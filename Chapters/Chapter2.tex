@@ -1,0 +1,281 @@
+% Chapter 2
+
+\chapter{Multi-Task Learning} % Write in your own chapter title
+\label{Chapter2}
+\lhead{Chapter \ref{Chapter2}. 
+\emph{Gaussian Processes And Approximate Inference}} % Write in your own chapter title to set the page header
+
+{\bf \small{
+This chapter presents\dots
+}}
+
+\section{Introduction}
+% What is MTL
+
+% Examples and Motivation
+
+% Some important references
+
+\section{Why does Multi-Task Learning work?}
+% First works in Learning to Learn
+% Overview of section
+ % Ruder and Caruana
+% 
+\subsection{Inductive Bias Learning Problem} % Baxter
+% The first theoretical work on MTL... MTL as a Bias Learning Problem
+Bias learning, also known as ``Learning to learn'' is 
+
+In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of multi-task learning. This is done by extending the work of hypotheses space capacity~\cite{vapnik2013nature} to a family of spaces of hypotheses capacity, with the goal of learning a good space of hypotheses from which we can obtain a good hypothesis.
+
+% Review of concepts for STL in Supervised Learning
+\subsubsection*{Classical Statistical Learning}
+In the classical learning approach, one has the following components:
+\begin{itemize}
+    \item an input space $X$ and an output space $Y$,
+    \item a probability $P$ (which is unknown) defined over $X \times Y$,
+    \item a loss function $l:Y \times Y \to R$, and
+    \item a hypothesis space $\mathcal{H}$ with hypotheses or functions $h: X \to Y$.
+\end{itemize}
+The goal for the learner is to select a hypothesis $h \in \mathcal{H}$ that minimizes the expected loss:
+$$ e_P(h) =  \int_{X \times Y} l(h(x), y) dP(x, y) .$$
+The density $P$ is unknown, but we have a training set $z = \{(x_1, y_1), \ldots, (x_m, y_m)\}$ drawn from P. One alternative, known as Empirical Risk Minimization (ERM), is to minimize:
+$$ \hat{e}_z(h) = \frac{1}{m} \sum_{i=1}^m l(h(x_i), y_i).$$
+Although this is the more straight-forward way to minimize $e_P(h)$ ($ \hat{e}_z(h)$ is an unbiased estimator of $e_P(h)$), it has been shown~\cite{vapnik2013nature} that there are smarter ways (with better generalization properties) of minimizing the expected loss.
+This have relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
+Vapnik answers to the question of what can we say about $e_P(h)$ when $h$ minimizes $\hat{e}_z(h)$, and moreover, his results are valid also for small number of training patterns $m$.
+Under some general conditions, he proves that:
+\begin{equation}\label{eq:classic_bound}
+    e_P(h) \leq \hat{e}_z(h) + R(d/m)
+\end{equation}
+where $R$ is some non-decreasing function and $d$ is the VC-dimension of the hypothesis $h$. This means that the empirical loss $\hat{e}_z(h)$ gets closer to the expected loss $e_P(h)$ if:
+\begin{itemize}
+    \item We use a larger number $m$ of training samples (this was already inferred from the asymptotical properties)
+    \item The VC-dimension (or capacity) of the hypotheses we use is small. This is the most important term in Vapnik theory.
+\end{itemize}
+The VC-dimension measures the capacity of a function or hypotheses space. In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_d$ that can be shattered (in two classes) by functions of this set.
+In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions 
+$ I(x, h, \beta) = \bm{1}_{\{h(x) - \beta\}} $.
+The VC-dimension gives a notion of the capacity of our set of hypotheses. If the the capacity of our set of hypotheses $\mathcal{H}$ is too large, we may find an hypotheses $h^*$ that minimizes $\hat{e}_z(h)$ but does not generalize well and therefore, does not minimize $e_P(h)$. We also have to notice that using a very simple (low capacity) space of hypotheses $\mathcal{H}$ we could be in a situation where there is not a good hypothesis $h \in \mathcal{H}$, so we cannot minimize $\hat{e}_z(h)$.
+
+The Structural Risk Minimization as an inductive principle proposed by Vapnik (as opposed to the ERM) tries to find a tradeoff between minimizing $\hat{e}_z(h)$ and minimizing $d$. The idea is to define an admissible structure, that is a sequence of hypotheses spaces:
+$$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
+where their VC-dimensions are ordered:
+$$ d_1 < d_2 < \ldots < d_k < \ldots$$
+where $d_i$ is the VC-dimension of $\mathcal{H}_i$
+SRM selects the hypothesis $h^* = h_i^* \in \mathcal{H}_i$ that obtains the best bound for the actual risk $e_P(h)$.
+This admissible structure can be built in various ways. In Neural Networks in can be the built by increasing the number of hidden layers. In other methods, such as SVM or Ridge Regression, this is done by decreasing the regularization.
+However, this SRM principle is usually replaced by a cross-validation (CV) procedure.
+
+Support Vector Machines, which are the most representative models of this theory, use the VC-dimension also in other way (apart from the SRM principle or the CV procedure). The goal of finding the optimal hyperplane, that is, that with the maximum margin between the classes, has its motivation in the fact the set of such type of hypotheses have a lower VC-dimension that the set of all hyperplanes do.
+
+
+% Extension to MTL
+\subsubsection*{Bias Statistical Learning}
+According to Baxter, in Bias Learning we have the following components:
+\begin{itemize}\label{eq:biaslearn_exprisk}
+    \item an input space $X$ and an output space $Y$,
+    \item a family of probabilities $\mathcal{P}$ of probabilities $P$ defined over $X \times Y$, and a distribution $Q$ defined over $\mathcal{P}$,
+    \item a loss function $l:Y \times Y \to R$, and
+    \item a family of hypotheses spaces $\mathbb{H}$ of spaces $\mathcal{H}$ with hypotheses or functions $h: X \to Y$.
+\end{itemize}
+The goal here is also to minimize the expected risk, which in this case is defined as:
+\begin{equation}\label{}
+    e_Q(\mathcal{H}) = \int_{\mathcal{P}} \inf_{h \in \mathcal{H}} e_P(h) dQ(P) = \int_{\mathcal{P}} \inf_{h \in \mathcal{H}} \int_{X \times Y} l(h(x), y) dP(x, y) dQ(P).
+\end{equation}
+Again, we do not know $\mathcal{P}$ nor $Q$, but we have a training set obtained in the following way:
+\begin{enumerate}
+    \item Sample $T$ times from $Q$ obtaining $P_1, \ldots, P_T \in \mathcal{P}$
+    \item For $r=1, \ldots, T$ sample using $P_r$ $m$ pairs $z_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ where $(x_i^r, y_i^r) \in X \times Y$.
+\end{enumerate}
+We obtain $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$.
+We call $z$ a $(T, m)$-sample, with $m$ examples from $T$ different learning tasks (the constant size $m$ is for simplicity purposes).
+Now we can define an empirical loss of $z$ as:
+\begin{equation}\label{eq:biaslearn_emprisk}
+    \hat{e}_z(\mathcal{H}) = \sum_{r=1}^T \inf_{h \in \mathcal{H}} \hat{e}_{z_r}(h) = \sum_{r=1}^T \inf_{h \in \mathcal{H}} \sum_{i=1}^m l(h(x_i^r), y_i^r),
+\end{equation}
+which is simply an average of the empirical losses of each task. Note, however, that in this case this estimate is biased, since (as we have seen) $e_{P_r}(h)$ does not coincide with $\hat{e}_{z_r}(h)$. 
+As in the classical approach, we want more intelligent ways of minimizing the actual error $e_Q(\mathcal{H})$. By following the same path, we want to:
+\begin{itemize}
+    \item Define a notion of capacity of hypotheses space families (VC-dimension like)
+    \item Find a bound of $e_Q(\mathcal{H})$ using the empirical error $\hat{e}_z(\mathcal{H})$ and the capacity of the hypotheses space family.
+    \item Define an inductive principle to learn good hypotheses spaces $\mathcal{H}$?
+    \item Find (bias learning) models that uses low capacity hypotheses space families?
+\end{itemize}
+Baxter does not directly address these points.
+In first place, he defines some concepts that allow to write two concepts of capacity related to $\mathbb{H}$. Using these two concepts, he shows uniform convergence of $e_Q(\mathcal{H})$ to $\hat{e}_z(h)$. Moreover, this result is valid not only asymptotically:
+\begin{equation*}
+    e_Q(\mathcal{H}) \leq \hat{e}_z(\mathcal{H}) + \epsilon
+\end{equation*}
+with $m$ such that
+\begin{equation*}
+    m \geq \frac{1}{T \epsilon^2} C(\mathbb{H})
+\end{equation*}
+where $C(\mathbb{H})$ is a notion of capacity of $\mathbb{H}$ (this bound is very simplified in this work). We can observe that as the number of tasks grow, we need less examples in each task. Also, if we have related tasks (and then $\mathbb{H}$ can have low capacity) the number of necessary examples per task also decreases.
+However, this bound is not so useful because it is theoretical, that is, we have theoretical notions of the capacity of $\mathbb{H}$ but we cannot compute it.
+
+He then focuses on feature learning, that is, we define a specific type of learners where we have two steps:
+\begin{itemize}
+    \item Learning the space of features (or learning $\mathcal{H}_f$)
+    \item Learning the best linear model $g$ over the features given by $f$ (or learning the best hypothesis $g \circ f$ in $\mathcal{H}_f$)
+\end{itemize}
+For these type of models, he also shows how a multi-output Neural Network (which can be seen an MTL NN) is a model that embodies this feature learning approach.
+The NN can be seen as a linear model $g$ over a transformation $f$ of the original data. That is, the set of functions $\mathcal{H}_f = \{g \circ f \}$ used by the neural network is learned trying to minimize the empirical loss when we update $f$.
+Baxter derives specific bound for the NN using that the capacity of the hypotheses space family $\mathbb{H}$ can be computed for this case.
+
+Finally, he show some results for Multi-Task Learning. 
+Multi-Task Learning is a particular case of Bias Learning where we are not interested in finding an optimal hypotheses space $\mathcal{H}$ where we can find good solutions for a great variety of problems, but our goal is to find good solutions for a fixed number of tasks. That is, instead of having a family of probabilities $\mathcal{P}$ with a probability measure $\mathcal{Q}$, we have a fixed vector $\bm{P} = (P_1, \ldots, P_T)$ of probability measures over a fixed set of tasks and the learner minimizes:
+\begin{equation}
+    e_{\bm{P}}(\mathcal{H}) = \sum_{r=1}^T e_{P_r}(h_r)  = \sum_{r=1}^T \int_{X \times Y} l(h_r(x), y) d P_r(x, y) .
+\end{equation}
+Then, we define the empirical multi-task error as
+\begin{equation}\label{eq:mtllearn_exprisk}
+    \hat{e}_z(\mathcal{H}) = \sum_{r=1}^T \hat{e}_{z_r}(h_r) = \sum_{r=1}^T \sum_{i=1}^m l(h_r(x_i^r), y_i^r).
+\end{equation}
+The difference is subtle but we have a different objective. In the multi-task setting, the hypotheses space $\mathcal{H}$ found will not necessarily be good for generalizing to new tasks. Also, we have got rid of the $\inf$ term, which was difficult to deal with.
+%
+
+Restricting to the Boolean functions, Baxter defines an extension of the VC-dimension $d_\mathbb{H}(T)$ that can be computed (for these Boolean map functions). Using that, he extends the previous theorems obtaining ``computable'' bounds and he derives a lower bound for $m$, if $m$ is below that lower bound then we can find tasks such that the error made by our estimator is larger then certain $\epsilon$.
+
+
+
+
+
+% Covering numbers
+
+% Uniform Convergence for bias learners (Comparison with Vapnik)
+
+% Multi-Task Learning (strictly speaking, with fixed tasks)
+
+% Feature Learning model as Bias Learner using Neural Networks
+
+    % Lemmas?
+
+\subsection{A notion of Task relatedness} % Ben-David
+% Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
+
+% Another view for MTL is when we have one main tasks and auxiliary tasks...
+
+% F-related tasks
+
+% Bound for F-related tasks
+
+% Relation with Baxter work
+
+\subsection{Learning Under Privileged Information}
+
+
+
+\section{Multi-Task Learning Methods: An Overview}
+
+\subsection{Bias Learning Approach}
+% Joint Learning
+% Leveraging common and specific information + LUPI
+% Common + specific model which is equivalent to penalizing individual norm and variance
+% Evgeniou, T. and Pontil, M. (2004). Regularized multi-task learning.
+% Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning multiple tasks with kernel methods.
+% Connection with LUPI!
+% Generalized SMO
+% Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
+% Learning multiple tasks with kernel methods
+
+%\subsection{Feature Learning}
+% Feature learning or
+%   Feature transformation (relacion con Deep Learning)
+% Sparse coding and MTL
+% K-Dimensional Coding Schemes in Hilbert Spaces
+% Sparse coding for multitask and transfer learning
+% Learning task grouping and overlap in multi-task learning.
+%%%%%%%% Relacion en A Survey on Multi-Task Learning
+% Multi-Task Feature Learning.
+% A spectral regularization framework for multi-task structure learning?
+% Infinite latent SVM for classificationand multi-task learning
+
+
+\subsection{Low-Rank Approach}
+%   Feature selection or block sparse regularization
+
+% Argyriou, A. and Pontil, M. (2007). Multi-Task Feature Learning.
+
+%  A Dirty Model for Multi-task Learning
+
+% Low-rank
+
+% .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictivestructures  from  multiple  tasks  and  unlabeled  data,”
+
+% A convex formulation for learning shared structures from multiple tasks
+
+% Learning  multiple  tasks using manifold regularization
+
+% Learning multiple related tasks using latent independent component analysis
+
+
+ % Learning task relations
+\subsection{Learning Task Relations}
+% Task relation learning
+
+% Bonilla
+
+% A Convex Formulation for Learning Task Relationships in Multi-Task Learning
+
+% A regularization approach to learning task relationships in multitask learning
+
+% Convex learning of multiple tasks and their structure
+
+% Tasks Clustering
+
+% Discovering structure in multiple learning tasks: The TC algorithm?
+
+% Learning  multiple  tasks  using  shared hypotheses?
+
+% Flexible modeling of latent task structures in multitask learning
+
+% Clustered multi-task learning: A convex formulation
+
+% Learning  with  whom  to  share  in multi-task feature learning
+
+% Learning task grouping and overlap in multi-task learning
+
+
+\subsection{Decomposition Approach}
+% learning to multitask
+
+% .  Chen,  J.  Liu,  and  J.  Ye,  “Learning  incoherent  sparse  and  low-rankpatterns from multiple tasks,” inKDD, 2010.[100]  J.  Chen,  J.  Zhou,  and  J.  Ye,  “Integrating  low-rank  and  group-sparsestructures for robust multi-task learning,” inKDD, 2011.[101]  P. Gong, J. Ye, and C. Zhang, “Robust multi-task feature learning,” inKDD, 2012.[102]  W. Zhong and J. T. Kwok, “Convex multitask learning with flexible taskclusters,” inICML, 2012.
+
+
+
+\section{Deep Multi-Task Learning}
+\subsection{Hard Parameter Sharing}
+\subsection{Soft Parameter Sharing}
+
+% Deep multi-task representation learning: A tensor factorisation approach
+
+% Trace norm regularised deep multi-task learning
+
+
+
+\section{Multi-Task Learning with Kernel Methods} % Evgeniou
+% Most multi-task methods are linear models, which may not be flexible enough to capture certain dependencies.
+% Deep Learning is a very popular and cost-effective way of overcoming this problem. The final linear models are substituted by the neural network output and the parameters are learned together using back propagation.
+% However, one of the main problems of deep learning is the lack of theoretical results and the non-convexity of the problems.
+% Other alternative to extend the MTL models non-linearly is by using the kernels.
+% Kernel trick.
+
+% Joint Learning
+% Leveraging common and specific information
+% Common + specific model which is equivalent to penalizing individual norm and variance
+% Evgeniou, T. and Pontil, M. (2004). Regularized multi-task learning.
+% Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning 
+
+% Teorema de Evgeniou
+
+% When is there a representer theorem? Vector versus matrix regularizers.
+
+% Multi-task least-squares support vector machines. Shuo
+
+% Multi-task Gaussian process prediction. Bonilla
+
+% Sparse coding for multitask and transfer learning
+
+\section{Conclusions}\label{sec-conclusions-2}
+
+In this chapter, we covered\dots

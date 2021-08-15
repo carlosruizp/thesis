@@ -1,0 +1,256 @@
+%% ----------------------------------------------------------------
+%% Thesis.tex -- MAIN FILE (the one that you compile with LaTeX)
+%% ---------------------------------------------------------------- 
+
+% Set up the document
+\documentclass[a4paper, 11pt]{Thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
+%\documentclass[b5paper,9pt]{Thesis}  % Use the "Thesis" style, based on the ECS Thesis style by Steve Gunn
+\graphicspath{{Figures/}}  % Location of the graphics files (set up for graphics to be in PDF format)
+
+% Include any extra LaTeX packages required
+\usepackage[round, authoryear, semicolon, sort&compress]{natbib}  % Use the "Natbib" style for the references in the Bibliography
+\usepackage{verbatim}  % Needed for the "comment" environment to make LaTeX comments
+\usepackage{vector}  % Allows "\bvec{}" and "\buvec{}" for "blackboard" style bold vectors in maths
+\usepackage[Lenny]{fncychap}
+\usepackage{bm}
+\usepackage{dsfont}
+\usepackage{psfrag}
+\usepackage{lettrine}
+\usepackage{lscape}
+\usepackage[]{algorithm2e}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{dsfont}
+\usepackage{bm}
+%\usepackage[utf8]{inputenc} % allow utf-8 input
+%\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amssymb}
+\usepackage{amsmath}
+\hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
+
+%% ----------------------------------------------------------------
+\setlength{\headheight}{26pt}
+\begin{document}
+
+\frontmatter	  % Begin Roman style (i, ii, iii, iv...) page numbering
+
+% Set up the Title Page
+\title  {Advanced Methods for Bayesian Optimization in Complex Scenarios}
+%\title  {\uppercase{Prediction Based on Averages over Automatically Induced Learners: Ensemble Methods and Bayesian Techniques}}
+\authors  {\texorpdfstring
+            {\href{http://arantxa.ii.uam.es/~egarrido/}{Eduardo C. Garrido Merch\'{a}n}}
+            {Eduardo C. Garrido Merch\'{a}n}
+          }
+\addresses  {\groupname\\\deptname\\\univname}  
+% Do not change this here, instead these must be set in the "Thesis.cls" file, please look through it instead
+\date       {\today}
+\subject    {}
+\keywords   {}
+
+\maketitle
+%% ----------------------------------------------------------------
+
+%\setstretch{1.3}  % It is better to have smaller font and larger line spacing than the other way round
+
+% Define the page headers using the FancyHdr package and set up for one-sided printing
+\fancyhead{}  % Clears all page headers and footers
+\rhead{\thepage}  % Sets the right side header to show the page number
+\lhead{}  % Clears the left side page header
+
+\pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
+
+%% ----------------------------------------------------------------
+% Declaration Page required for the Thesis, your institution may give you a different text to place here
+%\Declaration{
+
+%\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
+%\addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
+
+%I, AUTHOR NAME, declare that this thesis titled, `THESIS TITLE' and the work presented in it are my own. I confirm that:
+
+%\begin{itemize} 
+%\item[\tiny{$\blacksquare$}] This work was done wholly or mainly while in candidature for a research degree at this University.
+ 
+%\item[\tiny{$\blacksquare$}] Where any part of this thesis has previously been submitted for a degree or any other qualification at this University or any other institution, this has been clearly stated.
+ 
+%\item[\tiny{$\blacksquare$}] Where I have consulted the published work of others, this is always clearly attributed.
+ 
+%\item[\tiny{$\blacksquare$}] Where I have quoted from the work of others, the source is always given. With the exception of such quotations, this thesis is entirely my own work.
+ 
+%\item[\tiny{$\blacksquare$}] I have acknowledged all main sources of help.
+ 
+%\item[\tiny{$\blacksquare$}] Where the thesis is based on work done by myself jointly with others, I have made clear exactly what was done by others and what I have contributed myself.
+%\\
+%\end{itemize}
+ 
+ 
+%Signed:\\
+%\rule[1em]{25em}{0.5pt}  % This prints a line for the signature
+ 
+%Date:\\
+%\rule[1em]{25em}{0.5pt}  % This prints a line to write the date
+%}
+%\clearpage  % Declaration ended, now start a new page
+
+%% ----------------------------------------------------------------
+% The "Funny Quote Page"
+\pagestyle{empty}  % No headers or footers for the following pages
+
+\null\vfill
+% Now comes the "Funny Quote", written in italics
+\textit{What is the essence of life? To serve others and to do good.} 
+%\textit{``Write a quote here.''}
+
+\begin{flushright}
+Aristotle.
+\end{flushright}
+
+\vfill\vfill\vfill\vfill\vfill\vfill\null
+\clearpage  % Funny Quote page ended, start a new page
+%% ----------------------------------------------------------------
+
+% The Abstract Page
+\addtotoc{Abstract}  % Add the "Abstract" page entry to the Contents
+\abstract{
+%\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
+\addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
+
+\small{
+.
+}
+
+}
+
+\clearpage  % Abstract ended, start a new page
+%% ----------------------------------------------------------------
+
+% The Resumen page, for thanking everyone
+\resumen{
+%\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
+\addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
+
+\small{
+.
+}
+	
+}
+\clearpage  % End of the resumen
+
+%% ----------------------------------------------------------------
+
+
+%
+%\setstretch{1.3}  % Reset the line-spacing to 1.3 for body text (if it has changed)
+
+% The Acknowledgements page, for thanking everyone
+\acknowledgements{
+%\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
+\addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
+.
+}
+\clearpage  % End of the Acknowledgements
+%% ----------------------------------------------------------------
+
+\pagestyle{fancy}  %The page style headers have been "empty" all this time, now use the "fancy" headers as defined before to bring them back
+
+
+%% ----------------------------------------------------------------
+\lhead{\emph{Contents}}  % Set the left side page header to "Contents"
+\tableofcontents  % Write out the Table of Contents
+
+%% ----------------------------------------------------------------
+%\lhead{\emph{List of Figures}}  % Set the left side page header to "List if Figures"
+%\listoffigures  % Write out the List of Figures
+
+%% ----------------------------------------------------------------
+%\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
+%\listoftables  % Write out the List of Tables
+
+%% ----------------------------------------------------------------
+%\setstretch{1.5}  % Set the line spacing to 1.5, this makes the following tables easier to read
+\clearpage  % Start a new page
+\lhead{\emph{Abbreviations}}  % Set the left side page header to "Abbreviations"
+\listofsymbols{ll}{  % Include a list of Abbreviations (a table of two columns)
+
+% \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
+\textbf{ADF} & \textbf{A}ssumed \textbf{D}ensity \textbf{F}iltering \\
+\textbf{AF} & \textbf{A}cquisition \textbf{F}unction \\
+\textbf{BO} & \textbf{B}ayesian \textbf{O}ptimization  \\
+\textbf{DGP} & \textbf{D}eep \textbf{G}aussian \textbf{P}rocess \\
+\textbf{EI} & \textbf{E}xpected \textbf{I}mprovement \\
+\textbf{EP} & \textbf{E}xpectation \textbf{P}ropagation \\
+\textbf{GP} & \textbf{G}aussian \textbf{P}rocess \\
+\textbf{KL} & \textbf{K}ullback  \textbf{L}iebler \\
+\textbf{MCMC} & \textbf{M}arkov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\
+\textbf{PPESMOC} & \textbf{P}arallel \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch for \textbf{M}ultiobjective \textbf{O}ptimization with \\ & \textbf{C}onstraints\\
+\textbf{PES} & \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch \\
+\textbf{PESMOC} & \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch for \textbf{M}ultiobjective \textbf{O}ptimization with \textbf{C}onstraints\\
+\textbf{RS} & \textbf{R}andom \textbf{S}earch \\
+\textbf{UCB} & \textbf{U}pper \textbf{C}onfidence \textbf{B}ound \\
+}
+
+%\setstretch{1.3}  % Return the line spacing back to 1.3
+
+\pagestyle{empty}  % Page style needs to be empty for this page
+\dedicatory{To my family}
+
+%\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
+\addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
+
+\setstretch{1}  % Return the line spacing back to 1
+
+%% ----------------------------------------------------------------
+\mainmatter	  % Begin normal, numeric (1,2,3...) page numbering
+\pagestyle{fancy}  % Return the page headers back to the "fancy" style
+
+% Include the chapters of the thesis, as separate files
+% Just uncomment the lines as you write the chapters
+
+\input{./Chapters/Intro} % Introduction
+
+\input{./Chapters/Chapter1} % Foundations and Concepts
+
+\input{./Chapters/Chapter2} % Multi-Task Learning Overview
+
+\input{./Chapters/Chapter3} % Convex Multi-Task SVM
+
+\input{./Chapters/Chapter4} % Adaptive Graph Laplacian Multi-Task Learning SVM
+
+% \input{./Chapters/Chapter5} % Parallel predictive entropy search for multi-objective bayesian optimization with constraints
+
+% \input{./Chapters/Chapter6} % Dealing with categorical and integer-valued variables in Bayesian optimization with Gaussian processes
+
+% \input{./Chapters/Chapter7} % Bayesian optimization of a hybrid system for robust ocean wave features prediction
+
+%\input{./Chapters/Chapter8} % Conclusions and Future Work
+
+%% ----------------------------------------------------------------
+% Now begin the Appendices, including them as separate files
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+
+\appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
+
+%\input{./Appendices/AppendixA}	% Probability Distributions
+
+%\input{./Appendices/AppendixB} % Appendix for Chapter 4
+
+%\input{./Appendices/AppendixC} % Appendix for Chapter 5
+
+\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
+\backmatter
+
+%% ----------------------------------------------------------------
+\label{Bibliography}
+\lhead{\emph{Bibliography}}  % Change the left side page header to "Bibliography"
+%\bibliographystyle{unsrtnat}  % Use the "unsrtnat" BibTeX style for formatting the Bibliography
+\bibliographystyle{apalike}  % Use the "unsrtnat" BibTeX style for formatting the Bibliography
+\bibliography{Bibliography}  % The references (bibliography) information are stored in the file named "Bibliography.bib"
+
+\end{document}  % The End
+%% ----------------------------------------------------------------

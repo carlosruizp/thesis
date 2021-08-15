@@ -1,0 +1,897 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(./Thesis.tex
+LaTeX2e <2020-02-02> patch level 2
+L3 programming layer <2020-02-14> (./Thesis.cls
+Document Class: Thesis 2007/22/02 v1.0 LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2019/12/20 v1.4l Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/bk11.clo))
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/vmargin/vmargin.sty
+Package: vmargin 2004/07/15 V2.5 set document margins (VK)
+) (./fancyhdr.sty) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amscd.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/xspace.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def)))
+(/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf.sty
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/grfext/grfext.sty
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/pdftexcmds/pdftexcmds.sty
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg)))
+(/usr/share/texlive/texmf-dist/tex/latex/subfigure/subfigure.sty
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(/usr/share/texlive/texmf-dist/tex/latex/subfigure/subfigure.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty (./lstpatch.sty
+
+***
+*** This is a patch for listings 1.3, but you're using
+*** version 1.8c.
+***
+*** Patch file not loaded.
+***
+
+) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg))
+(./lstpatch.sty
+
+***
+*** This is a patch for listings 1.3, but you're using
+*** version 1.8c.
+***
+ *** Patch file not loaded.
+***
+
+) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))
+(/usr/share/texlive/texmf-dist/tex/generic/atbegshi/atbegshi.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/share/texlive/texmf-dist/tex/latex/atveryend/atveryend.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/natbib/natbib.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty) (./vector.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty)) (./fncychap.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/doublestroke/dsfont.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/psfrag/psfrag.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/lettrine/lettrine.sty
+(/usr/share/texlive/texmf-dist/tex/generic/minifp/minifp.sty)
+Loading lettrine.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/lettrine/lettrine.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/lscape.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
+(/usr/share/texlive/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/relsize/relsize.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/units/nicefrac.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.sty
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype-pdftex.def)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/microtype.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def)
+(./Thesis.aux
+
+LaTeX Warning: Label `eq:pred_dist' multiply defined.
+
+
+LaTeX Warning: Label `eq:AppendixA_new_mean' multiply defined.
+
+
+LaTeX Warning: Label `eq:Appendix_Gaussian' multiply defined.
+
+) (/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty)
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty))
+(./Thesis.out) (./Thesis.out)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg)
+------------------------------------------------------------------------------
+ Title Page
+------------------------------------------------------------------------------
+[1
+Non-PDF special ignored!
+<special> header=psfrag.pro
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+------------------------------------------------------------------------------
+ Abstract Page
+------------------------------------------------------------------------------
+[4]
+------------------------------------------------------------------------------
+ Acknowledgements
+------------------------------------------------------------------------------
+[5]
+------------------------------------------------------------------------------
+ Acknowledgements
+------------------------------------------------------------------------------
+[6]
+------------------------------------------------------------------------------
+ Table of Contents
+------------------------------------------------------------------------------
+(./Thesis.toc (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg) [7] [8] [9])
+[10]
+------------------------------------------------------------------------------
+ Abbreviations
+------------------------------------------------------------------------------
+
+Overfull \hbox (42.7928pt too wide) in alignment at lines 324--324
+ [] [] 
+[11] [12]
+------------------------------------------------------------------------------
+ Dedicatory
+------------------------------------------------------------------------------
+[13] [14] (./Chapters/Chapter1.tex
+Chapter 1.
+------------------------------------------------------------------------------
+ 1 Introduction
+------------------------------------------------------------------------------
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1phv.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-ptm.cfg) [1] [2] [3]
+[4] [5 <./Figures/../Figures/chapter_1/f_obj.pdf> <./Figures/../Figures/chapter
+_1/f_obj_noisy.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/f_obj_noisy.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+>] [6 <./Figures/../Figures/chapter_1/samples.pdf> <./Figures/../Figures/chapte
+r_1/gp_posterior.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/gp_posterior.pdf)
+: PDF inclusion: multiple pdfs with page group included in a single page
+>] [7] [8 <./Figures/../Figures/chapter_1/gp0.pdf> <./Figures/../Figures/chapte
+r_1/gp1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/gp1.pdf): PDF inc
+lusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/acq0.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/acq0.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/acq1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/acq1.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/gp2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/gp2.pdf): PDF inc
+lusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/gp3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/gp3.pdf): PDF inc
+lusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/acq2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/acq2.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_1/acq3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_1/acq3.pdf): PDF in
+clusion: multiple pdfs with page group included in a single page
+>] [9] [10 <./Figures/chapter_1/figure/o1.pdf> <./Figures/chapter_1/figure/o2.p
+df
+
+pdfTeX warning: pdflatex (file ./Figures/chapter_1/figure/o2.pdf): PDF inclusio
+n: multiple pdfs with page group included in a single page
+> <./Figures/chapter_1/figure/c1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/chapter_1/figure/c1.pdf): PDF inclusio
+n: multiple pdfs with page group included in a single page
+> <./Figures/chapter_1/figure/pareto_set_c.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/chapter_1/figure/pareto_set_c.pdf): PD
+F inclusion: multiple pdfs with page group included in a single page
+> <./Figures/chapter_1/figure/frontier_c.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/chapter_1/figure/frontier_c.pdf): PDF 
+inclusion: multiple pdfs with page group included in a single page
+>] [11] [12] [13] [14]) (./Chapters/Chapter2.tex [15] [16]
+Chapter 2.
+------------------------------------------------------------------------------
+ 2 Gaussian Processes and Approximate Inference
+------------------------------------------------------------------------------
+[17] [18] [19] [20] [21 <./Figures/../Figures/samples_gp.pdf>]
+Overfull \hbox (4.86552pt too wide) in paragraph at lines 71--78
+ [][] 
+[22 <./Figures/../Figures/f0.pdf> <./Figures/../Figures/f1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/f1.pdf): PDF inclusion: mul
+tiple pdfs with page group included in a single page
+> <./Figures/../Figures/f2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/f2.pdf): PDF inclusion: mul
+tiple pdfs with page group included in a single page
+> <./Figures/../Figures/f3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/f3.pdf): PDF inclusion: mul
+tiple pdfs with page group included in a single page
+>]
+Overfull \hbox (4.86552pt too wide) in paragraph at lines 97--103
+[][] 
+[23]
+Overfull \hbox (4.86552pt too wide) in paragraph at lines 119--125
+[][] 
+[24 <./Figures/../Figures/sek_2.pdf> <./Figures/../Figures/sek_3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/sek_3.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./Figures/../Figures/sek_1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/sek_1.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./Figures/../Figures/sek_4.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/sek_4.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+>] [25 <./Figures/../Figures/mat_1.pdf> <./Figures/../Figures/mat_2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/mat_2.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./Figures/../Figures/mat_3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/mat_3.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./Figures/../Figures/mat_4.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/mat_4.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+>] [26] [27] [28] [29]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Overfull \hbox (9.31827pt too wide) in paragraph at lines 203--203
+ [] 
+
+Overfull \hbox (9.31827pt too wide) in paragraph at lines 204--204
+ [][] 
+[30]
+Underfull \hbox (badness 10000) in paragraph at lines 210--211
+
+[31 <./Figures/../Figures/chapter_2/slice_sampling.pdf>] [32 <./Figures/../Figu
+res/chapter_2/ML.pdf> <./Figures/../Figures/chapter_2/sampling.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_2/sampling.pdf): PD
+F inclusion: multiple pdfs with page group included in a single page
+>] [33]
+Overfull \hbox (4.86552pt too wide) in paragraph at lines 227--231
+[][] 
+[34 <./Figures/../Figures/chapter_2/random_forest.png>] [35 <./Figures/../Figur
+es/chapter_2/gp.pdf> <./Figures/../Figures/chapter_2/rf.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_2/rf.pdf): PDF incl
+usion: multiple pdfs with page group included in a single page
+>] [36] [37] [38 <./Figures/../Figures/chapter_2/deepGP.pdf>] [39] [40]
+[41] [42] [43] [44 <./Figures/../Figures/chapter_2/approxinf.pdf>] [45]
+Overfull \hbox (0.3959pt too wide) in paragraph at lines 381--383
+\OT1/cmr/m/n/10.95 (-20) ous dis-tri-bu-tion $\OML/cmm/m/it/10.95 p\OT1/cmr/m/n
+/10.95 (-20) (\OML/cmm/b/it/10.95 ^^R\OT1/cmr/m/n/10.95 (-20) )$ with a para-me
+t-ric pro-posal dis-tri-bu-tion $\OML/cmm/m/it/10.95 q[]\OT1/cmr/m/n/10.95 (-20
+) (\OML/cmm/b/it/10.95 ^^R\OT1/cmr/m/n/10.95 (-20) )$, that is, $[](\OML/cmm/m/
+it/10.95 p\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/b/it/10.95 ^^R\OT1/cmr/m/n/10.95 (
+-20) )\OMS/cmsy/m/n/10.95 jj\OML/cmm/m/it/10.95 q\OT1/cmr/m/n/10.95 (-20) (\OML
+/cmm/b/it/10.95 ^^R\OT1/cmr/m/n/10.95 (-20) ))$
+[46 <./Figures/../Figures/chapter_2/mvg.pdf>] [47] [48]
+(/usr/share/texlive/texmf-dist/tex/latex/doublestroke/Udsrom.fd) [49] [50]
+[51]
+Overfull \hbox (8.76022pt too wide) detected at line 516
+[]
+[52]) [53 <./Figures/../Figures/chapter_2/e1.pdf> <./Figures/../Figures/chapter
+_2/e2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_2/e2.pdf): PDF incl
+usion: multiple pdfs with page group included in a single page
+>] (./Chapters/Chapter3.tex [54]
+Chapter 3.
+------------------------------------------------------------------------------
+ 3 Fundamentals of Bayesian Optimization
+------------------------------------------------------------------------------
+[55] [56] [57] [58] [59] [60] [61 <./Figures/../Figures/bo.pdf>] [62] [63 <./Fi
+gures/../Figures/bo_vs_random_bo.pdf> <./Figures/../Figures/bo_vs_random_rs.pdf
+
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/bo_vs_random_rs.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+>] [64 <./Figures/../Figures/for_thesis.pdf>] [65] [66 <./Figures/../Figures/pe
+smoc/theory/pred2.pdf>] [67] [68 <./Figures/../Figures/beta_exponential.pdf> <.
+/Figures/../Figures/beta_exponential_beta.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/beta_exponential_beta.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/beta_exponential_post.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/beta_exponential_post.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/beta_stationary.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/beta_stationary.pdf): PDF i
+nclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/beta_stationary_beta.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/beta_stationary_beta.pdf): 
+PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/beta_stationary_post.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/beta_stationary_post.pdf): 
+PDF inclusion: multiple pdfs with page group included in a single page
+>] [69 <./Figures/../Figures/gp.pdf> <./Figures/../Figures/pi.pdf>] [70 <./Figu
+res/../Figures/ucb.pdf>] [71] [72 <./Figures/../Figures/ei.pdf>] [73 <./Figures
+/../Figures/hedge.pdf>] [74 <./Figures/../Figures/entropy.pdf>] [75] [76]
+[77 <./Figures/../Figures/es.pdf>] [78] [79] [80] [81] [82 <./Figures/../Figure
+s/pesmoc/real/100_nnet.pdf>] [83 <./Figures/../Figures/constrained_multiobjecti
+ve.pdf>] [84]) (./Chapters/Chapter4.tex [85] [86]
+Chapter 4.
+------------------------------------------------------------------------------
+ 4 Predictive entropy search for multi-objective bayesian optimization with con
+straints
+------------------------------------------------------------------------------
+[87] [88] [89] [90] [91] [92] [93] [94] [95] [96] [97 <./Figures/../Figures/cha
+pter_4/theory/pred1.pdf> <./Figures/../Figures/chapter_4/theory/sample1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/sample1.pd
+f): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/cond_pred1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/cond_pred1
+.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/acq1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/acq1.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/pred2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/pred2.pdf)
+: PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/sample2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/sample2.pd
+f): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/cond_pred2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/cond_pred2
+.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/acq2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/acq2.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/pred3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/pred3.pdf)
+: PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/sample3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/sample3.pd
+f): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/cond_pred3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/cond_pred3
+.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> <./Figures/../Figures/chapter_4/theory/acq3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/../Figures/chapter_4/theory/acq3.pdf):
+ PDF inclusion: multiple pdfs with page group included in a single page
+>] [98 <./Figures/../Figures/chapter_4/theory/acq.pdf>] [99] [100] [101]
+[102] [103]
+
+LaTeX Warning: Reference `sec:pesmoc' on page 104 undefined on input line 906.
+
+[104] [105 <./Figures/../Figures/chapter_4/acquisition/plot_posterior_coupled.p
+df> <./Figures/../Figures/chapter_4/acquisition/plot_acq_coupled.pdf>]
+Overfull \hbox (6.78145pt too wide) in paragraph at lines 995--1008
+[][] 
+[106 <./Figures/../Figures/chapter_4/acquisition/plot_posterior.pdf> <./Figures
+/../Figures/chapter_4/acquisition/plot_acq_obj_1.pdf> <./Figures/../Figures/cha
+pter_4/acquisition/plot_acq_obj_2.pdf> <./Figures/../Figures/chapter_4/acquisit
+ion/plot_acq_con_1.pdf>] [107 <./Figures/../Figures/chapter_4/synthetic/4d_nois
+eless_NEW.pdf> <./Figures/../Figures/chapter_4/synthetic/6d_noiseless_NEW.pdf> 
+<./Figures/../Figures/chapter_4/synthetic/4d_noisy_NEW.pdf> <./Figures/../Figur
+es/chapter_4/synthetic/6d_noisy_NEW.pdf>] [108 <./Figures/figure.pdf>]
+Overfull \hbox (1.78613pt too wide) in paragraph at lines 1154--1154
+[]|\OT1/cmr/m/n/10 (-20) CONSTR|  
+[109]
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 1190--1202
+[][] 
+[110]
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 1207--1218
+[][] 
+[111 <./Figures/../Figures/chapter_4/benchmark/BNH.pdf> <./Figures/../Figures/c
+hapter_4/benchmark/BNH_noisy.pdf> <./Figures/../Figures/chapter_4/benchmark/SRN
+.pdf> <./Figures/../Figures/chapter_4/benchmark/SRN_noisy.pdf> <./Figures/../Fi
+gures/chapter_4/benchmark/TNK.pdf> <./Figures/../Figures/chapter_4/benchmark/TN
+K_noisy.pdf> <./Figures/../Figures/chapter_4/benchmark/OSY.pdf> <./Figures/../F
+igures/chapter_4/benchmark/OSY_noisy.pdf>] [112 <./Figures/../Figures/chapter_4
+/benchmark/CONSTR.pdf> <./Figures/../Figures/chapter_4/benchmark/CONSTR_noisy.p
+df> <./Figures/../Figures/chapter_4/benchmark/TwoBarTruss.pdf> <./Figures/../Fi
+gures/chapter_4/benchmark/TwoBarTruss_noisy.pdf> <./Figures/../Figures/chapter_
+4/benchmark/WeldedBeam.pdf> <./Figures/../Figures/chapter_4/benchmark/WeldedBea
+m_noisy.pdf>] [113] [114] [115 <./Figures/../Figures/chapter_4/real/100_ensembl
+e.pdf> <./Figures/../Figures/chapter_4/real/200_ensemble.pdf>] [116 <./Figures/
+../Figures/chapter_4/real/plot_ensemble_counter.pdf>]
+Overfull \hbox (7.82758pt too wide) in paragraph at lines 1463--1469
+ [] 
+[117 <./Figures/../Figures/chapter_4/real/diagrams/architecture_real_hard_exp.p
+df>] [118] [119 <./Figures/../Figures/chapter_4/real/50_nnet.pdf> <./Figures/..
+/Figures/chapter_4/real/100_nnet.pdf>] [120 <./Figures/../Figures/chapter_4/rea
+l/plot_rrnn_counter.pdf>]) (./Chapters/Chapter5.tex [121] [122]
+Chapter 5.
+------------------------------------------------------------------------------
+ 5 Parallel predictive entropy search for multi-objective bayesian optimization
+ with constraints
+------------------------------------------------------------------------------
+[123] [124] [125] [126] [127] [128] [129 <./Figures/ppesmoc/2-acq.pdf> <./Figur
+es/ppesmoc/2-acqb.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/ppesmoc/2-acqb.pdf): PDF inclusion: mu
+ltiple pdfs with page group included in a single page
+>] [130 <./Figures/exact_acq.pdf> <./Figures/ap_acq.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/ap_acq.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+>]
+Overfull \hbox (15.65514pt too wide) in paragraph at lines 466--472
+ [] 
+
+Overfull \hbox (15.65514pt too wide) in paragraph at lines 479--485
+ [] 
+[131]
+Overfull \hbox (16.65489pt too wide) in paragraph at lines 502--511
+ [][] 
+
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 554--562
+[][] 
+[132 <./Figures/ppesmoc/4D4B.pdf> <./Figures/ppesmoc/4D8B.pdf> <./Figures/ppesm
+oc/4D10B.pdf> <./Figures/ppesmoc/4D20B.pdf>] [133 <./Figures/ppesmoc/4D4B_noise
+.pdf> <./Figures/ppesmoc/4D8B_noise.pdf> <./Figures/ppesmoc/4D10B_noise.pdf> <.
+/Figures/ppesmoc/4D20B_noise.pdf>]
+Overfull \hbox (15.65514pt too wide) in paragraph at lines 628--632
+ [] 
+[134 <./Figures/ppesmoc/BNH.pdf> <./Figures/ppesmoc/SRN.pdf> <./Figures/ppesmoc
+/TNK.pdf> <./Figures/ppesmoc/TBT.pdf> <./Figures/ppesmoc/CONSTR.pdf> <./Figures
+/ppesmoc/OSY.pdf>] [135 <./Figures/ppesmoc/BNH_noisy.pdf> <./Figures/ppesmoc/SR
+N_noisy.pdf> <./Figures/ppesmoc/TNK_noisy.pdf> <./Figures/ppesmoc/OSY_noisy.pdf
+> <./Figures/ppesmoc/CONSTR_noisy.pdf> <./Figures/ppesmoc/TBT_noisy.pdf> <./Fig
+ures/ppesmoc/plot_100_ensemble.pdf> <./Figures/ppesmoc/plot_200_ensemble.pdf>]
+Overfull \hbox (15.65514pt too wide) in paragraph at lines 654--658
+ [] 
+) (./Chapters/Chapter6.tex [136 <./Figures/ppesmoc/plot_60_rrnn.pdf> <./Figures
+/ppesmoc/plot_100_rrnn.pdf>]
+Chapter 6.
+------------------------------------------------------------------------------
+ 6 Dealing with categorical and integer-valued variables in Bayesian optimizati
+on with Gaussian processes
+------------------------------------------------------------------------------
+[137] [138] [139] [140] [141]
+Overfull \hbox (13.08784pt too wide) in paragraph at lines 267--284
+[][] 
+[142] [143 <./Figures/integer/images/introduction/s4_before.pdf> <./Figures/int
+eger/images/introduction/s5_before.pdf> <./Figures/integer/images/introduction/
+s4_inside.pdf> <./Figures/integer/images/introduction/s5_inside.pdf> <./Figures
+/integer/images/introduction/s3_transform.pdf> <./Figures/integer/images/introd
+uction/s5_transform.pdf>] [144] [145]
+Overfull \hbox (13.36765pt too wide) in paragraph at lines 481--492
+ [] 
+[146 <./Figures/integer/images/proposed_method/posterior_mean_persp3d_black.pdf
+> <./Figures/integer/images/proposed_method/posterior_std_dev_contour.pdf> <./F
+igures/integer/images/proposed_method/posterior_mean_persp3d_black_real.pdf> <.
+/Figures/integer/images/proposed_method/posterior_std_dev_contour_real.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/images/proposed_method/posteri
+or_std_dev_contour_real.pdf): PDF inclusion: multiple pdfs with page group incl
+uded in a single page
+>] [147 <./Figures/integer/categorical/posterior_mean_perspective_categorical.p
+df> <./Figures/integer/categorical/posterior_std_dev_contour_categorical.pdf> <
+./Figures/integer/categorical/posterior_mean_perspective_real.pdf> <./Figures/i
+nteger/categorical/posterior_std_dev_contour_real.pdf>] [148 <./Figures/integer
+/toy/oen_1.pdf> <./Figures/integer/toy/oen_2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/toy/oen_2.pdf): PDF inclusion:
+ multiple pdfs with page group included in a single page
+> <./Figures/integer/toy/oen_3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/toy/oen_3.pdf): PDF inclusion:
+ multiple pdfs with page group included in a single page
+> <./Figures/integer/toy/proposed_1.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/toy/proposed_1.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+> <./Figures/integer/toy/proposed_2.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/toy/proposed_2.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+> <./Figures/integer/toy/proposed_3.pdf
+
+pdfTeX warning: pdflatex (file ./Figures/integer/toy/proposed_3.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+>] [149] [150]
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 654--660
+[][] 
+
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 666--672
+[][] 
+[151 <./Figures/integer/synthetic/noiseless/4Dif.pdf> <./Figures/integer/synthe
+tic/noisy/4Dinf.pdf> <./Figures/integer/synthetic/noiseless/4Dcf.pdf> <./Figure
+s/integer/synthetic/noisy/4Dcnf.pdf>] [152 <./Figures/integer/synthetic/noisele
+ss/6Dif.pdf> <./Figures/integer/synthetic/noisy/6Dinf.pdf> <./Figures/integer/s
+ynthetic/noiseless/6Dcf.pdf> <./Figures/integer/synthetic/noisy/6Dcnf.pdf>]
+[153 <./Figures/integer/real/ensemble_digits_final_ok.pdf>] [154 <./Figures/int
+eger/real/rrnn_digits_final_ok.pdf> <./Figures/integer/real/rrnn_final_ok.pdf>]
+) (./Chapters/Chapter7.tex [155] [156]
+Chapter 7.
+------------------------------------------------------------------------------
+ 7 Bayesian optimization of a hybrid system for robust ocean wave features pred
+iction
+------------------------------------------------------------------------------
+[157]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 19.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 19.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 19.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 19.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 19.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 19.
+
+[158]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 49.
+
+[159] (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd) [160] [161 <./Fi
+gures/cruce_GGA.pdf>]
+
+LaTeX Warning: Reference `sec:bo_section' on page 162 undefined on input line 1
+42.
+
+[162] [163 <./Figures/alcala/Mapa_boyas_con_b_California.pdf>]) [164 <./Figures
+/alcala/bo.pdf> <./Figures/alcala/bo_height.pdf>] (./Chapters/Chapter8.tex
+[165] [166]
+Chapter 8.
+------------------------------------------------------------------------------
+ 8 Conclusions and Future Work
+------------------------------------------------------------------------------
+[167] [168]) (./Appendices/AppendixA.tex [169] [170]
+Appendix A.
+------------------------------------------------------------------------------
+ A Probability Distributions
+------------------------------------------------------------------------------
+[171] [172] [173] [174] [175] [176]
+Overfull \hbox (89.93634pt too wide) detected at line 233
+[]
+[177]
+Overfull \vbox (45.9755pt too high) has occurred while \output is active
+[178]) (./Appendices/AppendixB.tex
+Appendix B.
+------------------------------------------------------------------------------
+ B Appendix for Chapter \ref {Chapter4}
+------------------------------------------------------------------------------
+[179] [180] [181]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Phi' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Phi' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 126.
+
+[182] [183] [184]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 187.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 187.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 187.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 187.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 187.
+
+[185] [186]
+Overfull \hbox (6.75142pt too wide) detected at line 239
+[]
+[187]
+Overfull \hbox (32.88821pt too wide) detected at line 250
+[]
+[188] [189]
+Overfull \hbox (7.8154pt too wide) detected at line 307
+[]
+[190] [191] [192] [193] [194 <./Figures/../Figures/pesmoc/revision/plotParetoSe
+nsitivityAnalysis.pdf>] [195 <./Figures/../Figures/pesmoc/revision/mciters.pdf>
+]
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 450--461
+[][] 
+
+Overfull \hbox (3.13145pt too wide) in paragraph at lines 466--475
+[][] 
+) (./Appendices/AppendixC.tex [196 <./Figures/../Figures/pesmoc/benchmark/BNH_z
+eros_noiseless.pdf> <./Figures/../Figures/pesmoc/benchmark/BNH_zeros_noisy.pdf>
+ <./Figures/../Figures/pesmoc/benchmark/SRN_zeros_noiseless.pdf> <./Figures/../
+Figures/pesmoc/benchmark/SRN_zeros_noisy.pdf> <./Figures/../Figures/pesmoc/benc
+hmark/TNK_zeros_noiseless.pdf> <./Figures/../Figures/pesmoc/benchmark/TNK_zeros
+_noisy.pdf> <./Figures/../Figures/pesmoc/benchmark/OSY_zeros_noiseless.pdf> <./
+Figures/../Figures/pesmoc/benchmark/OSY_zeros_noisy.pdf>] [197 <./Figures/../Fi
+gures/pesmoc/benchmark/CONSTR_zeros_noiseless.pdf> <./Figures/../Figures/pesmoc
+/benchmark/CONSTR_zeros_noisy.pdf> <./Figures/../Figures/pesmoc/benchmark/TwoBa
+rTruss_zeros_noiseless.pdf> <./Figures/../Figures/pesmoc/benchmark/TwoBarTruss_
+zeros_noisy.pdf> <./Figures/../Figures/pesmoc/benchmark/WeldedBeam_zeros_noisel
+ess.pdf> <./Figures/../Figures/pesmoc/benchmark/WeldedBeam_zeros_noisy.pdf>]
+[198]
+Appendix C.
+------------------------------------------------------------------------------
+ C Appendix for Chapter \ref {Chapter5}
+------------------------------------------------------------------------------
+[199]
+Overfull \hbox (15.37779pt too wide) in paragraph at lines 49--51
+\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/m/it/10.95 f[]\OT1/cmr/m/n/10.95 (-20) (\OML
+/cmm/b/it/10.95 x[]\OT1/cmr/m/n/10.95 (-20) )\OML/cmm/m/it/10.95 ; :::; f[]\OT1
+/cmr/m/n/10.95 (-20) (\OML/cmm/b/it/10.95 x[]\OT1/cmr/m/n/10.95 (-20) )\OML/cmm
+/m/it/10.95 ; f[]\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/b/it/10.95 x[]\OT1/cmr/m/n/
+10.95 (-20) )\OML/cmm/m/it/10.95 ; [] ; f[]\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/b
+/it/10.95 x[]\OT1/cmr/m/n/10.95 (-20) ))[]$ and $\OML/cmm/b/it/10.95 C[] \OT1/c
+mr/m/n/10.95 (-20) = (\OML/cmm/m/it/10.95 c[]\OT1/cmr/m/n/10.95 (-20) (\OML/cmm
+/b/it/10.95 x[]\OT1/cmr/m/n/10.95 (-20) )\OML/cmm/m/it/10.95 ; :::; c[]\OT1/cmr
+/m/n/10.95 (-20) (\OML/cmm/b/it/10.95 x[]\OT1/cmr/m/n/10.95 (-20) )\OML/cmm/m/i
+t/10.95 ; c[]\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/b/it/10.95 x[]\OT1/cmr/m/n/10.9
+5 (-20) )\OML/cmm/m/it/10.95 ; [] ; c[]\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/b/it/
+10.95 x[]\OT1/cmr/m/n/10.95 (-20) ))[]$.
+[200] [201] [202]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Phi' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 122.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Phi' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 126.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 126.
+
+[203] [204]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 172.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 172.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 172.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\cdot' on input line 172.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 172.
+
+[205] [206]
+Overfull \hbox (6.75142pt too wide) detected at line 224
+[]
+
+Overfull \hbox (32.88821pt too wide) detected at line 235
+[]
+[207] [208] [209]
+
+LaTeX Warning: Reference `eq:ep_approx' on page 210 undefined on input line 285
+.
+
+[210] [211]
+Overfull \hbox (1.78613pt too wide) in paragraph at lines 358--358
+[]|\OT1/cmr/m/n/10 (-20) CONSTR|  
+) [212] [213] [214]
+------------------------------------------------------------------------------
+ Bibliography
+------------------------------------------------------------------------------
+(./Thesis.bbl [215] [216] [217] [218]
+Underfull \hbox (badness 1248) in paragraph at lines 393--396
+[]\OT1/cmr/m/n/10.95 (+20) Frazier, P. I. (2018).  A tu-to-rial on Bayesian op-
+ti-miza-tion.  \OT1/cmr/m/it/10.95 (+20) arXiv preprint
+[219] [220] [221] [222] [223] [224] [225] [226]) [227] (./Thesis.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ )
+(see the transcript file for additional information){/usr/share/texmf/fonts/enc
+/dvips/cm-super/cm-super-ts1.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvips
+/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx
+10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl12.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/doublestroke/dsro
+m10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm
+10.pfb></usr/share/texmf/fonts/type1/public/tex-gyre/qhvb.pfb></usr/share/texmf
+/fonts/type1/public/tex-gyre/qhvr.pfb></usr/share/texmf/fonts/type1/public/cm-s
+uper/sfrm1095.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8
+a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
+Output written on Thesis.pdf (241 pages, 10766122 bytes).
+Transcript written on Thesis.log.

@@ -1,0 +1,5 @@
+Predictive entropy search is applied to the constrained multi-objective scenario.
+The technique reduces the entropy of the Pareto set in the feasible space.
+The acquisition function is approximated using expectation propagation.
+Empirical results show that the proposed technique outperforms other methods.
+The proposed technique allows for decoupled evaluation scenarios.

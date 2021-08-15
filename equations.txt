@@ -1,0 +1,94 @@
+ \boldsymbol{\mu} = \boldsymbol{\mu}u, \boldsymbol{\mu}edia de cavity
+\boldsymbol{\Sigma} = \boldsymbol{\Sigma}igma, covarianzas del cavity
+
+d log Z / dm = \frac{1}{Z}  d Z / dm
+
+d Z / dm = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  -0.5  2  (\mathbf{x} - \boldsymbol{\mu})  \boldsymbol{\Sigma}^{-1}  - 1 d \mathbf{x}
+
+d Z / dm = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}
+
+
+C  exp( - 0.5  (\mathbf{x} - \boldsymbol{\mu})^t \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}))
+
+d log Z / dm = \frac{1}{Z}  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = d (1 / Z) / dm   \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} + \frac{1}{Z}  d (\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}) / dm
+
+OK d (1 / Z) / dm  = - \frac{1}{Z}^2  d Z / dm  = - \frac{1}{Z}^2  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}
+
+OK d (\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}) / dm =
+
+OK \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}) (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x}  =
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z}^2  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} + \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}) (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] =
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z}^2  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})  d \mathbf{x}]   [\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}] + \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] =
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})  d \mathbf{x}]  \frac{1}{Z}  [\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}] + \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] =
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] \boldsymbol{\Sigma}^{-1} + \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] =
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] \boldsymbol{\Sigma}^{-1} + \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}]  - \boldsymbol{\Sigma}^{-1} =
+
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^\boldsymbol{\Sigma}^{-1} + \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T ]- 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  - \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^\boldsymbol{\Sigma}^{-1} + \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_^p[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  - \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [- [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] + [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] ] \boldsymbol{\Sigma}^{-1}   - \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [- [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] + [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [- [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T + [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + 2  \boldsymbol{\mu}  \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T - \boldsymbol{\mu}\boldsymbol{\mu}^T + [\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + 2  \boldsymbol{\mu}  \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + [\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T]] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = \boldsymbol{\Sigma}^{-1} [ Cov_tilted - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+OK \boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} = [ Cov_tilted - \boldsymbol{\Sigma} ]
+\boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} =  Cov_tilted - \boldsymbol{\Sigma} ]
+\boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} + \boldsymbol{\Sigma} =  Cov_tilted
+
+OK Cov_tilted  = \boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} + \boldsymbol{\Sigma}
+
+-----
+Cov_tilted  = \boldsymbol{\Sigma} - \boldsymbol{\Sigma} [ (d log Z / \boldsymbol{\mu}) (d log Z / \boldsymbol{\mu})^T - 2  d log Z / \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}
+
+\frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} + \boldsymbol{\Sigma}^{-1}  =  \boldsymbol{\Sigma}^{-1} - [ (d log Z / \boldsymbol{\mu}) (d log Z / \boldsymbol{\mu})^T - 2  d log Z / \boldsymbol{\Sigma} ]
+
+\frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2}  =  - [ (d log Z / \boldsymbol{\mu}) (d log Z / \boldsymbol{\mu})^T - 2  d log Z / \boldsymbol{\Sigma} ]
+
+
+Sustituir (2.45) por esto:
+
+Cov_tilted  = \boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} + \boldsymbol{\Sigma}
+
+
+
+d log Z / d\boldsymbol{\Sigma} = \frac{1}{Z}  d Z / \boldsymbol{\Sigma} = \frac{1}{Z}  0.5  d^2 Z / dm^2
+
+
+Cov_tilted  = \boldsymbol{\Sigma} - \boldsymbol{\Sigma} [ (d log Z / \boldsymbol{\mu}) (d log Z / \boldsymbol{\mu})^T - 2  \frac{1}{Z} d Z / d\boldsymbol{\Sigma} ] \boldsymbol{\Sigma}
+
+Cov_tilted  = \boldsymbol{\Sigma} - \boldsymbol{\Sigma} [ \frac{1}{Z}^2 (d Z / \boldsymbol{\mu}) (d Z / \boldsymbol{\mu})^T - \frac{1}{Z}  d^2 Z / dm^2 ] \boldsymbol{\Sigma}
+
+\frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2}  = \boldsymbol{\Sigma}^{-1} [ Cov_tilted - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+d ( d ( log Z ) / dm ) / dm = \boldsymbol{\Sigma}^{-1} [ Cov_tilted - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+d (  \frac{1}{Z}  d Z / dm ) / dm = \boldsymbol{\Sigma}^{-1} [ Cov_tilted - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+- / Z^2  [ d Z / \boldsymbol{\mu} ]^2 + \frac{1}{Z}  d^2 Z / dm^2 = \boldsymbol{\Sigma}^{-1} [ Cov_tilted - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1}
+
+\boldsymbol{\Sigma}[ - / Z^2  [ d Z / \boldsymbol{\mu} ]^2 + \frac{1}{Z}  d^2 Z / dm^2] \boldsymbol{\Sigma} =  Cov_tilted - \boldsymbol{\Sigma}
+
+\boldsymbol{\Sigma}[ - / Z^2  [ d Z / \boldsymbol{\mu} ]^2 + \frac{1}{Z}  d^2 Z / dm^2] \boldsymbol{\Sigma} + \boldsymbol{\Sigma} =  Cov_tilted
+Cov_tilted = \boldsymbol{\Sigma} + \boldsymbol{\Sigma}[ - \frac{1}{Z}^2  [ d Z / \boldsymbol{\mu} ]^2 + \frac{1}{Z}  d^2 Z / dm^2] \boldsymbol{\Sigma}
+
+Cov_tilted = \boldsymbol{\Sigma} - \boldsymbol{\Sigma}[ \frac{1}{Z}^2  [ d Z / \boldsymbol{\mu} ]^2 - \frac{1}{Z}  d^2 Z / dm^2] \boldsymbol{\Sigma}
