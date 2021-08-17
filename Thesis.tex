@@ -31,13 +31,40 @@
 \usepackage{microtype}      % microtypography
 \usepackage{amssymb}
 \usepackage{amsmath}
+
+% My packages
+\usepackage{mathtools}
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
 
-% Own definitions
-
+% My definitions
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\defeq}{\vcentcolon=}
+\newcommand{\hyp}[2]{h\left(#1, #2\right)}
+\newcommand{\fun}[1]{f\left(#1\right)}
+\newcommand{\den}[1]{p\left( #1 \right)}
+\newcommand{\cond}[2]{p\left( #1 \;\middle\vert\; #2 \right)}
+\newcommand{\distf}{F}
+
+\newcommand{\idotsn}{i=1, \ldots, n}
+\newcommand{\hypspace}{\mathcal{H}}
+\newcommand{\hypspacef}{\mathbb{H}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\param}{\alpha}
+\newcommand{\paramspace}{\Lambda}
+
+\newcommand{\sample}{z}
+\newcommand{\err}{e}
+\newcommand{\emperr}{\hat{\err}_\sample}
+\newcommand{\experr}{\err_\distf}
+
+\DeclareMathOperator*{\argmin}{arg\min}
+\DeclareMathOperator*{\argmax}{arg\max}
+\DeclareMathOperator{\Tr}{tr}
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Vector}{vec}
 
 
 %% ----------------------------------------------------------------

@@ -23,15 +23,19 @@ This chapter presents\dots
 % 
 \subsection{Inductive Bias Learning Problem} % Baxter
 % The first theoretical work on MTL... MTL as a Bias Learning Problem
-Tipically in Machine Learning the goal is to find the best hypothesis $h$ from a space of hypotheses $\mathcal{H}$. This best candidate can be selected according to different principles such as the classical Maximum Likelihood approach or Empirical Risk Minimization. 
-In the Maximum Likelihood approach, the hypotheses space is parametric, i.e. $\mathcal{H} = \set{h(x, \alpha), \alpha \in \Lambda \subset \mathbb{R}^m}$ the learner select the hypotheses that maximizes the probability of the data given the hypotheses .
-In the latter, which is the most common approach, the learner is given a set of observations $z=(x_i, y_i),\; i=1, \ldots, n$, which are sampled from a distribution $F$, and it minimizes some empirical error $e_z(x)$ with the hope of minimizing the true expected error $e_F(x)$. 
+Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
+$ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
+where $(x_i, y_i)$ are sampled from a distribution $\distf$.
+%
+In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypotheses space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
+%
+Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emperr$ is minimized with the hope of minimizing the true expected error $\experr$, which would result in a good generalization. 
 Inductive Bias learning, also known as ``Learning to learn'' has the goal of finding a good hypotheses space from which statistical learning methods can be applied to 
 
 In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of multi-task learning. This is done by extending the work of hypotheses space capacity~\cite{vapnik2013nature} to a family of spaces of hypotheses capacity, with the goal of learning a good space of hypotheses from which we can obtain a good hypothesis.
 
 % Review of concepts for STL in Supervised Learning
-\subsubsection*{Classical Statistical Learning}
+\subsubsection*{Statistical Learning}
 In the classical learning approach, one has the following components:
 \begin{itemize}
     \item an input space $X$ and an output space $Y$,
