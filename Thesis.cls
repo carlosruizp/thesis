@@ -154,7 +154,7 @@
 \newcommand*{\FACULTY}[1]{\def\FACNAME{#1}}
 \newcommand*{\subject}[1]{\def\subjectname{#1}}
 \newcommand*{\keywords}[1]{\def\keywordnames{#1}}
-\supervisor  {Daniel Hern\'{a}ndez Lobato}
+\supervisor  {Jos\'{e} R. Dorronsoro Ibero}
 \examiner    {}
 \degree      {}
 \authors     {}
@@ -434,5 +434,9 @@
   \btypeout{\bibname}
   \@mainmatterfalse}
 \endinput
+
+
+
+
 %%
 %% End of file `Thesis.cls'.
