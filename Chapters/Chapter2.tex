@@ -23,102 +23,126 @@ This chapter presents\dots
 % 
 \subsection{Inductive Bias Learning Problem} % Baxter
 % The first theoretical work on MTL... MTL as a Bias Learning Problem
-Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
+Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
 $ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
 where $(x_i, y_i)$ are sampled from a distribution $\distf$.
 %
-In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypotheses space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
+In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypothesis space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
 %
 Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emprisk$ is minimized with the hope of minimizing the true expected error $\exprisk$, which would result in a good generalization. 
 %
 Several models use the ERM principle to generalize from data such as Neural Networks or Support Vector Machines. These methods are designed to find a good hypothesis $\hyp{x}{\alpha}$ from a given space $\hypspace$. The definition of such space $\hypspace$ define the bias for these problems. If $\mathcal{H}$ does not contain any good hypothesis, the learner will not be able to learn.
 %
 
-The best hypotheses space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
+The best hypothesis space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
 Instead, we focus on the situation where we want to solve multiple related tasks. In that case, we can obtain a good space $\hypspace$ that contains good solutions for the different tasks.
 %
-In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypotheses, Baxter defines the capacity of a family of spaces of hypotheses.
+In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypothesis, Baxter defines the capacity of a family of spaces of hypothesis.
 
 % Review of concepts for STL in Supervised Learning
 Before presenting the concepts defined for Bias Learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
 \subsubsection*{Ordinary Learning}
 In the ordinary statistical learning, some theoretical concepts are used:
 \begin{itemize}
-    \item an input space $\Xspace$ and an output space $\Yspace$,
-    \item a probability distribution $\distf$, which is unknown, defined over $\Xspace \times \Yspace$,
-    \item a loss function $\lossf{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
-    \item a hypothesis space $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$ with hypotheses $\hyp{\cdot}{\param}: \Xspace \to \Yspace$.
+    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
+    \item a \emph{probability distribution} $\distf$, which is unknown, defined over $\Xspace \times \Yspace$,
+    \item a \emph{loss function} $\lossf{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
+    \item a \emph{hypothesis space} $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$ with hypothesis $\hyp{\cdot}{\param}: \Xspace \to \Yspace$.
 \end{itemize}
 The goal for the learner is to select a hypothesis $\hyp{x}{\alpha} \in \mathcal{H}$, or equivalently $\param \in \paramspace$, that minimizes the expected risk
 $$ \exprisk(\param) =  \int_{\Xspace \times \Yspace} \lossf{\hyp{x}{\alpha}}{y} d\distf(x, y) .$$
-The density $P$ is unknown, but we have a training set $\sample = \{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ of samples drawn from $\distf$. 
+The distribution $\distf$ is unknown, but we have a training set $\sample = \{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ of samples drawn from $\distf$. 
 The approach is then is to apply the ERM inductive principle, that is to minimize the empirical risk
-$$ \emprisk(\alpha) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples l(h(x_i), y_i).$$
-Although $\emprisk(\alpha)$ is an unbiased estimator of $\exprisk(\alpha)$, it has been shown~\cite{vapnik2013nature} that this approach, despite being the most evident one, is not the best principle that can be followed.
+$$ \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples l(h(x_i), y_i).$$
+Although $\emprisk(\param)$ is an unbiased estimator of $\exprisk(\param)$, it has been shown~\cite{vapnik2013nature} that this approach, despite being the most evident one, is not the best principle that can be followed.
 This has relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
-Vapnik answers to the question of what can we say about $e_P(h)$ when $h$ minimizes $\hat{e}_z(h)$, and moreover, his results are valid also for small number of training patterns $m$.
+Vapnik answers to the question of what can be said about $\exprisk$ when $\param$ minimizes $\emprisk(\param)$, and moreover, his results are valid also for small number of training samples $n$.
+More specifically, Vapnik sets the sufficient and necessary conditions for the consistency of an inductive learning process, i.e. for $\emprisk(\param) \toprob \exprisk(\param) $ uniformly. Vapnik also defines the capacity of a hypothesis space and use it to derive bounds on the rate of this convergence for any $\param \in \paramspace$ and, more importantly, bounds on the difference $\inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param)$.
 Under some general conditions, he proves that:
-\begin{equation}\label{eq:classic_bound}
-    e_P(h) \leq \hat{e}_z(h) + R(d/m)
+\begin{equation}\label{eq:ordinary_generalization_bound}
+    \inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param) \leq C(\nsamples/\vcdim)
 \end{equation}
-where $R$ is some non-decreasing function and $d$ is the VC-dimension of the hypothesis $h$. This means that the empirical loss $\hat{e}_z(h)$ gets closer to the expected loss $e_P(h)$ if:
+where $C$ is some non-decreasing function and $\vcdim$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
 \begin{itemize}
-    \item We use a larger number $m$ of training samples (this was already inferred from the asymptotical properties)
-    \item The VC-dimension (or capacity) of the hypotheses we use is small. This is the most important term in Vapnik theory.
+    \item The number of training samples $\nsamples$. A greater number of training samples assures a better generalization of the learning process.This looks intuitive and could be already inferred from the asymptotical properties. 
+    \item The VC-dimension $\vcdim$, or capacity, of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
 \end{itemize}
-The VC-dimension measures the capacity of a function or hypotheses space. In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_d$ that can be shattered (in two classes) by functions of this set.
-In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions 
-$ I(x, h, \beta) = \bm{1}_{\{h(x) - \beta\}} $.
-The VC-dimension gives a notion of the capacity of our set of hypotheses. If the the capacity of our set of hypotheses $\mathcal{H}$ is too large, we may find an hypotheses $h^*$ that minimizes $\hat{e}_z(h)$ but does not generalize well and therefore, does not minimize $e_P(h)$. We also have to notice that using a very simple (low capacity) space of hypotheses $\mathcal{H}$ we could be in a situation where there is not a good hypothesis $h \in \mathcal{H}$, so we cannot minimize $\hat{e}_z(h)$.
+The VC-dimension measures the capacity of a set of hypothesis $\hypspace$. 
+%In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \alpha, \beta) = \bm{1}_{\{\hyp{x}{\param} - \beta\}} $.
+If the capacity of the set $\hypspace$ is too large, we may find a
+hypothesis $\hyp{x}{\opt{\param}}$ that minimizes $\emprisk$ but does not 
+generalize well and therefore, does not minimize $\exprisk$. This is the 
+overfitting problem. 
+On the other side, if we use a simple $\hypspace$, 
+with low capacity, we could be in a situation where there is not a good hypothesis $\hyp{x}{\alpha} \in \hypspace$, so the empirical risk $\inf_{\param \in \paramspace} \exprisk$ is too large. This is the underfitting problem.
 
-The Structural Risk Minimization as an inductive principle proposed by Vapnik (as opposed to the ERM) tries to find a tradeoff between minimizing $\hat{e}_z(h)$ and minimizing $d$. The idea is to define an admissible structure, that is a sequence of hypotheses spaces:
-$$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
-where their VC-dimensions are ordered:
-$$ d_1 < d_2 < \ldots < d_k < \ldots$$
-where $d_i$ is the VC-dimension of $\mathcal{H}_i$
-SRM selects the hypothesis $h^* = h_i^* \in \mathcal{H}_i$ that obtains the best bound for the actual risk $e_P(h)$.
-This admissible structure can be built in various ways. In Neural Networks in can be the built by increasing the number of hidden layers. In other methods, such as SVM or Ridge Regression, this is done by decreasing the regularization.
-However, this SRM principle is usually replaced by a cross-validation (CV) procedure.
+% The Structural Risk Minimization (SRM) as an inductive principle, proposed by Vapnik (as opposed to the ERM), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
+% $$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
+% where their VC-dimensions are ordered:
+% $$ d_1 < d_2 < \ldots < d_k < \ldots$$
+% where $d_i$ is the VC-dimension of $\mathcal{H}_i$.
+% SRM selects the hypothesis $\hyp{x}{\alpha^*} = \hyp{x}{\alpha_i^*} \in \hypspace_i$ that obtains the best bound for the actual risk $\exprisk$.
+% This admissible structure can be built in various ways. In Neural Networks in can be the built by increasing the number of hidden layers. In other methods, such as SVM or Ridge Regression, this is done by decreasing the regularization.
+% However, this SRM principle is usually replaced by a cross-validation (CV) procedure.
 
-Support Vector Machines, which are the most representative models of this theory, use the VC-dimension also in other way (apart from the SRM principle or the CV procedure). The goal of finding the optimal hyperplane, that is, that with the maximum margin between the classes, has its motivation in the fact the set of such type of hypotheses have a lower VC-dimension that the set of all hyperplanes do.
+% Support Vector Machines, which are the most representative models of this theory, use the VC-dimension also in other way (apart from the SRM principle or the CV procedure). The goal of finding the optimal hyperplane, that is, that with the maximum margin between the classes, has its motivation in the fact the set of such type of hypothesis have a lower VC-dimension that the set of all hyperplanes do.
 
 
 % Extension to MTL
 \subsubsection*{Bias Statistical Learning}
-According to Baxter, in Bias Learning we have the following components:
+In ~\cite{baxter2000model} two main concepts are presented: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
+For a simpler formulation we consider $\hypf(x) = \hypf(x, \alpha)$ so we can substitute $\param$ by $\hypf$ when necessary.
+Using these concepts, the bias learning problem has the following components:
 \begin{itemize}\label{eq:biaslearn_exprisk}
-    \item an input space $X$ and an output space $Y$,
-    \item a family of probabilities $\mathcal{P}$ of probabilities $P$ defined over $X \times Y$, and a distribution $Q$ defined over $\mathcal{P}$,
-    \item a loss function $l:Y \times Y \to R$, and
-    \item a family of hypotheses spaces $\mathbb{H}$ of spaces $\mathcal{H}$ with hypotheses or functions $h: X \to Y$.
+    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
+    \item an \emph{environment} $(\bprobspace, \bdistf)$ where $\bprobspace$ is a set of distributions $P$ defined over $\Xspace \times \Yspace$, and we can sample from $\bprobspace$ according to a distribution $\bdistf$,
+    \item a \emph{loss function} $\lossf{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
+    \item a \emph{family of hypothesis spaces} $\hypspacef = \set{\hypspace_\delta, \delta \in \Delta}$, where each element $\hypspace_\delta$ is a set of hypothesis.
 \end{itemize}
-The goal here is also to minimize the expected risk, which in this case is defined as:
+Analogous to ordinary learning, the goal is to minimize the expected risk, defined as
 \begin{equation}\label{}
-    e_Q(\mathcal{H}) = \int_{\mathcal{P}} \inf_{h \in \mathcal{H}} e_P(h) dQ(P) = \int_{\mathcal{P}} \inf_{h \in \mathcal{H}} \int_{X \times Y} l(h(x), y) dP(x, y) dQ(P).
+    \bexprisk(\delta) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} e_P(h) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} \int_{\Xspace \times Y} l(h(x), y) dP(x, y) d\bdistf(P).
 \end{equation}
-Again, we do not know $\mathcal{P}$ nor $Q$, but we have a training set obtained in the following way:
+Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set samples from the environment $(\bprobspace, \bdistf)$ obtained in the following way:
 \begin{enumerate}
-    \item Sample $T$ times from $Q$ obtaining $P_1, \ldots, P_T \in \mathcal{P}$
-    \item For $r=1, \ldots, T$ sample using $P_r$ $m$ pairs $z_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ where $(x_i^r, y_i^r) \in X \times Y$.
+    \item Sample $T$ times from $\bdistf$ obtaining $P_1, \ldots, P_T \in \bprobspace$
+    \item For $r=1, \ldots, T$ sample $m$ pairs $z_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$ where $(x_i^r, y_i^r) \in X \times Y$ .
 \end{enumerate}
-We obtain $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$.
-We call $z$ a $(T, m)$-sample, with $m$ examples from $T$ different learning tasks (the constant size $m$ is for simplicity purposes).
-Now we can define an empirical loss of $z$ as:
-\begin{equation}\label{eq:biaslearn_emprisk}
-    \hat{e}_z(\mathcal{H}) = \sum_{r=1}^T \inf_{h \in \mathcal{H}} \hat{e}_{z_r}(h) = \sum_{r=1}^T \inf_{h \in \mathcal{H}} \sum_{i=1}^m l(h(x_i^r), y_i^r),
+We obtain a sample $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$, with $m$ examples from $T$ different learning tasks, and
+\begin{equation}
+    \nonumber
+    \bsample \defeq 
+    \begin{pmatrix}
+        (x_1^1, y_1^1) & \ldots & (x_m^1, y_m^1) \\
+        \vdots & \ddots & \vdots \\
+        (x_1^\ntasks, y_1^\ntasks) & \ldots & (x_m^\ntasks, y_m^\ntasks) \\
+    \end{pmatrix}
 \end{equation}
-which is simply an average of the empirical losses of each task. Note, however, that in this case this estimate is biased, since (as we have seen) $e_{P_r}(h)$ does not coincide with $\hat{e}_{z_r}(h)$. 
-As in the classical approach, we want more intelligent ways of minimizing the actual error $e_Q(\mathcal{H})$. By following the same path, we want to:
+is defined as a $(T, m)$-sample.
+Using $\bsample$ we can define the empirical loss as
+\begin{equation}\label{eq:biaslearn_emprisk}
+    \bemprisk(\delta) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\delta} \hat{\risk}_{\sample_r}(\hypf) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\delta} \sum_{i=1}^m l(\hypf(x_i^r), y_i^r),
+\end{equation}
+which is an average of the empirical losses of each task. Note, however, that in this case this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{z_r}(\hypf)$. 
+To follow an analogous path to that of ordinary learning, the milestones in bias learning theory should include:
 \begin{itemize}
-    \item Define a notion of capacity of hypotheses space families (VC-dimension like)
-    \item Find a bound of $e_Q(\mathcal{H})$ using the empirical error $\hat{e}_z(\mathcal{H})$ and the capacity of the hypotheses space family.
-    \item Define an inductive principle to learn good hypotheses spaces $\mathcal{H}$?
-    \item Find (bias learning) models that uses low capacity hypotheses space families?
+    \item Checking the consistency of the Bias Learning methods, i.e. proving that $\bemprisk(\delta)$ converges uniformly in probability to $\bexprisk(\delta)$.
+    \item Defining a notion of capacity of hypothesis space families $\hypspacef$.
+    \item Finding a bound of $\bemprisk(\delta) - \bexprisk(\delta)$ for any $\delta$ using the capacity of the hypothesis space family. If possible, finding also a bound for $\inf_{\delta \in \Delta}\bemprisk(\delta) - \inf_{\delta \in \Delta} \bexprisk(\delta)$.
 \end{itemize}
-Baxter does not directly address these points.
-In first place, he defines some concepts that allow to write two concepts of capacity related to $\mathbb{H}$. Using these two concepts, he shows uniform convergence of $e_Q(\mathcal{H})$ to $\hat{e}_z(h)$. Moreover, this result is valid not only asymptotically:
+To address these points some previous definitions are needed. Two concepts that capture some important properties of $\hypspacef$ are introduced:
+\begin{itemize}
+    \item The set of \emph{sample-driven capacity} $\hypspacef^\ntasks$.
+    \item The set of \emph{distribution-driven capacity} $\hypspacef^*$.
+\end{itemize}
+
+% Covering numbers
+
+
+% Uniform Convergence for bias learners (Comparison with Vapnik)
+In first place, he defines some concepts that allow to write two concepts of capacity related to $\mathbb{H}$. Using these two concepts, he shows uniform convergence of $e_Q(\hypspace)$ to $\hat{e}_z(h)$. Moreover, this result is valid not only asymptotically:
 \begin{equation*}
-    e_Q(\mathcal{H}) \leq \hat{e}_z(\mathcal{H}) + \epsilon
+    e_Q(\hypspace) \leq \hat{e}_z(\hypspace) + \epsilon
 \end{equation*}
 with $m$ such that
 \begin{equation*}
@@ -129,23 +153,23 @@ However, this bound is not so useful because it is theoretical, that is, we have
 
 He then focuses on feature learning, that is, we define a specific type of learners where we have two steps:
 \begin{itemize}
-    \item Learning the space of features (or learning $\mathcal{H}_f$)
-    \item Learning the best linear model $g$ over the features given by $f$ (or learning the best hypothesis $g \circ f$ in $\mathcal{H}_f$)
+    \item Learning the space of features (or learning $\hypspace_f$)
+    \item Learning the best linear model $g$ over the features given by $f$ (or learning the best hypothesis $g \circ f$ in $\hypspace_f$)
 \end{itemize}
 For these type of models, he also shows how a multi-output Neural Network (which can be seen an MTL NN) is a model that embodies this feature learning approach.
-The NN can be seen as a linear model $g$ over a transformation $f$ of the original data. That is, the set of functions $\mathcal{H}_f = \{g \circ f \}$ used by the neural network is learned trying to minimize the empirical loss when we update $f$.
-Baxter derives specific bound for the NN using that the capacity of the hypotheses space family $\mathbb{H}$ can be computed for this case.
+The NN can be seen as a linear model $g$ over a transformation $f$ of the original data. That is, the set of functions $\hypspace_f = \{g \circ f \}$ used by the neural network is learned trying to minimize the empirical loss when we update $f$.
+Baxter derives specific bound for the NN using that the capacity of the hypothesis space family $\mathbb{H}$ can be computed for this case.
 
 Finally, he show some results for Multi-Task Learning. 
-Multi-Task Learning is a particular case of Bias Learning where we are not interested in finding an optimal hypotheses space $\mathcal{H}$ where we can find good solutions for a great variety of problems, but our goal is to find good solutions for a fixed number of tasks. That is, instead of having a family of probabilities $\mathcal{P}$ with a probability measure $\mathcal{Q}$, we have a fixed vector $\bm{P} = (P_1, \ldots, P_T)$ of probability measures over a fixed set of tasks and the learner minimizes:
+Multi-Task Learning is a particular case of Bias Learning where we are not interested in finding an optimal hypothesis space $\hypspace$ where we can find good solutions for a great variety of problems, but our goal is to find good solutions for a fixed number of tasks. That is, instead of having a family of probabilities $\mathcal{P}$ with a probability measure $\mathcal{Q}$, we have a fixed vector $\bm{P} = (P_1, \ldots, P_T)$ of probability measures over a fixed set of tasks and the learner minimizes:
 \begin{equation}
-    e_{\bm{P}}(\mathcal{H}) = \sum_{r=1}^T e_{P_r}(h_r)  = \sum_{r=1}^T \int_{X \times Y} l(h_r(x), y) d P_r(x, y) .
+    e_{\bm{P}}(\hypspace) = \sum_{r=1}^\ntasks e_{P_r}(h_r)  = \sum_{r=1}^\ntasks \int_{X \times Y} l(h_r(x), y) d P_r(x, y) .
 \end{equation}
 Then, we define the empirical multi-task error as
 \begin{equation}\label{eq:mtllearn_exprisk}
-    \hat{e}_z(\mathcal{H}) = \sum_{r=1}^T \hat{e}_{z_r}(h_r) = \sum_{r=1}^T \sum_{i=1}^m l(h_r(x_i^r), y_i^r).
+    \hat{e}_z(\hypspace) = \sum_{r=1}^\ntasks \hat{e}_{z_r}(h_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(h_r(x_i^r), y_i^r).
 \end{equation}
-The difference is subtle but we have a different objective. In the multi-task setting, the hypotheses space $\mathcal{H}$ found will not necessarily be good for generalizing to new tasks. Also, we have got rid of the $\inf$ term, which was difficult to deal with.
+The difference is subtle but we have a different objective. In the multi-task setting, the hypothesis space $\hypspace$ found will not necessarily be good for generalizing to new tasks. Also, we have got rid of the $\inf$ term, which was difficult to deal with.
 %
 
 Restricting to the Boolean functions, Baxter defines an extension of the VC-dimension $d_\mathbb{H}(T)$ that can be computed (for these Boolean map functions). Using that, he extends the previous theorems obtaining ``computable'' bounds and he derives a lower bound for $m$, if $m$ is below that lower bound then we can find tasks such that the error made by our estimator is larger then certain $\epsilon$.
@@ -154,9 +178,7 @@ Restricting to the Boolean functions, Baxter defines an extension of the VC-dime
 
 
 
-% Covering numbers
 
-% Uniform Convergence for bias learners (Comparison with Vapnik)
 
 % Multi-Task Learning (strictly speaking, with fixed tasks)
 
@@ -239,7 +261,7 @@ Restricting to the Boolean functions, Baxter defines an extension of the VC-dime
 
 % Discovering structure in multiple learning tasks: The TC algorithm?
 
-% Learning  multiple  tasks  using  shared hypotheses?
+% Learning  multiple  tasks  using  shared hypothesis?
 
 % Flexible modeling of latent task structures in multitask learning
 
