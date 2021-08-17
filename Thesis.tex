@@ -47,7 +47,8 @@
 \newcommand{\cond}[2]{p\left( #1 \;\middle\vert\; #2 \right)}
 \newcommand{\distf}{F}
 
-\newcommand{\idotsn}{i=1, \ldots, n}
+\newcommand{\nsamples}{n}
+\newcommand{\idotsn}{i=1, \ldots, \nsamples}
 \newcommand{\hypspace}{\mathcal{H}}
 \newcommand{\hypspacef}{\mathbb{H}}
 \newcommand{\reals}{\mathbb{R}}
@@ -56,8 +57,13 @@
 
 \newcommand{\sample}{z}
 \newcommand{\err}{e}
-\newcommand{\emperr}{\hat{\err}_\sample}
-\newcommand{\experr}{\err_\distf}
+\newcommand{\risk}{R}
+\newcommand{\emprisk}{\hat{\risk}_\sample}
+\newcommand{\exprisk}{\risk_\distf}
+\newcommand{\lossf}[2]{\ell\left( #1, #2\right)}
+
+\newcommand{\Xspace}{\mathcal{X}}
+\newcommand{\Yspace}{\mathcal{Y}}
 
 \DeclareMathOperator*{\argmin}{arg\min}
 \DeclareMathOperator*{\argmax}{arg\max}

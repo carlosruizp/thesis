@@ -29,26 +29,33 @@ where $(x_i, y_i)$ are sampled from a distribution $\distf$.
 %
 In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypotheses space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
 %
-Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emperr$ is minimized with the hope of minimizing the true expected error $\experr$, which would result in a good generalization. 
-Inductive Bias learning, also known as ``Learning to learn'' has the goal of finding a good hypotheses space from which statistical learning methods can be applied to 
+Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emprisk$ is minimized with the hope of minimizing the true expected error $\exprisk$, which would result in a good generalization. 
+%
+Several models use the ERM principle to generalize from data such as Neural Networks or Support Vector Machines. These methods are designed to find a good hypothesis $\hyp{x}{\alpha}$ from a given space $\hypspace$. The definition of such space $\hypspace$ define the bias for these problems. If $\mathcal{H}$ does not contain any good hypothesis, the learner will not be able to learn.
+%
 
-In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of multi-task learning. This is done by extending the work of hypotheses space capacity~\cite{vapnik2013nature} to a family of spaces of hypotheses capacity, with the goal of learning a good space of hypotheses from which we can obtain a good hypothesis.
+The best hypotheses space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
+Instead, we focus on the situation where we want to solve multiple related tasks. In that case, we can obtain a good space $\hypspace$ that contains good solutions for the different tasks.
+%
+In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypotheses, Baxter defines the capacity of a family of spaces of hypotheses.
 
 % Review of concepts for STL in Supervised Learning
-\subsubsection*{Statistical Learning}
-In the classical learning approach, one has the following components:
+Before presenting the concepts defined for Bias Learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
+\subsubsection*{Ordinary Learning}
+In the ordinary statistical learning, some theoretical concepts are used:
 \begin{itemize}
-    \item an input space $X$ and an output space $Y$,
-    \item a probability $P$ (which is unknown) defined over $X \times Y$,
-    \item a loss function $l:Y \times Y \to R$, and
-    \item a hypothesis space $\mathcal{H}$ with hypotheses or functions $h: X \to Y$.
+    \item an input space $\Xspace$ and an output space $\Yspace$,
+    \item a probability distribution $\distf$, which is unknown, defined over $\Xspace \times \Yspace$,
+    \item a loss function $\lossf{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
+    \item a hypothesis space $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$ with hypotheses $\hyp{\cdot}{\param}: \Xspace \to \Yspace$.
 \end{itemize}
-The goal for the learner is to select a hypothesis $h \in \mathcal{H}$ that minimizes the expected loss:
-$$ e_P(h) =  \int_{X \times Y} l(h(x), y) dP(x, y) .$$
-The density $P$ is unknown, but we have a training set $z = \{(x_1, y_1), \ldots, (x_m, y_m)\}$ drawn from P. One alternative, known as Empirical Risk Minimization (ERM), is to minimize:
-$$ \hat{e}_z(h) = \frac{1}{m} \sum_{i=1}^m l(h(x_i), y_i).$$
-Although this is the more straight-forward way to minimize $e_P(h)$ ($ \hat{e}_z(h)$ is an unbiased estimator of $e_P(h)$), it has been shown~\cite{vapnik2013nature} that there are smarter ways (with better generalization properties) of minimizing the expected loss.
-This have relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
+The goal for the learner is to select a hypothesis $\hyp{x}{\alpha} \in \mathcal{H}$, or equivalently $\param \in \paramspace$, that minimizes the expected risk
+$$ \exprisk(\param) =  \int_{\Xspace \times \Yspace} \lossf{\hyp{x}{\alpha}}{y} d\distf(x, y) .$$
+The density $P$ is unknown, but we have a training set $\sample = \{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ of samples drawn from $\distf$. 
+The approach is then is to apply the ERM inductive principle, that is to minimize the empirical risk
+$$ \emprisk(\alpha) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples l(h(x_i), y_i).$$
+Although $\emprisk(\alpha)$ is an unbiased estimator of $\exprisk(\alpha)$, it has been shown~\cite{vapnik2013nature} that this approach, despite being the most evident one, is not the best principle that can be followed.
+This has relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
 Vapnik answers to the question of what can we say about $e_P(h)$ when $h$ minimizes $\hat{e}_z(h)$, and moreover, his results are valid also for small number of training patterns $m$.
 Under some general conditions, he proves that:
 \begin{equation}\label{eq:classic_bound}
