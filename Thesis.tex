@@ -52,6 +52,7 @@
 \newcommand{\nsamples}{n}
 \newcommand{\vcdim}{d}
 \newcommand{\ntasks}{T}
+\newcommand{\npertask}{m}
 \newcommand{\idotsn}{i=1, \ldots, \nsamples}
 \newcommand{\hypspace}{\mathcal{H}}
 \newcommand{\hypspacef}{\mathbb{H}}
@@ -59,7 +60,8 @@
 \newcommand{\param}{\alpha}
 \newcommand{\paramspace}{\Lambda}
 
-\newcommand{\lossf}[2]{\ell\left( #1, #2\right)}
+\newcommand{\lossf}{\ell}
+\newcommand{\loss}[2]{\lossf\left( #1, #2\right)}
 
 \newcommand{\distf}{F}
 \newcommand{\sample}{z}
@@ -71,9 +73,15 @@
 
 \newcommand{\bprobspace}{\mathcal{P}}
 \newcommand{\bdistf}{Q}
+\newcommand{\bprobseq}{\bm{P}}
 \newcommand{\bsample}{\bm{z}}
 \newcommand{\bemprisk}{\hat{\risk}_{\bsample}}
 \newcommand{\bexprisk}{\risk_\bdistf}
+\newcommand{\bsetsample}{\hypspacef^{\ntasks}}
+\newcommand{\bsetdist}{\hypspacef^{\bdistf}}
+\newcommand{\capacity}[1]{C(#1)}
+\newcommand{\dist}[1]{d_{#1}}
+
 
 
 
