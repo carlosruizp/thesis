@@ -94,19 +94,19 @@ with low capacity, we could be in a situation where there is not a good hypothes
 
 
 % Extension to MTL
-\subsubsection*{Bias Statistical Learning}
+\subsubsection*{Bias Learning: Concept and Components}
 In ~\cite{baxter2000model} two main concepts are presented: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
 For simplicity we consider $\hypf(x) = \hypf(x, \param)$, that is $\param$ completely defines $\hypf$, we also substitute $\param$ by $\hypf$ for an easier formulation when necessary.
 Using these concepts, the bias learning problem has the following components:
-\begin{itemize}\label{eq:biaslearn_exprisk}
+\begin{itemize}
     \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
     \item an \emph{environment} $(\bprobspace, \bdistf)$ where $\bprobspace$ is a set of distributions $P$ defined over $\Xspace \times \Yspace$, and we can sample from $\bprobspace$ according to a distribution $\bdistf$,
     \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
     \item a \emph{family of hypothesis spaces} $\hypspacef = \set{\hypspace_\delta, \delta \in \Delta}$, where each element $\hypspace_\delta$ is a set of hypothesis.
 \end{itemize}
 Analogous to ordinary learning, the goal is to minimize the expected risk, defined as
-\begin{equation}\label{}
-    \bexprisk(\delta) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} e_P(h) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} \int_{\Xspace \times Y} l(h(x), y) dP(x, y) d\bdistf(P).
+\begin{equation}\label{eq:biaslearn_exprisk}
+    \bexprisk(\delta) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} \risk_P(\hypf) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\delta} \int_{\Xspace \times Y} l(h(x), y) dP(x, y) d\bdistf(P).
 \end{equation}
 Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set samples from the environment $(\bprobspace, \bdistf)$ obtained in the following way:
 \begin{enumerate}
@@ -145,14 +145,15 @@ To follow an analogous path to that of ordinary learning, the milestones in bias
 \end{itemize}
 To achieve these goals some previous definitions are needed.
 %
-
+\subsubsection*{Bias Learning Capacities}
+% Pseudo-metrics, Covering numbers and Capacities
 In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
 Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
 Consider also the set of sequences of $\ntasks$ hypothesis 
 $\hypspace^\ntasks \defeq \set{ \bm{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$ 
 We can define then the set of $(\ntasks, 1)$-empirical risks as 
 $$\hypspace^\ntasks_\lossf \defeq \set{ \bm{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
-The family of the set of $T$-risks of hypothesis is then $\hypspacef^T = \bigcup_{\hypspace \in \hypspacef} \hypspace^T$. Now we can define
+The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks$. Now we can define
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -160,22 +161,76 @@ The family of the set of $T$-risks of hypothesis is then $\hypspacef^T = \bigcup
         & d{P_1}(x_1, y_1) \ldots d{P_\ntasks}(x_\ntasks, y_\ntasks)
     \end{aligned}
 \end{equation}
-for $\bm{\hypf}_\lossf, \bm{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace_\lossf$ as a pseudo-metric in $\hypspacef^T$.
+for $\bm{\hypf}_\lossf, \bm{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^T$.
 %
 
-Then, a \emph{distribution-driven} pseudo-metric is defined. Consider 
-
-
-Two concepts that capture some important properties of $\hypspacef$ are defined.
+Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
+\begin{equation}
+    \nonumber
+    \hypspace^* \defeq \inf_{\hypf \in \hypspace} \risk_P(\hypf).
+\end{equation}
+The family of such sets is defined as 
+$\bsetdist = \set{\hypspace^*, \hypspace \in \hypspacef}$.
+The pseudo-metric in this space is given by $Q$:
+\begin{equation}
+    \nonumber
+    \dist{\bdistf} = \int_\bprobspace \abs{\hypspace_1^* - \hypspace_2^*} d\bdistf
+\end{equation}
+With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. Given a pseudo-metric $\dist{S}$ in a space $\mathcal{S}$, 
+a set of $l$ elements $s_1, \ldots, s_l \in \mathcal{S}$ is an $\epsilon$-cover of $\mathcal{S}$ if 
+$ \dist{S}(s, s_i) \leq \epsilon $
+for some $i=1, \ldots, l$.  Let $\mathcal{N}(\epsilon, \mathcal{S}, \dist{S})$ denote the size of the smallest $\epsilon$-cover.
+Then, we can define the following capacities of a family space $\hypspacef$:
 \begin{itemize}
-    \item The \emph{sample-driven capacity} $\capacity{\bsetsample}$.
-    \item The \emph{distribution-driven capacity} $\capacity{\bsetdist}$.
+    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^T, \dist{\bprobseq})$.
+    \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} \defeq \sup_Q \mathcal{N}(\epsilon, \bsetdist, \dist{\bdistf})$.
 \end{itemize}
 
-% Covering numbers
-
-
 % Uniform Convergence for bias learners (Comparison with Vapnik)
+Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, the bias expected risk is bounded
+\begin{equation}
+    \nonumber
+    \bexprisk(\hypspace) \leq \bemprisk(\hypspace) + \epsilon
+\end{equation}
+with probability $1 - \delta$, given sufficiently large $\ntasks$ and $\npertask$, 
+\begin{equation}
+    \nonumber
+    \ntasks \geq \bigO {\frac{1}{\epsilon^2} \log\frac{\capacity{\frac{\epsilon}{32}}{\bsetdist}}{\delta} } , \; \npertask \geq \bigO{\frac{1}{\ntasks \epsilon^2}  \log\frac{\capacity{\frac{\epsilon}{32}}{\bsetsample}}{\delta} } .
+\end{equation}
+It should be noted that the bound for $\npertask$ is inversely proportional to $\ntasks$, that is, the more tasks we have, the less samples we need for each task. 
+As with $\hypf(x)$ and $\param$, since any $\hypspace$ is defined by a $\delta \in \Delta$, we omit $\delta$ and write just $\hypspace$ for simplicity.
+
+% Multi-Task Learning (strictly speaking, with fixed tasks)
+\subsubsection*{Multi-Task Learning}
+The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\bm{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $.
+\begin{equation}\label{eq:mtlearn_exprisk}
+    \bexprisk(\bm{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
+\end{equation}
+and the empirical risk is defined as
+\begin{equation}\label{eq:mtlearn_emprisk}
+    \bemprisk(\bm{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(\hypf_r(x_i^r), y_i^r).
+\end{equation}
+A similar result to that of Bias Learning is given for Multi-Task Learning~\cite[Theorem~4]{baxter2000model}:
+\begin{equation}
+    \nonumber
+    \bexprisk(\bm{\hypf}) \leq \bemprisk(\bm{\hypf}) + \epsilon,
+\end{equation}
+with probability $1 - \delta$ given that the number of samples per task
+\begin{equation}
+    \nonumber
+    \npertask \geq \bigO{\frac{1}{\ntasks \epsilon^2} \log\frac{\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\delta}}.
+\end{equation}
+
+% Feature Learning
+\subsubsection*{Feature Learning}
+Feature Learning is a common way to encode bias. The most popular example are Neural Networks, where all the hidden layers can be seen as a Feature Learning engine that learns a mapping from the original space to a space with ''strong'' features.
+In general, a set of ''strong'' feature maps $\Phi = \set{\phi, \phi: \Xspace \to \Fspace}$ .
+
+
+
+\pagebreak
+
+
 In first place, he defines some concepts that allow to write two concepts of capacity related to $\mathbb{H}$. Using these two concepts, he shows uniform convergence of $e_Q(\hypspace)$ to $\hat{e}_z(h)$. Moreover, this result is valid not only asymptotically:
 \begin{equation*}
     e_Q(\hypspace) \leq \hat{e}_z(\hypspace) + \epsilon
@@ -216,8 +271,6 @@ Restricting to the Boolean functions, Baxter defines an extension of the VC-dime
 
 
 
-% Multi-Task Learning (strictly speaking, with fixed tasks)
-
 % Feature Learning model as Bias Learner using Neural Networks
 
     % Lemmas?
@@ -232,6 +285,7 @@ Restricting to the Boolean functions, Baxter defines an extension of the VC-dime
 % Bound for F-related tasks
 
 % Relation with Baxter work
+
 
 \subsection{Learning Under Privileged Information}
 
