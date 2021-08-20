@@ -96,7 +96,7 @@ with low capacity, we could be in a situation where there is not a good hypothes
 % Extension to MTL
 \subsubsection*{Bias Learning: Concept and Components}
 In ~\cite{baxter2000model} two main concepts are presented: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
-For simplicity we consider $\hypf(x) = \hypf(x, \param)$, that is $\param$ completely defines $\hypf$, we also substitute $\param$ by $\hypf$ for an easier formulation when necessary.
+For simplicity we write $\hypf(x)$  instead of $\hypf(x, \param)$, and since $\param$ completely defines $\hypf$, we also substitute $\param$ by $\hypf$ for an easier notation.
 Using these concepts, the bias learning problem has the following components:
 \begin{itemize}
     \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
@@ -117,11 +117,11 @@ We obtain a sample $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$,
 \begin{equation}
     \nonumber
     \bsample \defeq 
-    \begin{pmatrix}
+    \begin{matrix}
         (x_1^1, y_1^1) & \ldots & (x_m^1, y_m^1) \\
         \vdots & \ddots & \vdots \\
         (x_1^\ntasks, y_1^\ntasks) & \ldots & (x_m^\ntasks, y_m^\ntasks) \\
-    \end{pmatrix}
+    \end{matrix}
 \end{equation}
 is named as a $(\ntasks, \npertask)$-sample.
 Using $\bsample$ we can define the empirical loss as
@@ -143,14 +143,14 @@ To follow an analogous path to that of ordinary learning, the milestones in bias
     \item Defining a notion of capacity of hypothesis space families $\hypspacef$.
     \item Finding a bound of $\bemprisk(\delta) - \bexprisk(\delta)$ for any $\delta$ using the capacity of the hypothesis space family. If possible, finding also a bound for $\inf_{\delta \in \Delta}\bemprisk(\delta) - \inf_{\delta \in \Delta} \bexprisk(\delta)$.
 \end{itemize}
-To achieve these goals some previous definitions are needed.
+To achieve these goals some previous definitions are needed. From this point, since any $\hypspace$ is defined by a $\delta \in \Delta$, we omit $\delta$ and write just $\hypspace$ for simplicity.
 %
-\subsubsection*{Bias Learning Capacities and Uniform Convergence}
+\subsubsection*{Bias Learning: Capacities and Uniform Convergence}
 % Pseudo-metrics, Covering numbers and Capacities
 In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
 Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
 Consider also the set of sequences of $\ntasks$ hypothesis 
-$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$ 
+$$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$$
 We can define then the set of $(\ntasks, 1)$-empirical risks as 
 $$\hypspace^\ntasks_\lossf \defeq \set{ \myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
 The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks$. Now we can define
@@ -190,21 +190,21 @@ Then, we can define the following capacities of a family space $\hypspacef$:
 Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, the bias expected risk is bounded
 \begin{equation}
     \nonumber
-    \bexprisk(\hypspace) \leq \bemprisk(\hypspace) + \epsilon
+    \bemprisk(\hypspace) \leq \bexprisk(\hypspace) + \epsilon
 \end{equation}
 with probability $1 - \delta$, given sufficiently large $\ntasks$ and $\npertask$, 
 \begin{equation}
     \nonumber
-    \ntasks \geq \bigO {\frac{1}{\epsilon^2} \log\frac{\capacity{\frac{\epsilon}{32}}{\bsetdist}}{\delta} } , \; \npertask \geq \bigO{\frac{1}{\ntasks \epsilon^2}  \log\frac{\capacity{\frac{\epsilon}{32}}{\bsetsample}}{\delta} } .
+    \ntasks \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetdist}}{\delta} , \frac{64}{\epsilon^2}\right)  , \; \npertask \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetsample}}{\delta} , \frac{64}{\epsilon^2}\right) .
 \end{equation}
 It should be noted that the bound for $\npertask$ is inversely proportional to $\ntasks$, that is, the more tasks we have, the less samples we need for each task. 
-As with $\hypf(x)$ and $\param$, since any $\hypspace$ is defined by a $\delta \in \Delta$, we omit $\delta$ and write just $\hypspace$ for simplicity.
+
 
 % Multi-Task Learning (strictly speaking, with fixed tasks)
 \subsubsection*{Multi-Task Learning}
-The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $.
+The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the Multi-Task expected risk is
 \begin{equation}\label{eq:mtlearn_exprisk}
-    \bexprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
+    \risk_{\bprobseq}(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
 \end{equation}
 and the empirical risk is defined as
 \begin{equation}\label{eq:mtlearn_emprisk}
@@ -213,14 +213,14 @@ and the empirical risk is defined as
 A similar result to that of Bias Learning is given for Multi-Task Learning~\cite[Theorem~4]{baxter2000model}:
 \begin{equation}
     \nonumber
-    \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
+    \bemprisk(\myvec{\hypf}) \leq \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon,
 \end{equation}
 with probability $1 - \delta$ given that the number of samples per task
 \begin{equation}
     \nonumber
-    \npertask \geq \bigO{\frac{1}{\ntasks \epsilon^2} \log\frac{\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\delta}}.
+    \npertask \geq \max \left( \frac{64}{\ntasks \epsilon^2} \log\frac{4\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\delta} , \frac{16}{\epsilon^2}\right).
 \end{equation}
-
+Observe that we do not need the \emph{distribution-driven} capacity in this case, just the \emph{sample-driven} capacity.
 % Feature Learning
 \subsubsection*{Feature Learning}
 Feature Learning is a common way to encode bias. The most popular example are Neural Networks, where all the hidden layers can be seen as a Feature Learning engine that learns a mapping from the original space to a space with ''strong'' features.
@@ -242,9 +242,9 @@ $$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} sup_{g 
 is a pseudo-metric. Using these results alongside those presented for Bias Learning is useful to establish bounds for Feature Learning models like Neural Networks.
 
 % Generalized VC-dim , Theorems 12, 13 and Corollary 13
-\subsubsection*{Generalized VC-Dimensions for Multi-Task Learning}
+\subsubsection*{Generalized VC-Dimension for Multi-Task Learning}
 The concepts presented until now rely on the concepts of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\bemprisk(\myvec{\hypf}) - \bexprisk(\myvec{\hypf})$, that is, the probability of large deviations between the empirical and expected risks for a given hypothesis sequence. However, it would be more interesting to establish some bounds between the empirical error and the \emph{best expected error}.
-To overcome this limitations, a generalized VC-dimension developed in~\cite{baxter2000model} for Multi-Task Learning with Boolean hypothesis.
+To overcome this limitations, a generalized VC-dimension is developed in~\cite{baxter2000model} for Multi-Task Learning with Boolean hypothesis.
 %
 
 Let $\hypspace$ be a space of boolean functions and $\hypspacef$ a boolean hypothesis space family. Denote the set of $\ntasks \times \npertask$ matrices in $\Xspace$ as $\Xspace^{\ntasks \times \npertask}$
@@ -270,25 +270,66 @@ For each $\ntasks, \npertask \geq 0$ define the number of binary matrices obtain
 Note that $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ and if $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ we say that $\hypspacef$ shatters $\Xspace^{\ntasks \times \npertask}$.
 For each $n > 0$ define
 \begin{align}
-    d_\hypspacef(\ntasks) &\defeq \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \nonumber \\
-    \overline{d}(\hypspacef) &\defeq    \nonumber \\
-    \underline{d}(\hypspacef) &\defeq    \nonumber
+    d_\hypspacef(\ntasks) &\defeq \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m , \nonumber \\
+    \overline{d}(\hypspacef) &\defeq \vcdim{\hypspacef^1} = \vcdim{\bigcup_{\hypspace \in \hypspacef} \hypspace}  ,  \nonumber \\
+    \underline{d}(\hypspacef) &\defeq \max_{\hypspace \in \hypspacef} \vcdim{\hypspace}  . \nonumber
 \end{align}
+Here, $d_\hypspacef(\ntasks)$ is the generalized VC-dimension, and
+\begin{equation}
+    \nonumber
+    d_\hypspacef(\ntasks) \geq \max\left(\floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}}, \underline{d}(\hypspacef) \right)
+\end{equation}
+where is trivial to see that $\overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef)$. 
+% Look at Ben-David version
+Now we can present the relevant result expressed in~\cite[Corollary~13]{baxter2000model}.
+\begin{theorem}
+    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{-1, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then
+\begin{equation}
+    \nonumber
+    \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
+\end{equation}
+with probability $1 - \delta$ given that the number of samples per task
+\begin{equation}
+    \label{eq:bound_npertask_genvcdim}
+    \npertask \geq \frac{88}{\epsilon^2} \left[2 d_\hypspacef(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\delta} \right] .
+\end{equation}
+\end{theorem}
+Here, since $d_\hypspacef(\ntasks) \geq d_\hypspacef(\ntasks+1)$, it is easy to see that as the number of task $\ntasks$ increases, the number of examples needed per task can decrease. 
+Moreover, as shown in~\cite[Theorem~14]{baxter2000model}, if this bound on $\npertask$ is not fulfilled, then we can always find a sequence of distributions $\bprobseq$ such that
+\begin{equation}
+    \nonumber
+    \inf_{\hypf \in \hypspace} \bemprisk(\myvec{\hypf}) > \inf_{\hypf \in \hypspace} \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon .
+\end{equation}
+With this results we can see that the condition~\eqref{eq:bound_npertask_genvcdim} has some important properties:
+\begin{itemize}
+    \item It is a computable bound, given that we know how to compute $d_\hypspacef(\ntasks)$.
+    \item It provides a sufficient condition for the uniform convergence (in probability) of the empirical risk to the expected risk.
+    \item It provides a necessary condition for the consistency of Multi-Task Learners, i.e. uniform convergence of the best empirical risk to the best expected risk.
+\end{itemize}
+
+\subsubsection*{Conclusion}
+In~\cite{baxter2000model} several new concepts are developed. The $(\bprobspace, \bdistf)$-environment of tasks is useful to characterize the concept of related tasks. Moreover, using this definition, Baxter is able to give some important results of uniform convergence in the Bias Learning paradigm. From this general view, Multi-Task Learning
+is a particular case and the uniform convergence results are also valid. The Feature Learning approach, which can be seen as a more particular method of Multi-Task Learning has some interesting results splitting the analysis into the feature learning process and the construction of models over these features. Finally, the most important result is the definition of a generalized VC-dimension and the uniform convergence of Multi-Task Learning models using this concept. Although this is a result only valid for boolean hypothesis, it helps to shed some light on Multi-Task Learning and the reasons of its effectiveness.
 
 
-
-
-
-\subsection{A notion of Task relatedness} % Ben-David
+\subsection{Learning with Related Tasks} % Ben-David
 % Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
-
-% Another view for MTL is when we have one main tasks and auxiliary tasks...
+Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08}. One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
+% task individual risks
+The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target one.
 
 % F-related tasks
+\subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
 
-% Bound for F-related tasks
 
+\subsubsection*{Bounds for $\frelset$-Related Tasks}
 % Relation with Baxter work
+% Results for F-related tasks (Theorems 2, 3)
+
+% Analysis of generalized VCdim
+\subsubsection*{Analysis of generalized VC-dimension}
+
+
 
 
 \subsection{Learning Under Privileged Information}

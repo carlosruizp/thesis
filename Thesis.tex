@@ -88,7 +88,9 @@
 \newcommand{\capacity}[2]{\capf\left(#1, #2\right)}
 \newcommand{\dist}[1]{d_{#1}}
 
-\newcommand\bigO[1]{O\left(#1\right)}
+\newcommand{\bigO}[1]{O\left( #1 \right)}
+% \newcommand{\floor}[1]{\lfloor( #1 \rfloor)}
+% \newcommand{\ceil}[1]{\lceil( #1 \rceil)}
 
 
 \newcommand{\Xspace}{\mathcal{X}}
@@ -97,12 +99,18 @@
 
 \newcommand{\toprob}{\xrightarrow{P}}
 
+\newcommand{\frel}{f}
+\newcommand{\frelset}{\mathcal{F}}
+
 \DeclareMathOperator*{\argmin}{arg\min}
 \DeclareMathOperator*{\argmax}{arg\max}
 \DeclareMathOperator{\Tr}{tr}
 \DeclareMathOperator{\Ima}{Im}
 \DeclareMathOperator{\Ker}{Ker}
 \DeclareMathOperator{\Vector}{vec}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 
 
 %% ----------------------------------------------------------------
