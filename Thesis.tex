@@ -42,15 +42,20 @@
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\defeq}{\vcentcolon=}
 \newcommand{\hypf}{h}
+\newcommand{\hypfun}[1]{\hypf\left(#1\right)}
 \newcommand{\hyp}[2]{\hypf\left(#1, #2\right)}
 \newcommand{\fun}[1]{f\left(#1\right)}
 \newcommand{\den}[1]{p\left( #1 \right)}
 \newcommand{\opt}[1]{{#1}^*}
 \newcommand{\cond}[2]{p\left( #1 \;\middle\vert\; #2 \right)}
 
+\newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
+\newcommand{\mymat}[1]{\upper{#1}}
+\newcommand{\myvec}[1]{\bm{#1}}
+
 
 \newcommand{\nsamples}{n}
-\newcommand{\vcdim}{d}
+\newcommand{\vcdim}[1]{\text{VCdim}\left(#1\right)}
 \newcommand{\ntasks}{T}
 \newcommand{\npertask}{m}
 \newcommand{\idotsn}{i=1, \ldots, \nsamples}
@@ -79,7 +84,8 @@
 \newcommand{\bexprisk}{\risk_\bdistf}
 \newcommand{\bsetsample}{\hypspacef^{\ntasks}}
 \newcommand{\bsetdist}{\hypspacef^{*}}
-\newcommand{\capacity}[2]{C\left(#1, #2\right)}
+\newcommand{\capf}{C}
+\newcommand{\capacity}[2]{\capf\left(#1, #2\right)}
 \newcommand{\dist}[1]{d_{#1}}
 
 \newcommand\bigO[1]{O\left(#1\right)}

@@ -65,15 +65,15 @@ Vapnik answers to the question of what can be said about $\exprisk$ when $\param
 More specifically, Vapnik sets the sufficient and necessary conditions for the consistency of an inductive learning process, i.e. for $\emprisk(\param) \toprob \exprisk(\param) $ uniformly. Vapnik also defines the capacity of a hypothesis space and use it to derive bounds on the rate of this convergence for any $\param \in \paramspace$ and, more importantly, bounds on the difference $\inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param)$.
 Under some general conditions, he proves that
 \begin{equation}\label{eq:ordinary_generalization_bound}
-    \inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param) \leq B(\nsamples/\vcdim)
+    \inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param) \leq B(\nsamples/\vcdim{\hypspace})
 \end{equation}
-where $B$ is some non-decreasing function and $\vcdim$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
+where $B$ is some non-decreasing function and $\vcdim{\hypspace}$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
 \begin{itemize}
     \item The number of training samples $\nsamples$. A greater number of training samples assures a better generalization of the learning process.This looks intuitive and could be already inferred from the asymptotical properties. 
-    \item The VC-dimension $\vcdim$, or capacity, of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
+    \item The VC-dimension $\vcdim{\hypspace}$, or capacity, of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
 \end{itemize}
 The VC-dimension measures the capacity of a set of hypothesis $\hypspace$. 
-%In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \alpha, \beta) = \bm{1}_{\{\hyp{x}{\param} - \beta\}} $.
+%In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim{\hypspace}$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \alpha, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
 If the capacity of the set $\hypspace$ is too large, we may find a
 hypothesis $\hyp{x}{\opt{\param}}$ that minimizes $\emprisk$ but does not 
 generalize well and therefore, does not minimize $\exprisk$. This is the 
@@ -81,7 +81,7 @@ overfitting problem.
 On the other side, if we use a simple $\hypspace$, 
 with low capacity, we could be in a situation where there is not a good hypothesis $\hyp{x}{\alpha} \in \hypspace$, so the empirical risk $\inf_{\param \in \paramspace} \exprisk$ is too large. This is the underfitting problem.
 
-% The Structural Risk Minimization (SRM) as an inductive principle, proposed by Vapnik (as opposed to the ERM), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
+% The Structural Risk Minimization (SRM) as an inductive principle, proposed by Vapnik (as opposed to the ERM), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim{\hypspace}$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
 % $$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
 % where their VC-dimensions are ordered:
 % $$ d_1 < d_2 < \ldots < d_k < \ldots$$
@@ -145,23 +145,23 @@ To follow an analogous path to that of ordinary learning, the milestones in bias
 \end{itemize}
 To achieve these goals some previous definitions are needed.
 %
-\subsubsection*{Bias Learning Capacities}
+\subsubsection*{Bias Learning Capacities and Uniform Convergence}
 % Pseudo-metrics, Covering numbers and Capacities
 In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
 Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
 Consider also the set of sequences of $\ntasks$ hypothesis 
-$\hypspace^\ntasks \defeq \set{ \bm{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$ 
+$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$ 
 We can define then the set of $(\ntasks, 1)$-empirical risks as 
-$$\hypspace^\ntasks_\lossf \defeq \set{ \bm{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
+$$\hypspace^\ntasks_\lossf \defeq \set{ \myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
 The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks$. Now we can define
 \begin{equation}
     \nonumber
     \begin{aligned}
-        \dist{\bprobseq}(\bm{\hypf}_\lossf, \bm{\hypf'}_\lossf) = \int_{(\Xspace \times \Yspace)^{\ntasks}} &\abs{\bm{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) - \bm{\hypf'}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks)} \\ 
+        \dist{\bprobseq}(\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf) = \int_{(\Xspace \times \Yspace)^{\ntasks}} &\abs{\myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) - \myvec{\hypf'}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks)} \\ 
         & d{P_1}(x_1, y_1) \ldots d{P_\ntasks}(x_\ntasks, y_\ntasks)
     \end{aligned}
 \end{equation}
-for $\bm{\hypf}_\lossf, \bm{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^T$.
+for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^T$.
 %
 
 Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
@@ -202,18 +202,18 @@ As with $\hypf(x)$ and $\param$, since any $\hypspace$ is defined by a $\delta \
 
 % Multi-Task Learning (strictly speaking, with fixed tasks)
 \subsubsection*{Multi-Task Learning}
-The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\bm{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $.
+The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $.
 \begin{equation}\label{eq:mtlearn_exprisk}
-    \bexprisk(\bm{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
+    \bexprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
 \end{equation}
 and the empirical risk is defined as
 \begin{equation}\label{eq:mtlearn_emprisk}
-    \bemprisk(\bm{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(\hypf_r(x_i^r), y_i^r).
+    \bemprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(\hypf_r(x_i^r), y_i^r).
 \end{equation}
 A similar result to that of Bias Learning is given for Multi-Task Learning~\cite[Theorem~4]{baxter2000model}:
 \begin{equation}
     \nonumber
-    \bexprisk(\bm{\hypf}) \leq \bemprisk(\bm{\hypf}) + \epsilon,
+    \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
 \end{equation}
 with probability $1 - \delta$ given that the number of samples per task
 \begin{equation}
@@ -224,56 +224,60 @@ with probability $1 - \delta$ given that the number of samples per task
 % Feature Learning
 \subsubsection*{Feature Learning}
 Feature Learning is a common way to encode bias. The most popular example are Neural Networks, where all the hidden layers can be seen as a Feature Learning engine that learns a mapping from the original space to a space with ''strong'' features.
-In general, a set of ''strong'' feature maps $\Phi = \set{\phi, \phi: \Xspace \to \Fspace}$ .
+In general, a set of ''strong'' feature maps is defined as $\mathcal{F} = \set{f, f: \Xspace \to \Fspace}$. Using these features, functions $g \in \mathcal{G}$ (which are tipically simple) are built:
+$\Xspace \to_f \Fspace \to_g \Yspace$.
+Thus, for each map $f$, the hypothesis space can be expressed as 
+$\hypspace_f = \set{h = \mathcal{G} \circ f, g \in \mathcal{G}}$
+, and the family of hypothesis spaces is 
+$\hypspacef = \set{\hypspace_f, f \in \mathcal{F}}$.
+Now, the Bias Learning problem is the problem of finding a good mapping $f$.
+It is proved~\cite[Theorem~6]{baxter2000model} that in the Feature Learning case the capacities of $\hypspacef$ can be bounded by the capacities of $\mathcal{F}$ and $\mathcal{G}$ as
+\begin{align*}
+    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}^\ntasks}^T \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
+    \capacity{\epsilon}{\bsetdist} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})
+\end{align*}
+with $\epsilon = \epsilon_1 + \epsilon_2 $. Here, $\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})$ is defined as 
+$\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) \defeq \sup_P \mathcal{N}(\epsilon, \mathcal{F}, \dist{[P, \mathcal{G}_\lossf]})$, where
+$$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} sup_{g \in \mathcal{G}} \abs{\loss{g \circ f(x)}{y} - \loss{g \circ f'(x)}{y}} dP(x, y)$$
+is a pseudo-metric. Using these results alongside those presented for Bias Learning is useful to establish bounds for Feature Learning models like Neural Networks.
 
-
-
-\pagebreak
-
-
-In first place, he defines some concepts that allow to write two concepts of capacity related to $\mathbb{H}$. Using these two concepts, he shows uniform convergence of $e_Q(\hypspace)$ to $\hat{e}_z(h)$. Moreover, this result is valid not only asymptotically:
-\begin{equation*}
-    e_Q(\hypspace) \leq \hat{e}_z(\hypspace) + \epsilon
-\end{equation*}
-with $m$ such that
-\begin{equation*}
-    m \geq \frac{1}{T \epsilon^2} C(\mathbb{H})
-\end{equation*}
-where $C(\mathbb{H})$ is a notion of capacity of $\mathbb{H}$ (this bound is very simplified in this work). We can observe that as the number of tasks grow, we need less examples in each task. Also, if we have related tasks (and then $\mathbb{H}$ can have low capacity) the number of necessary examples per task also decreases.
-However, this bound is not so useful because it is theoretical, that is, we have theoretical notions of the capacity of $\mathbb{H}$ but we cannot compute it.
-
-He then focuses on feature learning, that is, we define a specific type of learners where we have two steps:
-\begin{itemize}
-    \item Learning the space of features (or learning $\hypspace_f$)
-    \item Learning the best linear model $g$ over the features given by $f$ (or learning the best hypothesis $g \circ f$ in $\hypspace_f$)
-\end{itemize}
-For these type of models, he also shows how a multi-output Neural Network (which can be seen an MTL NN) is a model that embodies this feature learning approach.
-The NN can be seen as a linear model $g$ over a transformation $f$ of the original data. That is, the set of functions $\hypspace_f = \{g \circ f \}$ used by the neural network is learned trying to minimize the empirical loss when we update $f$.
-Baxter derives specific bound for the NN using that the capacity of the hypothesis space family $\mathbb{H}$ can be computed for this case.
-
-Finally, he show some results for Multi-Task Learning. 
-Multi-Task Learning is a particular case of Bias Learning where we are not interested in finding an optimal hypothesis space $\hypspace$ where we can find good solutions for a great variety of problems, but our goal is to find good solutions for a fixed number of tasks. That is, instead of having a family of probabilities $\mathcal{P}$ with a probability measure $\mathcal{Q}$, we have a fixed vector $\bm{P} = (P_1, \ldots, P_T)$ of probability measures over a fixed set of tasks and the learner minimizes:
-\begin{equation}
-    e_{\bm{P}}(\hypspace) = \sum_{r=1}^\ntasks e_{P_r}(h_r)  = \sum_{r=1}^\ntasks \int_{X \times Y} l(h_r(x), y) d P_r(x, y) .
-\end{equation}
-Then, we define the empirical multi-task error as
-\begin{equation}\label{eq:mtllearn_exprisk}
-    \hat{e}_z(\hypspace) = \sum_{r=1}^\ntasks \hat{e}_{z_r}(h_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(h_r(x_i^r), y_i^r).
-\end{equation}
-The difference is subtle but we have a different objective. In the multi-task setting, the hypothesis space $\hypspace$ found will not necessarily be good for generalizing to new tasks. Also, we have got rid of the $\inf$ term, which was difficult to deal with.
+% Generalized VC-dim , Theorems 12, 13 and Corollary 13
+\subsubsection*{Generalized VC-Dimensions for Multi-Task Learning}
+The concepts presented until now rely on the concepts of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\bemprisk(\myvec{\hypf}) - \bexprisk(\myvec{\hypf})$, that is, the probability of large deviations between the empirical and expected risks for a given hypothesis sequence. However, it would be more interesting to establish some bounds between the empirical error and the \emph{best expected error}.
+To overcome this limitations, a generalized VC-dimension developed in~\cite{baxter2000model} for Multi-Task Learning with Boolean hypothesis.
 %
 
-Restricting to the Boolean functions, Baxter defines an extension of the VC-dimension $d_\mathbb{H}(T)$ that can be computed (for these Boolean map functions). Using that, he extends the previous theorems obtaining ``computable'' bounds and he derives a lower bound for $m$, if $m$ is below that lower bound then we can find tasks such that the error made by our estimator is larger then certain $\epsilon$.
+Let $\hypspace$ be a space of boolean functions and $\hypspacef$ a boolean hypothesis space family. Denote the set of $\ntasks \times \npertask$ matrices in $\Xspace$ as $\Xspace^{\ntasks \times \npertask}$
+For each $\mymat{x} \in \Xspace^{\ntasks \times \npertask}$ and each $\hypspace \in \hypspacef$ define the set of binary $\ntasks \times \npertask$ matrices
+\begin{equation}
+    \nonumber
+    \hypspace_{\vert \mymat{x}} \defeq \set{\begin{pmatrix}
+        \hypfun{x_1^1} & \ldots & \hypfun{x_\npertask^1} \\
+        \vdots & \ddots & \vdots \\
+        \hypfun{x_1^\ntasks} & \ldots & \hypfun{x_\npertask^\ntasks} \\
+    \end{pmatrix}, \hypf \in \hypspace} ,
+\end{equation}
+and the corresponding family of such sets as
+\begin{equation}
+    \nonumber
+    \hypspacef_{\vert \mymat{x}} = \bigcup_{\hypspace \in \hypspacef}  \hypspace_{\vert \mymat{x}}.
+\end{equation}
+For each $\ntasks, \npertask \geq 0$ define the number of binary matrices obtainable with $\hypspacef$ as
+\begin{equation}
+    \nonumber
+    \Pi_\hypspacef(\ntasks, \npertask) \defeq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \abs{ \hypspacef_{\vert \mymat{x}} }.
+\end{equation}
+Note that $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ and if $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ we say that $\hypspacef$ shatters $\Xspace^{\ntasks \times \npertask}$.
+For each $n > 0$ define
+\begin{align}
+    d_\hypspacef(\ntasks) &\defeq \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \nonumber \\
+    \overline{d}(\hypspacef) &\defeq    \nonumber \\
+    \underline{d}(\hypspacef) &\defeq    \nonumber
+\end{align}
 
 
 
 
-
-
-
-% Feature Learning model as Bias Learner using Neural Networks
-
-    % Lemmas?
 
 \subsection{A notion of Task relatedness} % Ben-David
 % Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
