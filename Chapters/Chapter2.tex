@@ -70,7 +70,7 @@ Under some general conditions, he proves that
 where $B$ is some non-decreasing function and $\vcdim{\hypspace}$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
 \begin{itemize}
     \item The number of training samples $\nsamples$. A greater number of training samples assures a better generalization of the learning process.This looks intuitive and could be already inferred from the asymptotical properties. 
-    \item The VC-dimension $\vcdim{\hypspace}$, or capacity, of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
+    \item The VC-dimension $\vcdim{\hypspace}$ of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
 \end{itemize}
 The VC-dimension measures the capacity of a set of hypothesis $\hypspace$. 
 %In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim{\hypspace}$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \alpha, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
@@ -282,8 +282,8 @@ Here, $d_\hypspacef(\ntasks)$ is the generalized VC-dimension, and
 where is trivial to see that $\overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef)$. 
 % Look at Ben-David version
 Now we can present the relevant result expressed in~\cite[Corollary~13]{baxter2000model}.
-\begin{theorem}
-    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{-1, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then
+\begin{theorem}\label{th:baxter_vcdim}
+    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then
 \begin{equation}
     \nonumber
     \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
@@ -311,19 +311,57 @@ With this results we can see that the condition~\eqref{eq:bound_npertask_genvcdi
 In~\cite{baxter2000model} several new concepts are developed. The $(\bprobspace, \bdistf)$-environment of tasks is useful to characterize the concept of related tasks. Moreover, using this definition, Baxter is able to give some important results of uniform convergence in the Bias Learning paradigm. From this general view, Multi-Task Learning
 is a particular case and the uniform convergence results are also valid. The Feature Learning approach, which can be seen as a more particular method of Multi-Task Learning has some interesting results splitting the analysis into the feature learning process and the construction of models over these features. Finally, the most important result is the definition of a generalized VC-dimension and the uniform convergence of Multi-Task Learning models using this concept. Although this is a result only valid for boolean hypothesis, it helps to shed some light on Multi-Task Learning and the reasons of its effectiveness.
 
-
 \subsection{Learning with Related Tasks} % Ben-David
 % Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
-Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08}. One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
+Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08} for boolean hypothesis functions defined over $\Xspace \times \set{0, 1}$.
+% task relatedness
+One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
 % task individual risks
 The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target one.
 
 % F-related tasks
 \subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
+The main concept for the theory developed in~\cite{Ben-DavidB08} is a set of $\frelset$ of transformations $\frelf: \Xspace \to \Xspace$. Given a probability distribution $\distf$ over $\Xspace \times \set{0, 1}$, a set of tasks with distributions $P_1, \ldots, P_\ntasks$ are $\frelset$-related if, for each task there exists some $\frelf_i \in \frelset$ such that $P_i = \frelf_i(\distf)$.
+
+\begin{definition}[$\frelset$-related task]
+    Consider a measurable space $(\Xspace, \mathcal{A})$ and the corresponding measurable product space $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$. Consider $P$ a probability distribution over this product space and a function $\frelf: \Xspace \to \Xspace$, then we define the distribution $\frel{P}$ such that for any $S \in \mathcal{A}$,
+    $$ \frel{P}(S) \defeq P(\set{(f(x), b), (x, b) \in S }).$$
+    %
+    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$, and let $P_1, P_2$ be distributions over $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, then the distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
+    % \begin{itemize}
+    %     \item The distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
+    %     \item Two samples $z_1, z_2$ sampled from $P_1, P_2$ respectively are $\frelset$-related if $P_1, P_2$ are $\frelset$-related.
+    % \end{itemize}
+\end{definition}
+This notion establishes a clear definition of related tasks but we are interested in how a learner can use this relatedness to improve the learning process.
+For that, considering that $\frelset$ is a group under function composition, we regard at the action of the group $\frelset$ over the set of hypothesis $\hypspace$. This action defines the following equivalence relation in $\hypspace$:
+$$ \hypf_1 \sim_\frelset \hypf_2 \iff \exists \frelf \in \frelset,  \hypf_1 \circ \frelf = \hypf_2 .$$
+%
+This equivalence relation defines equivalence classes $\equivclass{\hypf}$, that is let $h' \in \hypspace$ be an hypothesis, then $h' \in \equivclass{\hypf}$ iff $h' \sim_\frelset h$. 
+We consider the quotient space $\hypspace_\frelset \defeq \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
+%
+This equivalence classes are useful to divide the learning process in two stages: a first one to determine the best equivalence class, and a second one to find the best representative hypothesis of such equivalence class.
+%
+
+For example, consider the handwritten digits recognition problem, we might integrate $T$ different datasets designed in different conditions. Each dataset have been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generate a different bias for the dataset. However, there exists a probability for ''pure'' digits, e.g. the pixels of digit one have higher probability around a line in the middle of the picture than in the sides. This ''pure'' probability distribution $P_0$ and all the distributions $P_1, \ldots, P_T$ from which our datasets have been sampled might be $\frelset$-related among them and with $P_0$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
 
 
 \subsubsection*{Bounds for $\frelset$-Related Tasks}
 % Relation with Baxter work
+The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis space of equivalent classes $\hypspace_\frelset$. However the following results is needed first.
+%
+Let $P_1, P_2$ be $\frelset$-related distributions, then this statement can be proved~\cite[Lemma~2]{Ben-DavidB08}:
+\begin{equation}
+    \nonumber
+    \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) = \inf_{\hypf \in \hypspace} \risk_{P_2}(\hypf).
+\end{equation}
+This indicates that the the expected risk is invariant under transformations of $\frelset$.
+Now, one of the main results~\cite[Theorem~2]{baxter2000model} can be given.
+\begin{theorem}
+    
+\end{theorem}
+
+
 % Results for F-related tasks (Theorems 2, 3)
 
 % Analysis of generalized VCdim

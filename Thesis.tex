@@ -89,9 +89,6 @@
 \newcommand{\dist}[1]{d_{#1}}
 
 \newcommand{\bigO}[1]{O\left( #1 \right)}
-% \newcommand{\floor}[1]{\lfloor( #1 \rfloor)}
-% \newcommand{\ceil}[1]{\lceil( #1 \rceil)}
-
 
 \newcommand{\Xspace}{\mathcal{X}}
 \newcommand{\Yspace}{\mathcal{Y}}
@@ -99,7 +96,10 @@
 
 \newcommand{\toprob}{\xrightarrow{P}}
 
-\newcommand{\frel}{f}
+\newcommand{\powerset}[1]{\wp\left( #1 \right)}
+
+\newcommand{\frelf}{f}
+\newcommand{\frel}[1]{\frelf\left[ #1 \right]}
 \newcommand{\frelset}{\mathcal{F}}
 
 \DeclareMathOperator*{\argmin}{arg\min}
@@ -111,6 +111,7 @@
 
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\equivclass{\lbrack}{\rbrack}
 
 
 %% ----------------------------------------------------------------
