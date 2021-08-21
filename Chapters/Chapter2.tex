@@ -111,7 +111,7 @@ Analogous to ordinary learning, the goal is to minimize the expected risk, defin
 Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set samples from the environment $(\bprobspace, \bdistf)$ obtained in the following way:
 \begin{enumerate}
     \item Sample $T$ times from $\bdistf$ obtaining $P_1, \ldots, P_T \in \bprobspace$
-    \item For $r=1, \ldots, T$ sample $m$ pairs $z_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$ where $(x_i^r, y_i^r) \in X \times Y$ .
+    \item For $r=1, \ldots, T$ sample $m$ pairs $\sample_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$ where $(x_i^r, y_i^r) \in X \times Y$ .
 \end{enumerate}
 We obtain a sample $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$, with $\npertask$ examples from $\ntasks$ different learning tasks, and
 \begin{equation}
@@ -129,7 +129,7 @@ Using $\bsample$ we can define the empirical loss as
     \bemprisk(\delta) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\delta} \hat{\risk}_{\sample_r}(\hypf) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\delta} \sum_{i=1}^m l(\hypf(x_i^r), y_i^r),
 \end{equation}
 which is an average of the empirical losses of each task. 
-Note, however, that in the case of the bias learner, this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{z_r}(\hypf)$. 
+Note, however, that in the case of the bias learner, this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{\sample_r}(\hypf)$. 
 Putting all together, a bias learner $\mathcal{A}$ maps the set of all $(\ntasks, \npertask)$-samples to a family of hypothesis spaces:
 \begin{equation}
     \nonumber
@@ -265,7 +265,7 @@ and the corresponding family of such sets as
 For each $\ntasks, \npertask \geq 0$ define the number of binary matrices obtainable with $\hypspacef$ as
 \begin{equation}
     \nonumber
-    \Pi_\hypspacef(\ntasks, \npertask) \defeq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \abs{ \hypspacef_{\vert \mymat{x}} }.
+    \Pi_\hypspacef(\ntasks, \npertask) \defeq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef_{\vert \mymat{x}} }.
 \end{equation}
 Note that $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ and if $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ we say that $\hypspacef$ shatters $\Xspace^{\ntasks \times \npertask}$.
 For each $n > 0$ define
@@ -279,14 +279,23 @@ Here, $d_\hypspacef(\ntasks)$ is the generalized VC-dimension, and
     \nonumber
     d_\hypspacef(\ntasks) \geq \max\left(\floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}}, \underline{d}(\hypspacef) \right)
 \end{equation}
-where is trivial to see that $\overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef)$. 
+where it can be observed that 
+\begin{equation}
+    \label{eq:genvc_inequalities}
+    \overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef).
+\end{equation}
+\comm{Proof?}
 % Look at Ben-David version
 Now we can present the relevant result expressed in~\cite[Corollary~13]{baxter2000model}.
 \begin{theorem}\label{th:baxter_vcdim}
-    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then
+    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then for every $\epsilon > 0$
+% \begin{equation}
+%     \nonumber
+%     \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
+% \end{equation}
 \begin{equation}
     \nonumber
-    \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
+    \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})} \leq \epsilon,
 \end{equation}
 with probability $1 - \delta$ given that the number of samples per task
 \begin{equation}
@@ -317,7 +326,7 @@ Using the work of~\cite{baxter2000model} as the foundation, several important no
 % task relatedness
 One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
 % task individual risks
-The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target one.
+The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
 
 % F-related tasks
 \subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
@@ -330,7 +339,7 @@ The main concept for the theory developed in~\cite{Ben-DavidB08} is a set of $\f
     Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$, and let $P_1, P_2$ be distributions over $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, then the distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
     % \begin{itemize}
     %     \item The distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
-    %     \item Two samples $z_1, z_2$ sampled from $P_1, P_2$ respectively are $\frelset$-related if $P_1, P_2$ are $\frelset$-related.
+    %     \item Two samples $\sample_1, \sample_2$ sampled from $P_1, P_2$ respectively are $\frelset$-related if $P_1, P_2$ are $\frelset$-related.
     % \end{itemize}
 \end{definition}
 This notion establishes a clear definition of related tasks but we are interested in how a learner can use this relatedness to improve the learning process.
@@ -338,34 +347,156 @@ For that, considering that $\frelset$ is a group under function composition, we 
 $$ \hypf_1 \sim_\frelset \hypf_2 \iff \exists \frelf \in \frelset,  \hypf_1 \circ \frelf = \hypf_2 .$$
 %
 This equivalence relation defines equivalence classes $\equivclass{\hypf}$, that is let $h' \in \hypspace$ be an hypothesis, then $h' \in \equivclass{\hypf}$ iff $h' \sim_\frelset h$. 
-We consider the quotient space $\hypspace_\frelset \defeq \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
+We consider the quotient space 
+$$\hypspace_\frelset \defeq \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}.$$
+It is important to observe that $\hypspace_\frelset = \hypspacef'$ is a hypothesis space family, since it is a set of equivalence classes $\equivclass{\hypf} = \hypspace'$, which are set of hypothesis.
 %
-This equivalence classes are useful to divide the learning process in two stages: a first one to determine the best equivalence class, and a second one to find the best representative hypothesis of such equivalence class.
-%
+
+\subsubsection*{The Multi-Task Empirical Risk Minimization}
+This equivalence classes are useful to divide the learning process in two stages, this is called the \emph{Multi-Task ERM}. Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tasks, then
+\begin{enumerate}
+    \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
+    \begin{equation}
+        \nonumber
+        \equivclass{\hypf^\frelset} \defeq \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_i}(\hypf_i) ,
+    \end{equation}
+    \item Select the best hypothesis $h^\diamond$ for the target task (without loss of generality, consider the first one):
+    \begin{equation}
+        \nonumber
+        h^\diamond = \inf_{\hypf \in \equivclass{\hypf^\frelset}} \hat{\risk}_{\sample_1}(\hypf) .
+    \end{equation}
+\end{enumerate}
 
 For example, consider the handwritten digits recognition problem, we might integrate $T$ different datasets designed in different conditions. Each dataset have been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generate a different bias for the dataset. However, there exists a probability for ''pure'' digits, e.g. the pixels of digit one have higher probability around a line in the middle of the picture than in the sides. This ''pure'' probability distribution $P_0$ and all the distributions $P_1, \ldots, P_T$ from which our datasets have been sampled might be $\frelset$-related among them and with $P_0$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
 
-
+% Results for F-related tasks (Theorems 2, 3)
 \subsubsection*{Bounds for $\frelset$-Related Tasks}
 % Relation with Baxter work
-The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis space of equivalent classes $\hypspace_\frelset$. However the following results is needed first.
+The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis quotient space of equivalent classes $\hypspace_\frelset$. However the following results is needed first.
 %
 Let $P_1, P_2$ be $\frelset$-related distributions, then this statement can be proved~\cite[Lemma~2]{Ben-DavidB08}:
 \begin{equation}
-    \nonumber
+    \label{eq:ben-david_lemma2}
     \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) = \inf_{\hypf \in \hypspace} \risk_{P_2}(\hypf).
 \end{equation}
 This indicates that the the expected risk is invariant under transformations of $\frelset$.
 Now, one of the main results~\cite[Theorem~2]{baxter2000model} can be given.
-\begin{theorem}
-    
+\begin{theorem}\label{th:ben-david_th2}
+    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$ that is a group under function composition. Let $\hypspace$ be a hypothesis space so that $\frelset$ acts as a group over $\hypspace$, and consider the quotient space $\hypspace_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
+    Consider $\bprobseq = (P_1, \ldots, P_\ntasks)$ a sequence of $\frelset$-related distributions over $\Xspace \times \set{0, 1}$, and $\myvec{z} = (\sample_1, \ldots, \sample_\ntasks)$ the corresponding sequence of samples  where $\sample_i$ is sampled using $P_i$, then for every $\equivclass{\hypf} \in \hypspace_\frelset$ and $\epsilon > 0$ 
+    \begin{equation}
+        \nonumber
+        \abs{\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) - \inf_{\hypf' \in \equivclass{\hypf}}\risk_{P_1}(\hypf')}  \leq \epsilon
+    \end{equation}
+    with probability greater than $\delta$ if the number of samples from each distribution satisfies
+    \begin{equation}
+        \label{eq:ben-david_sample_inequality}
+        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\delta} \right].
+    \end{equation}
 \end{theorem}
+Note that, in contrast to Theorem~\ref{th:baxter_vcdim}, this result bounds the expected risk of a single task, not the average risk. This is the consequence of applying Theorem~\ref{th:baxter_vcdim} and substituting the average empirical error using the result from~\eqref{eq:ben-david_lemma2}.
+Also observe that here the hypothesis space family used is the quotient space $\hypspace_\frelset$, and the VC-dimension of such family is used.
+%
+Using this result, a bound for learners using the Multi-Task ERM principle is given~\cite[Theorem~3]{Ben-DavidB08}
+\begin{theorem}\label{th:ben-david_th3}
+    Consider $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequences of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Consider $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$.
+    Let $h^\diamond$ be the hypothesis selected using the Multi-Task ERM principle, then for every $\epsilon_1, \epsilon_2 > 0$
+    \begin{equation}
+        \nonumber
+        {\hat{\risk}_{\sample_1}(\hypf^\diamond) - \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')}  \leq 2(\epsilon_1 + \epsilon_2)
+    \end{equation}
+    with probability greater than $\delta$ if
+    \begin{equation}
+        \label{eq:ben-david_th3_ineq1}
+        \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \underline{d}(\hypspace_\frelset) \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\delta} \right], \; 
+    \end{equation}
+    and for $i \neq 1$
+    \begin{equation}
+        \label{eq:ben-david_th3_ineq2}
+        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\delta} \right] .
+    \end{equation}
+\end{theorem}
+The idea of the proof of this theorem helps to understand how using different tasks can help to improve the performance in the target task. 
+Consider $\hypf^* = \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf)$ the best hypothesis for the $P_1$ distribution.
+According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^*}$ we have that
+\begin{equation}
+    \nonumber
+    {\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^*}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf')}  + \epsilon_1.
+\end{equation}
+%
+Also, in the first stage of Multi-Task ERM principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
+According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^\frelset}$ we have that
+\begin{equation}
+    \nonumber
+    {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1.
+\end{equation}
+Using these two inequalities we get
+\begin{equation}
+    \nonumber
+    \inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf') \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf') + 2\epsilon_1 
+\end{equation}
+under the condition~\eqref{eq:ben-david_sample_inequality}. This bounds the risk of the hypothesis space given by the equivalence class of $\hypf^\frelset$ and establishes the inequality~\eqref{eq:ben-david_th3_ineq2}.
+%
 
+Once we select $\equivclass{\hypf^\frelset}$, the second stage is just ERM using this hypothesis space.
+%
+According to the \comm{reference?}
+\begin{equation}\nonumber
+    \inf_{\hypf \in \hypspace} \risk_{z_1}(\hypf) - \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) \leq \epsilon_2
+\end{equation}
+if
+\begin{equation}
+    \nonumber
+    \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \vcdim{\hypspace} \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\delta} \right] .
+\end{equation}
+Since the ERM will not use the whole space $\hypspace$ but the subset $\equivclass{\hypf^\frelset} \subset \hypspace$, and
+$$\vcdim{\equivclass{\hypf^\frelset}} \leq \max_{\equivclass{\hypf} \in \hypspace_\frelset} \vcdim{\equivclass{\hypf}} = \underline{d}(\hypspace_\frelset).$$
+ then we can write the inequality~\eqref{eq:ben-david_th3_ineq1} of the theorem.
+%
+The advantage of using multiple tasks is then illustrated in this bound and it will be defined by the gap between $\vcdim{\hypspace}$ and $\underline{d}(\hypspace_\frelset)$. If $\underline{d}(\hypspace_\frelset)$ is smaller than $\vcdim{\hypspace}$, the number of samples needed to solve the target task will also be smaller.
+Also, the sample complexity of the rest of tasks is given by $d_{\hypspace_\frelset}(\ntasks)$.
 
-% Results for F-related tasks (Theorems 2, 3)
+That is, Multi-Task Learning allows to select a subset of hypothesis from which a learner can use the ERM principle. In this stage, the sample complexity is controlled by the generalized VC-dimension of the set of equivalent classes of hypothesis. Once the best equivalent class has been selected, 
+the VC-dimension of this subset, compared to the VC-dimension of the whole set of hypothesis, is what marks the difference between Single Task and Multi-Task Learning.
 
 % Analysis of generalized VCdim
 \subsubsection*{Analysis of generalized VC-dimension}
+As we have seen in Theorem~\ref{th:ben-david_th3}, the VC-dimensions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$ are crucial for stating the advantage of Multi-Task over Single Task Learning. 
+To understand better how these concepts interact, Ben-David et al. give some theoretical results.
+Recall that, given a hypothesis space $\hypspace$, $\hypspace_\frelset$ is a family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$, then
+\begin{align*}
+    \nonumber
+    d_{\hypspace_\frelset}(\ntasks) &= \max_{\set{\npertask ,\Pi_{\hypspace_\frelset} = 2^{\ntasks \npertask}} } \npertask, \\
+    \underline{d}(\hypspace_\frelset) &= max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}, \\    
+    \overline{d}(\hypspace_\frelset) &= \vcdim{\bigcup_{\equivclass{\hypf} \in \hypspace_\frelset} \equivclass{\hypf}}= \vcdim{\hypspace}.
+\end{align*}
+Using the result from~\eqref{eq:genvc_inequalities} we observe that
+\begin{equation}
+    \nonumber
+    \underline{d}(\hypspace_\frelset) \leq d_{\hypspace_\frelset}(\ntasks) \leq \vcdim{\hypspace} .
+\end{equation}
+That is, the best we can hope when bounding the sample complexity in Theorem~\ref{th:ben-david_th3} is $\underline{d}(\hypspace_\frelset) = d_{\hypspace_\frelset}(\ntasks)$. 
+Ben-David et al. give evidence that, with some restrictions on $\hypspace$, this lower bound can be achieved~\cite[Theorem~4]{Ben-DavidB08}.
+\begin{theorem}
+    If the support of $\hypf$ is bounded, i.e. $ \cardinal{\set{x \in \Xspace,  \hypf(x) = 1}} < M$, for all $\hypf \in \hypspace$, then there exists $\ntasks_0$ such that for all $\ntasks>\ntasks_0$
+    \begin{equation}
+        \nonumber
+        d_{\hypspace_\frelset}(\ntasks) = \underline{d}(\hypspace_\frelset).
+    \end{equation} 
+\end{theorem}
+
+Moreover, the following result~\cite[Theorem~6]{Ben-DavidB08} has also relevance for understanding the advantages of Multi-Task Learning.
+\begin{theorem}\label{th:ben-david_th6}
+    If $\frelset$ is finite and $\frac{\ntasks}{\log (\ntasks)} \geq \vcdim{\hypspace}$, then
+    \begin{equation}
+        \nonumber
+        d_{\hypspace_\frelset}(\ntasks) \leq 2 \log(\cardinal{\frelset})
+    \end{equation}
+\end{theorem}
+This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but the bound on $d_{\hypspace_\frelset}(\ntasks)$ and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded.
+
+\subsubsection*{Conclusion}
+
 
 
 
