@@ -11,10 +11,12 @@ This chapter presents\dots
 
 \section{Introduction}
 % What is MTL
+% Notation
 
 % Examples and Motivation
 
 % Some important references
+% Caruana, Baxter... (ver review de Caruana para ver más)
 
 \section{Why does Multi-Task Learning work?}
 % First works in Learning to Learn
@@ -496,13 +498,71 @@ Moreover, the following result~\cite[Theorem~6]{Ben-DavidB08} has also relevance
 This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but the bound on $d_{\hypspace_\frelset}(\ntasks)$ and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded.
 
 \subsubsection*{Conclusion}
-
-
+\comm{TODO?}
 
 
 
 \subsection{Learning Under Privileged Information}
+% The classical learning paradigm tries to minimize the expected risk by minimizing the empirical risk...
+The standard machine learning paradigm tries to find the hypothesis $\hypf$ from a set of hypothesis $\hypspace$ that minimizes the expected risk $\emprisk$ given a set of training samples.
+% Vapnik gives develops the theory of Statisical Learning Theory and it seems complete
+Vapnik~\cite{vapnik2013nature} has developed the theory of statistical learning. In this theory several important results are provided: necessary and sufficient conditions for the consistency of learning processes and bounds for the rate of convergence, which uses the notion of VC-dimension. A new inductive principle, Structural Risk Minimization (SRM), and an algorithm, Support Vector Machine (SVM), that makes use of this notion to improve the learning process.
 
+% However, machines need many examples to learn. What is lacking?
+% An Intelligent Teacher is important in human learning, providing additional information: examples, metaphors...
+Nowadays learning approaches based on Deep Neural Networks, which are not focused on controlling the capacity of the set of hypothesis, outperform the SVM approaches in many problems. However, these popular Deep Learning approaches require large amounts of data to learn good hypothesis.
+It is commonly believed that machines need much more samples to learn than humans do. Vapnik~\cite{VapnikV09, VapnikI15a} reflects on this belief and states that humans typically learn under the supervision of an Intelligent Teacher.
+This Teacher shares important knowledge by providing metaphors, examples or clarifications that are helpful for the students.
+
+
+
+\subsubsection*{LUPI Paradigm}
+% How can that additional information be incorporated in Machine Learning?
+These additional knowledge provided by the Teacher is the Privileged Information that is available only during the training stage.
+To incorporate this concept of Intelligent Teacher providing Priviled Information, Vapnik introduces the paradigm of Learning Under Privileged Information (LUPI).
+% LUPI
+% Definition and notation
+In the LUPI paradigm describes the following model. Given a set of i.i.d. triplets
+$$ z = \set{(x_1, x^*_1, y_1), \ldots, (x_\nsamples,x^*_\nsamples, y_\nsamples)}, \; x \in \Xspace, x^* \in \Xspace^*, y \in \Yspace $$
+generated according to an unknown distribution $P(x, x^*, y)$, the goal is to find the hypothesis $\hyp{x}{\param^*}$ from a set of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
+$$ \risk_P = \int \loss{\hyp{x}{\alpha}}{y} dP(x, y). $$
+
+Note that the goal is the same that in the standard paradigm, however with the LUPI approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide a useful information $x^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ''intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
+% Examples
+To understand better this paradigm consider the following examples.
+\\
+% Example of doctor: images and commentaries
+\textbf{Example 1.} Consider that the goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ''There is an area of unusual concentration of cells of Type A.'' or ''There is an aggresive proliferation of cells of Type B''. These commentaries are the elements $x^*$ of certain space $X^*$ and the Teacher also chooses the probability $\cond{x^*}{x}$.
+\\
+% Example of high quality and low quality images
+\textbf{Example 2.} Consider the \comm{TODO} 
+
+\subsubsection*{Analysis of convergence rates}
+To get a better insight of how the Privileged Information can help in the Learning process, Vapnik provides a theoretical analysis of its influence on the learning rates.
+In the standard learning paradig
+% Convergence of separable hypothesis
+
+% Convergence of non-separable
+
+% Oracle SVM: separable
+
+% Intelligent Teacher: separable but we need to control two models
+
+\subsubsection*{SVM\small{+} }
+
+% definition
+
+
+\subsubsection*{Connection with MTLSVM}
+% Liang and Cherkassky
+
+% Definition
+
+% Similarities and differences
+
+% We do not have separable case but we estimate N and not 2N variables. Moreover, SVM+ is a relaxation for convexity...
+
+% Relation with the simplified approach?
 
 
 \section{Multi-Task Learning Methods: An Overview}
