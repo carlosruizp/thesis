@@ -55,10 +55,16 @@
 \newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
 \newcommand{\mymat}[1]{\upper{#1}}
 \newcommand{\myvec}[1]{\bm{#1}}
-
+\newcommand{\dotp}[2]{\langle #1, #2 \rangle}
+\newcommand{\ind}{\bm{1}}
 
 \newcommand{\nsamples}{n}
+\newcommand{\dimx}{m}
 \newcommand{\vcdim}[1]{\text{VCdim}\left(#1\right)}
+\newcommand{\vc}{d}
+\newcommand{\hplane}{w}
+\newcommand{\bias}{b}
+
 \newcommand{\ntasks}{T}
 \newcommand{\npertask}{m}
 \newcommand{\idotsn}{i=1, \ldots, \nsamples}
@@ -66,7 +72,7 @@
 \newcommand{\hypspacef}{\mathbb{H}}
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\param}{\alpha}
-\newcommand{\paramspace}{\Lambda}
+\newcommand{\paramspace}{A}
 
 \newcommand{\lossf}{\ell}
 \newcommand{\loss}[2]{\lossf\left( #1, #2\right)}
