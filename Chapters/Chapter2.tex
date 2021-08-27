@@ -650,7 +650,7 @@ $$\set{\max(0, f^*(x^*, \param^*)- 1), \param^* \in \paramspace^*}$$
 with probability $1 - 2\eta$.
 That is, to have a rate of $\vc/\nsamples$ for $\param_\nsamples$, we need to estimate $\param^*_\nsamples$, which has a rate of $\sqrt{\vc^*/\nsamples}$. However, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a much lower capacity, and thus, the convergence will be faster in this space.
 
-\subsubsection*{SVM\small{+} }
+\subsubsection*{SVM+ }
 Vapnik describes an extension of the SVM that embodies the LUPI paradigm~\cite{VapnikV09,VapnikI15a}. Given a set of triplets
 \begin{equation}
     \nonumber
@@ -704,9 +704,10 @@ $$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(x^*_i, x^*_j) = \dotp{\phi^*
 We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the LUPI paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\Xspace^*$. For that reason, $\Xspace$ and $\Xspace^*$ are named Decision Space and Correction Space, respectively.
 
 
-\subsubsection*{Connection between SVM\small{+} and MTLSVM}
+\subsubsection*{Connection between SVM+ and MTLSVM}
 % Liang and Cherkassky
-In~\cite{LiangC08} the connection between SVM\small{+} and Multi-Task Learning SVM (MTLSVM) is discussed. 
+In~\cite{LiangC08} the connection between SVM+ and Multi-Task Learning SVM (MTLSVM) is discussed. 
+% Definition
 The MTLSVM proposed in~\cite{LiangC08} is a Multi-Task Learning model based on the SVM. It solves the primal problem
 \begin{equation}
     \label{eq:mtlsvm_primal}
@@ -723,25 +724,28 @@ Here, a combination of a common model for all tasks
 $$ \dotp{w}{\phi(x_{i})} + b $$
 and a task-specific model
 $$ \dotp{v_r}{\phi_r(x_{i}^r)} + b_r $$
-is used.
+is used. Here, the common transformation $\phi$ and the task-independent ones $\phi_r$ can be different 
 The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
 \begin{equation}\label{eq:mtlsvm_dual}
     \begin{aligned}
         & \argmin_{\myvec{\alpha}} 
-        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k^r(x^r_i, x^s_j)  - \sum_{r=1}^\ntasks \sum_{i=1}^\nsamples \alpha_i^r \\
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k_r(x^r_i, x^s_j)  - \sum_{r=1}^\ntasks \sum_{i=1}^\nsamples \alpha_i^r \\
         & \text{s.t.}
         & & 0 \leq \alpha_i^r \leq C \\
         & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
         \end{aligned}
 \end{equation}
-
-% Definition
-
 % Similarities and differences
-
-% We do not have separable case but we estimate N and not 2N variables. Moreover, SVM+ is a relaxation for convexity...
-
+In~\cite{LiangC08} some similarities between MTLSVM and SVM+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve MTL problems, where the $\Xspace = \Xspace^*$ but different tasks are incorporated, which is reflected on the different transformations $\phi_r$.
+If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a modification of SVM+ where the slack variables are modeled as
+$$ \xi(x^*, y) = y (w^* \phi^*(x^*) + b^*)  $$
+and $x^* = x$. That is, it is a relaxation of the original problem~\eqref{eq:svmplus_original} where the positive part is ignored.
+This relaxation gives place to some important differences between both models. Since the auxiliary primal variables $\zeta_i$ are no longer required, this is reflected in a simpler dual form~\eqref{eq:mtlsvm_dual}, where only $\nsamples$ dual variables have to be estimated, instead of the $2\nsamples$ dual variables of~\eqref{eq:svmplus_delta_dual}.
+The Multi-Task element, is reflected on~\eqref{eq:mtlsvm_dual} through the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
+%
+A major remark can be make about the differences between MTLSVM and SVM+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid with MTLSVM, since we are no modelling the slack variables $\xi$ adequately. 
+It is still a work in progress to study the rate of convergence of MTLSVM and to establish more clear links with SVM+.
 % Relation with the simplified approach?
 
 
