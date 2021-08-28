@@ -163,7 +163,7 @@ The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \b
         & d{P_1}(x_1, y_1) \ldots d{P_\ntasks}(x_\ntasks, y_\ntasks)
     \end{aligned}
 \end{equation}
-for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^T$.
+for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^\ntasks$.
 %
 
 Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
@@ -184,7 +184,7 @@ $ \dist{S}(s, s_i) \leq \epsilon $
 for some $i=1, \ldots, l$.  Let $\mathcal{N}(\epsilon, \mathcal{S}, \dist{S})$ denote the size of the smallest $\epsilon$-cover.
 Then, we can define the following capacities of a family space $\hypspacef$:
 \begin{itemize}
-    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^T, \dist{\bprobseq})$.
+    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^\ntasks, \dist{\bprobseq})$.
     \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} \defeq \sup_Q \mathcal{N}(\epsilon, \bsetdist, \dist{\bdistf})$.
 \end{itemize}
 
@@ -235,7 +235,7 @@ $\hypspacef = \set{\hypspace_f, f \in \mathcal{F}}$.
 Now, the Bias Learning problem is the problem of finding a good mapping $f$.
 It is proved~\cite[Theorem~6]{baxter2000model} that in the Feature Learning case the capacities of $\hypspacef$ can be bounded by the capacities of $\mathcal{F}$ and $\mathcal{G}$ as
 \begin{align*}
-    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}^\ntasks}^T \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
+    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}^\ntasks}^\ntasks \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
     \capacity{\epsilon}{\bsetdist} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})
 \end{align*}
 with $\epsilon = \epsilon_1 + \epsilon_2 $. Here, $\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})$ is defined as 
@@ -676,7 +676,7 @@ The minimization problem is then
 \begin{equation}
     \label{eq:svmplus_delta_primal}
     \begin{aligned}
-        & \argmin_{w, w^*, b, b^*}
+        & \argmin_{w, w^*, b, b^*, \zeta_i}
         & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + C \Delta \sum_{i=1}^\nsamples \zeta_i \\
         & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
         & \text{s.t.}
@@ -689,7 +689,7 @@ The minimization problem is then
 Problem~\eqref{eq:svmplus_delta_primal} is convex and the corresponding dual problem is
 \begin{equation}\label{eq:svmplus_delta_dual}
     \begin{aligned}
-        & \argmin_{\myvec{\alpha}, \myvec{\delta}} 
+        & \argmin_{\alpha_i, \delta_i} 
         & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(x^*_i, x^*_j)  - \sum_{i=1}^\nsamples \alpha_i \\
         & \text{s.t.}
         & & 0 \leq \delta_i \leq C \\
@@ -699,7 +699,7 @@ Problem~\eqref{eq:svmplus_delta_primal} is convex and the corresponding dual pro
         & \text{for } & & i=1, \ldots, \nsamples.
         \end{aligned}
 \end{equation}
-where $\myvec{\alpha} = \alpha_1, \ldots, \alpha_\nsamples$ and $\myvec{\delta} = (\delta_1, \ldots, \delta_\nsamples)$; and we use the kernel functions
+where we use the kernel functions
 $$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(x^*_i, x^*_j) = \dotp{\phi^*(x^*_i)}{\phi^*(x^*_j)}.$$ 
 We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the LUPI paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\Xspace^*$. For that reason, $\Xspace$ and $\Xspace^*$ are named Decision Space and Correction Space, respectively.
 
@@ -712,10 +712,10 @@ The MTLSVM proposed in~\cite{LiangC08} is a Multi-Task Learning model based on t
 \begin{equation}
     \label{eq:mtlsvm_primal}
     \begin{aligned}
-        & \argmin_{w, b, v_r, b_r}
-        & & C \sum_{i=1}^\nsamples \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
+        & \argmin_{w, b, v_r, b_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
         & \text{s.t.}
-        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq 1 - \xi_i ,\\
+        & & y_{i}^r ( \dotp{w}{\phi(x_{i}^r)} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq 1 - \xi_i^r ,\\
         & & &\xi_i^r \geq 0, \\
         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
     \end{aligned}
@@ -728,8 +728,9 @@ is used. Here, the common transformation $\phi$ and the task-independent ones $\
 The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
 \begin{equation}\label{eq:mtlsvm_dual}
     \begin{aligned}
-        & \argmin_{\myvec{\alpha}} 
-        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^\nsamples y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k_r(x^r_i, x^s_j)  - \sum_{r=1}^\ntasks \sum_{i=1}^\nsamples \alpha_i^r \\
+        & \argmin_{\alpha_i} 
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k_r(x^r_i, x^s_j) \\
+        & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r \\
         & \text{s.t.}
         & & 0 \leq \alpha_i^r \leq C \\
         & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
@@ -751,20 +752,10 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 
 \section{Multi-Task Learning Methods: An Overview}
 
-\subsection{Bias Learning Approach}
-% Joint Learning
-% Leveraging common and specific information + LUPI
-% Common + specific model which is equivalent to penalizing individual norm and variance
-% Evgeniou, T. and Pontil, M. (2004). Regularized multi-task learning.
-% Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning multiple tasks with kernel methods.
-% Connection with LUPI!
-% Generalized SMO
-% Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
-% Learning multiple tasks with kernel methods
-
-%\subsection{Feature Learning}
+\subsection{Feature Learning}
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
+Feature Learning or Feature Transformation is one of the most popular approaches to MTL. 
 % Sparse coding and MTL
 % K-Dimensional Coding Schemes in Hilbert Spaces
 % Sparse coding for multitask and transfer learning
@@ -774,8 +765,137 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 % A spectral regularization framework for multi-task structure learning?
 % Infinite latent SVM for classificationand multi-task learning
 
+\subsection{Joint Learning}
+% Joint Learning
+The Joint Learning methods for MTL can be divided into the frequentist and the Bayesian approaches.
+The frequentist approaches uses a combination of task-specific models and models that are common to all tasks. These two models are learned simultaneously with the goal of leveraging the common and specific information.
+In the Bayesian approaches common prior is shared for all the tasks models, and the diverse sources of data definetele different posterior distributions for each task.
 
-\subsection{Low-Rank Approach}
+% Frequentist approach
+% Evgeniou, T. and Pontil, M. (2004). Regularized multi-task learning.
+The first proposal of the frequentist approach, which uses the SVM as the foundation, is found in~\cite{EvgeniouP04} where the \emph{regularized MTL} SVM is presented. The goal is to find a decision function for each task, each being defined by a vector
+$$w_r = w + v_r,$$
+where $w$ is common to all tasks and $v_r$ is task-specific.
+The primal problem of \emph{regularized MTL} SVM, using the unified formulation, is 
+\begin{equation}
+    \label{eq:regmtlsvm_primal}
+    \begin{aligned}
+        & \argmin_{w, v_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
+        & \text{s.t.}
+        & & y_{i}^r ( \dotp{w}{x_{i}^r} + \dotp{v_r}{x_{i}^r}) \geq p_i^r - \xi_i^r ,\\
+        & & &\xi_i^r \geq 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+    \end{aligned}
+\end{equation}
+% Leveraging common and specific information
+Note that $\mu$ is a parameter that controls the tradeoff between the relevance of common and specific models. That is, when $\mu$ tends to infinite, the resulting model approaches a common-task standard SVM; when $\mu$ tends to zero, a independent task approach is taken, with one standard SVM problem for each task.
+This is also reflected in the corresponding dual problem
+\begin{equation}\label{eq:regmtlsvm_dual}
+    \begin{aligned}
+        & \argmin_{\alpha_i} 
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \dotp{x_i^r}{x_j^s} + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} \dotp{x_i^r}{x_j^s} \\
+        & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} p_i^r \alpha_i^r \\
+        & \text{s.t.}
+        & & 0 \leq \alpha_i^r \leq C \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+        \end{aligned}
+\end{equation}
+In this dual form, as $\mu$ grows, the task-specific part goes to zero, and the most important term is the first one, corresponding to the common part. The opposite effect is obtained when $\mu$ shrinks.
+% Common + specific model which is equivalent to penalizing individual norm and variance
+Moreover, in~\cite{EvgeniouP04} it is shown that solving~\eqref{eq:regmtlsvm_primal} is equivalent to solving the problem
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        & \argmin_{ww_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r +  \frac{1}{2} \sum_{r=1}^\ntasks \norm{w_r}^2 + \frac{\mu}{2} \sum_{r=1}^\ntasks  \norm{w_r - \sum_{s=1}^\ntasks w_s}^2 \\
+        & \text{s.t.}
+        & & y_{i}^r ( \dotp{w_r}{x_{i}^r}) \geq p_i^r - \xi_i^r ,\\
+        & & &\xi_i^r \geq 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+    \end{aligned}
+\end{equation}
+Now, only the $w_r$ variables are included, and it is clearer that $\mu$ penalizes the variance of the $w_r$ vectors, so all models $w_r$ will tend to a common model as $\mu$ grows.
+%
+
+Multiple extensions of the work of~\cite{EvgeniouP04} have been presented: in~\cite{XuAQZ14, LiTST15} the method is extended to the Proximal SVM~\cite{FungM01} and Least Squares SVM~\cite{SuykensV99}, respectively. Also, in~\cite{ParameswaranW10} the idea is adapted for the Large Margin Nearest Neighbor model~\cite{WeinbergerS09}.
+%
+% Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning multiple tasks with kernel methods.
+% MTLSVM and Generalized SMO
+However, in this work we are interested mainly in two extensions: one is the work of~\cite{EvgeniouMP05}, pivotal for this thesis, which will be described in Section\comm{TODO}; the other relevant extension is developed in~\cite{LiangC08}, which has already been discussed in the previous section.
+The multi-task problem described in~\cite{LiangC08} for classification, is also adapted for regression problems in~\cite{CaiC09}. Using the unified notation we can express the primal problem as
+\begin{equation}
+    \label{eq:mtlsvm_primal_unif}
+    \begin{aligned}
+        & \argmin_{w, b, v_r, b_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
+        & \text{s.t.}
+        & & y_{i} ( \dotp{w}{\phi(x_{i}^r)} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq p_i^r - \xi_i^r ,\\
+        & & &\xi_i^r \geq 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+    \end{aligned}
+\end{equation}
+Comparing~\eqref{eq:regmtlsvm_primal} and~\eqref{eq:mtlsvm_primal_unif} we observe that the subyacent idea is the same, but there exists some differences. In first place, note that~\eqref{eq:regmtlsvm_primal} is described as a linear model, while in~\eqref{eq:mtlsvm_primal_unif} not only non-linear transformations of the data are used, but different transformations can be selected $\phi, \phi_r$ for the common part and for each task-specific term, respectively. Moreover, it is relevant to note the incorporation of the bias terms in~\eqref{eq:mtlsvm_primal_unif}.
+The dual form of~\eqref{eq:mtlsvm_primal_unif} is
+\begin{equation}\label{eq:mtlsvm_dual_unif}
+    \begin{aligned}
+        & \argmin_{\alpha_i} 
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \left[k(x_i^r, x_j^s) + \delta_{rs} k_r(x^r_i, x^s_j) \right] - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} p_i^r \alpha_i^r \\
+        & \text{s.t.}
+        & & 0 \leq \alpha_i^r \leq C \\
+        & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+        \end{aligned}
+\end{equation}
+In~\eqref{eq:mtlsvm_dual_unif} an equality constrain, not present in~\eqref{eq:regmtlsvm_dual} is added. This a direct consequence of the incorporation of bias terms in the primal form. Also, it is important to observe the use of different kernel spaces through the functions $k$ and $k_r$.
+% Connection with LUPI!
+This has connections with the LUPI paradigm~\cite{VapnikI15a}, as described in the previous section. The kernel space for the common part is named the decision space, and the spaces corresponding to the kernel functions $k_r$ are the correcting spaces. That is, each task can correct the similarity defined by the decision space independently. 
+
+% Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
+
+% Bayesian approach
+% Learning to learn with the informative vector machine (2004)
+In the Bayesian approaches, the first work of~\cite{LawrenceP04} presents a GP model where all the tasks share a common prior.
+That is, given $T$ tasks, a noise model with latent variables $\myvec{f}^r$ is considered, i.e. $y_i^r = f_i^r + \epsilon$, and $\myvec{f}^r$ follows a GP prior
+$$ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta}) = \normal{0, \mymat{k}_{\myvec{\theta}}} $$
+where $\mymat{k}$ is a kernel matrix parametrized by $\myvec{\theta}$ and evaluated at the points $\mymat{x}$. Note that a single $\myvec{\theta}$ parameter is used to model a prior shared for all tasks.
+The posterior probability can be expressed as
+\begin{equation}
+    \nonumber
+    p (\myvec{y}^1, \ldots, \myvec{y}^\ntasks \vert \myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta},  \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto  p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \prod_{r=1}^\ntasks p(\myvec{y}^r \vert \mymat{f}^r, \myvec{\theta}) %p(\myvec{\theta} | \myvec{f}_r)
+\end{equation}
+where the distribution for the latent parameters is
+\begin{equation}
+    \nonumber
+    p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}^r \vert \mymat{x}^r, \myvec{\theta}) . %p(\myvec{\theta} | \myvec{f}_r).
+\end{equation}
+Although this idea is interesting for MTL, it presents a rigid framework since we use a fixed model for the prior $ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta})$. To use Bayesian induction over the prior too, the hierarchical Bayesian model is considered. That is, we consider a different prior $ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta}^r)$ for each task and a hyperprior for $\myvec{\theta}^r$, $p(\myvec{\theta}^r \vert \myvec{\phi})$. Then, the distribution for latent parameters is expressed as
+\begin{equation}
+    \nonumber
+    p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks, \myvec{\phi} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}^r \vert \mymat{x}^r, \myvec{\theta}^r, \myvec{\phi}) p(\myvec{\theta}^r | \myvec{\phi}).
+\end{equation}
+In~\cite{YuTS05}, a Gaussian hyperprior $p(\myvec{\theta}^r | \myvec{\phi})$ is considered. Note that in this formulation, each task parameter $\myvec{\theta}^r$ is an independent from the rest of parameters $\myvec{\theta}^s, s \neq r$ given $\myvec{phi}$ .
+That is,
+\begin{equation}
+    \nonumber
+    p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r | \myvec{\phi}) .
+\end{equation} 
+
+%
+% Learning Gaussian processes from multiple tasks (2005)
+% Multi-Task Learning for Classification with Dirichlet Process Priors (2007)
+% Bayesian multitask learning with latent hierarchies (2009)
+Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling the task parameters. A explicit dependence is then defined over the task parameters
+\begin{equation}
+    \nonumber
+    p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r |\myvec{\theta}^{-r} , \myvec{\phi}) .
+\end{equation} 
+where $\myvec{\theta}^{-r}  = \set{\myvec{\theta}^s, s \neq r }$.
+This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
+Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
+
+
+\subsection{Low-Rank}
 %   Feature selection or block sparse regularization
 
 % Argyriou, A. and Pontil, M. (2007). Multi-Task Feature Learning.
@@ -784,7 +904,12 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 
 % Low-rank
 
-% .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictivestructures  from  multiple  tasks  and  unlabeled  data,”
+% .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictive structures  from  multiple  tasks  and  unlabeled  data,” 2005
+
+% Multi-Task feature Learning 2006
+% Convex multi-task feature learning 2008
+% Learning with Whom to Share in Multi-task Feature Learning 2011
+% Clustered Multi-Task Learning Via Alternating Structure Optimization 2011
 
 % A convex formulation for learning shared structures from multiple tasks
 
@@ -794,7 +919,7 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 
 
  % Learning task relations
-\subsection{Learning Task Relations}
+\subsection{Tasks Relations Learning}
 % Task relation learning
 
 % Bonilla
@@ -820,7 +945,7 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 % Learning task grouping and overlap in multi-task learning
 
 
-\subsection{Decomposition Approach}
+\subsection{Decomposition}
 % learning to multitask
 
 % .  Chen,  J.  Liu,  and  J.  Ye,  “Learning  incoherent  sparse  and  low-rankpatterns from multiple tasks,” inKDD, 2010.[100]  J.  Chen,  J.  Zhou,  and  J.  Ye,  “Integrating  low-rank  and  group-sparsestructures for robust multi-task learning,” inKDD, 2011.[101]  P. Gong, J. Ye, and C. Zhang, “Robust multi-task feature learning,” inKDD, 2012.[102]  W. Zhong and J. T. Kwok, “Convex multitask learning with flexible taskclusters,” inICML, 2012.
@@ -843,6 +968,8 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 % However, one of the main problems of deep learning is the lack of theoretical results and the non-convexity of the problems.
 % Other alternative to extend the MTL models non-linearly is by using the kernels.
 % Kernel trick.
+
+% Kernels for Multi--task Learning. Michelli and Pontil
 
 % Joint Learning
 % Leveraging common and specific information
