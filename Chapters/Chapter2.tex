@@ -766,20 +766,53 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 \subsection{Feature-Based MTL}
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
-Feature Learning or Feature Transformation is one of the most popular approaches to MTL. 
+The feature-based methods try to find a set of features that are useful for all tasks. Two main approaches are taken: Feature Learning, which tries to learn new features from the original ones, and Feature Selection which selects a subset of the original features.
+Deep Learning is a particular case of Feature Learning that has had a tremendous relevance and that is treated separately. 
 
 \subsubsection*{Feature Learning approach}
-% Sparse coding and MTL
-% K-Dimensional Coding Schemes in Hilbert Spaces
-% Sparse coding for multitask and transfer learning
-% Learning task grouping and overlap in multi-task learning.
-%%%%%%%% Relacion en A Survey on Multi-Task Learning
- 
+
+
 % Caruana R. Multitask learning. 1997 (multi-task feedforward NN)
 % Multi-Task feature Learning 2006
 % Convex multi-task feature learning 2008
 % A spectral regularization framework for multi-task structure learning 2007
-% Infinite latent SVM for classificationand multi-task learning
+Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruana97}, which will be described later, the first work of Multi-Task Feature Learning is presented in~\cite{ArgyriouEP06}. Argyriou et. al assume a multi-task linear model in some RKHS $\rkhs$, where that the task parameters $w_t$ lie in a linear subspace, i.e. $\mymat{w} = \mymat{u}\mymat{a}$ where
+$w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthonormal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
+\begin{equation}
+    \label{eq:mtl_feat_learning}
+    \argmin_{\mymat{a}, \mymat{u}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{a_r}{U^\intercal x_i^r} + b_r) + \lambda \norm{A}_{2, 1} \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+\end{equation}
+Here, the $L^{2, 1}$ regularizer is used to impose row-sparsity across tasks and the matrix $\mymat{u}$ is restricted to be orthonormal.
+Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
+\begin{equation}
+    \label{eq:convmtl_feat_learning}   
+    \begin{aligned}
+        &\argmin_{\mymat{w}, \mymat{d}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{r=1}^\ntasks \langle w_r, D^+ w_r\rangle \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \Tr{\mymat{d}} \leq 1 ,\; \Span{\mymat{w}} \subseteq \Span{\mymat{d}}.
+    \end{aligned}
+\end{equation}
+Here $\mymat{d}^+$ denotes the pseudo-inverse of $\mymat{d}$ and $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices. Problem~\eqref{eq:convmtl_feat_learning} is solved using a two-step optimization algorithm. First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} \right)$. The regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$.
+Then, in~\cite{ArgyriouMPY07} this idea is extended to any spectral funcion $F: \mathbb{S}^d_{++} \to \mathbb{S}^d_{++}$ where $\mathbb{S}^d_{++}$ is the set of matrices $A \in \mathbb{R}^{d \times d}$ symmetric and positive definite. The definition for the spectral function $F(\mymat{d})$, where we can write $D = \mymat{u}^\intercal \Diag (\lambda_1, \ldots, \lambda_d)  \mymat{u}$ is:
+$ F(\mymat{d}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d)) \mymat{u} \; .$
+Then, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning} can be expressed as
+$$ \sum_t \langle w_t, F(\mymat{d}) w_t\rangle = \Tr (\mymat{w}^\intercal F(\mymat{d}) \mymat{w}) \; .$$
+It is easy to see that problem~\eqref{eq:convmtl_feat_learning} is a particular case where $f(\lambda) = \lambda^{-1}$.
+%  Learning multiple tasks using manifold regularization. Agarwal
+Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assuming that the task parameters $w_r$ lie in a linear subspace, the authors generalize this idea by assuming that $w_r$ lies in a manifold $\mathcal{M} \in \rkhs$.
+\begin{equation}
+    \label{eq:mtl_feat_learning_manifold}   
+    \begin{aligned}
+        &\argmin_{\mymat{w}, \mathcal{M}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{r=1}^\ntasks \mathcal{P}_\mathcal{M}(w_r) ,
+    \end{aligned}
+\end{equation}
+where $\mathcal{P}_\mathcal{M}(w_t)$ represents the distance between $w_t$ and its projection on the manifold $\mathcal{M}$. Again, an approximation of~\eqref{eq:mtl_feat_learning_manifold} is used to obtain a convex problem and it is solved using a two-step optimization algorithm.
+
+Other distinct, relevant approach for Feature Learning is the one described
+% Sparse coding and MTL. 
+% K-Dimensional Coding Schemes in Hilbert Spaces
+% Sparse coding for multitask and transfer learning Maurer 2013
+% Learning task grouping and overlap in multi-task learning.
+%%%%%%%% Relacion en A Survey on Multi-Task Learning
+
 
 \subsubsection*{Feature Selection approach}
 %   Feature selection or block sparse regularization
@@ -806,6 +839,10 @@ Feature Learning or Feature Transformation is one of the most popular approaches
 
 % Trace norm regularised deep multi-task learning
 
+%  Linear algorithms for online multitask classification. 
+
+% cross-stitch networkf for multi-task learning
+
 
 \subsection{Parameter-Based MTL}
 
@@ -817,9 +854,6 @@ Feature Learning or Feature Transformation is one of the most popular approaches
 
 % .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictive structures  from  multiple  tasks  and  unlabeled  data,” 2005
 
-
-% Learning with Whom to Share in Multi-task Feature Learning 2011
-% Clustered Multi-Task Learning Via Alternating Structure Optimization 2011
 
 % A convex formulation for learning shared structures from multiple tasks
 
@@ -850,8 +884,6 @@ Feature Learning or Feature Transformation is one of the most popular approaches
 % Clustered multi-task learning: A convex formulation
 
 % Learning  with  whom  to  share  in multi-task feature learning
-
-% Learning task grouping and overlap in multi-task learning
 
 
 \subsubsection*{Decomposition approach}
