@@ -18,6 +18,12 @@ This chapter presents\dots
 % Some important references
 % Caruana, Baxter... (ver review de Caruana para ver más)
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Why does Multi-Task Learning work?}
 % First works in Learning to Learn
 % Overview of section
@@ -750,27 +756,120 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 % Relation with the simplified approach?
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Multi-Task Learning Methods: An Overview}
 
-\subsection{Feature Learning}
+\subsection{Feature-Based MTL}
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
 Feature Learning or Feature Transformation is one of the most popular approaches to MTL. 
+
+\subsubsection*{Feature Learning approach}
 % Sparse coding and MTL
 % K-Dimensional Coding Schemes in Hilbert Spaces
 % Sparse coding for multitask and transfer learning
 % Learning task grouping and overlap in multi-task learning.
 %%%%%%%% Relacion en A Survey on Multi-Task Learning
-% Multi-Task Feature Learning.
-% A spectral regularization framework for multi-task structure learning?
+ 
+% Caruana R. Multitask learning. 1997 (multi-task feedforward NN)
+% Multi-Task feature Learning 2006
+% Convex multi-task feature learning 2008
+% A spectral regularization framework for multi-task structure learning 2007
 % Infinite latent SVM for classificationand multi-task learning
 
-\subsection{Joint Learning}
+\subsubsection*{Feature Selection approach}
+%   Feature selection or block sparse regularization
+
+% G. Obozinski, B. Taskar, and M. Jordan, “Multi-task feature selection,” (2006)
+% Multi-task feature learning via efficient l2,1-norm minimization (2009)
+% H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009
+
+% Bayesian approaches
+% 15. Zhang Y, Yeung DY and Xu Q. Probabilistic multi-task feature selection. In:
+% Advances in Neural Information Processing Systems 23. 2010, 2559–67.
+% 16. Hern ́andez-Lobato D and Hern ́andez-Lobato JM. Learning feature selection
+% dependencies in multi-task learning. In: Advances in Neural Information Pro-
+% cessing Systems 26. 2013, 746–54.
+% 17. Hern ́andez-Lobato D, Hern ́andez-Lobato JM and Ghahramani Z. A probabilis-
+% tic model for dirty multi-task feature selection. In: Proceedings of the 32nd
+% International Conference on Machine Learning. 2015, 1073–82.
+
+\subsubsection*{Deep Learning approach}
+% Hard parameter sharing
+% Soft parameter sharing
+
+% Deep multi-task representation learning: A tensor factorisation approach
+
+% Trace norm regularised deep multi-task learning
+
+
+\subsection{Parameter-Based MTL}
+
+\subsubsection*{Low-Rank approach}
+
+%  A Dirty Model for Multi-task Learning
+
+% Low-rank
+
+% .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictive structures  from  multiple  tasks  and  unlabeled  data,” 2005
+
+
+% Learning with Whom to Share in Multi-task Feature Learning 2011
+% Clustered Multi-Task Learning Via Alternating Structure Optimization 2011
+
+% A convex formulation for learning shared structures from multiple tasks
+
+% Learning  multiple  tasks using manifold regularization
+
+% Learning multiple related tasks using latent independent component analysis
+
+
+\subsubsection*{Tasks Relations Learning approach}
+% Task relation learning
+
+% Bonilla
+
+% A Convex Formulation for Learning Task Relationships in Multi-Task Learning
+
+% A regularization approach to learning task relationships in multitask learning
+
+% Convex learning of multiple tasks and their structure
+
+\subsubsection*{Tasks Clustering approach}
+
+% Discovering structure in multiple learning tasks: The TC algorithm?
+
+% Learning  multiple  tasks  using  shared hypothesis?
+
+% Flexible modeling of latent task structures in multitask learning
+
+% Clustered multi-task learning: A convex formulation
+
+% Learning  with  whom  to  share  in multi-task feature learning
+
+% Learning task grouping and overlap in multi-task learning
+
+
+\subsubsection*{Decomposition approach}
+% learning to multitask
+
+% Jalali. A dirt model
+
+% .  Chen,  J.  Liu,  and  J.  Ye,  “Learning  incoherent  sparse  and  low-rankpatterns from multiple tasks,” inKDD, 2010.[100]  J.  Chen,  J.  Zhou,  and  J.  Ye,  “Integrating  low-rank  and  group-sparsestructures for robust multi-task learning,” inKDD, 2011.[101]  P. Gong, J. Ye, and C. Zhang, “Robust multi-task feature learning,” inKDD, 2012.[102]  W. Zhong and J. T. Kwok, “Convex multitask learning with flexible taskclusters,” inICML, 2012.
+
+
+\subsection{Joint MTL}
 % Joint Learning
+% Sometimes in task clustering approaches, sometimes in task relations learning
 The Joint Learning methods for MTL can be divided into the frequentist and the Bayesian approaches.
 The frequentist approaches uses a combination of task-specific models and models that are common to all tasks. These two models are learned simultaneously with the goal of leveraging the common and specific information.
 In the Bayesian approaches common prior is shared for all the tasks models, and the diverse sources of data definetele different posterior distributions for each task.
 
+\subsubsection*{Frequentist Approach}
 % Frequentist approach
 % Evgeniou, T. and Pontil, M. (2004). Regularized multi-task learning.
 The first proposal of the frequentist approach, which uses the SVM as the foundation, is found in~\cite{EvgeniouP04} where the \emph{regularized MTL} SVM is presented. The goal is to find a decision function for each task, each being defined by a vector
@@ -853,6 +952,7 @@ This has connections with the LUPI paradigm~\cite{VapnikI15a}, as described in t
 
 % Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
 
+\subsubsection*{Bayesian Approach}
 % Bayesian approach
 % Learning to learn with the informative vector machine (2004)
 In the Bayesian approaches, the first work of~\cite{LawrenceP04} presents a GP model where all the tasks share a common prior.
@@ -895,72 +995,9 @@ This formulation converts this model in a task-clustering approach, where the cl
 Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
 
 
-\subsection{Low-Rank}
-%   Feature selection or block sparse regularization
-
-% Argyriou, A. and Pontil, M. (2007). Multi-Task Feature Learning.
-
-%  A Dirty Model for Multi-task Learning
-
-% Low-rank
-
-% .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictive structures  from  multiple  tasks  and  unlabeled  data,” 2005
-
-% Multi-Task feature Learning 2006
-% Convex multi-task feature learning 2008
-% Learning with Whom to Share in Multi-task Feature Learning 2011
-% Clustered Multi-Task Learning Via Alternating Structure Optimization 2011
-
-% A convex formulation for learning shared structures from multiple tasks
-
-% Learning  multiple  tasks using manifold regularization
-
-% Learning multiple related tasks using latent independent component analysis
-
-
- % Learning task relations
-\subsection{Tasks Relations Learning}
-% Task relation learning
-
-% Bonilla
-
-% A Convex Formulation for Learning Task Relationships in Multi-Task Learning
-
-% A regularization approach to learning task relationships in multitask learning
-
-% Convex learning of multiple tasks and their structure
-
-% Tasks Clustering
-
-% Discovering structure in multiple learning tasks: The TC algorithm?
-
-% Learning  multiple  tasks  using  shared hypothesis?
-
-% Flexible modeling of latent task structures in multitask learning
-
-% Clustered multi-task learning: A convex formulation
-
-% Learning  with  whom  to  share  in multi-task feature learning
-
-% Learning task grouping and overlap in multi-task learning
-
-
-\subsection{Decomposition}
-% learning to multitask
-
-% .  Chen,  J.  Liu,  and  J.  Ye,  “Learning  incoherent  sparse  and  low-rankpatterns from multiple tasks,” inKDD, 2010.[100]  J.  Chen,  J.  Zhou,  and  J.  Ye,  “Integrating  low-rank  and  group-sparsestructures for robust multi-task learning,” inKDD, 2011.[101]  P. Gong, J. Ye, and C. Zhang, “Robust multi-task feature learning,” inKDD, 2012.[102]  W. Zhong and J. T. Kwok, “Convex multitask learning with flexible taskclusters,” inICML, 2012.
-
-
-
-\section{Multi-Task Learning with Deep Neural Networks}
-\subsection{Hard Parameter Sharing}
-\subsection{Soft Parameter Sharing}
-
-% Deep multi-task representation learning: A tensor factorisation approach
-
-% Trace norm regularised deep multi-task learning
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Multi-Task Learning with Kernel Methods} % Evgeniou
 % Most multi-task methods are linear models, which may not be flexible enough to capture certain dependencies.
