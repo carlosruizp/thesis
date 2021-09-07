@@ -95,12 +95,7 @@
   volume    = {23},
   number    = {6},
   pages     = {997--1003},
-  year      = {2012},
-  url       = {https://doi.org/10.1109/TNNLS.2012.2187307},
-  doi       = {10.1109/TNNLS.2012.2187307},
-  timestamp = {Mon, 09 Mar 2020 15:51:15 +0100},
-  biburl    = {https://dblp.org/rec/journals/tnn/CaiC12.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  year      = {2012}
 }
 
 @inproceedings{EvgeniouP04,
@@ -342,7 +337,7 @@
   year      = {2010}
 }
 
-% Sparse Coding
+% Sparse Coding  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @article{Maurer09,
   author    = {Andreas Maurer},
   title     = {Transfer bounds for linear feature learning},
@@ -397,4 +392,438 @@
   journal   = {CoRR},
   volume    = {abs/1705.08142},
   year      = {2017}
+}
+
+% Feature Selection Approach (frequentist)  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@article{obozinski2006multi,
+  title={Multi-task feature selection},
+  author={Obozinski, Guillaume and Taskar, Ben and Jordan, Michael},
+  journal={Statistics Department, UC Berkeley, Tech. Rep},
+  volume={2},
+  number={2.2},
+  pages={2},
+  year={2006},
+  publisher={Citeseer}
+}
+
+@inproceedings{LiuPZ09,
+  author    = {Han Liu and
+               Mark Palatucci and
+               Jian Zhang},
+  editor    = {Andrea Pohoreckyj Danyluk and
+               L{\'{e}}on Bottou and
+               Michael L. Littman},
+  title     = {Blockwise coordinate descent procedures for the multi-task lasso,
+               with applications to neural semantic basis discovery},
+  booktitle = {Proceedings of the 26th Annual International Conference on Machine
+               Learning, {ICML} 2009, Montreal, Quebec, Canada, June 14-18, 2009},
+  series    = {{ACM} International Conference Proceeding Series},
+  volume    = {382},
+  pages     = {649--656},
+  publisher = {{ACM}},
+  year      = {2009}
+}
+
+@inproceedings{GongYZ12,
+  author    = {Pinghua Gong and
+               Jieping Ye and
+               Changshui Zhang},
+  editor    = {Peter L. Bartlett and
+               Fernando C. N. Pereira and
+               Christopher J. C. Burges and
+               L{\'{e}}on Bottou and
+               Kilian Q. Weinberger},
+  title     = {Multi-Stage Multi-Task Feature Learning},
+  booktitle = {Advances in Neural Information Processing Systems 25: 26th Annual
+               Conference on Neural Information Processing Systems 2012. Proceedings
+               of a meeting held December 3-6, 2012, Lake Tahoe, Nevada, United States},
+  pages     = {1997--2005},
+  year      = {2012}
+}
+
+@inproceedings{LozanoS12,
+  author    = {Aurelie C. Lozano and
+               Grzegorz Swirszcz},
+  title     = {Multi-level Lasso for Sparse Multi-task Regression},
+  booktitle = {Proceedings of the 29th International Conference on Machine Learning,
+               {ICML} 2012, Edinburgh, Scotland, UK, June 26 - July 1, 2012},
+  publisher = {icml.cc / Omnipress},
+  year      = {2012}
+}
+
+
+% Feature Selection Approach (Bayesian)  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@inproceedings{ZhangYX10,
+  author    = {Yu Zhang and
+               Dit{-}Yan Yeung and
+               Qian Xu},
+  editor    = {John D. Lafferty and
+               Christopher K. I. Williams and
+               John Shawe{-}Taylor and
+               Richard S. Zemel and
+               Aron Culotta},
+  title     = {Probabilistic Multi-Task Feature Selection},
+  booktitle = {Advances in Neural Information Processing Systems 23: 24th Annual
+               Conference on Neural Information Processing Systems 2010. Proceedings
+               of a meeting held 6-9 December 2010, Vancouver, British Columbia,
+               Canada},
+  pages     = {2559--2567},
+  publisher = {Curran Associates, Inc.},
+  year      = {2010}
+}
+
+@inproceedings{Hernandez-LobatoH13,
+  author    = {Daniel Hern{\'{a}}ndez{-}Lobato and
+               Jos{\'{e}} Miguel Hern{\'{a}}ndez{-}Lobato},
+  editor    = {Christopher J. C. Burges and
+               L{\'{e}}on Bottou and
+               Zoubin Ghahramani and
+               Kilian Q. Weinberger},
+  title     = {Learning Feature Selection Dependencies in Multi-task Learning},
+  booktitle = {Advances in Neural Information Processing Systems 26: 27th Annual
+               Conference on Neural Information Processing Systems 2013. Proceedings
+               of a meeting held December 5-8, 2013, Lake Tahoe, Nevada, United States},
+  pages     = {746--754},
+  year      = {2013}
+}
+
+@inproceedings{Hernandez-Lobato15,
+  author    = {Daniel Hern{\'{a}}ndez{-}Lobato and
+               Jos{\'{e}} Miguel Hern{\'{a}}ndez{-}Lobato and
+               Zoubin Ghahramani},
+  editor    = {Francis R. Bach and
+               David M. Blei},
+  title     = {A Probabilistic Model for Dirty Multi-task Feature Selection},
+  booktitle = {Proceedings of the 32nd International Conference on Machine Learning,
+               {ICML} 2015, Lille, France, 6-11 July 2015},
+  series    = {{JMLR} Workshop and Conference Proceedings},
+  volume    = {37},
+  pages     = {1073--1082},
+  publisher = {JMLR.org},
+  year      = {2015}
+}
+
+% Low Rank approach  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@article{AndoZ05,
+  author    = {Rie Kubota Ando and
+               Tong Zhang},
+  title     = {A Framework for Learning Predictive Structures from Multiple Tasks
+               and Unlabeled Data},
+  journal   = {J. Mach. Learn. Res.},
+  volume    = {6},
+  pages     = {1817--1853},
+  year      = {2005}
+}
+
+@inproceedings{ChenTLY09,
+  author    = {Jianhui Chen and
+               Lei Tang and
+               Jun Liu and
+               Jieping Ye},
+  editor    = {Andrea Pohoreckyj Danyluk and
+               L{\'{e}}on Bottou and
+               Michael L. Littman},
+  title     = {A convex formulation for learning shared structures from multiple
+               tasks},
+  booktitle = {Proceedings of the 26th Annual International Conference on Machine
+               Learning, {ICML} 2009, Montreal, Quebec, Canada, June 14-18, 2009},
+  series    = {{ACM} International Conference Proceeding Series},
+  volume    = {382},
+  pages     = {137--144},
+  publisher = {{ACM}},
+  year      = {2009}
+}
+
+@article{PongTJY10,
+  author    = {Ting Kei Pong and
+               Paul Tseng and
+               Shuiwang Ji and
+               Jieping Ye},
+  title     = {Trace Norm Regularization: Reformulations, Algorithms, and Multi-Task
+               Learning},
+  journal   = {{SIAM} J. Optim.},
+  volume    = {20},
+  number    = {6},
+  pages     = {3465--3489},
+  year      = {2010}
+}
+
+@inproceedings{HanZ16,
+  author    = {Lei Han and
+               Yu Zhang},
+  editor    = {Dale Schuurmans and
+               Michael P. Wellman},
+  title     = {Multi-Stage Multi-Task Learning with Reduced Rank},
+  booktitle = {Proceedings of the Thirtieth {AAAI} Conference on Artificial Intelligence,
+               February 12-17, 2016, Phoenix, Arizona, {USA}},
+  pages     = {1638--1644},
+  publisher = {{AAAI} Press},
+  year      = {2016}
+}
+
+% Task-relation Learning approach  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@inproceedings{BonillaCW07,
+  author    = {Edwin V. Bonilla and
+               Kian Ming Adam Chai and
+               Christopher K. I. Williams},
+  editor    = {John C. Platt and
+               Daphne Koller and
+               Yoram Singer and
+               Sam T. Roweis},
+  title     = {Multi-task Gaussian Process Prediction},
+  booktitle = {Advances in Neural Information Processing Systems 20, Proceedings
+               of the Twenty-First Annual Conference on Neural Information Processing
+               Systems, Vancouver, British Columbia, Canada, December 3-6, 2007},
+  pages     = {153--160},
+  publisher = {Curran Associates, Inc.},
+  year      = {2007}
+}
+
+@inproceedings{ZhangY10,
+  author    = {Yu Zhang and
+               Dit{-}Yan Yeung},
+  editor    = {Peter Gr{\"{u}}nwald and
+               Peter Spirtes},
+  title     = {A Convex Formulation for Learning Task Relationships in Multi-Task
+               Learning},
+  booktitle = {{UAI} 2010, Proceedings of the Twenty-Sixth Conference on Uncertainty
+               in Artificial Intelligence, Catalina Island, CA, USA, July 8-11, 2010},
+  pages     = {733--442},
+  publisher = {{AUAI} Press},
+  year      = {2010}
+}
+
+@article{ZhangY13a,
+  author    = {Yu Zhang and
+               Dit{-}Yan Yeung},
+  title     = {A Regularization Approach to Learning Task Relationships in Multitask
+               Learning},
+  journal   = {{ACM} Trans. Knowl. Discov. Data},
+  volume    = {8},
+  number    = {3},
+  pages     = {12:1--12:31},
+  year      = {2013}
+}
+
+@article{argyriou2013learning,
+  title={Learning the graph of relations among multiple tasks},
+  author={Argyriou, Andreas and Cl{\'e}men{\c{c}}on, St{\'e}phan and Zhang, Ruocong},
+  year={2013},
+  journal={HAL}
+}
+
+@article{Dinuzzo13,
+  author    = {Francesco Dinuzzo},
+  title     = {Learning output kernels for multi-task problems},
+  journal   = {Neurocomputing},
+  volume    = {118},
+  pages     = {119--126},
+  year      = {2013}
+}
+
+@inproceedings{CilibertoMPR15,
+  author    = {Carlo Ciliberto and
+               Youssef Mroueh and
+               Tomaso A. Poggio and
+               Lorenzo Rosasco},
+  editor    = {Francis R. Bach and
+               David M. Blei},
+  title     = {Convex Learning of Multiple Tasks and their Structure},
+  booktitle = {Proceedings of the 32nd International Conference on Machine Learning,
+               {ICML} 2015, Lille, France, 6-11 July 2015},
+  series    = {{JMLR} Workshop and Conference Proceedings},
+  volume    = {37},
+  pages     = {1548--1557},
+  publisher = {JMLR.org},
+  year      = {2015}
+}
+
+% Task Clustering approach  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{ThrunO96,
+  author    = {Sebastian Thrun and
+               Joseph O'Sullivan},
+  editor    = {Lorenza Saitta},
+  title     = {Discovering Structure in Multiple Learning Tasks: The {TC} Algorithm},
+  booktitle = {Machine Learning, Proceedings of the Thirteenth International Conference
+               {(ICML} '96), Bari, Italy, July 3-6, 1996},
+  pages     = {489--497},
+  publisher = {Morgan Kaufmann},
+  year      = {1996}
+}
+
+@article{BakkerH03,
+  author    = {Bart Bakker and
+               Tom Heskes},
+  title     = {Task Clustering and Gating for Bayesian Multitask Learning},
+  journal   = {J. Mach. Learn. Res.},
+  volume    = {4},
+  pages     = {83--99},
+  year      = {2003}
+}
+
+@inproceedings{JacobBV08,
+  author    = {Laurent Jacob and
+               Francis R. Bach and
+               Jean{-}Philippe Vert},
+  editor    = {Daphne Koller and
+               Dale Schuurmans and
+               Yoshua Bengio and
+               L{\'{e}}on Bottou},
+  title     = {Clustered Multi-Task Learning: {A} Convex Formulation},
+  booktitle = {Advances in Neural Information Processing Systems 21, Proceedings
+               of the Twenty-Second Annual Conference on Neural Information Processing
+               Systems, Vancouver, British Columbia, Canada, December 8-11, 2008},
+  pages     = {745--752},
+  publisher = {Curran Associates, Inc.},
+  year      = {2008}
+}
+
+@inproceedings{KangGS11,
+  author    = {Zhuoliang Kang and
+               Kristen Grauman and
+               Fei Sha},
+  editor    = {Lise Getoor and
+               Tobias Scheffer},
+  title     = {Learning with Whom to Share in Multi-task Feature Learning},
+  booktitle = {Proceedings of the 28th International Conference on Machine Learning,
+               {ICML} 2011, Bellevue, Washington, USA, June 28 - July 2, 2011},
+  pages     = {521--528},
+  publisher = {Omnipress},
+  year      = {2011}
+}
+
+@inproceedings{CrammerM12,
+  author    = {Koby Crammer and
+               Yishay Mansour},
+  editor    = {Peter L. Bartlett and
+               Fernando C. N. Pereira and
+               Christopher J. C. Burges and
+               L{\'{e}}on Bottou and
+               Kilian Q. Weinberger},
+  title     = {Learning Multiple Tasks using Shared Hypotheses},
+  booktitle = {Advances in Neural Information Processing Systems 25: 26th Annual
+               Conference on Neural Information Processing Systems 2012. Proceedings
+               of a meeting held December 3-6, 2012, Lake Tahoe, Nevada, United States},
+  pages     = {1484--1492},
+  year      = {2012}
+}
+
+@inproceedings{BarzilaiC15,
+  author    = {Aviad Barzilai and
+               Koby Crammer},
+  editor    = {Guy Lebanon and
+               S. V. N. Vishwanathan},
+  title     = {Convex Multi-Task Learning by Clustering},
+  booktitle = {Proceedings of the Eighteenth International Conference on Artificial
+               Intelligence and Statistics, {AISTATS} 2015, San Diego, California,
+               USA, May 9-12, 2015},
+  series    = {{JMLR} Workshop and Conference Proceedings},
+  volume    = {38},
+  publisher = {JMLR.org},
+  year      = {2015}
+}
+
+% Decomposition Approach  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{JalaliRSR10,
+  author    = {Ali Jalali and
+               Pradeep Ravikumar and
+               Sujay Sanghavi and
+               Chao Ruan},
+  editor    = {John D. Lafferty and
+               Christopher K. I. Williams and
+               John Shawe{-}Taylor and
+               Richard S. Zemel and
+               Aron Culotta},
+  title     = {A Dirty Model for Multi-task Learning},
+  booktitle = {Advances in Neural Information Processing Systems 23: 24th Annual
+               Conference on Neural Information Processing Systems 2010. Proceedings
+               of a meeting held 6-9 December 2010, Vancouver, British Columbia,
+               Canada},
+  pages     = {964--972},
+  publisher = {Curran Associates, Inc.},
+  year      = {2010}
+}
+
+@inproceedings{ChenLY10,
+  author    = {Jianhui Chen and
+               Ji Liu and
+               Jieping Ye},
+  editor    = {Bharat Rao and
+               Balaji Krishnapuram and
+               Andrew Tomkins and
+               Qiang Yang},
+  title     = {Learning incoherent sparse and low-rank patterns from multiple tasks},
+  booktitle = {Proceedings of the 16th {ACM} {SIGKDD} International Conference on
+               Knowledge Discovery and Data Mining, Washington, DC, USA, July 25-28,
+               2010},
+  pages     = {1179--1188},
+  publisher = {{ACM}},
+  year      = {2010}
+}
+
+@inproceedings{GongYZ12rmfl,
+  author    = {Pinghua Gong and
+               Jieping Ye and
+               Changshui Zhang},
+  editor    = {Qiang Yang and
+               Deepak Agarwal and
+               Jian Pei},
+  title     = {Robust multi-task feature learning},
+  booktitle = {The 18th {ACM} {SIGKDD} International Conference on Knowledge Discovery
+               and Data Mining, {KDD} '12, Beijing, China, August 12-16, 2012},
+  pages     = {895--903},
+  publisher = {{ACM}},
+  year      = {2012}
+}
+
+@inproceedings{ChenZY11,
+  author    = {Jianhui Chen and
+               Jiayu Zhou and
+               Jieping Ye},
+  editor    = {Chid Apt{\'{e}} and
+               Joydeep Ghosh and
+               Padhraic Smyth},
+  title     = {Integrating low-rank and group-sparse structures for robust multi-task
+               learning},
+  booktitle = {Proceedings of the 17th {ACM} {SIGKDD} International Conference on
+               Knowledge Discovery and Data Mining, San Diego, CA, USA, August 21-24,
+               2011},
+  pages     = {42--50},
+  publisher = {{ACM}},
+  year      = {2011}
+}
+
+@inproceedings{ZweigW13,
+  author    = {Alon Zweig and
+               Daphna Weinshall},
+  title     = {Hierarchical Regularization Cascade for Joint Learning},
+  booktitle = {Proceedings of the 30th International Conference on Machine Learning,
+               {ICML} 2013, Atlanta, GA, USA, 16-21 June 2013},
+  series    = {{JMLR} Workshop and Conference Proceedings},
+  volume    = {28},
+  pages     = {37--45},
+  publisher = {JMLR.org},
+  year      = {2013}
+}
+
+@inproceedings{HanZ15,
+  author    = {Lei Han and
+               Yu Zhang},
+  editor    = {Longbing Cao and
+               Chengqi Zhang and
+               Thorsten Joachims and
+               Geoffrey I. Webb and
+               Dragos D. Margineantu and
+               Graham Williams},
+  title     = {Learning Tree Structure in Multi-Task Learning},
+  booktitle = {Proceedings of the 21th {ACM} {SIGKDD} International Conference on
+               Knowledge Discovery and Data Mining, Sydney, NSW, Australia, August
+               10-13, 2015},
+  pages     = {397--406},
+  publisher = {{ACM}},
+  year      = {2015}
 }

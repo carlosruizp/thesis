@@ -29,7 +29,7 @@ This chapter presents\dots
 % Overview of section
  % Ruder and Caruana
 % 
-\subsection{Inductive Bias Learning Problem} % Baxter
+\subsection{Learning to Learn} % Baxter
 % The first theoretical work on MTL... MTL as a Bias Learning Problem
 Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
 $ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
@@ -45,7 +45,7 @@ Several models use the ERM principle to generalize from data such as Neural Netw
 The best hypothesis space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
 Instead, we focus on the situation where we want to solve multiple related tasks. In that case, we can obtain a good space $\hypspace$ that contains good solutions for the different tasks.
 %
-In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypothesis, Baxter defines the capacity of a family of spaces of hypothesis.
+In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning or Learning to Learn, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypothesis, Baxter defines the capacity of a family of spaces of hypothesis.
 
 % Review of concepts for STL in Supervised Learning
 Before presenting the concepts defined for Bias Learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
@@ -777,20 +777,25 @@ Deep Learning is a particular case of Feature Learning that has had a tremendous
 % Convex multi-task feature learning 2008
 % A spectral regularization framework for multi-task structure learning 2007
 Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruana97}, which will be described later, the first work of Multi-Task Feature Learning is presented in~\cite{ArgyriouEP06}. Argyriou et. al assume a multi-task linear model in some RKHS $\rkhs$, where that the task parameters $w_t$ lie in a linear subspace, i.e. $\mymat{w} = \mymat{u}\mymat{a}$ where
-$w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthonormal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
+$w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthogonal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
 \begin{equation}
     \label{eq:mtl_feat_learning}
-    \argmin_{\mymat{a}, \mymat{u}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{a_r}{U^\intercal x_i^r} + b_r) + \lambda \norm{A}_{2, 1} \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{x_i^r}) + \lambda \norm{\mymat{a}^\intercal}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
 \end{equation}
-Here, the $L^{2, 1}$ regularizer is used to impose row-sparsity across tasks and the matrix $\mymat{u}$ is restricted to be orthonormal.
+Here, the $L_{2, 1}$ regularizer is used to impose row-sparsity across tasks, i.e. forcing some rows of $\mymat{a}$ to be zero, and the matrix $\mymat{u}$ is restricted to be orthonormal.
 Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
 \begin{equation}
     \label{eq:convmtl_feat_learning}   
     \begin{aligned}
-        &\argmin_{\mymat{w}, \mymat{d}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{r=1}^\ntasks \langle w_r, D^+ w_r\rangle \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \Tr{\mymat{d}} \leq 1 ,\; \Span{\mymat{w}} \subseteq \Span{\mymat{d}}.
+        &\argmin_{\mymat{w} \in \reals^{d \times \ntasks}, \mymat{d}  \in \reals^{d \times d}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \dotp{w_r}{D^{-1}w_r} \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \Tr{\mymat{d}} \leq 1 ,\; \Span{\mymat{w}} \subseteq \Span{\mymat{d}}.
     \end{aligned}
 \end{equation}
-Here $\mymat{d}^+$ denotes the pseudo-inverse of $\mymat{d}$ and $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices. Problem~\eqref{eq:convmtl_feat_learning} is solved using a two-step optimization algorithm. First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} \right)$. The regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$.
+Here $\mymat{d}^+$ denotes the pseudo-inverse of $\mymat{d}$ and $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices. Problem~\eqref{eq:convmtl_feat_learning} is solved using a two-step optimization algorithm. First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} \right)$.
+% It is shown that solving~\eqref{eq:mtl_feat_learning} with a perturbed version of $ \mymat{W} \mymat{W}^\intercal $, i.e. $ \mymat{W} \mymat{W}^\intercal + \epsilon I$, is equivalent to solving
+%
+The regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$.
+%
+In~\cite{Maurer09} some bounds on the excess risks are given for this Multi-Task Feature Learning method.
 Then, in~\cite{ArgyriouMPY07} this idea is extended to any spectral funcion $F: \mathbb{S}^d_{++} \to \mathbb{S}^d_{++}$ where $\mathbb{S}^d_{++}$ is the set of matrices $A \in \mathbb{R}^{d \times d}$ symmetric and positive definite. The definition for the spectral function $F(\mymat{d})$, where we can write $D = \mymat{u}^\intercal \Diag (\lambda_1, \ldots, \lambda_d)  \mymat{u}$ is:
 $ F(\mymat{d}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d)) \mymat{u} \; .$
 Then, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning} can be expressed as
@@ -806,20 +811,45 @@ Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assu
 \end{equation}
 where $\mathcal{P}_\mathcal{M}(w_t)$ represents the distance between $w_t$ and its projection on the manifold $\mathcal{M}$. Again, an approximation of~\eqref{eq:mtl_feat_learning_manifold} is used to obtain a convex problem and it is solved using a two-step optimization algorithm.
 
-Other distinct, relevant approach for Feature Learning is the one described
 % Sparse coding and MTL. 
 % K-Dimensional Coding Schemes in Hilbert Spaces
 % Sparse coding for multitask and transfer learning Maurer 2013
 % Learning task grouping and overlap in multi-task learning.
-%%%%%%%% Relacion en A Survey on Multi-Task Learning
+Other distinct, relevant approach for Feature Learning is the one described in~\cite{MaurerPR13}, where a sparse-coding~\cite{MaurerP10} method is used for MTL. Maurer et al. present the problem
+\begin{equation}
+    \label{eq:mtl_sparse_coding}
+    \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, \infty} +\mu \norm{\mymat{a}}_{1, \infty} .
+\end{equation}
+Here, $\mathcal{D}_k$ is the set of $k$-dimensional dictionary and every $\mymat{d} \in \mathcal{D}_k$ is a linear map $\mymat{D}: \reals^k \to \rkhs$; in the linear case, where $\rkhs = \reals^d$, the set $\mathcal{D}_k$ is the set of matrices $\reals^{d \times k}$, such that 
+$$\underset{d \times T}{\mymat{w}} = \underset{d \times k}{\mymat{D}} \underset{k \times T}{\mymat{a}}$$.
+Although~\eqref{eq:mtl_feat_learning} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k > d$ columns of bounded norm.
+A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{KumarD12} where the idea is the same but the regularizers are the $L_{2, 2}$ (Frobenius) norm for $\mymat{d}$ and the $L_{1, 1}$ norm for $\mymat{a}$:
+\begin{equation}
+    \label{eq:mtl_go}
+    \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, 2} +\mu \norm{\mymat{a}}_{1, 1} .
+\end{equation}
 
 
 \subsubsection*{Feature Selection approach}
 %   Feature selection or block sparse regularization
+The feature selection is also driven by learning a good set of features for all tasks, however it focuses on subsets of the original features. This is a more rigid approach than that of Feature Learning but is also more interpretable.
 
 % G. Obozinski, B. Taskar, and M. Jordan, “Multi-task feature selection,” (2006)
-% Multi-task feature learning via efficient l2,1-norm minimization (2009)
-% H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009
+% H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009.
+Most works on Multi-Task Feature Selection uses an $L_{p, q}$ regularization of the weights matrix $\mymat{w}$. The first work~\cite{obozinski2006multi} solves the problem
+\begin{equation}
+    \label{eq:mtl_feat_selection}   
+    \begin{aligned}
+        &\argmin_{\mymat{w}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}^\intercal}_{2, 1}^2 ,
+    \end{aligned}
+\end{equation}
+where the $L_{2, 1}$ regularization enforces row sparsity and forces different tasks to share some features $\mymat{w}^i$, which are the rows of $\mymat{w}$. In~\cite{LiuPZ09} the $L_{\infty, 1}$ regularization is used for the same goal. 
+Then, in~\cite{GongYZ12} this idea is generalized with a capped-$L_{p, 1}$ penalty of $\mymat{W}^\intercal$, which is defined as
+$ \sum_{i=1}^d min(\theta, \norm{W^i}_p).$
+That is, the parameter $\theta$ enables a more flexible regularization, with small values of $\theta$ many rows should be zero, since only the small rows will be fully penalized and, as $\theta$ grows this penalty will degenerate to the standard $L_{p, 1}$ norm.
+
+To allow more flexibility, a multi-level selection is presented in~\cite{LozanoS12}. The main idea is to decompose each $w_r^i$, that is, the $i$-th feature of the $r$-th task as 
+$w_r^i = \theta^i \gamma_r^i$ and using an $L_1$ regularizer on the vector $\myvec{\theta}$ and the vectors $\myvec{\gamma}^i$, which are the concatenations of $\theta^i$ and $\gamma_r^i$ for all tasks respectively. By doing this, the features $i$ such that $\theta^i = 0$, are discarded for all tasks, but the rest may be shared among tasks or not depending on $\gamma_r^i$.
 
 % Bayesian approaches
 % 15. Zhang Y, Yeung DY and Xu Q. Probabilistic multi-task feature selection. In:
@@ -830,6 +860,8 @@ Other distinct, relevant approach for Feature Learning is the one described
 % 17. Hern ́andez-Lobato D, Hern ́andez-Lobato JM and Ghahramani Z. A probabilis-
 % tic model for dirty multi-task feature selection. In: Proceedings of the 32nd
 % International Conference on Machine Learning. 2015, 1073–82.
+The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
+
 
 \subsubsection*{Deep Learning approach}
 % Hard parameter sharing
@@ -845,53 +877,207 @@ Other distinct, relevant approach for Feature Learning is the one described
 
 
 \subsection{Parameter-Based MTL}
+The parameter-based MTL does not focus on shared sets of features across tasks, instead other types of dependencies among the task (the task-parameters $w_r$ specifically) are taken into account. Some approaches rely on the assumption that the Multi-Task weight matrix $\mymat{w}$ has a low rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices.
 
 \subsubsection*{Low-Rank approach}
-
-%  A Dirty Model for Multi-task Learning
-
 % Low-rank
 
 % .  K.  Ando  and  T.  Zhang,  “A  framework  for  learning  predictive structures  from  multiple  tasks  and  unlabeled  data,” 2005
 
+% A convex formulation for learning shared structures from multiple tasks 2009
 
-% A convex formulation for learning shared structures from multiple tasks
+% Trace Norm Regularization: Reformulations, Algorithms, and Multi-Task Learning
 
-% Learning  multiple  tasks using manifold regularization
+% Multi-Stage Multi-Task Learning with Reduced Rank
+In the low-rank approach, the assumption is that the task parameters $w_r$ share a low-dimensional space, or are close to this subspace. This is similar to the Feature Learning approach, but it is not that rigid, since it allows for some flexibility.
+The idea in~\cite{AndoZ05} is that the task parameters can be decomposed as
+$$ w_r = u_r + \mymat{\Theta} v_r,$$
+where $\mymat{\Theta} \in \reals^{p \times d}$ spans a shared low dimensional space, that is $\mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p$ with $p < d$, and $d$ is the dimension of the data. Under this consideration, the proposed model is
+\begin{equation}
+    \label{eq:mtl_struct_learn}
+    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta} v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p .
+\end{equation}
+Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
+Problem~\eqref{eq:mtl_struct_learn} is solved using a two-step optimization fixing $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{u}$ and iterating until convergence. However problem~\eqref{eq:mtl_struct_learn} is not convex. 
+Note that~\eqref{eq:mtl_struct_learn} can be reformulated as
+\begin{equation}
+    \label{eq:mtl_struct_learn_ref}
+    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta} v_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p ,
+\end{equation}
+where the terms $\norm{w_r - \mymat{\Theta} v_r}^2$ enforces the similarity across tasks by binging them closer to the shared subspace.
+In~\cite{ChenTLY09} the following extension is proposed:
+\begin{equation}
+    \label{eq:mtl_struct_learn_frob}
+    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta} v_r}^2 + \mu \sum_{r=1}^\ntasks \norm{w_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal  = \mymat{i}_p .
+\end{equation}
+And it is shown that~\eqref{eq:mtl_struct_learn_frob}, when relaxing the orthogonality constraint, can be expressed as a convex minimization problem.
+Note that the difference between~\eqref{eq:mtl_struct_learn_ref} and~\eqref{eq:mtl_struct_learn_frob} is the addition of the Frobenius norm of matrix $\mymat{w}$, also known as trace norm. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ is an eigenvector of $\mymat{w}$, and thus, forcing $\mymat{w}$ to be low-rank.
+In the work of~\cite{PongTJY10} new formulations for problems with this trace norm penalty and a primal-dual method for solving the problem is developed.
+A modification of the trace norm can be found in~\cite{HanZ16}, where a capped-Frobenius norm is defined as $\sum_{i=1}^d \min(\theta, {\lambda_i(\mymat{w})}^2)$. This capped norm, as in the capped-$L_{p, q}$ norm, can enforce a lower rank matrix for small $\theta$ and also degenerates to the trace norm for large enough $\theta$. 
 
-% Learning multiple related tasks using latent independent component analysis
 
-
-\subsubsection*{Tasks Relations Learning approach}
+\subsubsection*{Task-Relation Learning approach}
 % Task relation learning
+In other approaches, like the Feature Learning approach or the Low-Rank approach, the assumption is that all task parameters share the same subspace, which may be detrimental when there exists a negative or neutral transfer. The Task-Relation Learning approach aims to find the pairwise dependencies among tasks and to possibly model positive, neutral and negative transfers between tasks.
 
-% Bonilla
+% GP approach
+% Multi-task Gaussian Process Prediction. Bonilla. 2007
+% A Convex Formulation for Learning Task Relationships in Multi-Task Learning 2010
+% A regularization approach to learning task relationships in multitask learning 2013
+One of the first works with the goal of explicitly modelling the pairwise task-relations is~\cite{BonillaCW07}, where a Multi-Task Gaussian Process (GP) formulation is presented. Assuming a Gaussian noise model 
+$y_i^r \sim \normal{f_r(x_i^r), \sigma_r^2}$, 
+Bonilla et al. place a GP prior over the latent functions $\myvec{f}_r$ to induce correlation among tasks:
+$$ \myvec{f} \sim \normal{\myvec{0}_{d \ntasks}, \mymat{K}^f \otimes K_\theta^\Xspace}$$ 
+where $\myvec{f} = (\myvec{f}_1, \ldots, \myvec{f}_\ntasks)$ and $\mymat{a} \otimes \mymat{b}$ is the Kronecker product of two matrices, so $\Cov(f_r(x), f_s(x')) = \mymat{K}^f_{rs} k^\Xspace_\theta(x, x')$. That is, instead of assuming a block-diagonal covariance matrix for $\myvec{f}$ as in previous works of Joint Learning~\cite{LawrenceP04}, the authors in~\cite{BonillaCW07} model the covariance as a product of inter-task covariance and inter-feature covariance. The inference of this model can be done using the standard GP inference for the mean and the variance of the prediction distribution. The mean prediction for a new data point $x_*$ of task $s$ is:
+\begin{equation}
+    \nonumber
+    f_s(x_*) = (\mymat{K}^f_{:,l} \otimes \mymat{K}^\Xspace(:, x_*))^\intercal \Sigma^{-1} \myvec{y}, \;
+     \Sigma = \mymat{K}^f \otimes \mymat{K}^\Xspace_\theta + \Diag(\sigma_1, \ldots, \sigma_\ntasks) \otimes \mymat{i}_{\nsamples}.
+\end{equation}
+However the interest resides in learning the task-covariance matrix $\mymat{K}^f$, but this leads to a non-convex problem. The authors propose a low-rank approximation of $\mymat{K}^f$, which weaken its expressive power.
+To overcome this disadvantage, in~\cite{ZhangY10,ZhangY13a}, using the idea of the Multi-Task GP they consider linear models $f(x_i^r) = \dotp{w_r}{x_i^r} + b_r$ and the prior on matrix $\mymat{w} = (w_1 \ldots, w_\ntasks)$ is defined as
+\begin{equation}
+    \nonumber
+    \mymat{W} \vert \sigma_r \sim \left(\prod_{r=1}^\ntasks \normal{\myvec{0}_d, \theta_i^2 I_d}  \right) \multinormal{\mymat{0}_{d \times m}, \mymat{i}_d \otimes \mymat{\Omega}}
+\end{equation}
+where $\multinormal{0, \mymat{M} \otimes \mymat{B}}$ denotes the matrix-variate normal distribution with mean $\mymat{M}$, row covariance matrix $\mymat{a}$ and column covariance matrix $\mymat{b}$. It is shown that the problem of selecting the maximum a posteriori estimation of $\mymat{w}$ and the maximum Likelihood estimations of $\mymat{\Omega}$ and $\myvec{b}$ has a regularized minimization problem that, when relaxing the restrictions on $\Omega$, can be expressed as
+% \begin{equation}
+%     \label{eq:mtl_relation_learn_trace}
+%     \argmin_{\mymat{\Omega} \in \reals^{d \times \ntasks}, \mymat{w}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \Tr\left({\mymat{w} \mymat{w}^\intercal}\right) + \mu \Tr \left(\mymat{w} \mymat{\Omega}^{-1} \mymat{w}^\intercal \right)\text{ s.t. } \mymat{\mymat{\Omega}} \succeq 0, \Tr\mymat{\Omega} = 1 .
+% \end{equation}
+\begin{equation}
+    \label{eq:mtl_relation_learn}
+    \begin{aligned}
+        &\argmin_{\mymat{\Omega} \in \reals^{d \times \ntasks}, \mymat{w}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{r=1}^\ntasks \norm{w_r}^2 + \mu \sum_{r,s=1}^\ntasks \left(\Omega^{-1}\right)_{rs} \norm{w_r - w_s}^2 \\
+        &\text{ s.t. } \mymat{\mymat{\Omega}} \succeq 0, \Tr\mymat{\Omega} = 1 .
+    \end{aligned}    
+\end{equation}
+This is a convex formulation and a two-step procedure is developed to find the solution. 
 
-% A Convex Formulation for Learning Task Relationships in Multi-Task Learning
+% Laplacian approach
+% Learning the Graph of Relations Among Multiple Tasks. 2013
+% Learning Output Kernels for Multi-TaskProblems. 2013
+% Convex learning of multiple tasks and their structure 2015
+Other approaches like~\cite{argyriou2013learning} reach a similar problem from other perspective. Argyriou et al. assume a representation of the structure of the tasks as a graph, then the graph Laplacian in the optimization problem can incorporate the knowledge about the task structure as shown in~\cite{EvgeniouMP05}:
+\begin{equation}
+    \label{eq:mtl_laplacian}
+    \begin{aligned}
+        &\argmin_{\mymat{w}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \mu \sum_{r,s=1}^\ntasks \left(L^{-1}\right)_{rs} \norm{w_r - w_s}^2 \\
+        &\text{ s.t. } \mymat{\mymat{\Omega}} \succeq 0, \Tr\mymat{\Omega} = 1 .
+    \end{aligned}    
+\end{equation}
+That is, we restrict the task covariance matrix $\Omega$ to be a valid graph Laplacian matrix.
+The goal of~\cite{argyriou2013learning} is to jointly learn the task parameters and the graph Laplacian $\mymat{L}$. For that, first they add the penalty $ \lambda \sum_{r=1}^\ntasks \norm{w_r}^2$ to the objective function of~\eqref{eq:mtl_laplacian}. Then, according to~\cite{EvgeniouMP05} the problem~\eqref{eq:mtl_laplacian} can be solved in the dual space using a positive definite kernel
+$$ k_\mymat{L}(x_i^r, x_j^s) = \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1} _{rs} k(x_i^r, x_j^s). $$
+Argyriou et al. propose the joint learning in this dual space by solving
+\begin{equation}
+    \label{eq:mtl_laplacian_dual}
+    \begin{aligned}
+        &\argmin_{\myvec{\alpha}, \mymat{L}} \myvec{\alpha}^\intercal \mymat{K}_L \myvec{\alpha} + \nu \myvec{\alpha}^\intercal \bm{y}  + \Tr \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1} \\
+        &\text{ s.t. } \mymat{0} \preceq \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1} \preceq \frac{1}{\lambda} I,\; \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1}_\text{off} \leq 0, \; \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1} \myvec{1}_\nsamples = \frac{1}{\lambda} \myvec{1}_\nsamples ,
+    \end{aligned}
+\end{equation}
+where $\mymat{A}_\text{off}$ denotes the off diagonal entries of $\mymat{A}$. The restrictions on of problem~\eqref{eq:mtl_laplacian_dual} are to ensure that $\mymat{L}$ is a valid graph Laplacian, and the trace term in the objective function is to force $\mymat{L}$ to be low-rank so it is easier to find clusters of tasks. Although the objective function of~\eqref{eq:mtl_laplacian_dual} is convex, the feasible space is not convex.
+Another work focused on learning the task-relations is~\cite{Dinuzzo13}, where instead of using a graph Laplacian matrix, a decomposition of $\Theta$ in the product of two low-rank matrices.
+In~\cite{CilibertoMPR15} some results are developed for the convergence of alternating minimization algorithms as that used in~\cite{ZhangY13a}. However, since the problems presented in~\cite{argyriou2013learning,Dinuzzo13} are not convex, they do not hold this result.
 
-% A regularization approach to learning task relationships in multitask learning
+% learning to multitask ?
 
-% Convex learning of multiple tasks and their structure
+\subsubsection*{Task Clustering approach}
+The Task Clustering approach tries to find $K$ clusters or groups among the original set of $T$ tasks. Usually, the goal is to learn jointly only the tasks in the same cluster, so no negative transfer takes place.
+% Discovering structure in multiple learning tasks: The TC algorithm. 1996
+% Task clustering and gating for Bayesian multitask learning. 1999
+% Clustered multi-task learning: A convex formulation. 2008
+% Learning  with  whom  to  share  in multi-task feature learning. 2011
+% Learning task grouping and overlap in multi-task learning. 2012
+% Learning Multiple Tasks using Shared Hypotheses 2012
+% Convex Multi-Task Learning by Clustering. 2015
+The first clustering approach~\cite{ThrunO96} divides the optimization process in two separate steps: independently learning the task-parameters and jointly learning the clusters of tasks.
+It assumes that the models involves $f(x)$ needs a definition of distance, e.g. kernel methods, such that
+$$ \text{dist}_\phi(x, x') = \sqrt{\sum_{i=1}^\dimx \phi^i \left( x^i - x'^i \right)^2}. $$
+That is, $\phi$ parametrizes the distance with a different weight for each feature.
+Then, for each task $r=1, \ldots, \ntasks$ an optimal $\phi_r^*$ is computed minimizing the distance between examples of the same class and maximizing the distance among different classes:
+\begin{equation}
+    \nonumber
+    A_r(\phi) = \sum_{i, j}^{\npertask_r} (y_i^r  y_j^r) \text{dist}_\phi(x_i^r, x_j^r).
+\end{equation}
+Then, the procedure is the following. First the empirical loss on task $r$ of a model fitted (on task $r$) using a distance parametrized by $\phi_s^*$ is defined as $e_{rs}$. Then, for $K = 1, 2,  \ldots, \ntasks$, the following functional is minimized
+\begin{equation}
+    \nonumber
+    J(K) = \sum_{\kappa = 1}^K \sum_{r \in B_\kappa} \frac{1}{\abs{B_r}} \sum_{s \in B_\kappa} e_{r, s} ,
+\end{equation}
+and the number of clusters $K$ with minimum $J(K)$ is selected. That is, the clusters are selected using the results of independently trained tasks and the transfer is done through the parameters $\phi$.
+%
 
-\subsubsection*{Tasks Clustering approach}
+A different approach is the Bayesian proposal of~\cite{BakkerH03} where a Multi-Task Neural Network~\cite{Caruana97} with one shared hidden layer is used. The task-dependent parameters can be modeled together using a prior that is a mixture of $K$ Gaussians $\myvec{a}_r \sim \sum_{\kappa = 1}^K \alpha_\kappa \normal{\myvec{\mu}_\kappa, \mymat{\Sigma}_\kappa}$; and by learning the variables $\alpha_i$ using Bayesian inference, the tasks can be clustered. In this model, unlike in~\cite{ThrunO96} the clusters and task parameters are jointly learned.
+%
 
-% Discovering structure in multiple learning tasks: The TC algorithm?
+From the regularization approach some proposals have also been made. In~\cite{JacobBV08} a problem based on~\cite{EvgeniouP04} is proposed. Considering $\mymat{U} = \frac{1}{\ntasks} \myvec{1} \myvec{1}^\intercal$, $\mymat{E}$ the $\ntasks \times K$ cluster assignment binary matrix, and defining the adjacency matrix $M = E (E^\intercal E)^{-1} E^\intercal$ the problem is
+\begin{equation}
+    \label{eq:mtl_clustered}
+    \begin{aligned}
+        &\argmin_{\mymat{w}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda (\mu_\text{m} \Omega_\text{m}(\mymat{w}) + \mu_\text{b} \Omega_\text{b}(\mymat{w}) + \mu_\text{w} \Omega_\text{w}(\mymat{w})) ,
+    \end{aligned}    
+\end{equation}
+where $\Omega_\text{m} = \Tr\left( \mymat{W} \mymat{U} \mymat{W}^\intercal \right)$ is the mean regularization, $\Omega_\text{b} = \Tr\left( \mymat{W} (\mymat{M} - \mymat{U}) \mymat{W}^\intercal \right)$ is the inter-cluster variance regularization and $\Omega_\text{w} = \Tr\left( \mymat{W} (\mymat{I} - \mymat{M}) \mymat{W}^\intercal \right)$ is the intra-cluster variance regularization.
+This problem cannot be solved using the results of~\cite{EvgeniouMP05} because the regularization used is not convex, so a convex relaxation is needed.
+%
 
-% Learning  multiple  tasks  using  shared hypothesis?
+A similar approach is presented in~\cite{KangGS11} where, using the results from~\cite{ArgyriouEP08}, they propose a trace norm regularizer of the matrices $\mymat{W}_\kappa = \mymat{W} Q_\kappa$, where $Q_\kappa$ are diagonal matrices and the $r$-th element of the diagonal indicates if task $r$ corresponds to cluster $\kappa$. They consider the problem
+\begin{equation}
+    \label{eq:mtl_clustered_featlearn}   
+    \begin{aligned}
+        &\argmin_{\mymat{w}, \mymat{Q_g}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{\kappa=1}^K \Tr\left(\mymat{W}_\kappa \mymat{W}_\kappa^\intercal \right) .
+    \end{aligned}
+\end{equation}
+This can be seen as a clusterized version of Multi-Task Feature Learning~\cite{ArgyriouEP06}, that is, instead of assuming that all tasks share the same subspace, only the tasks in the same cluster do, however the explicit learned features cannot be recovered.
+%
 
-% Flexible modeling of latent task structures in multitask learning
-
-% Clustered multi-task learning: A convex formulation
-
-% Learning  with  whom  to  share  in multi-task feature learning
-
+Another approximation to clusterized MTL is provided in~\cite{CrammerM12}, where a two-step procedure if described as follows. Considering that $K$ initial clusters are fixed containing the $T$ tasks, then two steps are repeated:
+First $K$ single task models $f_\kappa$ are fitted using the pooled data from tasks in cluster $\kappa$.
+Secondly each task $r$ is assigned to the cluster $\kappa$ whose function $f_\kappa$ obtains the lowest error in task $r$.
+%
+The proposal of~\cite{BarzilaiC15} takes the idea of the cluster assignation step from~\cite{CrammerM12} and is also inspired by the work of~\cite{KumarD12}. In this work a model is presented where $\mymat{w} = \mymat{D} \mymat{A}$, where $\mymat{D} \in \reals^{\dimx \times K}$ contains as columns the hypothesis for each cluster and $\mymat{G} \in \reals^{K \times \ntasks}$ is the task assignment matrix, that is ${g}_r = G_r \in \set{0, 1}$ and $\norm{{g}_r}^2 = 1$. The corresponding optimization problem is
+\begin{equation}
+    \label{eq:mtl_clustering_convex}
+    \begin{aligned}
+        &\argmin_{\mymat{d} \in \reals^{\dimx \times K}, \mymat{G} \in \reals^{K \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D g_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, 1} \\
+        & \text{s.t. } {g}_r \in [0, 1], \; \norm{{g}_r}^2 = 1 ,
+    \end{aligned}
+\end{equation}
+where the constraints on $g_r$ have been relaxed to be in the $[0,1]$ interval in order to make problem~\eqref{eq:mtl_clustering_convex} convex. Observe that~\eqref{eq:mtl_clustering_convex} is similar to~\eqref{eq:mtl_go} but different restrictions are used to ensure that $\mymat{G}$ can be seen as a clustering assignment matrix.
 
 \subsubsection*{Decomposition approach}
-% learning to multitask
+The Decomposition approach considers that the assumption that the task parameters resides in the same subspace or that the parameter matrix $\mymat{w}$ is too restrictive for real world scenarios. The proposition is then to decompose the parameter matrix in the sum of two matrices, i.e. $\mymat{W} = \mymat{U} + \mymat{V}$ where usually $\mymat{U}$  captures the shared properties of the tasks and $V$ accounts for the information that cannot be shared among tasks.
+This models also receive the name of \emph{dirty models} because they assume that the data is \emph{dirty} and does not place perfectly in constrained subspaces.
+% A Dirty Model for Multi-task Learning. 2010
+% Learning incoherent sparse and low-rank patterns from multiple tasks. 2010
+% Robust multi-task feature learning 2012
+% Integrating low-rank and group-sparse structures for robust multi-task learning. 2012
+% A convex feature learning formulation for latent task structure discovery. 2012
+% Hierarchical regularization cascade for joint learning 2013
+% Learning tree structure in multi-task learning. 2015
+The optimization problem that is solved can be expressed as
+\begin{equation}
+    \label{eq:mtl_dirty}
+    \argmin_{\mymat{u}, \mymat{v} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + v_r}{x_i^r}) + \lambda g(\mymat{U}) +\mu h(\mymat{V}),
+\end{equation}
+where $g(\mymat{U})$ and $h(\mymat{V})$ are different regularizers for $\mymat{U}$ and $\mymat{V}$, respectively.
+In~\cite{JalaliRSR10} $g(\mymat{U}^\intercal) = \norm{\mymat{U}}_{1, \infty}$ to enforce block-sparsity and $h(\mymat{V}) = \norm{\mymat{V}}_{1, 1}$ to enforce element-sparsity. 
+In~\cite{ChenLY10} $g(\mymat{U}) = \norm{\mymat{U}}_{2, 2}$ to enforce low-rank while maintaining $h(\mymat{V}) = \norm{\mymat{V}}_{1, 1}$. 
+In~\cite{ChenZY11} both regularizers seek properties shared among all tasks, $g(\mymat{U}) = \norm{\mymat{U}}_{2, 2}$ to enforce a low-rank and $h(\mymat{V}) = \norm{\mymat{V}^\intercal}_{1, 2}$ for row-sparsity.
+In~\cite{GongYZ12rmfl} they propose $g(\mymat{U}) = \norm{\mymat{U}^\intercal}_{1, 2}$ to enforce row-sparsity, i.e. the tasks share a common subspace; and $h(\mymat{V}) = \norm{\mymat{V}}_{1, 2}$ which penalizes the orthogonal parts to the common subspace of task-parameter, the authors state that it penalizes outlier tasks.
 
-% Jalali. A dirt model
-
-% .  Chen,  J.  Liu,  and  J.  Ye,  “Learning  incoherent  sparse  and  low-rankpatterns from multiple tasks,” inKDD, 2010.[100]  J.  Chen,  J.  Zhou,  and  J.  Ye,  “Integrating  low-rank  and  group-sparsestructures for robust multi-task learning,” inKDD, 2011.[101]  P. Gong, J. Ye, and C. Zhang, “Robust multi-task feature learning,” inKDD, 2012.[102]  W. Zhong and J. T. Kwok, “Convex multitask learning with flexible taskclusters,” inICML, 2012.
+Other approaches generalize the decomposition method by assuming that the parameter matrix can be expressed as $\mymat{W} = \sum_{l=1}^L \mymat{W}_l$, then the problem to solve has the form
+\begin{equation}
+    \label{eq:mtl_decomposition_gen}
+    \argmin_{\mymat{W}_1, \ldots, \mymat{W}_L \in \reals^{\dimx \times \ntasks}} 
+    \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} 
+    \lossf(y_i^r, \dotp{\sum_{l=1}^L {(W_l)}_r}{x_i^r}) 
+    + \sum_{l=1}^L \lambda_l r(\mymat{W}_l) ,
+\end{equation}
+In~\cite{ZweigW13} the regularizer used is $r(\mymat{W_l}) = \norm{\mymat{W_l}^\intercal}_{2, 1} + \norm{\mymat{W_l}}_{1, 1}$ to enforce the row and element-sparsity. 
+In~\cite{HanZ15} the regularizer is $r(\mymat{W_l}) = \sum_{r,s=1}^T \norm{(W_l)_r - (W_l)_s}^2$, which alongside some constraints it allows to build a tree of task groups, where the root contains all the tasks and the leafs only correspond to one task.
 
 
 \subsection{Joint MTL}
@@ -978,9 +1164,10 @@ The dual form of~\eqref{eq:mtlsvm_primal_unif} is
         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
         \end{aligned}
 \end{equation}
-In~\eqref{eq:mtlsvm_dual_unif} an equality constrain, not present in~\eqref{eq:regmtlsvm_dual} is added. This a direct consequence of the incorporation of bias terms in the primal form. Also, it is important to observe the use of different kernel spaces through the functions $k$ and $k_r$.
+In~\eqref{eq:mtlsvm_dual_unif} $\ntasks$ equality constraints, not present in~\eqref{eq:regmtlsvm_dual} are added. This a direct consequence of the incorporation of bias terms in the primal form. Since the original SMO algorithm does not account for multiple equality constraints, in~\cite{CaiC12} a generalized SMO algorithm is developed.
+Also, it is important to observe the use of different kernel spaces through the functions $k$ and $k_r$.
 % Connection with LUPI!
-This has connections with the LUPI paradigm~\cite{VapnikI15a}, as described in the previous section. The kernel space for the common part is named the decision space, and the spaces corresponding to the kernel functions $k_r$ are the correcting spaces. That is, each task can correct the similarity defined by the decision space independently. 
+This has connections with the LUPI paradigm~\cite{VapnikI15a}, as described in Section\comm{TODO}. The kernel space for the common part is named the decision space, and the spaces corresponding to the kernel functions $k_r$ are the correcting spaces. That is, each task can correct the similarity defined by the decision space independently.
 
 % Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
 
@@ -988,25 +1175,27 @@ This has connections with the LUPI paradigm~\cite{VapnikI15a}, as described in t
 % Bayesian approach
 % Learning to learn with the informative vector machine (2004)
 In the Bayesian approaches, the first work of~\cite{LawrenceP04} presents a GP model where all the tasks share a common prior.
-That is, given $T$ tasks, a noise model with latent variables $\myvec{f}^r$ is considered, i.e. $y_i^r = f_i^r + \epsilon$, and $\myvec{f}^r$ follows a GP prior
-$$ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta}) = \normal{0, \mymat{k}_{\myvec{\theta}}} $$
+That is, given $T$ tasks, a noise model with latent variables $\myvec{f}_r$ is considered, i.e. $y_i^r = f_i^r + \epsilon$, and $\myvec{f}_r$ follows a GP prior
+$$ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}) = \normal{0, \mymat{k}_{\myvec{\theta}}} $$
 where $\mymat{k}$ is a kernel matrix parametrized by $\myvec{\theta}$ and evaluated at the points $\mymat{x}$. Note that a single $\myvec{\theta}$ parameter is used to model a prior shared for all tasks.
 The posterior probability can be expressed as
 \begin{equation}
     \nonumber
-    p (\myvec{y}^1, \ldots, \myvec{y}^\ntasks \vert \myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta},  \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto  p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \prod_{r=1}^\ntasks p(\myvec{y}^r \vert \mymat{f}^r, \myvec{\theta}) %p(\myvec{\theta} | \myvec{f}_r)
+    p (\myvec{y}^1, \ldots, \myvec{y}^\ntasks \vert \myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta},  \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto  p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \prod_{r=1}^\ntasks p(\myvec{y}^r \vert \myvec{f}_r, \myvec{\theta}) %p(\myvec{\theta} | \myvec{f}_r)
 \end{equation}
 where the distribution for the latent parameters is
 \begin{equation}
     \nonumber
-    p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}^r \vert \mymat{x}^r, \myvec{\theta}) . %p(\myvec{\theta} | \myvec{f}_r).
+    p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) , %p(\myvec{\theta} | \myvec{f}_r).
 \end{equation}
-Although this idea is interesting for MTL, it presents a rigid framework since we use a fixed model for the prior $ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta})$. To use Bayesian induction over the prior too, the hierarchical Bayesian model is considered. That is, we consider a different prior $ p(\myvec{f}^r \vert \mymat{x}, \myvec{\theta}^r)$ for each task and a hyperprior for $\myvec{\theta}^r$, $p(\myvec{\theta}^r \vert \myvec{\phi})$. Then, the distribution for latent parameters is expressed as
+where $p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) = \normal{0, K_\theta}$, that is 
+$\Cov(f^r(x), f^r(x')) = k_\theta(x, x') .$
+Although this idea is interesting for MTL, it presents a rigid framework since we use a fixed model for the prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta})$. To use Bayesian induction over the prior too, the hierarchical Bayesian model is considered. That is, we consider a different prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}^r)$ for each task and a hyperprior for $\myvec{\theta}^r$, $p(\myvec{\theta}^r \vert \myvec{\phi})$. Then, the distribution for latent parameters is expressed as
 \begin{equation}
     \nonumber
-    p (\myvec{f}^1, \ldots, \myvec{f}^\ntasks, \myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks, \myvec{\phi} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}^r \vert \mymat{x}^r, \myvec{\theta}^r, \myvec{\phi}) p(\myvec{\theta}^r | \myvec{\phi}).
+    p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks, \myvec{\phi} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}^r, \myvec{\phi}) p(\myvec{\theta}^r | \myvec{\phi}).
 \end{equation}
-In~\cite{YuTS05}, a Gaussian hyperprior $p(\myvec{\theta}^r | \myvec{\phi})$ is considered. Note that in this formulation, each task parameter $\myvec{\theta}^r$ is an independent from the rest of parameters $\myvec{\theta}^s, s \neq r$ given $\myvec{phi}$ .
+In~\cite{YuTS05}, a Gaussian hyperprior $p(\myvec{\theta}^r | \myvec{\phi})$ is considered. Note that in this formulation, each task parameter $\myvec{\theta}^r$ is an independent from the rest of parameters $\myvec{\theta}^s, s \neq r$ given $\myvec{\phi}$ .
 That is,
 \begin{equation}
     \nonumber
@@ -1017,7 +1206,7 @@ That is,
 % Learning Gaussian processes from multiple tasks (2005)
 % Multi-Task Learning for Classification with Dirichlet Process Priors (2007)
 % Bayesian multitask learning with latent hierarchies (2009)
-Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling the task parameters. A explicit dependence is then defined over the task parameters
+Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling the task parameters. An explicit dependence is then defined over the task parameters
 \begin{equation}
     \nonumber
     p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r |\myvec{\theta}^{-r} , \myvec{\phi}) .
