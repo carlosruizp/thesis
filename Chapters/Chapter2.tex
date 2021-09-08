@@ -24,743 +24,6 @@ This chapter presents\dots
   %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Why does Multi-Task Learning work?}
-% First works in Learning to Learn
-% Overview of section
- % Ruder and Caruana
-% 
-\subsection{Learning to Learn} % Baxter
-% The first theoretical work on MTL... MTL as a Bias Learning Problem
-Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
-$ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
-where $(x_i, y_i)$ are sampled from a distribution $\distf$.
-%
-In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypothesis space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
-%
-Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emprisk$ is minimized with the hope of minimizing the true expected error $\exprisk$, which would result in a good generalization. 
-%
-Several models use the ERM principle to generalize from data such as Neural Networks or Support Vector Machines. These methods are designed to find a good hypothesis $\hyp{x}{\param}$ from a given space $\hypspace$. The definition of such space $\hypspace$ define the bias for these problems. If $\mathcal{H}$ does not contain any good hypothesis, the learner will not be able to learn.
-%
-
-The best hypothesis space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
-Instead, we focus on the situation where we want to solve multiple related tasks. In that case, we can obtain a good space $\hypspace$ that contains good solutions for the different tasks.
-%
-In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning or Learning to Learn, which can be seen as a generalization of strict multi-task learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypothesis, Baxter defines the capacity of a family of spaces of hypothesis.
-
-% Review of concepts for STL in Supervised Learning
-Before presenting the concepts defined for Bias Learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
-\subsubsection*{Ordinary Learning}
-In the ordinary statistical learning, some theoretical concepts are used:
-\begin{itemize}
-    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
-    \item a \emph{probability distribution} $\distf$, which is unknown, defined over $\Xspace \times \Yspace$,
-    \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
-    \item a \emph{hypothesis space} $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$ with hypothesis $\hyp{\cdot}{\param}: \Xspace \to \Yspace$.
-\end{itemize}
-The goal for the learner is to select a hypothesis $\hyp{x}{\param} \in \mathcal{H}$, or equivalently $\param \in \paramspace$, that minimizes the expected risk
-$$ \exprisk(\param) =  \int_{\Xspace \times \Yspace} \loss{\hyp{x}{\param}}{y} d\distf(x, y) .$$
-The distribution $\distf$ is unknown, but we have a training set $\sample = \{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ of samples drawn from $\distf$. 
-The approach is then is to apply the ERM inductive principle, that is to minimize the empirical risk
-$$ \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples l(h(x_i), y_i).$$
-Thus, a learner $\mathcal{A}$ maps the set of training samples to a set of hypothesis:
-\begin{equation}
-    \nonumber
-    \mathcal{A} : \bigcup {(\Xspace \times \Yspace)^\nsamples} \to \hypspace.
-\end{equation}
-Although $\emprisk(\param)$ is an unbiased estimator of $\exprisk(\param)$, it has been shown~\cite{vapnik2013nature} that this approach, despite being the most evident one, is not the best principle that can be followed.
-This has relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
-Vapnik answers to the question of what can be said about $\exprisk$ when $\param$ minimizes $\emprisk(\param)$, and moreover, his results are valid also for small number of training samples $n$.
-More specifically, Vapnik sets the sufficient and necessary conditions for the consistency of an inductive learning process, i.e. for $\emprisk(\param) \toprob \exprisk(\param) $ uniformly. Vapnik also defines the capacity of a hypothesis space and use it to derive bounds on the rate of this convergence for any $\param \in \paramspace$ and, more importantly, bounds on the difference $\inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param)$.
-Under some general conditions, he proves that
-\begin{equation}\label{eq:ordinary_generalization_bound}
-    \inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param) \leq B(\nsamples/\vcdim{\hypspace})
-\end{equation}
-where $B$ is some non-decreasing function and $\vcdim{\hypspace}$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
-\begin{itemize}
-    \item The number of training samples $\nsamples$. A greater number of training samples assures a better generalization of the learning process.This looks intuitive and could be already inferred from the asymptotical properties. 
-    \item The VC-dimension $\vcdim{\hypspace}$ of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
-\end{itemize}
-The VC-dimension measures the capacity of a set of hypothesis $\hypspace$. 
-%In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim{\hypspace}$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \param, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
-If the capacity of the set $\hypspace$ is too large, we may find a
-hypothesis $\hyp{x}{\opt{\param}}$ that minimizes $\emprisk$ but does not 
-generalize well and therefore, does not minimize $\exprisk$. This is the 
-overfitting problem. 
-On the other side, if we use a simple $\hypspace$, 
-with low capacity, we could be in a situation where there is not a good hypothesis $\hyp{x}{\param} \in \hypspace$, so the empirical risk $\inf_{\param \in \paramspace} \exprisk$ is too large. This is the underfitting problem.
-
-% The Structural Risk Minimization (SRM) as an inductive principle, proposed by Vapnik (as opposed to the ERM), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim{\hypspace}$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
-% $$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
-% where their VC-dimensions are ordered:
-% $$ d_1 < d_2 < \ldots < d_k < \ldots$$
-% where $d_i$ is the VC-dimension of $\mathcal{H}_i$.
-% SRM selects the hypothesis $\hyp{x}{\param^*} = \hyp{x}{\param_i^*} \in \hypspace_i$ that obtains the best bound for the actual risk $\exprisk$.
-% This admissible structure can be built in various ways. In Neural Networks in can be the built by increasing the number of hidden layers. In other methods, such as SVM or Ridge Regression, this is done by decreasing the regularization.
-% However, this SRM principle is usually replaced by a cross-validation (CV) procedure.
-
-% Support Vector Machines, which are the most representative models of this theory, use the VC-dimension also in other way (apart from the SRM principle or the CV procedure). The goal of finding the optimal hyperplane, that is, that with the maximum margin between the classes, has its motivation in the fact the set of such type of hypothesis have a lower VC-dimension that the set of all hyperplanes do.
-
-
-% Extension to MTL
-\subsubsection*{Bias Learning: Concept and Components}
-In ~\cite{baxter2000model} two main concepts are presented: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
-For simplicity we write $\hypf(x)$  instead of $\hypf(x, \param)$, and since $\param$ completely defines $\hypf$, we also substitute $\param$ by $\hypf$ for an easier notation.
-Using these concepts, the bias learning problem has the following components:
-\begin{itemize}
-    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
-    \item an \emph{environment} $(\bprobspace, \bdistf)$ where $\bprobspace$ is a set of distributions $P$ defined over $\Xspace \times \Yspace$, and we can sample from $\bprobspace$ according to a distribution $\bdistf$,
-    \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
-    \item a \emph{family of hypothesis spaces} $\hypspacef = \set{\hypspace_\eta, \eta \in \eta}$, where each element $\hypspace_\eta$ is a set of hypothesis.
-\end{itemize}
-Analogous to ordinary learning, the goal is to minimize the expected risk, defined as
-\begin{equation}\label{eq:biaslearn_exprisk}
-    \bexprisk(\eta) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\eta} \risk_P(\hypf) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\eta} \int_{\Xspace \times Y} l(h(x), y) dP(x, y) d\bdistf(P).
-\end{equation}
-Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set samples from the environment $(\bprobspace, \bdistf)$ obtained in the following way:
-\begin{enumerate}
-    \item Sample $T$ times from $\bdistf$ obtaining $P_1, \ldots, P_T \in \bprobspace$
-    \item For $r=1, \ldots, T$ sample $m$ pairs $\sample_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$ where $(x_i^r, y_i^r) \in X \times Y$ .
-\end{enumerate}
-We obtain a sample $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$, with $\npertask$ examples from $\ntasks$ different learning tasks, and
-\begin{equation}
-    \nonumber
-    \bsample \defeq 
-    \begin{matrix}
-        (x_1^1, y_1^1) & \ldots & (x_m^1, y_m^1) \\
-        \vdots & \ddots & \vdots \\
-        (x_1^\ntasks, y_1^\ntasks) & \ldots & (x_m^\ntasks, y_m^\ntasks) \\
-    \end{matrix}
-\end{equation}
-is named as a $(\ntasks, \npertask)$-sample.
-Using $\bsample$ we can define the empirical loss as
-\begin{equation}\label{eq:biaslearn_emprisk}
-    \bemprisk(\eta) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\eta} \hat{\risk}_{\sample_r}(\hypf) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\eta} \sum_{i=1}^m l(\hypf(x_i^r), y_i^r),
-\end{equation}
-which is an average of the empirical losses of each task. 
-Note, however, that in the case of the bias learner, this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{\sample_r}(\hypf)$. 
-Putting all together, a bias learner $\mathcal{A}$ maps the set of all $(\ntasks, \npertask)$-samples to a family of hypothesis spaces:
-\begin{equation}
-    \nonumber
-    \mathcal{A} : \bigcup {(\Xspace \times \Yspace)^{(\ntasks, \npertask)}} \to \hypspacef.
-\end{equation}
-%
-
-To follow an analogous path to that of ordinary learning, the milestones in bias learning theory should include:
-\begin{itemize}
-    \item Checking the consistency of the Bias Learning methods, i.e. proving that $\bemprisk(\eta)$ converges uniformly in probability to $\bexprisk(\eta)$.
-    \item Defining a notion of capacity of hypothesis space families $\hypspacef$.
-    \item Finding a bound of $\bemprisk(\eta) - \bexprisk(\eta)$ for any $\eta$ using the capacity of the hypothesis space family. If possible, finding also a bound for $\inf_{\eta \in \eta}\bemprisk(\eta) - \inf_{\eta \in \eta} \bexprisk(\eta)$.
-\end{itemize}
-To achieve these goals some previous definitions are needed. From this point, since any $\hypspace$ is defined by a $\eta \in \eta$, we omit $\eta$ and write just $\hypspace$ for simplicity.
-%
-\subsubsection*{Bias Learning: Capacities and Uniform Convergence}
-% Pseudo-metrics, Covering numbers and Capacities
-In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
-Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
-Consider also the set of sequences of $\ntasks$ hypothesis 
-$$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$$
-We can define then the set of $(\ntasks, 1)$-empirical risks as 
-$$\hypspace^\ntasks_\lossf \defeq \set{ \myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
-The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks$. Now we can define
-\begin{equation}
-    \nonumber
-    \begin{aligned}
-        \dist{\bprobseq}(\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf) = \int_{(\Xspace \times \Yspace)^{\ntasks}} &\abs{\myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) - \myvec{\hypf'}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks)} \\ 
-        & d{P_1}(x_1, y_1) \ldots d{P_\ntasks}(x_\ntasks, y_\ntasks)
-    \end{aligned}
-\end{equation}
-for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^\ntasks$.
-%
-
-Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
-\begin{equation}
-    \nonumber
-    \hypspace^* \defeq \inf_{\hypf \in \hypspace} \risk_P(\hypf).
-\end{equation}
-The family of such sets is defined as 
-$\bsetdist = \set{\hypspace^*, \hypspace \in \hypspacef}$.
-The pseudo-metric in this space is given by $Q$:
-\begin{equation}
-    \nonumber
-    \dist{\bdistf} = \int_\bprobspace \abs{\hypspace_1^* - \hypspace_2^*} d\bdistf
-\end{equation}
-With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. Given a pseudo-metric $\dist{S}$ in a space $\mathcal{S}$, 
-a set of $l$ elements $s_1, \ldots, s_l \in \mathcal{S}$ is an $\epsilon$-cover of $\mathcal{S}$ if 
-$ \dist{S}(s, s_i) \leq \epsilon $
-for some $i=1, \ldots, l$.  Let $\mathcal{N}(\epsilon, \mathcal{S}, \dist{S})$ denote the size of the smallest $\epsilon$-cover.
-Then, we can define the following capacities of a family space $\hypspacef$:
-\begin{itemize}
-    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^\ntasks, \dist{\bprobseq})$.
-    \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} \defeq \sup_Q \mathcal{N}(\epsilon, \bsetdist, \dist{\bdistf})$.
-\end{itemize}
-
-% Uniform Convergence for bias learners (Comparison with Vapnik)
-Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, the bias expected risk is bounded
-\begin{equation}
-    \nonumber
-    \bemprisk(\hypspace) \leq \bexprisk(\hypspace) + \epsilon
-\end{equation}
-with probability $1 - \eta$, given sufficiently large $\ntasks$ and $\npertask$, 
-\begin{equation}
-    \nonumber
-    \ntasks \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetdist}}{\eta} , \frac{64}{\epsilon^2}\right)  , \; \npertask \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetsample}}{\eta} , \frac{64}{\epsilon^2}\right) .
-\end{equation}
-It should be noted that the bound for $\npertask$ is inversely proportional to $\ntasks$, that is, the more tasks we have, the less samples we need for each task. 
-
-
-% Multi-Task Learning (strictly speaking, with fixed tasks)
-\subsubsection*{Multi-Task Learning}
-The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the Multi-Task expected risk is
-\begin{equation}\label{eq:mtlearn_exprisk}
-    \risk_{\bprobseq}(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
-\end{equation}
-and the empirical risk is defined as
-\begin{equation}\label{eq:mtlearn_emprisk}
-    \bemprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(\hypf_r(x_i^r), y_i^r).
-\end{equation}
-A similar result to that of Bias Learning is given for Multi-Task Learning~\cite[Theorem~4]{baxter2000model}:
-\begin{equation}
-    \nonumber
-    \bemprisk(\myvec{\hypf}) \leq \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon,
-\end{equation}
-with probability $1 - \eta$ given that the number of samples per task
-\begin{equation}
-    \nonumber
-    \npertask \geq \max \left( \frac{64}{\ntasks \epsilon^2} \log\frac{4\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\eta} , \frac{16}{\epsilon^2}\right).
-\end{equation}
-Observe that we do not need the \emph{distribution-driven} capacity in this case, just the \emph{sample-driven} capacity.
-% Feature Learning
-\subsubsection*{Feature Learning}
-Feature Learning is a common way to encode bias. The most popular example are Neural Networks, where all the hidden layers can be seen as a Feature Learning engine that learns a mapping from the original space to a space with ''strong'' features.
-In general, a set of ''strong'' feature maps is defined as $\mathcal{F} = \set{f, f: \Xspace \to \Fspace}$. Using these features, functions $g \in \mathcal{G}$ (which are tipically simple) are built:
-$\Xspace \to_f \Fspace \to_g \Yspace$.
-Thus, for each map $f$, the hypothesis space can be expressed as 
-$\hypspace_f = \set{h = \mathcal{G} \circ f, g \in \mathcal{G}}$
-, and the family of hypothesis spaces is 
-$\hypspacef = \set{\hypspace_f, f \in \mathcal{F}}$.
-Now, the Bias Learning problem is the problem of finding a good mapping $f$.
-It is proved~\cite[Theorem~6]{baxter2000model} that in the Feature Learning case the capacities of $\hypspacef$ can be bounded by the capacities of $\mathcal{F}$ and $\mathcal{G}$ as
-\begin{align*}
-    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}^\ntasks}^\ntasks \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
-    \capacity{\epsilon}{\bsetdist} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})
-\end{align*}
-with $\epsilon = \epsilon_1 + \epsilon_2 $. Here, $\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})$ is defined as 
-$\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) \defeq \sup_P \mathcal{N}(\epsilon, \mathcal{F}, \dist{[P, \mathcal{G}_\lossf]})$, where
-$$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} sup_{g \in \mathcal{G}} \abs{\loss{g \circ f(x)}{y} - \loss{g \circ f'(x)}{y}} dP(x, y)$$
-is a pseudo-metric. Using these results alongside those presented for Bias Learning is useful to establish bounds for Feature Learning models like Neural Networks.
-
-% Generalized VC-dim , Theorems 12, 13 and Corollary 13
-\subsubsection*{Generalized VC-Dimension for Multi-Task Learning}
-The concepts presented until now rely on the concepts of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\bemprisk(\myvec{\hypf}) - \bexprisk(\myvec{\hypf})$, that is, the probability of large deviations between the empirical and expected risks for a given hypothesis sequence. However, it would be more interesting to establish some bounds between the empirical error and the \emph{best expected error}.
-To overcome this limitations, a generalized VC-dimension is developed in~\cite{baxter2000model} for Multi-Task Learning with Boolean hypothesis.
-%
-
-Let $\hypspace$ be a space of boolean functions and $\hypspacef$ a boolean hypothesis space family. Denote the set of $\ntasks \times \npertask$ matrices in $\Xspace$ as $\Xspace^{\ntasks \times \npertask}$
-For each $\mymat{x} \in \Xspace^{\ntasks \times \npertask}$ and each $\hypspace \in \hypspacef$ define the set of binary $\ntasks \times \npertask$ matrices
-\begin{equation}
-    \nonumber
-    \hypspace_{\vert \mymat{x}} \defeq \set{\begin{pmatrix}
-        \hypfun{x_1^1} & \ldots & \hypfun{x_\npertask^1} \\
-        \vdots & \ddots & \vdots \\
-        \hypfun{x_1^\ntasks} & \ldots & \hypfun{x_\npertask^\ntasks} \\
-    \end{pmatrix}, \hypf \in \hypspace} ,
-\end{equation}
-and the corresponding family of such sets as
-\begin{equation}
-    \nonumber
-    \hypspacef_{\vert \mymat{x}} = \bigcup_{\hypspace \in \hypspacef}  \hypspace_{\vert \mymat{x}}.
-\end{equation}
-For each $\ntasks, \npertask \geq 0$ define the number of binary matrices obtainable with $\hypspacef$ as
-\begin{equation}
-    \nonumber
-    \Pi_\hypspacef(\ntasks, \npertask) \defeq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef_{\vert \mymat{x}} }.
-\end{equation}
-Note that $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ and if $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ we say that $\hypspacef$ shatters $\Xspace^{\ntasks \times \npertask}$.
-For each $n > 0$ define
-\begin{align}
-    d_\hypspacef(\ntasks) &\defeq \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m , \nonumber \\
-    \overline{d}(\hypspacef) &\defeq \vcdim{\hypspacef^1} = \vcdim{\bigcup_{\hypspace \in \hypspacef} \hypspace}  ,  \nonumber \\
-    \underline{d}(\hypspacef) &\defeq \max_{\hypspace \in \hypspacef} \vcdim{\hypspace}  . \nonumber
-\end{align}
-Here, $d_\hypspacef(\ntasks)$ is the generalized VC-dimension, and
-\begin{equation}
-    \nonumber
-    d_\hypspacef(\ntasks) \geq \max\left(\floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}}, \underline{d}(\hypspacef) \right)
-\end{equation}
-where it can be observed that 
-\begin{equation}
-    \label{eq:genvc_inequalities}
-    \overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef).
-\end{equation}
-\comm{Proof?}
-% Look at Ben-David version
-Now we can present the relevant result expressed in~\cite[Corollary~13]{baxter2000model}.
-\begin{theorem}\label{th:baxter_vcdim}
-    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then for every $\epsilon > 0$
-% \begin{equation}
-%     \nonumber
-%     \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
-% \end{equation}
-\begin{equation}
-    \nonumber
-    \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})} \leq \epsilon,
-\end{equation}
-with probability $1 - \eta$ given that the number of samples per task
-\begin{equation}
-    \label{eq:bound_npertask_genvcdim}
-    \npertask \geq \frac{88}{\epsilon^2} \left[2 d_\hypspacef(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right] .
-\end{equation}
-\end{theorem}
-Here, since $d_\hypspacef(\ntasks) \geq d_\hypspacef(\ntasks+1)$, it is easy to see that as the number of task $\ntasks$ increases, the number of examples needed per task can decrease. 
-Moreover, as shown in~\cite[Theorem~14]{baxter2000model}, if this bound on $\npertask$ is not fulfilled, then we can always find a sequence of distributions $\bprobseq$ such that
-\begin{equation}
-    \nonumber
-    \inf_{\hypf \in \hypspace} \bemprisk(\myvec{\hypf}) > \inf_{\hypf \in \hypspace} \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon .
-\end{equation}
-With this results we can see that the condition~\eqref{eq:bound_npertask_genvcdim} has some important properties:
-\begin{itemize}
-    \item It is a computable bound, given that we know how to compute $d_\hypspacef(\ntasks)$.
-    \item It provides a sufficient condition for the uniform convergence (in probability) of the empirical risk to the expected risk.
-    \item It provides a necessary condition for the consistency of Multi-Task Learners, i.e. uniform convergence of the best empirical risk to the best expected risk.
-\end{itemize}
-
-\subsubsection*{Conclusion}
-In~\cite{baxter2000model} several new concepts are developed. The $(\bprobspace, \bdistf)$-environment of tasks is useful to characterize the concept of related tasks. Moreover, using this definition, Baxter is able to give some important results of uniform convergence in the Bias Learning paradigm. From this general view, Multi-Task Learning
-is a particular case and the uniform convergence results are also valid. The Feature Learning approach, which can be seen as a more particular method of Multi-Task Learning has some interesting results splitting the analysis into the feature learning process and the construction of models over these features. Finally, the most important result is the definition of a generalized VC-dimension and the uniform convergence of Multi-Task Learning models using this concept. Although this is a result only valid for boolean hypothesis, it helps to shed some light on Multi-Task Learning and the reasons of its effectiveness.
-
-\subsection{Learning with Related Tasks} % Ben-David
-% Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
-Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08} for boolean hypothesis functions defined over $\Xspace \times \set{0, 1}$.
-% task relatedness
-One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
-% task individual risks
-The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
-
-% F-related tasks
-\subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
-The main concept for the theory developed in~\cite{Ben-DavidB08} is a set of $\frelset$ of transformations $\frelf: \Xspace \to \Xspace$. Given a probability distribution $\distf$ over $\Xspace \times \set{0, 1}$, a set of tasks with distributions $P_1, \ldots, P_\ntasks$ are $\frelset$-related if, for each task there exists some $\frelf_i \in \frelset$ such that $P_i = \frelf_i(\distf)$.
-
-\begin{definition}[$\frelset$-related task]
-    Consider a measurable space $(\Xspace, \mathcal{A})$ and the corresponding measurable product space $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$. Consider $P$ a probability distribution over this product space and a function $\frelf: \Xspace \to \Xspace$, then we define the distribution $\frel{P}$ such that for any $S \in \mathcal{A}$,
-    $$ \frel{P}(S) \defeq P(\set{(f(x), b), (x, b) \in S }).$$
-    %
-    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$, and let $P_1, P_2$ be distributions over $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, then the distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
-    % \begin{itemize}
-    %     \item The distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
-    %     \item Two samples $\sample_1, \sample_2$ sampled from $P_1, P_2$ respectively are $\frelset$-related if $P_1, P_2$ are $\frelset$-related.
-    % \end{itemize}
-\end{definition}
-This notion establishes a clear definition of related tasks but we are interested in how a learner can use this relatedness to improve the learning process.
-For that, considering that $\frelset$ is a group under function composition, we regard at the action of the group $\frelset$ over the set of hypothesis $\hypspace$. This action defines the following equivalence relation in $\hypspace$:
-$$ \hypf_1 \sim_\frelset \hypf_2 \iff \exists \frelf \in \frelset,  \hypf_1 \circ \frelf = \hypf_2 .$$
-%
-This equivalence relation defines equivalence classes $\equivclass{\hypf}$, that is let $h' \in \hypspace$ be an hypothesis, then $h' \in \equivclass{\hypf}$ iff $h' \sim_\frelset h$. 
-We consider the quotient space 
-$$\hypspace_\frelset \defeq \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}.$$
-It is important to observe that $\hypspace_\frelset = \hypspacef'$ is a hypothesis space family, since it is a set of equivalence classes $\equivclass{\hypf} = \hypspace'$, which are set of hypothesis.
-%
-
-\subsubsection*{The Multi-Task Empirical Risk Minimization}
-This equivalence classes are useful to divide the learning process in two stages, this is called the \emph{Multi-Task ERM}. Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tasks, then
-\begin{enumerate}
-    \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
-    \begin{equation}
-        \nonumber
-        \equivclass{\hypf^\frelset} \defeq \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_i}(\hypf_i) ,
-    \end{equation}
-    \item Select the best hypothesis $h^\diamond$ for the target task (without loss of generality, consider the first one):
-    \begin{equation}
-        \nonumber
-        h^\diamond = \inf_{\hypf \in \equivclass{\hypf^\frelset}} \hat{\risk}_{\sample_1}(\hypf) .
-    \end{equation}
-\end{enumerate}
-
-For example, consider the handwritten digits recognition problem, we might integrate $T$ different datasets designed in different conditions. Each dataset have been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generate a different bias for the dataset. However, there exists a probability for ''pure'' digits, e.g. the pixels of digit one have higher probability around a line in the middle of the picture than in the sides. This ''pure'' probability distribution $P_0$ and all the distributions $P_1, \ldots, P_T$ from which our datasets have been sampled might be $\frelset$-related among them and with $P_0$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
-
-% Results for F-related tasks (Theorems 2, 3)
-\subsubsection*{Bounds for $\frelset$-Related Tasks}
-% Relation with Baxter work
-The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis quotient space of equivalent classes $\hypspace_\frelset$. However the following results is needed first.
-%
-Let $P_1, P_2$ be $\frelset$-related distributions, then this statement can be proved~\cite[Lemma~2]{Ben-DavidB08}:
-\begin{equation}
-    \label{eq:ben-david_lemma2}
-    \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) = \inf_{\hypf \in \hypspace} \risk_{P_2}(\hypf).
-\end{equation}
-This indicates that the the expected risk is invariant under transformations of $\frelset$.
-Now, one of the main results~\cite[Theorem~2]{baxter2000model} can be given.
-\begin{theorem}\label{th:ben-david_th2}
-    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$ that is a group under function composition. Let $\hypspace$ be a hypothesis space so that $\frelset$ acts as a group over $\hypspace$, and consider the quotient space $\hypspace_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
-    Consider $\bprobseq = (P_1, \ldots, P_\ntasks)$ a sequence of $\frelset$-related distributions over $\Xspace \times \set{0, 1}$, and $\myvec{z} = (\sample_1, \ldots, \sample_\ntasks)$ the corresponding sequence of samples  where $\sample_i$ is sampled using $P_i$, then for every $\equivclass{\hypf} \in \hypspace_\frelset$ and $\epsilon > 0$ 
-    \begin{equation}
-        \nonumber
-        \abs{\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) - \inf_{\hypf' \in \equivclass{\hypf}}\risk_{P_1}(\hypf')}  \leq \epsilon
-    \end{equation}
-    with probability greater than $\eta$ if the number of samples from each distribution satisfies
-    \begin{equation}
-        \label{eq:ben-david_sample_inequality}
-        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right].
-    \end{equation}
-\end{theorem}
-Note that, in contrast to Theorem~\ref{th:baxter_vcdim}, this result bounds the expected risk of a single task, not the average risk. This is the consequence of applying Theorem~\ref{th:baxter_vcdim} and substituting the average empirical error using the result from~\eqref{eq:ben-david_lemma2}.
-Also observe that here the hypothesis space family used is the quotient space $\hypspace_\frelset$, and the VC-dimension of such family is used.
-%
-Using this result, a bound for learners using the Multi-Task ERM principle is given~\cite[Theorem~3]{Ben-DavidB08}
-\begin{theorem}\label{th:ben-david_th3}
-    Consider $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequences of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Consider $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$.
-    Let $h^\diamond$ be the hypothesis selected using the Multi-Task ERM principle, then for every $\epsilon_1, \epsilon_2 > 0$
-    \begin{equation}
-        \nonumber
-        {\hat{\risk}_{\sample_1}(\hypf^\diamond) - \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')}  \leq 2(\epsilon_1 + \epsilon_2)
-    \end{equation}
-    with probability greater than $\eta$ if
-    \begin{equation}
-        \label{eq:ben-david_th3_ineq1}
-        \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \underline{d}(\hypspace_\frelset) \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right], \; 
-    \end{equation}
-    and for $i \neq 1$
-    \begin{equation}
-        \label{eq:ben-david_th3_ineq2}
-        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
-    \end{equation}
-\end{theorem}
-The idea of the proof of this theorem helps to understand how using different tasks can help to improve the performance in the target task. 
-Consider $\hypf^* = \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf)$ the best hypothesis for the $P_1$ distribution.
-According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^*}$ we have that
-\begin{equation}
-    \nonumber
-    {\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^*}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf')}  + \epsilon_1.
-\end{equation}
-%
-Also, in the first stage of Multi-Task ERM principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
-According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^\frelset}$ we have that
-\begin{equation}
-    \nonumber
-    {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1.
-\end{equation}
-Using these two inequalities we get
-\begin{equation}
-    \nonumber
-    \inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf') \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf') + 2\epsilon_1 
-\end{equation}
-under the condition~\eqref{eq:ben-david_sample_inequality}. This bounds the risk of the hypothesis space given by the equivalence class of $\hypf^\frelset$ and establishes the inequality~\eqref{eq:ben-david_th3_ineq2}.
-%
-
-Once we select $\equivclass{\hypf^\frelset}$, the second stage is just ERM using this hypothesis space.
-%
-According to the \comm{reference?}
-\begin{equation}\nonumber
-    \inf_{\hypf \in \hypspace} \risk_{z_1}(\hypf) - \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) \leq \epsilon_2
-\end{equation}
-if
-\begin{equation}
-    \nonumber
-    \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \vcdim{\hypspace} \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
-\end{equation}
-Since the ERM will not use the whole space $\hypspace$ but the subset $\equivclass{\hypf^\frelset} \subset \hypspace$, and
-$$\vcdim{\equivclass{\hypf^\frelset}} \leq \max_{\equivclass{\hypf} \in \hypspace_\frelset} \vcdim{\equivclass{\hypf}} = \underline{d}(\hypspace_\frelset).$$
- then we can write the inequality~\eqref{eq:ben-david_th3_ineq1} of the theorem.
-%
-The advantage of using multiple tasks is then illustrated in this bound and it will be defined by the gap between $\vcdim{\hypspace}$ and $\underline{d}(\hypspace_\frelset)$. If $\underline{d}(\hypspace_\frelset)$ is smaller than $\vcdim{\hypspace}$, the number of samples needed to solve the target task will also be smaller.
-Also, the sample complexity of the rest of tasks is given by $d_{\hypspace_\frelset}(\ntasks)$.
-
-That is, Multi-Task Learning allows to select a subset of hypothesis from which a learner can use the ERM principle. In this stage, the sample complexity is controlled by the generalized VC-dimension of the set of equivalent classes of hypothesis. Once the best equivalent class has been selected, 
-the VC-dimension of this subset, compared to the VC-dimension of the whole set of hypothesis, is what marks the difference between Single Task and Multi-Task Learning.
-
-% Analysis of generalized VCdim
-\subsubsection*{Analysis of generalized VC-dimension with $\frelset$-related tasks}
-As we have seen in Theorem~\ref{th:ben-david_th3}, the VC-dimensions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$ are crucial for stating the advantage of Multi-Task over Single Task Learning. 
-To understand better how these concepts interact, Ben-David et al. give some theoretical results.
-Recall that, given a hypothesis space $\hypspace$, $\hypspace_\frelset$ is a family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$, then
-\begin{align*}
-    \nonumber
-    d_{\hypspace_\frelset}(\ntasks) &= \max_{\set{\npertask ,\Pi_{\hypspace_\frelset} = 2^{\ntasks \npertask}} } \npertask, \\
-    \underline{d}(\hypspace_\frelset) &= max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}, \\    
-    \overline{d}(\hypspace_\frelset) &= \vcdim{\bigcup_{\equivclass{\hypf} \in \hypspace_\frelset} \equivclass{\hypf}}= \vcdim{\hypspace}.
-\end{align*}
-Using the result from~\eqref{eq:genvc_inequalities} we observe that
-\begin{equation}
-    \nonumber
-    \underline{d}(\hypspace_\frelset) \leq d_{\hypspace_\frelset}(\ntasks) \leq \vcdim{\hypspace} .
-\end{equation}
-That is, the best we can hope when bounding the sample complexity in Theorem~\ref{th:ben-david_th3} is $\underline{d}(\hypspace_\frelset) = d_{\hypspace_\frelset}(\ntasks)$. 
-Ben-David et al. give evidence that, with some restrictions on $\hypspace$, this lower bound can be achieved~\cite[Theorem~4]{Ben-DavidB08}.
-\begin{theorem}
-    If the support of $\hypf$ is bounded, i.e. $ \cardinal{\set{x \in \Xspace,  \hypf(x) = 1}} < M$, for all $\hypf \in \hypspace$, then there exists $\ntasks_0$ such that for all $\ntasks>\ntasks_0$
-    \begin{equation}
-        \nonumber
-        d_{\hypspace_\frelset}(\ntasks) = \underline{d}(\hypspace_\frelset).
-    \end{equation} 
-\end{theorem}
-Thus, a sufficient condition on the hypothesis space $\hypspace$ to achieve the lowest $d_{\hypspace_\frelset}(\ntasks)$ is a bounded support of any hypothesis. Although this condition may be too restricting, it can also be proved that the upper limit of $d_{\hypspace_\frelset}(\ntasks)$, that is, $\vcdim{\hypspace}$, under some conditions on $\frelset$ is not achieved. 
-
-The following result~\cite[Theorem~6]{Ben-DavidB08} shows this.
-\begin{theorem}\label{th:ben-david_th6}
-    If $\frelset$ is finite and $\frac{\ntasks}{\log (\ntasks)} \geq \vcdim{\hypspace}$, then
-    \begin{equation}
-        \nonumber
-        d_{\hypspace_\frelset}(\ntasks) \leq 2 \log(\cardinal{\frelset})
-    \end{equation}
-\end{theorem}
-This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the Multi-Task bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$ is a better one in this cases. 
-
-\subsubsection*{Conclusion}
-\comm{TODO?}
-
-
-
-\subsection{Learning Under Privileged Information}
-% The classical learning paradigm tries to minimize the expected risk by minimizing the empirical risk...
-The standard machine learning paradigm tries to find the hypothesis $\hypf$ from a set of hypothesis $\hypspace$ that minimizes the expected risk $\emprisk$ given a set of training samples.
-% Vapnik gives develops the theory of Statisical Learning Theory and it seems complete
-Vapnik~\cite{vapnik2013nature} has developed the theory of statistical learning. In this theory several important results are provided: necessary and sufficient conditions for the consistency of learning processes and bounds for the rate of convergence, which uses the notion of VC-dimension. A new inductive principle, Structural Risk Minimization (SRM), and an algorithm, Support Vector Machine (SVM), that makes use of this notion to improve the learning process.
-
-% However, machines need many examples to learn. What is lacking?
-% An Intelligent Teacher is important in human learning, providing additional information: examples, metaphors...
-Nowadays learning approaches based on Deep Neural Networks, which are not focused on controlling the capacity of the set of hypothesis, outperform the SVM approaches in many problems. However, these popular Deep Learning approaches require large amounts of data to learn good hypothesis.
-It is commonly believed that machines need much more samples to learn than humans do. Vapnik~\cite{VapnikV09, VapnikI15a} reflects on this belief and states that humans typically learn under the supervision of an Intelligent Teacher.
-This Teacher shares important knowledge by providing metaphors, examples or clarifications that are helpful for the students.
-
-
-
-\subsubsection*{LUPI Paradigm}
-% How can that additional information be incorporated in Machine Learning?
-These additional knowledge provided by the Teacher is the Privileged Information that is available only during the training stage.
-To incorporate the concept of Intelligent Teacher in the Machine Learning framework, Vapnik introduces the paradigm of Learning Under Privileged Information (LUPI).
-% LUPI
-% Definition and notation
-In the LUPI paradigm describes the following model. Given a set of i.i.d. triplets
-$$ z = \set{(x_1, x^*_1, y_1), \ldots, (x_\nsamples,x^*_\nsamples, y_\nsamples)}, \; x \in \Xspace, x^* \in \Xspace^*, y \in \Yspace $$
-generated according to an unknown distribution $P(x, x^*, y)$, the goal is to find the hypothesis $\hyp{x}{\param^*}$ from a set of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
-$$ \exprisk = \int \loss{\hyp{x}{\param}}{y} dF(x, y). $$
-
-Note that the goal is the same that in the standard paradigm, however with the LUPI approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide a useful information $x^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ''intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
-% Examples
-To understand better this paradigm consider the following examples.
-\\
-% Example of doctor: images and commentaries
-\textbf{Example 1.} Consider that the goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ''There is an area of unusual concentration of cells of Type A.'' or ''There is an aggresive proliferation of cells of Type B''. These commentaries are the elements $x^*$ of certain space $X^*$ and the Teacher also chooses the probability $\cond{x^*}{x}$.
-\\
-% Example of high quality and low quality images
-\textbf{Example 2.} Consider the \comm{TODO} 
-
-\subsubsection*{Analysis of convergence rates}
-To get a better insight of how the Privileged Information can help in the Learning process, Vapnik provides a theoretical analysis of its influence on the learning rates.
-In the standard learning paradigm, how well the expected risk $\exprisk$ can be bounded is controlled by two factors: the empirical risk $\emprisk$ and the VC-dimension of the set of hypothesis $\mathcal{\hypspace}$.
-In the case of classification, where $\Yspace = \set{-1, 1}$ and the loss $\lossf(\hyp{x}{\param}, y) = \ind_{\hyp{x}{\param} y \leq 0}$, the risks can be expressed as
-\begin{align*}
-    \nonumber
-    \exprisk (\param) &= \int \ind_{y \hyp{x}{\param} \leq 0} d\distf(x, y) =  P(\hyp{x}{\param} y \leq 0) ,\\
-    \emprisk(\param) &= \sum_{i=1}^\nsamples \ind_{y_i \hyp{x_i}{\param} \leq 0} = \nu(\param) .
-\end{align*}
-In~\cite[Theorem~6.8]{vapnik1982estimation} the following bound for the rate of convergence is given with probability $1 - \eta$:
-\begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \nu(\param_\nsamples) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} \sqrt{\nu(\param_\nsamples) \frac{\nsamples}{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}} } .
-\end{equation}
-That is, the bound is controlled by the ratio $\vc/\nsamples$, where $\vc$ is the $\vcdim{\hypspace}$. If this $VC$-dimension is finite, the bound goes to zero as $\nsamples$ grows.
-However, two different cases can be considered.
-\\
-% Convergence of separable hypothesis
-
-\textbf{Separable case:} the training data can be classified in two groups without errors. That is, there exists $\param_\nsamples \in \eta$ such that $y_i \hyp{x_i}{\param_\nsamples} > 0$ for $i = 1, \ldots, \nsamples$, and thus $\nu(\param_\nsamples) = 0$.
-In this case, the following bound for the rate of converge holds
-\begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } .
-\end{equation}
-\\
-% Convergence of non-separable
-\textbf{Non-Separable case:} the training data cannot be classified in two groups without errors. That is, for all $\param_\nsamples \in \paramspace$, there exists $i = 1, \ldots, \nsamples$, such that $y_i \hyp{x_i}{\param_\nsamples} \leq 0$, and thus $\nu(\param_\nsamples) > 0$.
-In this case, the following bound for the rate of converge holds
-\begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \nu(\param_\nsamples) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
-\end{equation}
-Note that there is an important difference here in the rate of convergence. The separable case has a convergence rate of $\vc/\nsamples$, while the non-separable case has a rate of $\sqrt{\vc/\nsamples}$. Vapnik tries to address the question of why there exists such difference.
-
-% Oracle SVM: separable
-\subsubsection*{Oracle SVM}
-Vapnik tries to answer these question by looking at Support Vector Machines. In the separable case, one has to minimize the functional 
-$$J(\hplane) = \norm{\hplane}^2$$
-subject to the constraints
-$$y_i \left( \hplane x_i + \bias \right) \geq 1.$$
-However, in the non-separable case the functional to minimize is 
-$$J(\hplane, \xi_1, \ldots, \xi_\nsamples) = \norm{\hplane}^2 + C \sum_{i=1}^\nsamples \xi_i$$
-subject to the constraints
-$$y_i \left( \hplane x_i + b \right) \geq 1 - \xi_i.$$
-That is, in the separable case $\dimx$ parameters (of $\hplane$) have to be estimated using $\nsamples$ examples, while in the non-separable case $\dimx + \nsamples$ parameters (considering $\hplane$ and the slack variables $\xi_1, \ldots, \xi_\nsamples$) have to be estimated with $\nsamples$ examples. 
-
-What would happen if the parameters $\xi_1, \ldots, \xi_\nsamples$ were known?
-In~\cite{VapnikI15a} an \emph{Oracle} SVM is considered. Here, the learner (Student) is supplied with a set of triplets
-\begin{equation}
-    \nonumber
-    (x_1, \xi_1^0, y_1), \ldots, (x_\nsamples, \xi_\nsamples^0, y_\nsamples)
-\end{equation}
-where $\xi^0_1, \ldots, \xi^0_\nsamples$ are the slack variables for the best decision rule $\hyp{x}{\param_0} = \inf_{\param \in \paramspace} \exprisk(\param) $:
-\begin{equation}
-    \nonumber
-    \xi_i^0 = \max \left(0, 1 - \hyp{x}{\param_0}  \right), \; \forall i = 1, \ldots, \nsamples .
-\end{equation}
-An \emph{Oracle} SVM has to minimize the functional
-$$J(\hplane) = \norm{\hplane}^2$$
-subject to the constraints
-$$y_i \left( \hplane x_i + \bias \right) \geq 1 - \xi_i^0 .$$
-Since the slack variables $\xi_i^0$ are known in advance, it can be shown~\cite{VapnikV09} that for the \emph{Oracle} SVM the following bound holds
-\begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq P(1 - \xi^0 \leq 0) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } ,
-\end{equation}
-where $P(1 - \xi^0 \leq 0)$ is the probability error of the hypothesis $\hyp{x}{\param_0}$.
-That is, we recover the rate $\vc/\nsamples$.
-
-% Intelligent Teacher: separable but we need to control two models
-\subsubsection*{From Oracle to Intelligent Teacher}
-The \emph{Oracle} SVM is a theoretical construct, but we can approximate it by modelling the slack variables with the information provided by the Teacher in the LUPI paradigm.
-That is, the Teacher defines a space $\Xspace^*$ and a set of functions $\set{f^*(x, \param^*) , \param^* \in \paramspace^*}$. Then model the slack variables can be approximated as
-\begin{equation}
-    \nonumber
-    \xi^* = f^*(x^*, \param^*) .
-\end{equation}
-From the pairs generated by some random generator in nature, the Teacher also defines the probability $\cond{x^*}{x}$ to provide the triplets
-\begin{equation}
-    \nonumber
-    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) .
-\end{equation}
-Then, we can consider the problem where the goal is to minimize
-$$ J(\param, \param^*) = \sum_{i=1}^\nsamples \max(0, f^*(x_i^*, \param^*)) $$
-subject to the constraints
-$$ \hyp{x_i}{\param} \geq 1 - f^*(x_i^*, \param^*).$$
-Let $f(x, \param_\nsamples), h(x. \param_\nsamples)$ that minimize this problem. Then, in~\cite[Proposition~2]{VapnikV09} the following results for the bound of convergence is given
-\begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\frac{(\vc + \vc^*) \log\left(\frac{2\nsamples}{(\vc + \vc^*)} \right) - \log\eta}{\nsamples} } ,
-\end{equation}
-where $d^*$ is the VC-dimension of the space of hypothesis $\set{f(x, \param^*) \in \paramspace^*}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the $P(1 - f^*(x^*, \param^*_\nsamples) \leq 0)$. Although this probability is unknown,  we can control it. Considering
-\begin{equation}
-    \nonumber
-    \param^*_0 = \inf_{\param^* \in \paramspace^*} \int_{\Xspace^*} \max(0, f^*(x^*, \param^*)- 1) dP(x^*)
-\end{equation}
-and
-\begin{equation}
-    \nonumber
-    \param^*_\nsamples = \inf_{\param^* \in \paramspace^*} \sum_{i=1}^\nsamples \max(0, f^*(x^*_i, \param^*)- 1) .
-\end{equation}
-Consider $\set{f^*(x^*, \param^*), \param^* \in \paramspace^*}$ such that $f^*(x^*, \alpha^*) < B, \param^* \in \paramspace^*$, then 
-$$\set{\max(0, f^*(x^*, \param^*)- 1), \param^* \in \paramspace^*}$$
- is a set of totally bounded non-negative functions, then we have the standard bound~\cite{vapnik2013nature}
-\begin{equation}
-    \nonumber
-    P(1 - f^*(x^*, \param^*_0) \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
-\end{equation}
-with probability $1 - 2\eta$.
-That is, to have a rate of $\vc/\nsamples$ for $\param_\nsamples$, we need to estimate $\param^*_\nsamples$, which has a rate of $\sqrt{\vc^*/\nsamples}$. However, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a much lower capacity, and thus, the convergence will be faster in this space.
-
-\subsubsection*{SVM+ }
-Vapnik describes an extension of the SVM that embodies the LUPI paradigm~\cite{VapnikV09,VapnikI15a}. Given a set of triplets
-\begin{equation}
-    \nonumber
-    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) ,
-\end{equation}
-the idea is to model the slack variables of the standard SVM using the elements $x^* \in \Xspace^*$ as
-$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right]_+  = \max\left( y (w^* \phi^*(x^*) + b^*), 0  \right).$$
-The minimization problem is the following:
-\begin{equation}
-    \label{eq:svmplus_original}
-    \begin{aligned}
-        & \argmin_{w, w^*, b, b^*}
-        & &  C \sum_{i=1}^\nsamples \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right]_+ + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
-        & \text{s.t.}
-        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) \right]_+ .
-    \end{aligned}
-\end{equation}
-Here $\phi$ and $\phi^*$ are two transformations that can be different.
-However, note that problem~\eqref{eq:svmplus_original} is not convex due to the positive part term in the objective function. Vapnik et al. propose a relaxation of this problem to obtain a convex one. The idea is to model the slack variables $\xi$ as
-$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right] + \zeta(x^*, y) ,$$
-where $\zeta(x^*, y) \geq 0$.
-The minimization problem is then
-\begin{equation}
-    \label{eq:svmplus_delta_primal}
-    \begin{aligned}
-        & \argmin_{w, w^*, b, b^*, \zeta_i}
-        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + C \Delta \sum_{i=1}^\nsamples \zeta_i \\
-        & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
-        & \text{s.t.}
-        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \right] ,\\
-        & & &y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \geq 0 ,\\
-        & & &\zeta_i \geq 0, \\
-        & \text{for } & & i=1, \ldots, \nsamples.
-    \end{aligned}
-\end{equation}
-Problem~\eqref{eq:svmplus_delta_primal} is convex and the corresponding dual problem is
-\begin{equation}\label{eq:svmplus_delta_dual}
-    \begin{aligned}
-        & \argmin_{\alpha_i, \delta_i} 
-        & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(x^*_i, x^*_j)  - \sum_{i=1}^\nsamples \alpha_i \\
-        & \text{s.t.}
-        & & 0 \leq \delta_i \leq C \\
-        & & & 0 \leq \alpha_i \leq C + \delta_i, \\
-        & & & \sum_{i=1}^{\nsamples}{\delta_i y_i} = 0, \; 
-        \sum_{i=1}^{\nsamples}{\alpha_i y_i} = 0, \\
-        & \text{for } & & i=1, \ldots, \nsamples.
-        \end{aligned}
-\end{equation}
-where we use the kernel functions
-$$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(x^*_i, x^*_j) = \dotp{\phi^*(x^*_i)}{\phi^*(x^*_j)}.$$ 
-We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the LUPI paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\Xspace^*$. For that reason, $\Xspace$ and $\Xspace^*$ are named Decision Space and Correction Space, respectively.
-
-
-\subsubsection*{Connection between SVM+ and MTLSVM}
-% Liang and Cherkassky
-In~\cite{LiangC08} the connection between SVM+ and Multi-Task Learning SVM (MTLSVM) is discussed. 
-% Definition
-The MTLSVM proposed in~\cite{LiangC08} is a Multi-Task Learning model based on the SVM. It solves the primal problem
-\begin{equation}
-    \label{eq:mtlsvm_primal}
-    \begin{aligned}
-        & \argmin_{w, b, v_r, b_r, \xi_i^r}
-        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
-        & \text{s.t.}
-        & & y_{i}^r ( \dotp{w}{\phi(x_{i}^r)} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq 1 - \xi_i^r ,\\
-        & & &\xi_i^r \geq 0, \\
-        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
-    \end{aligned}
-\end{equation}
-Here, a combination of a common model for all tasks
-$$ \dotp{w}{\phi(x_{i})} + b $$
-and a task-specific model
-$$ \dotp{v_r}{\phi_r(x_{i}^r)} + b_r $$
-is used. Here, the common transformation $\phi$ and the task-independent ones $\phi_r$ can be different 
-The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
-\begin{equation}\label{eq:mtlsvm_dual}
-    \begin{aligned}
-        & \argmin_{\alpha_i} 
-        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k_r(x^r_i, x^s_j) \\
-        & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r \\
-        & \text{s.t.}
-        & & 0 \leq \alpha_i^r \leq C \\
-        & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
-        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
-        \end{aligned}
-\end{equation}
-% Similarities and differences
-In~\cite{LiangC08} some similarities between MTLSVM and SVM+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve MTL problems, where the $\Xspace = \Xspace^*$ but different tasks are incorporated, which is reflected on the different transformations $\phi_r$.
-If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a modification of SVM+ where the slack variables are modeled as
-$$ \xi(x^*, y) = y (w^* \phi^*(x^*) + b^*)  $$
-and $x^* = x$. That is, it is a relaxation of the original problem~\eqref{eq:svmplus_original} where the positive part is ignored.
-This relaxation gives place to some important differences between both models. Since the auxiliary primal variables $\zeta_i$ are no longer required, this is reflected in a simpler dual form~\eqref{eq:mtlsvm_dual}, where only $\nsamples$ dual variables have to be estimated, instead of the $2\nsamples$ dual variables of~\eqref{eq:svmplus_delta_dual}.
-The Multi-Task element, is reflected on~\eqref{eq:mtlsvm_dual} through the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
-%
-A major remark can be make about the differences between MTLSVM and SVM+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid with MTLSVM, since we are no modelling the slack variables $\xi$ adequately. 
-It is still a work in progress to study the rate of convergence of MTLSVM and to establish more clear links with SVM+.
-% Relation with the simplified approach?
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \section{Multi-Task Learning Methods: An Overview}
 
 \subsection{Feature-Based MTL}
@@ -1214,6 +477,775 @@ Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling t
 where $\myvec{\theta}^{-r}  = \set{\myvec{\theta}^s, s \neq r }$.
 This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
 Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Why does Multi-Task Learning work?}
+% First works in Learning to Learn
+% Overview of section
+ % Ruder and Caruana
+% 
+\subsection{Learning to Learn: A notion of environment of tasks} % Baxter
+% The first theoretical work on MTL... MTL as a Bias Learning Problem
+Tipically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
+$ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
+where $(x_i, y_i)$ are sampled from a distribution $\distf$.
+%
+In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypothesis space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the probability of the data given the hypothesis.
+%
+Another more direct inductive principle is Empirical Risk Minimization (ERM), which is the most common one. In ERM the densities are ignored and an empirical error $\emprisk$ is minimized with the hope of minimizing the true expected error $\exprisk$, which would result in a good generalization. 
+%
+Several models use the ERM principle to generalize from data such as Neural Networks or Support Vector Machines. These methods are designed to find a good hypothesis $\hyp{x}{\param}$ from a given space $\hypspace$. The definition of such space $\hypspace$ define the bias for these problems. If $\mathcal{H}$ does not contain any good hypothesis, the learner will not be able to learn.
+%
+
+The best hypothesis space we can provide is the one containing only the optimal hypothesis, but this is the original problem that we want to solve. Therefore, in the single task scenario, there is no difference between bias learning and ordinary learning.
+Instead, we focus on the situation where we want to solve multiple related tasks. In that case, we can obtain a good space $\hypspace$ that contains good solutions for the different tasks.
+%
+In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning or Learning to Learn, which can be seen as a generalization of strict Multi-Task Learning. This is done by defining an environment of tasks and extending the work of~\cite{vapnik2013nature}, which defines the capacity of space of hypothesis, Baxter defines the capacity of a family of spaces of hypothesis.
+
+% Review of concepts for STL in Supervised Learning
+Before presenting the concepts defined for Bias Learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
+\subsubsection*{Ordinary Learning}
+In the ordinary statistical learning, some theoretical concepts are used:
+\begin{itemize}
+    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
+    \item a \emph{probability distribution} $\distf$, which is unknown, defined over $\Xspace \times \Yspace$,
+    \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
+    \item a \emph{hypothesis space} $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$ with hypothesis $\hyp{\cdot}{\param}: \Xspace \to \Yspace$.
+\end{itemize}
+The goal for the learner is to select a hypothesis $\hyp{x}{\param} \in \mathcal{H}$, or equivalently $\param \in \paramspace$, that minimizes the expected risk
+$$ \exprisk(\param) =  \int_{\Xspace \times \Yspace} \loss{\hyp{x}{\param}}{y} d\distf(x, y) .$$
+The distribution $\distf$ is unknown, but we have a training set $\sample = \{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ of samples drawn from $\distf$. 
+The approach is then is to apply the ERM inductive principle, that is to minimize the empirical risk
+$$ \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples l(h(x_i), y_i).$$
+Thus, a learner $\mathcal{A}$ maps the set of training samples to a set of hypothesis:
+\begin{equation}
+    \nonumber
+    \mathcal{A} : \bigcup {(\Xspace \times \Yspace)^\nsamples} \to \hypspace.
+\end{equation}
+Although $\emprisk(\param)$ is an unbiased estimator of $\exprisk(\param)$, it has been shown~\cite{vapnik2013nature} that this approach, despite being the most evident one, is not the best principle that can be followed.
+This has relation with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
+Vapnik answers to the question of what can be said about $\exprisk$ when $\param$ minimizes $\emprisk(\param)$, and moreover, his results are valid also for small number of training samples $n$.
+More specifically, Vapnik sets the sufficient and necessary conditions for the consistency of an inductive learning process, i.e. for $\emprisk(\param) \toprob \exprisk(\param) $ uniformly. Vapnik also defines the capacity of a hypothesis space and use it to derive bounds on the rate of this convergence for any $\param \in \paramspace$ and, more importantly, bounds on the difference $\inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param)$.
+Under some general conditions, he proves that
+\begin{equation}\label{eq:ordinary_generalization_bound}
+    \inf_{\param \in \paramspace} \emprisk(\param) - \inf_{\param \in \paramspace} \exprisk(\param) \leq B(\nsamples/\vcdim{\hypspace})
+\end{equation}
+where $B$ is some non-decreasing function and $\vcdim{\hypspace}$ is the capacity of the space $\hypspace$, also named the VC-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
+\begin{itemize}
+    \item The number of training samples $\nsamples$. A greater number of training samples assures a better generalization of the learning process.This looks intuitive and could be already inferred from the asymptotical properties. 
+    \item The VC-dimension $\vcdim{\hypspace}$ of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik theory.
+\end{itemize}
+The VC-dimension measures the capacity of a set of hypothesis $\hypspace$. 
+%In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_\vcdim{\hypspace}$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the VC-dimension of the following set of indicator functions $ I(x, \param, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
+If the capacity of the set $\hypspace$ is too large, we may find a
+hypothesis $\hyp{x}{\opt{\param}}$ that minimizes $\emprisk$ but does not 
+generalize well and therefore, does not minimize $\exprisk$. This is the 
+overfitting problem. 
+On the other side, if we use a simple $\hypspace$, 
+with low capacity, we could be in a situation where there is not a good hypothesis $\hyp{x}{\param} \in \hypspace$, so the empirical risk $\inf_{\param \in \paramspace} \exprisk$ is too large. This is the underfitting problem.
+
+% The Structural Risk Minimization (SRM) as an inductive principle, proposed by Vapnik (as opposed to the ERM), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim{\hypspace}$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
+% $$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
+% where their VC-dimensions are ordered:
+% $$ d_1 < d_2 < \ldots < d_k < \ldots$$
+% where $d_i$ is the VC-dimension of $\mathcal{H}_i$.
+% SRM selects the hypothesis $\hyp{x}{\param^*} = \hyp{x}{\param_i^*} \in \hypspace_i$ that obtains the best bound for the actual risk $\exprisk$.
+% This admissible structure can be built in various ways. In Neural Networks in can be the built by increasing the number of hidden layers. In other methods, such as SVM or Ridge Regression, this is done by decreasing the regularization.
+% However, this SRM principle is usually replaced by a cross-validation (CV) procedure.
+
+% Support Vector Machines, which are the most representative models of this theory, use the VC-dimension also in other way (apart from the SRM principle or the CV procedure). The goal of finding the optimal hyperplane, that is, that with the maximum margin between the classes, has its motivation in the fact the set of such type of hypothesis have a lower VC-dimension that the set of all hyperplanes do.
+
+
+% Extension to MTL
+\subsubsection*{Bias Learning: Concept and Components}
+In ~\cite{baxter2000model} two main concepts are presented: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
+For simplicity we write $\hypf(x)$  instead of $\hypf(x, \param)$, and since $\param$ completely defines $\hypf$, we also substitute $\param$ by $\hypf$ for an easier notation.
+Using these concepts, the bias learning problem has the following components:
+\begin{itemize}
+    \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$,
+    \item an \emph{environment} $(\bprobspace, \bdistf)$ where $\bprobspace$ is a set of distributions $P$ defined over $\Xspace \times \Yspace$, and we can sample from $\bprobspace$ according to a distribution $\bdistf$,
+    \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$, and
+    \item a \emph{family of hypothesis spaces} $\hypspacef = \set{\hypspace_\param, \param \in \paramspace}$, where each element $\hypspace_\param$ is a set of hypothesis.
+\end{itemize}
+Analogous to ordinary learning, the goal is to minimize the expected risk, defined as
+\begin{equation}\label{eq:biaslearn_exprisk}
+    \bexprisk(\param) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\param} \risk_P(\hypf) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\param} \int_{\Xspace \times Y} l(h(x), y) dP(x, y) d\bdistf(P).
+\end{equation}
+Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set samples from the environment $(\bprobspace, \bdistf)$ obtained in the following way:
+\begin{enumerate}
+    \item Sample $T$ times from $\bdistf$ obtaining $P_1, \ldots, P_T \in \bprobspace$
+    \item For $r=1, \ldots, T$ sample $m$ pairs $\sample_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$ where $(x_i^r, y_i^r) \in X \times Y$ .
+\end{enumerate}
+We obtain a sample $z=\{(x_i^r, y_i^r), r=1,\; i=1, \ldots, \;m=1, \ldots, T\}$, with $\npertask$ examples from $\ntasks$ different learning tasks, and
+\begin{equation}
+    \nonumber
+    \bsample \defeq 
+    \begin{matrix}
+        (x_1^1, y_1^1) & \ldots & (x_m^1, y_m^1) \\
+        \vdots & \ddots & \vdots \\
+        (x_1^\ntasks, y_1^\ntasks) & \ldots & (x_m^\ntasks, y_m^\ntasks) \\
+    \end{matrix}
+\end{equation}
+is named as a $(\ntasks, \npertask)$-sample.
+Using $\bsample$ we can define the empirical loss as
+\begin{equation}\label{eq:biaslearn_emprisk}
+    \bemprisk(\param) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\param} \hat{\risk}_{\sample_r}(\hypf) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\param} \sum_{i=1}^m l(\hypf(x_i^r), y_i^r),
+\end{equation}
+which is an average of the empirical losses of each task. 
+Note, however, that in the case of the bias learner, this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{\sample_r}(\hypf)$. 
+Putting all together, a bias learner $\mathcal{A}$ maps the set of all $(\ntasks, \npertask)$-samples to a family of hypothesis spaces:
+\begin{equation}
+    \nonumber
+    \mathcal{A} : \bigcup {(\Xspace \times \Yspace)^{(\ntasks, \npertask)}} \to \hypspacef.
+\end{equation}
+%
+
+To follow an analogous path to that of ordinary learning, the milestones in bias learning theory should include:
+\begin{itemize}
+    \item Checking the consistency of the Bias Learning methods, i.e. proving that $\bemprisk(\param)$ converges uniformly in probability to $\bexprisk(\param)$.
+    \item Defining a notion of capacity of hypothesis space families $\hypspacef$.
+    \item Finding a bound of $\bemprisk(\param) - \bexprisk(\param)$ for any $\param$ using the capacity of the hypothesis space family. If possible, finding also a bound for $\inf_{\param \in \paramspace}\bemprisk(\param) - \inf_{\param \in \paramspace} \bexprisk(\param)$.
+\end{itemize}
+To achieve these goals some previous definitions are needed. From this point, since any $\hypspace$ is defined by a $\param \in \paramspace$, we omit $\param$ and write just $\hypspace$ for simplicity.
+%
+\subsubsection*{Bias Learning: Capacities and Uniform Convergence}
+% Pseudo-metrics, Covering numbers and Capacities
+In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
+Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
+Consider also the set of sequences of $\ntasks$ hypothesis 
+$$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$$
+We can define then the set of $(\ntasks, 1)$-empirical risks as 
+$$\hypspace^\ntasks_\lossf \defeq \set{ \myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
+The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks$. Now we can define
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \dist{\bprobseq}(\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf) = \int_{(\Xspace \times \Yspace)^{\ntasks}} &\abs{\myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) - \myvec{\hypf'}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks)} \\ 
+        & d{P_1}(x_1, y_1) \ldots d{P_\ntasks}(x_\ntasks, y_\ntasks)
+    \end{aligned}
+\end{equation}
+for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^\ntasks$.
+%
+
+Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
+\begin{equation}
+    \nonumber
+    \hypspace^* \defeq \inf_{\hypf \in \hypspace} \risk_P(\hypf).
+\end{equation}
+The family of such sets is defined as 
+$\bsetdist = \set{\hypspace^*, \hypspace \in \hypspacef}$.
+The pseudo-metric in this space is given by $Q$:
+\begin{equation}
+    \nonumber
+    \dist{\bdistf} = \int_\bprobspace \abs{\hypspace_1^* - \hypspace_2^*} d\bdistf
+\end{equation}
+With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. Given a pseudo-metric $\dist{S}$ in a space $\mathcal{S}$, 
+a set of $l$ elements $s_1, \ldots, s_l \in \mathcal{S}$ is an $\epsilon$-cover of $\mathcal{S}$ if 
+$ \dist{S}(s, s_i) \leq \epsilon $
+for some $i=1, \ldots, l$.  Let $\mathcal{N}(\epsilon, \mathcal{S}, \dist{S})$ denote the size of the smallest $\epsilon$-cover.
+Then, we can define the following capacities of a family space $\hypspacef$:
+\begin{itemize}
+    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^\ntasks, \dist{\bprobseq})$.
+    \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} \defeq \sup_Q \mathcal{N}(\epsilon, \bsetdist, \dist{\bdistf})$.
+\end{itemize}
+
+% Uniform Convergence for bias learners (Comparison with Vapnik)
+Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, the bias expected risk is bounded
+\begin{equation}
+    \nonumber
+    \bemprisk(\hypspace) \leq \bexprisk(\hypspace) + \epsilon
+\end{equation}
+with probability $1 - \eta$, given sufficiently large $\ntasks$ and $\npertask$, 
+\begin{equation}
+    \nonumber
+    \ntasks \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetdist}}{\eta} , \frac{64}{\epsilon^2}\right)  , \; \npertask \geq \max \left( \frac{256}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{32}}{\bsetsample}}{\eta} , \frac{64}{\epsilon^2}\right) .
+\end{equation}
+It should be noted that the bound for $\npertask$ is inversely proportional to $\ntasks$, that is, the more tasks we have, the less samples we need for each task. 
+
+
+% Multi-Task Learning (strictly speaking, with fixed tasks)
+\subsubsection*{Multi-Task Learning}
+The previous result is a result for pure Bias Learning, where we have an $(\bsetdist, \bdistf)$-environment of tasks. In Multi-Task Learning, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks), \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the Multi-Task expected risk is
+\begin{equation}\label{eq:mtlearn_exprisk}
+    \risk_{\bprobseq}(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} l(\hypf_r(x), y) d{P_r}(x, y),
+\end{equation}
+and the empirical risk is defined as
+\begin{equation}\label{eq:mtlearn_emprisk}
+    \bemprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m l(\hypf_r(x_i^r), y_i^r).
+\end{equation}
+A similar result to that of Bias Learning is given for Multi-Task Learning~\cite[Theorem~4]{baxter2000model}:
+\begin{equation}
+    \nonumber
+    \bemprisk(\myvec{\hypf}) \leq \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon,
+\end{equation}
+with probability $1 - \eta$ given that the number of samples per task
+\begin{equation}
+    \nonumber
+    \npertask \geq \max \left( \frac{64}{\ntasks \epsilon^2} \log\frac{4\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\eta} , \frac{16}{\epsilon^2}\right).
+\end{equation}
+Observe that we do not need the \emph{distribution-driven} capacity in this case, just the \emph{sample-driven} capacity.
+% Feature Learning
+\subsubsection*{Feature Learning}
+Feature Learning is a common way to encode bias. The most popular example are Neural Networks, where all the hidden layers can be seen as a Feature Learning engine that learns a mapping from the original space to a space with ''strong'' features.
+In general, a set of ''strong'' feature maps is defined as $\mathcal{F} = \set{f, f: \Xspace \to \Fspace}$. Using these features, functions $g \in \mathcal{G}$ (which are tipically simple) are built:
+$\Xspace \to_f \Fspace \to_g \Yspace$.
+Thus, for each map $f$, the hypothesis space can be expressed as 
+$\hypspace_f = \set{h = \mathcal{G} \circ f, g \in \mathcal{G}}$
+, and the family of hypothesis spaces is 
+$\hypspacef = \set{\hypspace_f, f \in \mathcal{F}}$.
+Now, the Bias Learning problem is the problem of finding a good mapping $f$.
+It is proved~\cite[Theorem~6]{baxter2000model} that in the Feature Learning case the capacities of $\hypspacef$ can be bounded by the capacities of $\mathcal{F}$ and $\mathcal{G}$ as
+\begin{align*}
+    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}^\ntasks}^\ntasks \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
+    \capacity{\epsilon}{\bsetdist} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})
+\end{align*}
+with $\epsilon = \epsilon_1 + \epsilon_2 $. Here, $\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})$ is defined as 
+$\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) \defeq \sup_P \mathcal{N}(\epsilon, \mathcal{F}, \dist{[P, \mathcal{G}_\lossf]})$, where
+$$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} sup_{g \in \mathcal{G}} \abs{\loss{g \circ f(x)}{y} - \loss{g \circ f'(x)}{y}} dP(x, y)$$
+is a pseudo-metric. Using these results alongside those presented for Bias Learning is useful to establish bounds for Feature Learning models like Neural Networks.
+
+% Generalized VC-dim , Theorems 12, 13 and Corollary 13
+\subsubsection*{Generalized VC-Dimension for Multi-Task Learning}
+The concepts presented until now rely on the concepts of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\bemprisk(\myvec{\hypf}) - \bexprisk(\myvec{\hypf})$, that is, the probability of large deviations between the empirical and expected risks for a given hypothesis sequence. However, it would be more interesting to establish some bounds between the empirical error and the \emph{best expected error}.
+To overcome this limitations, a generalized VC-dimension is developed in~\cite{baxter2000model} for Multi-Task Learning with Boolean hypothesis.
+%
+\begin{definition}\label{def:gen_vcdim}
+    Let $\hypspace$ be a space of boolean functions and $\hypspacef$ a boolean hypothesis space family. Denote the set of $\ntasks \times \npertask$ matrices in $\Xspace$ as $\Xspace^{\ntasks \times \npertask}$
+For each $\mymat{x} \in \Xspace^{\ntasks \times \npertask}$ and each $\hypspace \in \hypspacef$ define the set of binary $\ntasks \times \npertask$ matrices
+\begin{equation}
+    \nonumber
+    \hypspace_{\vert \mymat{x}} \defeq \set{\begin{pmatrix}
+        \hypfun{x_1^1} & \ldots & \hypfun{x_\npertask^1} \\
+        \vdots & \ddots & \vdots \\
+        \hypfun{x_1^\ntasks} & \ldots & \hypfun{x_\npertask^\ntasks} \\
+    \end{pmatrix}, \hypf \in \hypspace} ,
+\end{equation}
+and the corresponding family of such sets as
+\begin{equation}
+    \nonumber
+    \hypspacef_{\vert \mymat{x}} = \bigcup_{\hypspace \in \hypspacef}  \hypspace_{\vert \mymat{x}}.
+\end{equation}
+For each $\ntasks, \npertask \geq 0$ define the number of binary matrices obtainable with $\hypspacef$ as
+\begin{equation}
+    \nonumber
+    \Pi_\hypspacef(\ntasks, \npertask) \defeq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef_{\vert \mymat{x}} }.
+\end{equation}
+Note that $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ and if $\Pi_\hypspacef(\ntasks, \npertask) \leq 2^{\ntasks \npertask}$ we say that $\hypspacef$ shatters $\Xspace^{\ntasks \times \npertask}$.
+For each $n > 0$ define
+\begin{align}
+    d_\hypspacef(\ntasks) &\defeq \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m , \nonumber \\
+    \overline{d}(\hypspacef) &\defeq \vcdim{\hypspacef^1} = \vcdim{\bigcup_{\hypspace \in \hypspacef} \hypspace}  ,  \nonumber \\
+    \underline{d}(\hypspacef) &\defeq \max_{\hypspace \in \hypspacef} \vcdim{\hypspace}  . \nonumber
+\end{align}
+Here, $d_\hypspacef(\ntasks)$ is the generalized VC-dimension, and
+\begin{equation}
+    \nonumber
+    d_\hypspacef(\ntasks) \geq \max\left(\floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}}, \underline{d}(\hypspacef) \right)
+\end{equation}
+where it can be observed that 
+\begin{equation}
+    \label{eq:genvc_inequalities}
+    \overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef).
+\end{equation}
+\comm{Proof?}
+\end{definition}
+% Look at Ben-David version
+Now we can present the relevant result expressed in~\cite[Corollary~13]{baxter2000model}.
+\begin{theorem}\label{th:baxter_vcdim}
+    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of boolean hypothesis $\hypf_i \in \hypspace$, then for every $\epsilon > 0$
+% \begin{equation}
+%     \nonumber
+%     \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
+% \end{equation}
+\begin{equation}
+    \nonumber
+    \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})} \leq \epsilon,
+\end{equation}
+with probability $1 - \eta$ given that the number of samples per task
+\begin{equation}
+    \label{eq:bound_npertask_genvcdim}
+    \npertask \geq \frac{88}{\epsilon^2} \left[2 d_\hypspacef(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right] .
+\end{equation}
+\end{theorem}
+Here, since $d_\hypspacef(\ntasks) \geq d_\hypspacef(\ntasks+1)$, it is easy to see that as the number of task $\ntasks$ increases, the number of examples needed per task can decrease. 
+Moreover, as shown in~\cite[Theorem~14]{baxter2000model}, if this bound on $\npertask$ is not fulfilled, then we can always find a sequence of distributions $\bprobseq$ such that
+\begin{equation}
+    \nonumber
+    \inf_{\hypf \in \hypspace} \bemprisk(\myvec{\hypf}) > \inf_{\hypf \in \hypspace} \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon .
+\end{equation}
+With this results we can see that the condition~\eqref{eq:bound_npertask_genvcdim} has some important properties:
+\begin{itemize}
+    \item It is a computable bound, given that we know how to compute $d_\hypspacef(\ntasks)$.
+    \item It provides a sufficient condition for the uniform convergence (in probability) of the empirical risk to the expected risk.
+    \item It provides a necessary condition for the consistency of Multi-Task Learners, i.e. uniform convergence of the best empirical risk to the best expected risk.
+\end{itemize}
+
+\subsubsection*{Conclusion}
+In~\cite{baxter2000model} several new concepts are developed. The $(\bprobspace, \bdistf)$-environment of tasks is useful to characterize the concept of related tasks. Moreover, using this definition, Baxter is able to give some important results of uniform convergence in the Bias Learning paradigm. From this general view, Multi-Task Learning
+is a particular case and the uniform convergence results are also valid. The Feature Learning approach, which can be seen as a more particular method of Multi-Task Learning has some interesting results splitting the analysis into the feature learning process and the construction of models over these features. Finally, the most important result is the definition of a generalized VC-dimension and the uniform convergence of Multi-Task Learning models using this concept. Although this is a result only valid for boolean hypothesis, it helps to shed some light on Multi-Task Learning and the reasons of its effectiveness.
+
+\subsection{Learning with Related Tasks} % Ben-David
+% Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
+Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08} for boolean hypothesis functions defined over $\Xspace \times \set{0, 1}$.
+% task relatedness
+One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
+% task individual risks
+The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not bound the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
+
+% F-related tasks
+\subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
+The main concept for the theory developed in~\cite{Ben-DavidB08} is a set of $\frelset$ of transformations $\frelf: \Xspace \to \Xspace$. Given a probability distribution $\distf$ over $\Xspace \times \set{0, 1}$, a set of tasks with distributions $P_1, \ldots, P_\ntasks$ are $\frelset$-related if, for each task there exists some $\frelf_i \in \frelset$ such that $P_i = \frelf_i(\distf)$.
+
+\begin{definition}[$\frelset$-related task]\label{def:frel_tasks}
+    Consider a measurable space $(\Xspace, \mathcal{A})$ and the corresponding measurable product space $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$. Consider $P$ a probability distribution over this product space and a function $\frelf: \Xspace \to \Xspace$, then we define the distribution $\frel{P}$ such that for any $S \in \mathcal{A}$,
+    $$ \frel{P}(S) \defeq P(\set{(f(x), b), (x, b) \in S }).$$
+    %
+    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$, and let $P_1, P_2$ be distributions over $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, then the distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
+    % \begin{itemize}
+    %     \item The distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
+    %     \item Two samples $\sample_1, \sample_2$ sampled from $P_1, P_2$ respectively are $\frelset$-related if $P_1, P_2$ are $\frelset$-related.
+    % \end{itemize}
+\end{definition}
+This notion establishes a clear definition of related tasks but we are interested in how a learner can use this relatedness to improve the learning process.
+For that, considering that $\frelset$ is a group under function composition, we regard at the action of the group $\frelset$ over the set of hypothesis $\hypspace$. This action defines the following equivalence relation in $\hypspace$:
+$$ \hypf_1 \sim_\frelset \hypf_2 \iff \exists \frelf \in \frelset,  \hypf_1 \circ \frelf = \hypf_2 .$$
+%
+This equivalence relation defines equivalence classes $\equivclass{\hypf}$, that is let $h' \in \hypspace$ be an hypothesis, then $h' \in \equivclass{\hypf}$ iff $h' \sim_\frelset h$. 
+We consider the quotient space 
+$$\hypspace_\frelset \defeq \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}.$$
+It is important to observe that $\hypspace_\frelset = \hypspacef'$ is a hypothesis space family, since it is a set of equivalence classes $\equivclass{\hypf} = \hypspace'$, which are set of hypothesis.
+%
+
+\subsubsection*{The Multi-Task Empirical Risk Minimization}
+This equivalence classes are useful to divide the learning process in two stages, this is called the \emph{Multi-Task ERM}. Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tasks, then
+\begin{enumerate}
+    \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
+    \begin{equation}
+        \nonumber
+        \equivclass{\hypf^\frelset} \defeq \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_i}(\hypf_i) ,
+    \end{equation}
+    \item Select the best hypothesis $h^\diamond$ for the target task (without loss of generality, consider the first one):
+    \begin{equation}
+        \nonumber
+        h^\diamond = \inf_{\hypf \in \equivclass{\hypf^\frelset}} \hat{\risk}_{\sample_1}(\hypf) .
+    \end{equation}
+\end{enumerate}
+
+For example, consider the handwritten digits recognition problem, we might integrate $T$ different datasets designed in different conditions. Each dataset have been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generate a different bias for the dataset. However, there exists a probability for ''pure'' digits, e.g. the pixels of digit one have higher probability around a line in the middle of the picture than in the sides. This ''pure'' probability distribution $P_0$ and all the distributions $P_1, \ldots, P_T$ from which our datasets have been sampled might be $\frelset$-related among them and with $P_0$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
+
+% Results for F-related tasks (Theorems 2, 3)
+\subsubsection*{Bounds for $\frelset$-Related Tasks}
+% Relation with Baxter work
+The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis quotient space of equivalent classes $\hypspace_\frelset$. However the following results is needed first.
+%
+Let $P_1, P_2$ be $\frelset$-related distributions, then this statement can be proved~\cite[Lemma~2]{Ben-DavidB08}:
+\begin{equation}
+    \label{eq:ben-david_lemma2}
+    \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) = \inf_{\hypf \in \hypspace} \risk_{P_2}(\hypf).
+\end{equation}
+This indicates that the the expected risk is invariant under transformations of $\frelset$.
+Now, one of the main results~\cite[Theorem~2]{baxter2000model} can be given.
+\begin{theorem}\label{th:ben-david_th2}
+    Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$ that is a group under function composition. Let $\hypspace$ be a hypothesis space so that $\frelset$ acts as a group over $\hypspace$, and consider the quotient space $\hypspace_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
+    Consider $\bprobseq = (P_1, \ldots, P_\ntasks)$ a sequence of $\frelset$-related distributions over $\Xspace \times \set{0, 1}$, and $\myvec{z} = (\sample_1, \ldots, \sample_\ntasks)$ the corresponding sequence of samples  where $\sample_i$ is sampled using $P_i$, then for every $\equivclass{\hypf} \in \hypspace_\frelset$ and $\epsilon > 0$ 
+    \begin{equation}
+        \nonumber
+        \abs{\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) - \inf_{\hypf' \in \equivclass{\hypf}}\risk_{P_1}(\hypf')}  \leq \epsilon
+    \end{equation}
+    with probability greater than $\eta$ if the number of samples from each distribution satisfies
+    \begin{equation}
+        \label{eq:ben-david_sample_inequality}
+        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right].
+    \end{equation}
+\end{theorem}
+Note that, in contrast to Theorem~\ref{th:baxter_vcdim}, this result bounds the expected risk of a single task, not the average risk. This is the consequence of applying Theorem~\ref{th:baxter_vcdim} and substituting the average empirical error using the result from~\eqref{eq:ben-david_lemma2}.
+Also observe that here the hypothesis space family used is the quotient space $\hypspace_\frelset$, and the VC-dimension of such family is used.
+%
+Using this result, a bound for learners using the Multi-Task ERM principle is given~\cite[Theorem~3]{Ben-DavidB08}
+\begin{theorem}\label{th:ben-david_th3}
+    Consider $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequences of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Consider $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$.
+    Let $h^\diamond$ be the hypothesis selected using the Multi-Task ERM principle, then for every $\epsilon_1, \epsilon_2 > 0$
+    \begin{equation}
+        \nonumber
+        {\hat{\risk}_{\sample_1}(\hypf^\diamond) - \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')}  \leq 2(\epsilon_1 + \epsilon_2)
+    \end{equation}
+    with probability greater than $\eta$ if
+    \begin{equation}
+        \label{eq:ben-david_th3_ineq1}
+        \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \underline{d}(\hypspace_\frelset) \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right], \; 
+    \end{equation}
+    and for $i \neq 1$
+    \begin{equation}
+        \label{eq:ben-david_th3_ineq2}
+        \cardinal{\sample_i} \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
+    \end{equation}
+\end{theorem}
+The idea of the proof of this theorem helps to understand how using different tasks can help to improve the performance in the target task. 
+Consider $\hypf^* = \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf)$ the best hypothesis for the $P_1$ distribution.
+According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^*}$ we have that
+\begin{equation}
+    \nonumber
+    {\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^*}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf')}  + \epsilon_1.
+\end{equation}
+%
+Also, in the first stage of Multi-Task ERM principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
+According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^\frelset}$ we have that
+\begin{equation}
+    \nonumber
+    {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1.
+\end{equation}
+Using these two inequalities we get
+\begin{equation}
+    \nonumber
+    \inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf') \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf') + 2\epsilon_1 
+\end{equation}
+under the condition~\eqref{eq:ben-david_sample_inequality}. This bounds the risk of the hypothesis space given by the equivalence class of $\hypf^\frelset$ and establishes the inequality~\eqref{eq:ben-david_th3_ineq2}.
+%
+
+Once we select $\equivclass{\hypf^\frelset}$, the second stage is just ERM using this hypothesis space.
+%
+According to the \comm{reference?}
+\begin{equation}\nonumber
+    \inf_{\hypf \in \hypspace} \risk_{z_1}(\hypf) - \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) \leq \epsilon_2
+\end{equation}
+if
+\begin{equation}
+    \nonumber
+    \cardinal{\sample_1} \geq  \frac{64}{\epsilon^2} \left[2 \vcdim{\hypspace} \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
+\end{equation}
+Since the ERM will not use the whole space $\hypspace$ but the subset $\equivclass{\hypf^\frelset} \subset \hypspace$, and
+$$\vcdim{\equivclass{\hypf^\frelset}} \leq \max_{\equivclass{\hypf} \in \hypspace_\frelset} \vcdim{\equivclass{\hypf}} = \underline{d}(\hypspace_\frelset).$$
+ then we can write the inequality~\eqref{eq:ben-david_th3_ineq1} of the theorem.
+%
+The advantage of using multiple tasks is then illustrated in this bound and it will be defined by the gap between $\vcdim{\hypspace}$ and $\underline{d}(\hypspace_\frelset)$. If $\underline{d}(\hypspace_\frelset)$ is smaller than $\vcdim{\hypspace}$, the number of samples needed to solve the target task will also be smaller.
+Also, the sample complexity of the rest of tasks is given by $d_{\hypspace_\frelset}(\ntasks)$.
+
+That is, Multi-Task Learning allows to select a subset of hypothesis from which a learner can use the ERM principle. In this stage, the sample complexity is controlled by the generalized VC-dimension of the set of equivalent classes of hypothesis. Once the best equivalent class has been selected, 
+the VC-dimension of this subset, compared to the VC-dimension of the whole set of hypothesis, is what marks the difference between Single Task and Multi-Task Learning.
+
+% Analysis of generalized VCdim
+\subsubsection*{Analysis of generalized VC-dimension with $\frelset$-related tasks}
+As we have seen in Theorem~\ref{th:ben-david_th3}, the VC-dimensions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$ are crucial for stating the advantage of Multi-Task over Single Task Learning. 
+To understand better how these concepts interact, Ben-David et al. give some theoretical results.
+Recall that, given a hypothesis space $\hypspace$, $\hypspace_\frelset$ is a family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$, then
+\begin{align*}
+    \nonumber
+    d_{\hypspace_\frelset}(\ntasks) &= \max_{\set{\npertask ,\Pi_{\hypspace_\frelset} = 2^{\ntasks \npertask}} } \npertask, \\
+    \underline{d}(\hypspace_\frelset) &= max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}, \\    
+    \overline{d}(\hypspace_\frelset) &= \vcdim{\bigcup_{\equivclass{\hypf} \in \hypspace_\frelset} \equivclass{\hypf}}= \vcdim{\hypspace}.
+\end{align*}
+Using the result from~\eqref{eq:genvc_inequalities} we observe that
+\begin{equation}
+    \nonumber
+    \underline{d}(\hypspace_\frelset) \leq d_{\hypspace_\frelset}(\ntasks) \leq \vcdim{\hypspace} .
+\end{equation}
+That is, the best we can hope when bounding the sample complexity in Theorem~\ref{th:ben-david_th3} is $\underline{d}(\hypspace_\frelset) = d_{\hypspace_\frelset}(\ntasks)$. 
+Ben-David et al. give evidence that, with some restrictions on $\hypspace$, this lower bound can be achieved~\cite[Theorem~4]{Ben-DavidB08}.
+\begin{theorem}
+    If the support of $\hypf$ is bounded, i.e. $ \cardinal{\set{x \in \Xspace,  \hypf(x) = 1}} < M$, for all $\hypf \in \hypspace$, then there exists $\ntasks_0$ such that for all $\ntasks>\ntasks_0$
+    \begin{equation}
+        \nonumber
+        d_{\hypspace_\frelset}(\ntasks) = \underline{d}(\hypspace_\frelset).
+    \end{equation} 
+\end{theorem}
+Thus, a sufficient condition on the hypothesis space $\hypspace$ to achieve the lowest $d_{\hypspace_\frelset}(\ntasks)$ is a bounded support of any hypothesis. Although this condition may be too restricting, it can also be proved that the upper limit of $d_{\hypspace_\frelset}(\ntasks)$, that is, $\vcdim{\hypspace}$, under some conditions on $\frelset$ is not achieved. 
+
+The following result~\cite[Theorem~6]{Ben-DavidB08} shows this.
+\begin{theorem}\label{th:ben-david_th6}
+    If $\frelset$ is finite and $\frac{\ntasks}{\log (\ntasks)} \geq \vcdim{\hypspace}$, then
+    \begin{equation}
+        \nonumber
+        d_{\hypspace_\frelset}(\ntasks) \leq 2 \log(\cardinal{\frelset})
+    \end{equation}
+\end{theorem}
+This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the Multi-Task bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$ is a better one in this cases. 
+
+\subsubsection*{Conclusion}
+\comm{TODO?}
+
+
+\subsection{Other bounds for Multi-Task Learning}
+
+The work of Baxter~\cite{baxter2000model} set the foundations for the theoretical analysis of MTL. 
+In this work, an MTL extension to the VC-dimension is given, and it is used to develop some results bounding the difference between the Multi-Task empirical and expected risks 
+\begin{equation}
+    \nonumber
+    \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})}
+\end{equation}
+for any sequence of hypothesis $\myvec{\hypf} \in \hypspace^\ntasks$, see Theorem~\ref{th:baxter_vcdim}. This is a necessary condition for the consistency of Multi-Task Learners, but not a sufficient one.
+Then, Ben-David et al.~\cite{Ben-DavidS03,Ben-DavidB08} defines a notion of task relatedness, see Definition~\ref{def:frel_tasks}. Using this notion and building an appropiate hypothesis space $\hypspace = \equivclass{h}$, they bound the \emph{excess risk} of an Empirical Multi-Task Learner, that is, the difference between the best empirical risk, achieved by such Learner, and the best possible expected risk (Theorem~\ref{th:ben-david_th3})
+\begin{equation}
+    \nonumber
+    \abs{\inf_{\myvec{\hypf} \in \hypspace^\ntasks} \risk_{\bprobseq}(\myvec{\hypf}) - \inf_{\myvec{\hypf} \in \hypspace^\ntasks} \bemprisk(\myvec{\hypf})} .
+\end{equation}
+Moreover, using this task relatedness definition not only the Multi-Task average excess risk is bounded, but the individual excess risk of each task (Theorem~\ref{th:ben-david_th6}).
+
+%
+The works discussed until this point on the VC-dimension, and the corresponding extensions to the MTL framework expressed in Definition~\ref{def:gen_vcdim}, to bound the differences between empirical and expected risks.
+%
+However in~\cite{AndoZ05}, Ando and et al. rely on another notion  of complexity, the Rademacher Complexity~\cite{BartlettM02}, which measures how well a family of hypothesis can approximate random noise. The Rademacher complexity, unlike the VC-dimension, is a distribution-dependent. That is the VC-dimension only uses properties of the hypothesis space $\hypspace$, while the Rademacher complexity also depends on $\distf$.
+
+
+To control the complexity or VC-dimension of the hypothesis space regularization is used, so bounds for regularized methods are also of interest.
+
+In~\cite{Maurer06}, Maurer improves the bounds from~\cite{baxter2000model} and~\cite{Ben-DavidS03,Ben-DavidB08} in the particular case of using a feature extractor $g$, i.e. $\hypf_r = f_r \circ g$.
+Then, in~\cite{ArgyriouMP09} an extension of the spectral theorem to vector-valued function is shown. This is useful to compute the\comm{TODO}
+
+
+
+In~\cite{PontilM13} bounds for trace-norm regularized methods are given.
+
+Then, in~\cite{MaurerPR16} bounds for the Multi-Task Representation Learning (MTRL)~\cite{ArgyriouEP06} are given. That is, methods where the group sparse regularization $\norm{\mymat{W}^\intercal}_{2, 1}$ is used. Moreover, this bounds are not limited to MTL but are also valid for the Learning to Learn paradigm.
+
+
+\subsection{Learning Under Privileged Information}
+% The classical learning paradigm tries to minimize the expected risk by minimizing the empirical risk...
+The standard machine learning paradigm tries to find the hypothesis $\hypf$ from a set of hypothesis $\hypspace$ that minimizes the expected risk $\emprisk$ given a set of training samples.
+% Vapnik gives develops the theory of Statisical Learning Theory and it seems complete
+Vapnik~\cite{vapnik2013nature} has developed the theory of statistical learning. In this theory several important results are provided: necessary and sufficient conditions for the consistency of learning processes and bounds for the rate of convergence, which uses the notion of VC-dimension. A new inductive principle, Structural Risk Minimization (SRM), and an algorithm, Support Vector Machine (SVM), that makes use of this notion to improve the learning process.
+
+% However, machines need many examples to learn. What is lacking?
+% An Intelligent Teacher is important in human learning, providing additional information: examples, metaphors...
+Nowadays learning approaches based on Deep Neural Networks, which are not focused on controlling the capacity of the set of hypothesis, outperform the SVM approaches in many problems. However, these popular Deep Learning approaches require large amounts of data to learn good hypothesis.
+It is commonly believed that machines need much more samples to learn than humans do. Vapnik~\cite{VapnikV09, VapnikI15a} reflects on this belief and states that humans typically learn under the supervision of an Intelligent Teacher.
+This Teacher shares important knowledge by providing metaphors, examples or clarifications that are helpful for the students.
+
+
+
+\subsubsection*{LUPI Paradigm}
+% How can that additional information be incorporated in Machine Learning?
+These additional knowledge provided by the Teacher is the Privileged Information that is available only during the training stage.
+To incorporate the concept of Intelligent Teacher in the Machine Learning framework, Vapnik introduces the paradigm of Learning Under Privileged Information (LUPI).
+% LUPI
+% Definition and notation
+In the LUPI paradigm describes the following model. Given a set of i.i.d. triplets
+$$ z = \set{(x_1, x^*_1, y_1), \ldots, (x_\nsamples,x^*_\nsamples, y_\nsamples)}, \; x \in \Xspace, x^* \in \Xspace^*, y \in \Yspace $$
+generated according to an unknown distribution $P(x, x^*, y)$, the goal is to find the hypothesis $\hyp{x}{\param^*}$ from a set of hypothesis $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
+$$ \exprisk = \int \loss{\hyp{x}{\param}}{y} dF(x, y). $$
+
+Note that the goal is the same that in the standard paradigm, however with the LUPI approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide a useful information $x^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ''intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
+% Examples
+To understand better this paradigm consider the following examples.
+\\
+% Example of doctor: images and commentaries
+\textbf{Example 1.} Consider that the goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ''There is an area of unusual concentration of cells of Type A.'' or ''There is an aggresive proliferation of cells of Type B''. These commentaries are the elements $x^*$ of certain space $X^*$ and the Teacher also chooses the probability $\cond{x^*}{x}$.
+\\
+% Example of high quality and low quality images
+\textbf{Example 2.} Consider the \comm{TODO} 
+
+\subsubsection*{Analysis of convergence rates}
+To get a better insight of how the Privileged Information can help in the Learning process, Vapnik provides a theoretical analysis of its influence on the learning rates.
+In the standard learning paradigm, how well the expected risk $\exprisk$ can be bounded is controlled by two factors: the empirical risk $\emprisk$ and the VC-dimension of the set of hypothesis $\mathcal{\hypspace}$.
+In the case of classification, where $\Yspace = \set{-1, 1}$ and the loss $\lossf(\hyp{x}{\param}, y) = \ind_{\hyp{x}{\param} y \leq 0}$, the risks can be expressed as
+\begin{align*}
+    \nonumber
+    \exprisk (\param) &= \int \ind_{y \hyp{x}{\param} \leq 0} d\distf(x, y) =  P(\hyp{x}{\param} y \leq 0) ,\\
+    \emprisk(\param) &= \sum_{i=1}^\nsamples \ind_{y_i \hyp{x_i}{\param} \leq 0} = \nu(\param) .
+\end{align*}
+In~\cite[Theorem~6.8]{vapnik1982estimation} the following bound for the rate of convergence is given with probability $1 - \eta$:
+\begin{equation}
+    \nonumber
+    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \nu(\param_\nsamples) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} \sqrt{\nu(\param_\nsamples) \frac{\nsamples}{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}} } .
+\end{equation}
+That is, the bound is controlled by the ratio $\vc/\nsamples$, where $\vc$ is the $\vcdim{\hypspace}$. If this $VC$-dimension is finite, the bound goes to zero as $\nsamples$ grows.
+However, two different cases can be considered.
+\\
+% Convergence of separable hypothesis
+
+\textbf{Separable case:} the training data can be classified in two groups without errors. That is, there exists $\param_\nsamples \in \eta$ such that $y_i \hyp{x_i}{\param_\nsamples} > 0$ for $i = 1, \ldots, \nsamples$, and thus $\nu(\param_\nsamples) = 0$.
+In this case, the following bound for the rate of converge holds
+\begin{equation}
+    \nonumber
+    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } .
+\end{equation}
+\\
+% Convergence of non-separable
+\textbf{Non-Separable case:} the training data cannot be classified in two groups without errors. That is, for all $\param_\nsamples \in \paramspace$, there exists $i = 1, \ldots, \nsamples$, such that $y_i \hyp{x_i}{\param_\nsamples} \leq 0$, and thus $\nu(\param_\nsamples) > 0$.
+In this case, the following bound for the rate of converge holds
+\begin{equation}
+    \nonumber
+    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq \nu(\param_\nsamples) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
+\end{equation}
+Note that there is an important difference here in the rate of convergence. The separable case has a convergence rate of $\vc/\nsamples$, while the non-separable case has a rate of $\sqrt{\vc/\nsamples}$. Vapnik tries to address the question of why there exists such difference.
+
+% Oracle SVM: separable
+\subsubsection*{Oracle SVM}
+Vapnik tries to answer these question by looking at Support Vector Machines. In the separable case, one has to minimize the functional 
+$$J(\hplane) = \norm{\hplane}^2$$
+subject to the constraints
+$$y_i \left( \hplane x_i + \bias \right) \geq 1.$$
+However, in the non-separable case the functional to minimize is 
+$$J(\hplane, \xi_1, \ldots, \xi_\nsamples) = \norm{\hplane}^2 + C \sum_{i=1}^\nsamples \xi_i$$
+subject to the constraints
+$$y_i \left( \hplane x_i + b \right) \geq 1 - \xi_i.$$
+That is, in the separable case $\dimx$ parameters (of $\hplane$) have to be estimated using $\nsamples$ examples, while in the non-separable case $\dimx + \nsamples$ parameters (considering $\hplane$ and the slack variables $\xi_1, \ldots, \xi_\nsamples$) have to be estimated with $\nsamples$ examples. 
+
+What would happen if the parameters $\xi_1, \ldots, \xi_\nsamples$ were known?
+In~\cite{VapnikI15a} an \emph{Oracle} SVM is considered. Here, the learner (Student) is supplied with a set of triplets
+\begin{equation}
+    \nonumber
+    (x_1, \xi_1^0, y_1), \ldots, (x_\nsamples, \xi_\nsamples^0, y_\nsamples)
+\end{equation}
+where $\xi^0_1, \ldots, \xi^0_\nsamples$ are the slack variables for the best decision rule $\hyp{x}{\param_0} = \inf_{\param \in \paramspace} \exprisk(\param) $:
+\begin{equation}
+    \nonumber
+    \xi_i^0 = \max \left(0, 1 - \hyp{x}{\param_0}  \right), \; \forall i = 1, \ldots, \nsamples .
+\end{equation}
+An \emph{Oracle} SVM has to minimize the functional
+$$J(\hplane) = \norm{\hplane}^2$$
+subject to the constraints
+$$y_i \left( \hplane x_i + \bias \right) \geq 1 - \xi_i^0 .$$
+Since the slack variables $\xi_i^0$ are known in advance, it can be shown~\cite{VapnikV09} that for the \emph{Oracle} SVM the following bound holds
+\begin{equation}
+    \nonumber
+    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq P(1 - \xi^0 \leq 0) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } ,
+\end{equation}
+where $P(1 - \xi^0 \leq 0)$ is the probability error of the hypothesis $\hyp{x}{\param_0}$.
+That is, we recover the rate $\vc/\nsamples$.
+
+% Intelligent Teacher: separable but we need to control two models
+\subsubsection*{From Oracle to Intelligent Teacher}
+The \emph{Oracle} SVM is a theoretical construct, but we can approximate it by modelling the slack variables with the information provided by the Teacher in the LUPI paradigm.
+That is, the Teacher defines a space $\Xspace^*$ and a set of functions $\set{f^*(x, \param^*) , \param^* \in \paramspace^*}$. Then model the slack variables can be approximated as
+\begin{equation}
+    \nonumber
+    \xi^* = f^*(x^*, \param^*) .
+\end{equation}
+From the pairs generated by some random generator in nature, the Teacher also defines the probability $\cond{x^*}{x}$ to provide the triplets
+\begin{equation}
+    \nonumber
+    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) .
+\end{equation}
+Then, we can consider the problem where the goal is to minimize
+$$ J(\param, \param^*) = \sum_{i=1}^\nsamples \max(0, f^*(x_i^*, \param^*)) $$
+subject to the constraints
+$$ \hyp{x_i}{\param} \geq 1 - f^*(x_i^*, \param^*).$$
+Let $f(x, \param_\nsamples), h(x. \param_\nsamples)$ that minimize this problem. Then, in~\cite[Proposition~2]{VapnikV09} the following results for the bound of convergence is given
+\begin{equation}
+    \nonumber
+    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\frac{(\vc + \vc^*) \log\left(\frac{2\nsamples}{(\vc + \vc^*)} \right) - \log\eta}{\nsamples} } ,
+\end{equation}
+where $d^*$ is the VC-dimension of the space of hypothesis $\set{f(x, \param^*) \in \paramspace^*}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the $P(1 - f^*(x^*, \param^*_\nsamples) \leq 0)$. Although this probability is unknown,  we can control it. Considering
+\begin{equation}
+    \nonumber
+    \param^*_0 = \inf_{\param^* \in \paramspace^*} \int_{\Xspace^*} \max(0, f^*(x^*, \param^*)- 1) dP(x^*)
+\end{equation}
+and
+\begin{equation}
+    \nonumber
+    \param^*_\nsamples = \inf_{\param^* \in \paramspace^*} \sum_{i=1}^\nsamples \max(0, f^*(x^*_i, \param^*)- 1) .
+\end{equation}
+Consider $\set{f^*(x^*, \param^*), \param^* \in \paramspace^*}$ such that $f^*(x^*, \alpha^*) < B, \param^* \in \paramspace^*$, then 
+$$\set{\max(0, f^*(x^*, \param^*)- 1), \param^* \in \paramspace^*}$$
+ is a set of totally bounded non-negative functions, then we have the standard bound~\cite{vapnik2013nature}
+\begin{equation}
+    \nonumber
+    P(1 - f^*(x^*, \param^*_0) \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
+\end{equation}
+with probability $1 - 2\eta$.
+That is, to have a rate of $\vc/\nsamples$ for $\param_\nsamples$, we need to estimate $\param^*_\nsamples$, which has a rate of $\sqrt{\vc^*/\nsamples}$. However, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a much lower capacity, and thus, the convergence will be faster in this space.
+
+\subsubsection*{SVM+ }
+Vapnik describes an extension of the SVM that embodies the LUPI paradigm~\cite{VapnikV09,VapnikI15a}. Given a set of triplets
+\begin{equation}
+    \nonumber
+    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) ,
+\end{equation}
+the idea is to model the slack variables of the standard SVM using the elements $x^* \in \Xspace^*$ as
+$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right]_+  = \max\left( y (w^* \phi^*(x^*) + b^*), 0  \right).$$
+The minimization problem is the following:
+\begin{equation}
+    \label{eq:svmplus_original}
+    \begin{aligned}
+        & \argmin_{w, w^*, b, b^*}
+        & &  C \sum_{i=1}^\nsamples \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right]_+ + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
+        & \text{s.t.}
+        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) \right]_+ .
+    \end{aligned}
+\end{equation}
+Here $\phi$ and $\phi^*$ are two transformations that can be different.
+However, note that problem~\eqref{eq:svmplus_original} is not convex due to the positive part term in the objective function. Vapnik et al. propose a relaxation of this problem to obtain a convex one. The idea is to model the slack variables $\xi$ as
+$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right] + \zeta(x^*, y) ,$$
+where $\zeta(x^*, y) \geq 0$.
+The minimization problem is then
+\begin{equation}
+    \label{eq:svmplus_delta_primal}
+    \begin{aligned}
+        & \argmin_{w, w^*, b, b^*, \zeta_i}
+        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + C \Delta \sum_{i=1}^\nsamples \zeta_i \\
+        & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
+        & \text{s.t.}
+        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \right] ,\\
+        & & &y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \geq 0 ,\\
+        & & &\zeta_i \geq 0, \\
+        & \text{for } & & i=1, \ldots, \nsamples.
+    \end{aligned}
+\end{equation}
+Problem~\eqref{eq:svmplus_delta_primal} is convex and the corresponding dual problem is
+\begin{equation}\label{eq:svmplus_delta_dual}
+    \begin{aligned}
+        & \argmin_{\alpha_i, \delta_i} 
+        & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(x^*_i, x^*_j)  - \sum_{i=1}^\nsamples \alpha_i \\
+        & \text{s.t.}
+        & & 0 \leq \delta_i \leq C \\
+        & & & 0 \leq \alpha_i \leq C + \delta_i, \\
+        & & & \sum_{i=1}^{\nsamples}{\delta_i y_i} = 0, \; 
+        \sum_{i=1}^{\nsamples}{\alpha_i y_i} = 0, \\
+        & \text{for } & & i=1, \ldots, \nsamples.
+        \end{aligned}
+\end{equation}
+where we use the kernel functions
+$$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(x^*_i, x^*_j) = \dotp{\phi^*(x^*_i)}{\phi^*(x^*_j)}.$$ 
+We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the LUPI paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\Xspace^*$. For that reason, $\Xspace$ and $\Xspace^*$ are named Decision Space and Correction Space, respectively.
+
+
+\subsubsection*{Connection between SVM+ and MTLSVM}
+% Liang and Cherkassky
+In~\cite{LiangC08} the connection between SVM+ and Multi-Task Learning SVM (MTLSVM) is discussed. 
+% Definition
+The MTLSVM proposed in~\cite{LiangC08} is a Multi-Task Learning model based on the SVM. It solves the primal problem
+\begin{equation}
+    \label{eq:mtlsvm_primal}
+    \begin{aligned}
+        & \argmin_{w, b, v_r, b_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
+        & \text{s.t.}
+        & & y_{i}^r ( \dotp{w}{\phi(x_{i}^r)} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq 1 - \xi_i^r ,\\
+        & & &\xi_i^r \geq 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+    \end{aligned}
+\end{equation}
+Here, a combination of a common model for all tasks
+$$ \dotp{w}{\phi(x_{i})} + b $$
+and a task-specific model
+$$ \dotp{v_r}{\phi_r(x_{i}^r)} + b_r $$
+is used. Here, the common transformation $\phi$ and the task-independent ones $\phi_r$ can be different 
+The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
+\begin{equation}\label{eq:mtlsvm_dual}
+    \begin{aligned}
+        & \argmin_{\alpha_i} 
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} k_r(x^r_i, x^s_j) \\
+        & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r \\
+        & \text{s.t.}
+        & & 0 \leq \alpha_i^r \leq C \\
+        & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+        \end{aligned}
+\end{equation}
+% Similarities and differences
+In~\cite{LiangC08} some similarities between MTLSVM and SVM+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve MTL problems, where the $\Xspace = \Xspace^*$ but different tasks are incorporated, which is reflected on the different transformations $\phi_r$.
+If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a modification of SVM+ where the slack variables are modeled as
+$$ \xi(x^*, y) = y (w^* \phi^*(x^*) + b^*)  $$
+and $x^* = x$. That is, it is a relaxation of the original problem~\eqref{eq:svmplus_original} where the positive part is ignored.
+This relaxation gives place to some important differences between both models. Since the auxiliary primal variables $\zeta_i$ are no longer required, this is reflected in a simpler dual form~\eqref{eq:mtlsvm_dual}, where only $\nsamples$ dual variables have to be estimated, instead of the $2\nsamples$ dual variables of~\eqref{eq:svmplus_delta_dual}.
+The Multi-Task element, is reflected on~\eqref{eq:mtlsvm_dual} through the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
+%
+A major remark can be make about the differences between MTLSVM and SVM+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid with MTLSVM, since we are no modelling the slack variables $\xi$ adequately. 
+It is still a work in progress to study the rate of convergence of MTLSVM and to establish more clear links with SVM+.
+% Relation with the simplified approach?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
