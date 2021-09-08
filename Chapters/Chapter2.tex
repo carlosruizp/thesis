@@ -154,24 +154,24 @@ The parameter-based MTL does not focus on shared sets of features across tasks, 
 % Multi-Stage Multi-Task Learning with Reduced Rank
 In the low-rank approach, the assumption is that the task parameters $w_r$ share a low-dimensional space, or are close to this subspace. This is similar to the Feature Learning approach, but it is not that rigid, since it allows for some flexibility.
 The idea in~\cite{AndoZ05} is that the task parameters can be decomposed as
-$$ w_r = u_r + \mymat{\Theta} v_r,$$
-where $\mymat{\Theta} \in \reals^{p \times d}$ spans a shared low dimensional space, that is $\mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p$ with $p < d$, and $d$ is the dimension of the data. Under this consideration, the proposed model is
+$$ w_r = u_r + \mymat{\Theta}^\intercal v_r,$$
+where $\mymat{\Theta} \in \reals^{\dimx \times k}$ spans a shared low dimensional space, that is $\mymat{\Theta}^\intercal \mymat{\Theta} = \mymat{i}_k$ with $k < \dimx$, and $d$ is the dimension of the data. Under this consideration, the proposed model is
 \begin{equation}
     \label{eq:mtl_struct_learn}
-    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta} v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p .
+    \argmin_{\mymat{\Theta} \in \reals^{\dimx \times k}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta}^\intercal v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta}^\intercal \mymat{\Theta} = \mymat{i}_k .
 \end{equation}
 Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
 Problem~\eqref{eq:mtl_struct_learn} is solved using a two-step optimization fixing $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{u}$ and iterating until convergence. However problem~\eqref{eq:mtl_struct_learn} is not convex. 
 Note that~\eqref{eq:mtl_struct_learn} can be reformulated as
 \begin{equation}
     \label{eq:mtl_struct_learn_ref}
-    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta} v_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_p ,
+    \argmin_{\mymat{\Theta} \in \reals^{\dimx \times k}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 \text{ s.t. } \mymat{\Theta}^\intercal \mymat{\Theta} = \mymat{i}_k ,
 \end{equation}
-where the terms $\norm{w_r - \mymat{\Theta} v_r}^2$ enforces the similarity across tasks by binging them closer to the shared subspace.
+where the terms $\norm{w_r - \mymat{\Theta}^\intercal v_r}^2$ enforces the similarity across tasks by binging them closer to the shared subspace.
 In~\cite{ChenTLY09} the following extension is proposed:
 \begin{equation}
     \label{eq:mtl_struct_learn_frob}
-    \argmin_{\mymat{\Theta} \in \reals^{p \times d}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta} v_r}^2 + \mu \sum_{r=1}^\ntasks \norm{w_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal  = \mymat{i}_p .
+    \argmin_{\mymat{\Theta} \in \reals^{\dimx \times k}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 + \mu \sum_{r=1}^\ntasks \norm{w_r}^2 \text{ s.t. } \mymat{\Theta}^\intercal \mymat{\Theta}  = \mymat{i}_k .
 \end{equation}
 And it is shown that~\eqref{eq:mtl_struct_learn_frob}, when relaxing the orthogonality constraint, can be expressed as a convex minimization problem.
 Note that the difference between~\eqref{eq:mtl_struct_learn_ref} and~\eqref{eq:mtl_struct_learn_frob} is the addition of the Frobenius norm of matrix $\mymat{w}$, also known as trace norm. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ is an eigenvector of $\mymat{w}$, and thus, forcing $\mymat{w}$ to be low-rank.
@@ -615,7 +615,9 @@ To achieve these goals some previous definitions are needed. From this point, si
 % Pseudo-metrics, Covering numbers and Capacities
 In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
 Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according the the distribution $\bdistf$. 
-Consider also the set of sequences of $\ntasks$ hypothesis 
+\begin{definition}[\emph{sample-driven} pseudometric]
+    \label{def:sample_pseudometric}
+    Consider also the set of sequences of $\ntasks$ hypothesis 
 $$\hypspace^\ntasks \defeq \set{ \myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} .$$
 We can define then the set of $(\ntasks, 1)$-empirical risks as 
 $$\hypspace^\ntasks_\lossf \defeq \set{ \myvec{\hypf}_\lossf(x_1, y_1, \ldots, x_\ntasks, y_\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf(x_i), y_i) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} $$
@@ -628,9 +630,13 @@ The family of the set of $\ntasks$-risks of hypothesis is then $\bsetsample = \b
     \end{aligned}
 \end{equation}
 for $\myvec{\hypf}_\lossf, \myvec{\hypf'}_\lossf \in \hypspace_\lossf, \hypspace'_\lossf$ as a pseudo-metric in $\hypspacef^\ntasks$.
+\end{definition}
 %
 
-Then, a \emph{distribution-driven} pseudo-metric is defined. Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
+Then, a \emph{distribution-driven} pseudo-metric is defined. 
+\begin{definition}[\emph{distribution-driven} pseudo-metric]
+    \label{def:dist_pseudometric}
+    Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
 \begin{equation}
     \nonumber
     \hypspace^* \defeq \inf_{\hypf \in \hypspace} \risk_P(\hypf).
@@ -642,10 +648,16 @@ The pseudo-metric in this space is given by $Q$:
     \nonumber
     \dist{\bdistf} = \int_\bprobspace \abs{\hypspace_1^* - \hypspace_2^*} d\bdistf
 \end{equation}
-With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. Given a pseudo-metric $\dist{S}$ in a space $\mathcal{S}$, 
+\end{definition}
+With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. 
+\begin{definition}[$\epsilon$-cover]
+    \label{def:epsilon_cover}
+    Given a pseudo-metric $\dist{S}$ in a space $\mathcal{S}$, 
 a set of $l$ elements $s_1, \ldots, s_l \in \mathcal{S}$ is an $\epsilon$-cover of $\mathcal{S}$ if 
 $ \dist{S}(s, s_i) \leq \epsilon $
 for some $i=1, \ldots, l$.  Let $\mathcal{N}(\epsilon, \mathcal{S}, \dist{S})$ denote the size of the smallest $\epsilon$-cover.
+\end{definition}
+%
 Then, we can define the following capacities of a family space $\hypspacef$:
 \begin{itemize}
     \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} \defeq \sup_{\bprobseq} \mathcal{N}(\epsilon, \hypspacef^\ntasks, \dist{\bprobseq})$.
@@ -986,7 +998,11 @@ Moreover, using this task relatedness definition not only the Multi-Task average
 %
 The works discussed until this point on the VC-dimension, and the corresponding extensions to the MTL framework expressed in Definition~\ref{def:gen_vcdim}, to bound the differences between empirical and expected risks.
 %
-However in~\cite{AndoZ05}, Ando and et al. rely on another notion  of complexity, the Rademacher Complexity~\cite{BartlettM02}, which measures how well a family of hypothesis can approximate random noise. The Rademacher complexity, unlike the VC-dimension, is a distribution-dependent. That is the VC-dimension only uses properties of the hypothesis space $\hypspace$, while the Rademacher complexity also depends on $\distf$.
+However in~\cite{AndoZ05}, Ando and et al. rely on another notion  of complexity, the Rademacher Complexity~\cite{BartlettM02}, which measures how well a family of hypothesis can approximate random noise. The Rademacher complexity, unlike the VC-dimension, is a distribution-dependent. That is the VC-dimension only uses properties of the hypothesis space $\hypspace$, while the Rademacher complexity also depends on $\distf$. In first place, they use two pseudo-metrics different to those of Definitions~\ref{def:sample_pseudometric} or~\ref{def:dist_pseudometric} and they define the corresponding covering numbers. Then they bound the covering numbers of the set of hypothesis used in~\eqref{eq:mtl_struct_learn} using the Rademacher complexity of those sets of functions. 
+However, this bounds are also dependent on the dimensions $k$ and $\dimx$, which make them unfeasible for kernel extensions.
+
+
+
 
 
 To control the complexity or VC-dimension of the hypothesis space regularization is used, so bounds for regularized methods are also of interest.
