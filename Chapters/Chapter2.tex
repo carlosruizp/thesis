@@ -79,10 +79,10 @@ where $\mathcal{P}_\mathcal{M}(w_t)$ represents the distance between $w_t$ and i
 % Sparse coding for multitask and transfer learning Maurer 2013
 % Learning task grouping and overlap in multi-task learning.
 Other distinct, relevant approach for Feature Learning is the one described in~\cite{MaurerPR13}, where a sparse-coding~\cite{MaurerP10} method is used for MTL. Maurer et al. present the problem
-\begin{equation}
-    \label{eq:mtl_sparse_coding}
-    \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, \infty} +\mu \norm{\mymat{a}}_{1, \infty} .
-\end{equation}
+    \begin{equation}
+        \label{eq:mtl_sparse_coding}
+        \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, \infty} +\mu \norm{\mymat{a}}_{1, \infty} .
+    \end{equation}
 Here, $\mathcal{D}_k$ is the set of $k$-dimensional dictionary and every $\mymat{d} \in \mathcal{D}_k$ is a linear map $\mymat{D}: \reals^k \to \rkhs$; in the linear case, where $\rkhs = \reals^d$, the set $\mathcal{D}_k$ is the set of matrices $\reals^{d \times k}$, such that 
 $$\underset{d \times T}{\mymat{w}} = \underset{d \times k}{\mymat{D}} \underset{k \times T}{\mymat{a}}$$.
 Although~\eqref{eq:mtl_feat_learning} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k > d$ columns of bounded norm.
