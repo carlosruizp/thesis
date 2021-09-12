@@ -34,6 +34,9 @@
 
 % My packages
 \usepackage{mathtools}
+\usepackage{siunitx}       % typesetting values with units
+\usepackage{graphics}      % scalebox
+\usepackage{longtable}      % multi-page tables
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
 
 % My definitions
@@ -121,13 +124,19 @@
 \newcommand{\Var}{\mathrm{Var}}
 \newcommand{\Cov}{\mathrm{Cov}}
 
+% Tables
+\newcommand{\fcode}[1]{\texttt{#1}}
+\newcommand{\fheadmulti}[2]{\multicolumn{#1}{c}{\boldmath\textbf{#2}}}
+\newcommand{\fhead}[1]{\fheadmulti{1}{#1}}
+\newcommand{\fmax}[1]{{\num[detect-weight=true,math-rm=\mathbf]{#1}}}
+\newcommand{\fmaxn}[1]{\textbf{#1}}
+\newcommand{\fdata}[1]{\textsf{#1}}
+
 \DeclareMathOperator*{\argmin}{arg\min}
 \DeclareMathOperator*{\argmax}{arg\max}
 \DeclareMathOperator{\Tr}{tr}
 \DeclareMathOperator{\Span}{span}
 \DeclareMathOperator{\Diag}{diag}
-
-
 
 
 \DeclareMathOperator{\Ima}{Im}

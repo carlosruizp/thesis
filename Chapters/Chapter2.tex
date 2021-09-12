@@ -477,6 +477,77 @@ Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling t
 where $\myvec{\theta}^{-r}  = \set{\myvec{\theta}^s, s \neq r }$.
 This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
 Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
+\subsection{Multi-Task Problems}
+
+% \begin{table}[t]
+%     \caption{Sample sizes, dimensions and number of tasks of the datasets used.}
+%     \label{table:size_dim_tasks}
+%     \centering
+%     \begin{tabular}{*{6}{l}}
+%     \toprule
+%     \fhead{Name} & \fhead{Size} & \fhead{Dim} & \fhead{$T$} & \fhead{Goal} & \fhead{References} \\
+%     \midrule
+%     % \fdata{school} & 15362 & 27 & 139  & 1 \\ 
+%     \multirow{11}{*}{\fdata{school}} & \multirow{11}{*}{15362} & \multirow{11}{*}{27} & \multirow{11}{*}{139} & \multirow{11}{*}{single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{18000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{800000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
+%     \multirow{5}{*}{\fdata{computer}} & \multirow{5}{*}{3600} & \multirow{5}{*}{13} & \multirow{5}{*}{180} & \multirow{5}{*}{single-reg}  & \multirow{5}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ [3.0ex]
+%     \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{14820} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{32302} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{366} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
+%     \multirow{4}{*}{\fdata{sentiment}} & \multirow{4}{*}{2000} & \multirow{4}{*}{473856} & \multirow{4}{*}{4} & \multirow{4}{*}{bin-clas}  & \multirow{4}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ [3.0ex]
+%     \multirow{5}{*}{\fdata{sarcos}} & \multirow{5}{*}{44484} & \multirow{5}{*}{21} & \multirow{5}{*}{7} & \multirow{5}{*}{multi-reg}  & \multirow{5}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ [3.0ex]
+%     \multirow{3}{*}{\fdata{isolet}} & \multirow{3}{*}{7797} & \multirow{3}{*}{617} & \multirow{3}{*}{5} & \multirow{3}{*}{MT multi-clas}  & \multirow{3}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ &&&&& - \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{340} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
+%     \multirow{3}{*}{\fdata{mnist}} & \multirow{3}{*}{70000} & \multirow{3}{*}{400} & \multirow{3}{*}{10} & \multirow{3}{*}{multi-clas}  & \multirow{3}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ [3.0ex]
+%     \multirow{3}{*}{\fdata{usps}} & \multirow{3}{*}{9298} & \multirow{3}{*}{256} & \multirow{3}{*}{10} & \multirow{3}{*}{multi-clas}  & \multirow{3}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{675} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
+%     \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{131} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+
+%     \bottomrule
+%    \end{tabular}
+% \end{table}
+
+\newpage
+%\begin{center}
+    \begin{longtable}{llllll}
+    \caption{A sample long table.} \label{tab:long} \\
+    
+    \hline \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Goal}} & \multicolumn{1}{c}{\textbf{References}} \\ \hline 
+    \endfirsthead
+    
+    \multicolumn{6}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \hline \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Goal}} & \multicolumn{1}{c}{\textbf{References}} \\ \hline 
+    \endhead
+    
+    \hline \multicolumn{6}{|r|}{{Continued on next page}} \\ \hline
+    \endfoot
+    
+    \hline \hline
+    \endlastfoot    
+    \multirow{13}{*}{\fdata{school}} & \multirow{13}{*}{15362} & \multirow{13}{*}{27} & \multirow{13}{*}{139} & \multirow{13}{*}{single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ &&&&&~\cite{HanZ16} \\ &&&&&~\cite{JeongJ18}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{18000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{800000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
+    \multirow{6}{*}{\fdata{computer}} & \multirow{6}{*}{3600} & \multirow{6}{*}{13} & \multirow{6}{*}{180} & \multirow{6}{*}{single-reg}  & \multirow{6}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{14820} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{32302} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{366} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
+    \multirow{5}{*}{\fdata{sentiment}} & \multirow{5}{*}{2000} & \multirow{5}{*}{473856} & \multirow{5}{*}{4} & \multirow{5}{*}{bin-clas}  & \multirow{5}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{BarzilaiC15} \\ [3.0ex]
+    \\ \\ 
+    \multirow{6}{*}{\fdata{sarcos}} & \multirow{6}{*}{44484} & \multirow{6}{*}{21} & \multirow{6}{*}{7} & \multirow{6}{*}{multi-reg}  & \multirow{6}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{CilibertoMPR15} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{isolet}} & \multirow{2}{*}{7797} & \multirow{2}{*}{617} & \multirow{2}{*}{5} & \multirow{2}{*}{MT multi-clas}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ [3.0ex]
+%    \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{340} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
+    \multirow{4}{*}{\fdata{mnist}} & \multirow{4}{*}{70000} & \multirow{4}{*}{400} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{usps}} & \multirow{4}{*}{9298} & \multirow{4}{*}{256} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{675} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{131} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{cifar10}} & \multirow{2}{*}{50000} & \multirow{2}{*}{1024} & \multirow{2}{*}{10} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{ZweigW13} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{parkinson}} & \multirow{2}{*}{5875} & \multirow{2}{*}{19} & \multirow{2}{*}{42} & \multirow{2}{*}{single-reg}  & \multirow{2}{*}{}~\cite{JawanpuriaN12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \end{longtable}
+    %\end{center}
+    
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
