@@ -37,9 +37,52 @@
 \usepackage{siunitx}       % typesetting values with units
 \usepackage{graphics}      % scalebox
 \usepackage{longtable}      % multi-page tables
+\usepackage{tikz}
+
+%tikz
+\usetikzlibrary{arrows,positioning} 
+\tikzset{
+    %Define standard arrow tip
+    >=stealth',
+    %Define style for boxes
+    punkt/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           text width=6.5em,
+           minimum height=2em,
+           text centered},
+    % Define arrow style
+    pil/.style={
+           ->,
+           thick,
+           shorten <=2pt,
+           shorten >=2pt,}
+}
+
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
 
 % My definitions
+
+  % Math Operators
+\DeclareMathOperator*{\argmin}{arg\min}
+\DeclareMathOperator*{\argmax}{arg\max}
+\DeclareMathOperator{\Tr}{tr}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\Diag}{diag}
+\DeclareMathOperator{\rank}{rank}
+
+
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Vector}{vec}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\equivclass{\lbrack}{\rbrack}
+
+
+
 \newcommand{\comm}[1]{{\color{red} #1}}
 
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
@@ -62,7 +105,10 @@
 \newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
 \newcommand{\mymat}[1]{\upper{#1}}
 \newcommand{\myvec}[1]{\bm{#1}}
+\newcommand{\trace}[1]{\Tr{\left(#1\right)}}
 \newcommand{\dotp}[2]{\langle #1, #2 \rangle}
+\newcommand{\ydotp}[2]{\left( #1, #2 \right)}
+
 \newcommand{\ind}{\bm{1}}
 
 \newcommand{\nsamples}{n}
@@ -78,8 +124,11 @@
 \newcommand{\hypspace}{\mathcal{H}}
 \newcommand{\hypspacef}{\mathbb{H}}
 \newcommand{\reals}{\mathbb{R}}
+\newcommand{\naturals}{\mathbb{N}}
 \newcommand{\param}{\alpha}
 \newcommand{\paramspace}{A}
+\newcommand{\hilbertspace}{\mathcal{H}}
+
 
 \newcommand{\lossf}{\ell}
 \newcommand{\loss}[2]{\lossf\left( #1, #2\right)}
@@ -107,6 +156,7 @@
 \newcommand{\bigO}[1]{O\left( #1 \right)}
 
 \newcommand{\Xspace}{\mathcal{X}}
+\newcommand{\Tspace}{\mathcal{T}}
 \newcommand{\Yspace}{\mathcal{Y}}
 \newcommand{\Fspace}{\mathcal{V}}
 
@@ -132,20 +182,7 @@
 \newcommand{\fmaxn}[1]{\textbf{#1}}
 \newcommand{\fdata}[1]{\textsf{#1}}
 
-\DeclareMathOperator*{\argmin}{arg\min}
-\DeclareMathOperator*{\argmax}{arg\max}
-\DeclareMathOperator{\Tr}{tr}
-\DeclareMathOperator{\Span}{span}
-\DeclareMathOperator{\Diag}{diag}
 
-
-\DeclareMathOperator{\Ima}{Im}
-\DeclareMathOperator{\Ker}{Ker}
-\DeclareMathOperator{\Vector}{vec}
-
-\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
-\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
-\DeclarePairedDelimiter\equivclass{\lbrack}{\rbrack}
 
 
 %% ----------------------------------------------------------------
