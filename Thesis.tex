@@ -99,14 +99,23 @@
 \newcommand{\cond}[2]{P\left( #1 \;\middle\vert\; #2 \right)}
 \newcommand{\normal}[1]{N \left(#1\right)}
 \newcommand{\multinormal}[1]{MN \left(#1\right)}
+\newcommand{\tendsto}[2]{\xrightarrow[#1]{} #2}
+\newcommand{\diffp}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\optim}[1]{{#1}^*}
+
+
 
 
 
 \newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
 \newcommand{\mymat}[1]{\upper{#1}}
 \newcommand{\myvec}[1]{\bm{#1}}
+\newcommand{\fv}[1]{\myvec{#1}}
+\newcommand{\fm}[1]{\mymat{#1}}
+\newcommand{\vect}[1]{\bm{\text{vect}}\left(#1\right)}
+
 \newcommand{\trace}[1]{\Tr{\left(#1\right)}}
-\newcommand{\dotp}[2]{\langle #1, #2 \rangle}
+\newcommand{\dotp}[2]{\left\langle #1, #2 \right\rangle}
 \newcommand{\ydotp}[2]{\left( #1, #2 \right)}
 
 \newcommand{\ind}{\bm{1}}
@@ -128,6 +137,9 @@
 \newcommand{\param}{\alpha}
 \newcommand{\paramspace}{A}
 \newcommand{\hilbertspace}{\mathcal{H}}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\grad}{\nabla}
+
 
 
 \newcommand{\lossf}{\ell}

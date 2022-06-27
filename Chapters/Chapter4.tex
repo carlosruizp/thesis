@@ -1,22 +1,279 @@
-% Chapter 4
+% Chapter 3
 
-\chapter{Adaptive Graph Laplacian Multi-Task Support Vector Machine} % Write in your own chapter title
-\label{Chapter3}
+\chapter{A Convex Formulation for Multi-Task Learning} % Write in your own chapter title
+\label{Chapter4}
 \lhead{Chapter \ref{Chapter3}. 
-\emph{Adaptive Graph Laplacian Multi-Task Support Vector Machine}} % Write in your own chapter title to set the page header
+\emph{A Convex Formulation for Multi-Task Learning}} % Write in your own chapter title to set the page header
 
 {\bf \small{
 
 }}
 
 \section{Introduction}
+% Multi-Task Learning paradigms can be divided in: Feature-Based, Parameter-Based, Joint-Learning
 
-\section{Graph Laplacian Multi-Task Support Vector Machine}
 
-\section{Adaptive Graph Laplacian Algorithm}
+
+% The Feature-Based approach is restricted to use the same representation for all tasks
+
+% The Parameter-Based approach usually involves a lot of hyperparameters and problems that are not convex
+
+% The Joint-Learning approach is a very natural way to combine models, combining only the final prediction
+% flexible
+% easy to express: one single hyperparameter
+% preserver convexity
+
+% General formulation of joint learning
+
+% Convex formulation is more natural
+
+% General formulation of convex joint learning
+
+% hyperparameter lambda
+
+
+\section{Convex Multi-Task Learning with Kernel Models}
+% Kernel Models are powerful: Kernel trick, high dimensionality representation
+As explained in the previous chapters, kernel models offer many good properties such as implicit transformation to a possibly infinite-dimensional space and convexity. In thise models a regularized risk problem is solved.
+% General formulation for a kernel model
+A general formulation for kernel models is 
+\begin{equation}
+    \label{eq:regrisk_kernel}
+    \emprisk(\fv{w}) \defeq \sum_{i=1}^{\nsamples} \lossf(\fv{w}^\intercal {\phi(\fv{x}_i)}+ b, y_i) + \mu \Omega(\fv{w}) ,
+\end{equation}
+where $\sample$ is the sample $\{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)\}$ and $\Omega(w)$ is a regularizer for $\fv{w}$, tipically the $L_2$ norm: $\norm{w}^2$. Observe that $b$, the bias term, is not regularized since it does not affect the capacity of the hypothesis space.
+In~\eqref{eq:regrisk_kernel} $\phi$ is a fixed transformation function such that there exists a ``kernel trick'', that is a kernel function $k$ for which
+\begin{equation}
+    \nonumber
+    \dotp{\phi(x)}{\phi(y)} = k(x, y).
+\end{equation}
+These models embrace the Structural Risk Minimization paradigm by limiting the capacity of the space of hypothesis. This is done by using the $L_2$ norm of $w$ as regularizer, which is equivalent to limiting our space of candidates to vectors inside a ball of some radius.
+
+% One of the first multi-task learning approach with kernel models is Regularized MTL
+Multi-Task Learning with kernel models require imposing some kind of coupling between models in the learning process. The feature learning or feature sharing approach, which is usually adopted with neural networks, is not feasible when using kernel models, since the (implicit) transformation functions used are not learned but fixed. Therefore, other strategies have to be developed. 
+One of the first approaches to MTL with kernel models was developed in~\cite{EvgeniouP04}, where the models for each task are defined as:
+\begin{equation}
+    \nonumber
+    \fv{w}_r = \fv{w} + \fv{v}_r,
+\end{equation} 
+where $w$ is a common part, shared by all models, and $v_r$ is a task-specific part. With this approximation, the transfer of information is performed by the common part $\fv{w}$.
+The regularized risk that is minimized is 
+\begin{equation}
+    \label{eq:additive_regrisk}
+    \risk_{\bsample} (\fv{w}) \defeq \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\fv{w}^\intercal {\phi(\fv{x}_i)} + \fv{v}_r^\intercal {\phi_r(\fv{x}_i)}, y_i) + \mu_c \norm{\fv{w}}^2 + \mu_s \sum_{r=1}^\ntasks \norm{\fv{v}_r}^2,
+\end{equation}
+where $\mu_c$ and $\mu_s$ are the hyperparameters to control the common and specific parts regularization, respectively. Here $\bsample$ is a MTL sample $$\bsample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask}^r, y_{\npertask}^r)\}.$$
+Observe also that in~\eqref{eq:additive_regrisk} different transformations are used. The transformation $\phi$ corresponds to common part of the model, while $\phi_r$ is task-specific.
+%
+This is a joint learning approach that is developed for the L1-SVM, which Evgeniou et al. give the name of \emph{Regularized MTL} but we will refer to as \emph{additive} approach.
+%
+Observe that as $\frac{\mu_c}{\mu_s} \tendsto{}{\infty} $ we would have a common part $\fv{w}$ that tends to zero, which would results in independent models for each task, i.e. $\fv{w}_r \eqsim \fv{v}_r$. On the contrary, when $\frac{\mu_c}{\mu_s} \tendsto{}{0} $, the task-specific parts tend to zero and every model is the common part, i.e. $\fv{w}_r \eqsim \fv{w}$.
+There are two asymptotical behaviours: the first one tends to an ITL approach, while the second one tends to a CTL one. The MTL formulation is one strategy that lies between those two approaches, CTL and ITL, combining them to achieve a more flexible model.
+
+% General formulation for a convex MTL Kernel 
+The asymptotical properties of this approach offer an interpretation to understand the influence of each hyperparameter, but they are not applicable in practice.
+In~\cite{RuizAD19} an alternative formulation for this joint learning approach is proposed. The models for each task are defined as a convex combination of the common and task specific parts:
+\begin{equation}
+    \nonumber
+    \fv{w}_r = \lambda \fv{w} + (1 - \lambda) \fv{v}_r,
+\end{equation}
+where $\lambda$ is a hyperparameter such that $\lambda \in \left[0, 1\right]$.
+The corresponding regularized risk is 
+\begin{equation}
+    \nonumber
+    \risk_{\bsample} (\fv{w}) \defeq \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\fv{w}^\intercal {\phi(\fv{x}_i)} + \fv{v}_r^\intercal {\phi_r(\fv{x}_i)}, y_i) + \mu_c \norm{\fv{w}}^2 + \mu_s \sum_{r=1}^\ntasks \norm{\fv{v}_r}^2,
+\end{equation}
+We will name this approach \emph{convex}, in contrast to the \emph{additive} approach of the original formulation.
+% Discussion?
+With this formulation, the interpretation of $\lambda$ is straight-forward. The model with $\lambda = 1$ is equivalent to learning a single common model for all tasks, that is $\fv{w}_r = \fv{w}$. When $\lambda=0$, the models for each task are completely independent: $\fv{w}_r = \fv{v}_r$.
+The convex formulation also define an MTL model that is between a CTL approach and an ITL one, but it presents two advantages: the values of $\lambda$ that recover the CTL and ITL approaches are known, and these values are specific, not an asymptotical behaviour as in the original formulation. 
+%
+Moreover, it is shown in the paper that the two formulations, the \emph{additive} and \emph{convex}, are equivalent with an L1-SVM setting.
+%
+The proposal of~\cite{RuizAD19} is made only for L1-SVM, but it is extended to L2 and LS-SVMs in~\cite{RuizAD21}. In this subsection we present the convex formulation for L1, L2 and LS-SVM, as well as the equivalence results between the \emph{additive} and \emph{convex} formulations.
+
+
+
+
+\subsection{L1 Support Vector Machine}
+The L1-SVM~\cite{Vapnik00} is the original and most popular variant of the SVMs and is also the basis of the MTL formulation in~\cite{EvgeniouP04}.
+I will present the development for the \emph{additive} approach and the one for the \emph{convex} using an L1-SVM setting. Then I will show the equivalence between the two approaches and discuss its differences.
+
+\subsubsection{\emph{additive} MTL L1-SVM}
+% Additive Approach
+%   Primal
+The \emph{additive} MTL primal problem formulation, presented in~\cite{EvgeniouP04}, is the following:
+\begin{equation}\label{eq:svmmtl_primal_add}
+    \begin{aligned}
+    & \argmin_{w, \fv{v}_r, \xi}
+    & & {J(\fv{w}, \fv{v}_r, \xi) = C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{\fv{v}_r}^2} + \frac{\mu}{2} {\norm{\fv{w}}}^2} \\
+    & \text{s.t.}
+    & & y_{i}^r (\fv{w} \cdot \phi(x_{i}^r) + b + \fv{v}_r \cdot \phi_r(x_{i}^r) + d_r) \geq p_{i}^r - \xi_{i}^r ,  \\
+    & & & \xi_{i}^r \geq 0; \;  i=1 , \dotsc , m_r, \;  r= 1,\dotsc, T  . \\
+    \end{aligned}
+\end{equation}
+Observe again that the transformation $\phi$ is used for the common part and is shared by all tasks, while the transformation $\phi_r$ is task-specific.
+
+%
+In~\eqref{eq:svmmtl_primal_add} there are two hyperparameters: $C$ and $\mu$, which, in combination, balance the different parts of the objective function. 
+%
+Parameter $C$ plays the same role than in the standard L1-SVM, it balances the tradeoff between the loss incurred by the model, represented by the hinge variables $\xi_i^r$ and complexity of the models, represented by the norms $\norm{\fv{w}}$ and $\norm{\fv{v}_r}$. Large values of $C$ highly penalize the loss, so the resulting models are more complex because they have to adapt to the training sample distribution, but these models generalize worse. Small values of $C$ penalize more the norms of $w$ and $v_r$ so the resulting models are simpler but not so dependent on the training sample.
+
+%
+Parameter $\mu$ balances the specifity of our models. That is, given a small enough value of $C$, as $\mu \tendsto{}{\infty} $ the common part disappears, $\norm{\fv{w}} \tendsto{}{0}$. Conversely, given a small enough value of $C$, as $\mu \tendsto{}{0}$ the specific parts disappear, $\norm{\fv{v}_r} \tendsto{}{0}$
+%
+Recall that the prediction is made using the model $$ f_r(x_i^r) =(\fv{w} \cdot \phi(x_{i}^r) + b) + (\fv{v}_r \cdot \phi_r(x_{i}^r) + d_r),$$
+which consists of the combination of a common and task-specific prediction.
+We can find the following cases:
+\begin{itemize}
+    \item Reduction to an ITL approach:
+    $$C \tendsto{}{0}, \mu \tendsto{}{\infty} \implies f_r(x_i^r) = \fv{v}_r \cdot \phi_r(x_{i}^r) + d_r .$$
+    That is, the models are learned independently because the common part vanishes.
+    \item Reduction to a CTL approach: 
+    $$C \tendsto{}{0}, \mu \tendsto{}{0} \implies f_r(x_i^r) = \fv{w} \cdot \phi(x_{i}^r) + b .$$
+    That is, the model for all tasks is common because the specific parts disappear.
+    \item Pure MTL approach:
+    $$ C \in \reals, \mu_\text{inf} < \mu < \mu_\text{sup} \implies f_r(x_i^r) =(\fv{w} \cdot \phi(x_{i}^r) + b) + (\fv{v}_r \cdot \phi_r(x_{i}^r) + d_r) $$
+    There is a range of $\mu$, which is unknown, in which the models combine a common and task-specific part.
+\end{itemize}
+%   Lagrangian/KKT
+
+Observe that~\eqref{eq:svmmtl_primal_add} is a convex problem. As in the standard case of the L1-SVM, the corresponding dual problem is solved. To obtain the dual problem, it is necessary to express the Lagrangian of problem~\eqref{eq:svmmtl_primal_add}:
+\begin{equation}\label{eq:svmmtl_lagrangian_add}
+    \begin{aligned}
+        & \lagr(\fv{w}, \fv{v}_1, \ldots, \fv{v}_\ntasks, b, d_1, \ldots, d_\ntasks, \fv{\xi}, \fv{\alpha}, \fv{\beta}) \\
+        &=  C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{\fv{v}_r}^2} + \frac{\mu}{2} {\norm{\fv{w}}}^2 \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[ \fv{w} \cdot \phi(x_{i}^r) + b + \fv{v}_r \cdot \phi_r(x_{i}^r) + d_r \right] - p_{i}^r + \xi_{i}^r  \right\rbrace \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \beta_i^r \xi_i^r ,
+    \end{aligned}
+\end{equation}
+where $\alpha_i^r, \beta_i^r \geq 0$ are the Lagrange multipliers. Here $\fv{\xi}$ represents the vector $$(\xi_1^1, \ldots, \xi_{m_1}^1, \ldots, \xi_1^\ntasks, \ldots, \xi_{m_\ntasks}^\ntasks)^\intercal$$ and analogously we define $\fv{\alpha}$ and $\fv{\beta}$.
+Recall that the dual objective function is defined as 
+\begin{equation}\nonumber
+    \begin{aligned}
+         \Theta(\fv{\alpha}, \fv{\beta}) &=  \min_{\fv{w}, \fv{v}_1, \ldots, \fv{v}_\ntasks, b, d_1, \ldots, d_\ntasks, \fv{\xi}} \lagr(\fv{w}, \fv{v}_1, \ldots, \fv{v}_\ntasks, b, d_1, \ldots, d_\ntasks, \fv{\xi}, \fv{\alpha}, \fv{\beta}) \\
+         &= \lagr(\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta})
+    \end{aligned}    
+\end{equation}
+Since $\lagr$ is convex with respect to the primal variables, it is just necessary to compute the corresponding gradients
+\begin{align}
+    \grad_{\fv{w}} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, {\fv{\alpha}}, {\fv{\beta}}} = 0  &\implies \mu \optim{\fv{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = 0 \label{eq:common_repr_add} \\
+    \grad_{\fv{v}_r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, {\fv{\alpha}}, {\fv{\beta}}} = 0 &\implies \optim{\fv{v}_r} - \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = 0 \label{eq:specific_repr_add} \\
+    \grad_{b} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, {\fv{\alpha}}, {\fv{\beta}}} = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 \label{eq:specific_eqconstr_add}  \\
+    \grad_{\fv{v}_r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, {\fv{\alpha}}, {\fv{\beta}}} = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 \label{eq:common_eqconstr_add} \\
+    \grad_{\xi_i^r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, {\fv{\alpha}}, {\fv{\beta}}} = 0 &\implies C - {\alpha_i^r} - {\beta_i^r} = 0 \label{eq:alpha_feas_add}
+\end{align}
+% \begin{align}
+%     \grad_{\fv{w}} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0  &\implies \mu \optim{\fv{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = 0 \\
+%     \grad_{\fv{v}_r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0 &\implies \optim{\fv{v}_r} - \sum_{i=1}^{m_r} \optim{\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = 0 \\
+%     \grad_{b} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} y_i^r = 0  \\
+%     \grad_{\fv{v}_r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0 &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} y_i^r = 0 \\
+%     \grad_{\xi_i^r} \lagr \vert_{\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0 &\implies C - \optim{\alpha_i^r} - \optim{\beta_i^r} = 0
+% \end{align}
+
+Using these results and substituting back in the Lagrangian we obtain
+\begin{equation}\nonumber
+    \begin{aligned}
+        &  \Theta(\fv{\alpha}, \fv{\beta}) =  \lagr(\optim{\fv{w}}, \optim{\fv{v}_1}, \ldots, \optim{\fv{v}_\ntasks}, \optim{b}, \optim{d_1}, \ldots, \optim{d_\ntasks}, \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta})\\
+        &=  \frac{1}{2} \sum_{r= 1}^T{\norm{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}^2} + \frac{\mu}{2} {\norm{ \frac{1}{\mu}\sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}}^2 \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[ \left(\frac{1}{\mu} \sum_{s= 1}^T \sum_{j=1}^{m_s} {\alpha_j^s} \left\lbrace y_j^s \phi(\fv{x}_j^s) \right\rbrace \right) \cdot \phi(\fv{x}_{i}^r) \right]  \right\rbrace \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[  \left( \sum_{j=1}^{m_r} {\alpha_j^r} \left\lbrace y_j^r \phi_r(\fv{x}_j^r) \right\rbrace \right) \cdot \phi_r(\fv{x}_{i}^r)  \right]  \right\rbrace \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace \\
+        &=  \frac{1}{2} \sum_{r= 1}^T{\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}} \\
+        &\quad + \frac{\mu}{2} {\dotp{ \frac{1}{\mu}\sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}{ \frac{1}{\mu}\sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}} \\
+        &\quad - \frac{1}{\mu} \dotp{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace} \\
+        &\quad -  \sum_{r= 1}^T {\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}} \\
+        &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace \\
+        &= - \frac{1}{2\mu} \dotp{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace} \\
+        &\quad - \frac{1}{2} \sum_{r= 1}^T {\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}} \\
+        &\quad +  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r  p_{i}^r 
+    \end{aligned}
+\end{equation}
+Recall that the dual problem is defined as $\max_{\fv{\alpha}} \Theta(\fv{\alpha})$ where $\fv{\alpha}$ fulfill the KKT conditions. The condition~\eqref{eq:alpha_feas_add}, using the $\alpha_i^r , \beta_i^r \geq 0$, implies $0 \leq \alpha_i^r \leq C$. Also, observe that the equality constraint~\eqref{eq:common_eqconstr_add} is included in the task-specific equality constraints~\eqref{eq:specific_eqconstr_add}. Taking into account these KKT conditions, the dual problem can be expressed as
+\begin{equation}\label{eq:svmmtl_dual_add}
+    \begin{aligned}
+    & \min_{\alpha} && \Theta(\alpha) =  \frac{1}{2\mu} \dotp{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(\fv{x}_i^r) \right\rbrace} \\
+    & & &\quad  \frac{1}{2} \sum_{r= 1}^T {\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(\fv{x}_i^r) \right\rbrace}} -  \\
+    & \text{s.t.}
+    & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, m_r; r=1, \ldots, \ntasks \\
+    & & & \sum_{i=1}^{m_r} = \alpha_i^r y_i^r;  r=1, \ldots, \ntasks . \\
+    \end{aligned}
+\end{equation}
+Using the kernel trick, we can write the dual problem using a vector formulation
+\begin{equation}\label{eq:svmmtl_dualvec_add}
+    \begin{aligned}
+    & \min_{\alpha} && \Theta(\alpha) = \frac{1}{2} \fv{\alpha}^\intercal \left(\frac{1}{\mu} \fm{Q} + \fm{K} \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+    & \text{s.t.}
+    & & 0 \leq \fv{\alpha} \leq C ,  \\
+    & & & \fv{\alpha}^\intercal \fv{y} = 0   . \\
+    \end{aligned}
+\end{equation}
+Here $Q$ and $K$ are the common and specific kernel matrices, respectively.
+The matrix $Q$ is generated using the common kernel, defined as 
+\begin{equation}
+    \nonumber
+    k(x_i^r, x_j^s) = \dotp{\phi(x_i^r)}{\phi(x_j^s)} 
+\end{equation}
+
+
+
+
+
+%   Dual
+
+%   Discussion: Primal vs Dual
+
+
+% Convex Approach
+
+%   Primal
+
+%   Lagrangian/KKT
+
+%   Dual
+
+%   Discussion: Primal vs Dual
+
+% Equivalence results
+
+% Lemmas
+
+% Experiments
+
+
+
+\subsection{L2 Support Vector Machine}
+
+% Convex Approach
+
+%   Primal
+
+%   Lagrangian/KKT<
+
+%   Dual
+
+%   Discussion: Primal vs Dual
+\subsection{LS Support Vector Machine}
+
+% Convex Approach
+
+%   Primal
+
+%   Lagrangian/KKT
+
+%   Dual
+
+%   Discussion: Primal vs Dual
+
+\section{Optimal Convex Combination of fitted Models}
+% A natural alternative to convexMTL is to direclty combine models
+
+
+
+\section{Convex Multi-Task Learning with Neural Networks}
 
 \section{Experiments}
 
-\section{Conclusions}\label{sec-conclusions-4}
+\section{Conclusions}\label{sec-conclusions-3}
 
 In this chapter, we have\dots
