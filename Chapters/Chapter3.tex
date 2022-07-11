@@ -30,7 +30,7 @@ This chapter presents\dots
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
 The feature-based methods try to find a set of features that are useful for all tasks. Two main approaches are taken: Feature Learning, which tries to learn new features from the original ones, and Feature Selection which selects a subset of the original features.
-Deep Learning is a particular case of Feature Learning that has had a tremendous relevance and that is treated separately. 
+Deep Learning is a particular case of Feature Learning that has had a tremendous relevance in Machine Learning and that is treated separately. 
 
 \subsubsection*{Feature Learning approach}
 
@@ -39,11 +39,12 @@ Deep Learning is a particular case of Feature Learning that has had a tremendous
 % Multi-Task feature Learning 2006
 % Convex multi-task feature learning 2008
 % A spectral regularization framework for multi-task structure learning 2007
-Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruana97}, which will be described later, the first work of Multi-Task Feature Learning is presented in~\cite{ArgyriouEP06}. Argyriou et. al assume a multi-task linear model in some RKHS $\rkhs$, where that the task parameters $w_t$ lie in a linear subspace, i.e. $\mymat{w} = \mymat{u}\mymat{a}$ where
+Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruana97}, which will be described later, the first work of Multi-Task Feature Learning is presented in~\cite{ArgyriouEP06}. Argyriou et al. assume a multi-task linear model in some RKHS $\rkhs$, where that the task parameters $w_t$ lie in a linear subspace, i.e. $$\underset{\dimx \times \ntasks}{\mymat{w}} = \underset{\dimx \times \dimx}{\mymat{u}}\underset{\dimx \times \ntasks}{\mymat{a}}$$
+< where
 $w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthogonal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
 \begin{equation}
     \label{eq:mtl_feat_learning}
-    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{x_i^r}) + \lambda \norm{\mymat{a}^\intercal}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{x_i^r}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
 \end{equation}
 Here, the $L_{2, 1}$ regularizer is used to impose row-sparsity across tasks, i.e. forcing some rows of $\mymat{a}$ to be zero while the matrix $\mymat{u}$ is restricted to be orthonormal.
 Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
@@ -53,25 +54,29 @@ Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u
         &\argmin_{\mymat{w} \in \reals^{d \times \ntasks}, \mymat{d}  \in \reals^{d \times d}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) 
         + \lambda \sum_{r=1}^\ntasks \dotp{w_r}{D^{-1}w_r} 
         %+ \lambda \trace{\mymat{w}^\intercal \mymat{d}^{-1} \mymat{w}}
-        + \lambda \mu \trace{\mymat{D}^{-1}} \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
+        + \mu \trace{\mymat{D}^{-1}} \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
     \end{aligned}
 \end{equation}
-Here $\mymat{d}^+$ denotes the pseudo-inverse of $\mymat{d}$ and $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices and the trace of $\mymat{D}^{-1}$ is added for numerical stability and convenient convergence properties. Problem~\eqref{eq:convmtl_feat_learning} is solved using an alternating two-step optimization algorithm in $\mymat{W}$ and $\mymat{D}$.
-%First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w}\right)^\frac{1}{2} \right)$.
-%The regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$.
-When $\mu=0$ in~\eqref{eq:convmtl_feat_learning} the optimization problem can be reformulated as
+Here $\fm{D} = \fm{U} \Diag{\left(\frac{\norm{\fv{a}^1}_2}{\norm{\fm{A}_{2, 1}}}\right), \ldots, \left(\frac{\norm{\fv{a}^\dimx}_2}{\norm{\fm{A}_{2, 1}}}\right) } \fm{U}$, $\fv{a}^i$ are the rows of $\fm{A}$, $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices and the trace of $\mymat{D}^{+}$ is added for numerical stability and convenient convergence properties. Problem~\eqref{eq:convmtl_feat_learning} is solved using an alternating two-step optimization algorithm in $\mymat{W}$ and $\mymat{D}$.
+First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} \right)$.
+When $\mu=0$, the regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$:
+%When $\mu=0$ in~\eqref{eq:convmtl_feat_learning} the optimization problem can be reformulated as
 \begin{equation}
     \label{eq:mtl_feat_learning_tracenorm}
     \argmin_{\mymat{w} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}}_{*}^2.
 \end{equation}
 %
-Here, $\norm{W}_* = \trace{\left(W W^\intercal \right)^{\frac{1}{2}}}$ denotes the trace norm (or nuclear norm), which can be seen as the convex envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
-In~\cite{Maurer09} some bounds on the excess risks are given for this Multi-Task Feature Learning method.
-In~\cite{ArgyriouMPY07} this idea is extended to any spectral funcion $F: \mathbb{S}^d_{++} \to \mathbb{S}^d_{++}$ where $\mathbb{S}^d_{++}$ is the set of matrices $A \in \mathbb{R}^{d \times d}$ symmetric and positive definite. The definition for the spectral function $F(\mymat{d})$, where we can write $D = \mymat{u}^\intercal \Diag (\lambda_1, \ldots, \lambda_d)  \mymat{u}$ is:
-$ F(\mymat{d}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d)) \mymat{u} \; .$
+Here, $\norm{W}_* = \trace{\left(W^\intercal W \right)^{\frac{1}{2}}}$ denotes the trace norm (also known as Frobenius or nuclear norm), which can be seen as the continuous envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
+%
+This idea can be extended into a kernel setting in the standard way, by replacing the original features by the implicit transformations $\phi(x_i^r)$ in the primal problem.
+%
+In~\cite{ArgyriouMPY07} this idea is extended to any spectral funcion $F: \mathbb{S}^d_{++} \to \mathbb{S}^d_{++}$ where $\mathbb{S}^d_{++}$ is the set of matrices $A \in \mathbb{R}^{d \times d}$ symmetric and positive definite. The definition for the spectral function $F(\mymat{A})$, where we can diagonalize the matrix $\mymat{A}$ as $\mymat{V}^\intercal \Diag (\lambda_1, \ldots, \lambda_d)  \mymat{V}$ is
+$$ F(\mymat{A}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d)) \mymat{u} \; .$$
 Then, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning} can be expressed as
-$$ \sum_t \langle w_t, F(\mymat{d}) w_t\rangle = \trace{F(\mymat{d}) \mymat{w}  \mymat{w}^\intercal} \; .$$
+$$ \sum_t \langle w_t, F(\mymat{D}) w_t\rangle = \trace{\mymat{w}^\intercal F(\mymat{D}) \mymat{w}} = \trace{F(\mymat{D}) \mymat{w}  \mymat{w}^\intercal} \; .$$
 It is easy to see that problem~\eqref{eq:convmtl_feat_learning} is a particular case where $f(\lambda) = \lambda^{-1}$.
+In~\cite{Maurer09} some bounds on the excess risks are given for this Multi-Task Feature Learning method.
+
 %  Learning multiple tasks using manifold regularization. Agarwal
 Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assuming that the task parameters $w_r$ lie in a linear subspace, the authors generalize this idea by assuming that $w_r$ lies in a manifold $\mathcal{M} \in \rkhs$.
 \begin{equation}
@@ -86,7 +91,7 @@ where $\mathcal{P}_\mathcal{M}(w_t)$ represents the distance between $w_t$ and i
 % K-Dimensional Coding Schemes in Hilbert Spaces
 % Sparse coding for multitask and transfer learning Maurer 2013
 % Learning task grouping and overlap in multi-task learning.
-Other distinct, relevant approach for Feature Learning is the one described in~\cite{MaurerPR13}, where a sparse-coding method,~\cite{MaurerP10}, is used for MTL. Maurer et al. present the problem
+Other distinct, relevant approach for Feature Learning is the one described in~\cite{MaurerPR13}, where a sparse-coding method~\cite{MaurerP10} is used for MTL. Maurer et al. present the problem
     \begin{equation}
         \label{eq:mtl_sparse_coding}
         \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, \infty} +\mu \norm{\mymat{a}}_{1, \infty} .
@@ -99,11 +104,12 @@ A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{Kum
     \label{eq:mtl_go}
     \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, 2} +\mu \norm{\mymat{a}}_{1, 1} .
 \end{equation}
-
+Here, we can interpret this model as a linear sparse combination, encoded in $\fm{a}$, of some features encoded in $\fm{D}$: $\fv{w}_r^\intercal \cdot \fv{x}_i^r = \sum_{i=1}^k a_r^i \left(\fv{D}_i^\intercal \cdot \fv{x}_i^r \right)$.
+Unlike the Multi-Task Feature Learning approach of Argyriou et al, this sparse coding formulation is only presented in the linear setting.
 
 \subsubsection*{Feature Selection approach}
 %   Feature selection or block sparse regularization
-The feature selection is also driven by learning a good set of features for all tasks, however it focuses on subsets of the original features. This is a more rigid approach than that of Feature Learning but is also more interpretable.
+The feature selection is also driven by learning a good set of features for all tasks, however it focuses on subsets of the original features. Due to their nature, the works following this strategy are based on linear models. This is a more rigid approach than that of Feature Learning but is also more interpretable.
 
 % G. Obozinski, B. Taskar, and M. Jordan, “Multi-task feature selection,” (2006)
 % H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009.
@@ -111,16 +117,26 @@ Most works on Multi-Task Feature Selection uses an $L_{p, q}$ regularization of 
 \begin{equation}
     \label{eq:mtl_feat_selection}   
     \begin{aligned}
-        &\argmin_{\mymat{w}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}^\intercal}_{2, 1}^2 ,
+        &\argmin_{\mymat{w}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}}_{2, 1}^2 ,
     \end{aligned}
 \end{equation}
-where the $L_{2, 1}$ regularization enforces row sparsity and forces different tasks to share some features $\mymat{w}^i$, which are the rows of $\mymat{w}$. In~\cite{LiuPZ09} the $L_{\infty, 1}$ regularization is used for the same goal. 
-Then, in~\cite{GongYZ12} this idea is generalized with a capped-$L_{p, 1}$ penalty of $\mymat{W}^\intercal$, which is defined as
-$ \sum_{i=1}^d min(\theta, \norm{W^i}_p).$
-That is, the parameter $\theta$ enables a more flexible regularization, with small values of $\theta$ many rows should be zero, since only the small rows will be fully penalized and the rows with the largest norm will not dominate the sum, as $\theta$ grows this penalty will degenerate to the standard $L_{p, 1}$ norm.
+where the $L_{2, 1}$ regularization enforces row sparsity and forces different tasks to share a subset of features $\fv{w}^i$, which are the rows of $\mymat{w}$. In~\cite{LiuPZ09} the $L_{\infty, 1}$ regularization is used for the same goal. 
+Then, in~\cite{GongYZ12} this idea is generalized with a capped-$L_{p, 1}$ penalty of $\mymat{W}$, which is defined as
+$ \sum_{i=1}^d min(\theta, \norm{\fv{w}^i}_p).$
+That is, the parameter $\theta$ enables a more flexible regularization, with small values of $\theta$ the smallest rows are pushed towards zero since the rows with norms larger than $\theta$ will not dominate the sum, as $\theta$ grows this penalty will degenerate to the standard $L_{p, 1}$ norm.
 
-To allow more flexibility, a multi-level selection is presented in~\cite{LozanoS12}. The main idea is to decompose each $w_r^i$, that is, the $i$-th feature of the $r$-th task as 
-$w_r^i = \theta^i \gamma_r^i$ and using an $L_1$ regularizer on the vector $\myvec{\theta}$ and the vectors $\myvec{\gamma}^i$, which are the concatenations of $\theta^i$ and $\gamma_r^i$ for all features and all tasks, respectively. By doing this, the features $i$ such that $\theta^i = 0$, are discarded for all tasks, but the rest may be shared among tasks or not depending on $\gamma_r^i$.
+%
+In~\cite{LozanoS12} a multi-level lasso selection is presented where the main idea is to decompose each $w_r^i$, that is, the $i$-th feature of the $r$-th task as 
+$w_r^i = \theta^i a_r^i$ 
+and then, using the matrix $\fm{\Theta} = \Diag \left( \theta^1, \ldots, \theta^\dimx \right)$, the y define the problem
+\begin{equation}
+    \label{eq:mtl_multilevel_lasso}   
+    \begin{aligned}
+        &\argmin_{\mymat{\Theta}, \fv{a}_1, \ldots, \fv{a}_\ntasks}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\fm{\Theta} \fv{a}_r}{x_i^r})  + \mu \Tr \Theta + \nu \norm{\fm{a}}_{1, 1},
+    \end{aligned}
+\end{equation}
+By doing this, the features $i$ such that $\theta^i = 0$, are discarded for all tasks, but the rest may be shared among tasks or not depending on the values of $a_r^i$.
+Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl_sparse_coding} with $\fm{d}$, the ``feature building'' matrix, being limited to diagonal matrices since it is acting here as a selection matrix: $\fv{w}_r^\intercal \cdot \fv{x}_i^r = \sum_{i=1}^k a_r^i \left({\theta}_i \cdot \fv{x}_i^r \right)$.
 
 % Bayesian approaches
 % 15. Zhang Y, Yeung DY and Xu Q. Probabilistic multi-task feature selection. In:
@@ -131,7 +147,7 @@ $w_r^i = \theta^i \gamma_r^i$ and using an $L_1$ regularizer on the vector $\myv
 % 17. Hern ́andez-Lobato D, Hern ́andez-Lobato JM and Ghahramani Z. A probabilis-
 % tic model for dirty multi-task feature selection. In: Proceedings of the 32nd
 % International Conference on Machine Learning. 2015, 1073–82.
-The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
+The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and in~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
 
 
 \subsubsection*{Deep Learning approach}
@@ -157,7 +173,7 @@ The feature selection methods based on $L_{p, 1}$ regularization are shown to be
 
 
 \subsection{Parameter-Based MTL}
-The parameter-based MTL does not focus on shared sets of features across tasks, instead other types of dependencies among the task (the task-parameters $w_r$ specifically) are taken into account. Some approaches rely on the assumption that the Multi-Task weight matrix $\mymat{w}$ has a low rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices.
+The parameter-based MTL does not focus on shared sets of features across tasks, instead other types of dependencies among the task like the task-parameters $w_r$, are taken into account. Some approaches rely on the assumption that the Multi-Task weight matrix $\mymat{w}$ has a low rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices. We summarize each approach below.
 
 \subsubsection*{Low-Rank approach}
 % Low-rank
@@ -169,30 +185,32 @@ The parameter-based MTL does not focus on shared sets of features across tasks, 
 % Trace Norm Regularization: Reformulations, Algorithms, and Multi-Task Learning
 
 % Multi-Stage Multi-Task Learning with Reduced Rank
-In the low-rank approach, the assumption is that the task parameters $w_r$ share a low-dimensional space, or are close to this subspace. This is similar to the Feature Learning approach, but it is not that rigid, since it allows for some flexibility.
+In the low-rank approach the assumption is that task parameters $w_r$ share a low-dimensional space, or, at least, are close to this subspace. This is similar to the Feature Learning approach, but it is not that rigid, since it allows for some flexibility.
 The idea in~\cite{AndoZ05} is that the task parameters can be decomposed as
 $$ w_r = u_r + \mymat{\Theta}^\intercal v_r,$$
-where $\mymat{\Theta} \in \reals^{k \times \dimx}$ spans a shared low dimensional space, that is $\mymat{\Theta}^\intercal \mymat{\Theta} = \mymat{i}_k$ with $k < \dimx$, and $d$ is the dimension of the data. Under this consideration, the proposed model is
+where $\mymat{\Theta} \in \reals^{k \times \dimx}$ spans a shared low dimensional space, that is $\mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k$ with $k < \dimx$, and $d$ is the dimension of the data. Under this consideration, the proposed model is
 \begin{equation}
     \label{eq:mtl_struct_learn}
     \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta}^\intercal v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k .
 \end{equation}
 Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
-Problem~\eqref{eq:mtl_struct_learn} is solved using a two-step optimization iterating between minimizing in $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{u}$. However problem~\eqref{eq:mtl_struct_learn} is not convex. 
-Note that~\eqref{eq:mtl_struct_learn} can be reformulated as
+Problem~\eqref{eq:mtl_struct_learn} is solved using a two-step optimization iterating between minimizing in $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{u}$. Observe that problem~\eqref{eq:mtl_struct_learn} is not convex but it can be reformulated as
 \begin{equation}
     \label{eq:mtl_struct_learn_ref}
     \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k ,
 \end{equation}
-where the terms $\norm{w_r - \mymat{\Theta}^\intercal v_r}^2$ enforces the similarity across tasks by binging them closer to the shared subspace.
+where the terms $\norm{w_r - \mymat{\Theta}^\intercal v_r}^2$ enforces the similarity across tasks by bringing them closer to the shared subspace.
 In~\cite{ChenTLY09} the following extension is proposed:
 \begin{equation}
     \label{eq:mtl_struct_learn_frob}
     \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 + \mu \sum_{r=1}^\ntasks \norm{w_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal  = \mymat{i}_k .
 \end{equation}
 And it is shown that~\eqref{eq:mtl_struct_learn_frob}, when relaxing the orthogonality constraint, can be expressed as a convex minimization problem.
-Note that the difference between~\eqref{eq:mtl_struct_learn_ref} and~\eqref{eq:mtl_struct_learn_frob} is the addition of the Frobenius norm of matrix $\mymat{w}$, also known as trace norm. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ is an eigenvector of $\mymat{w}$, and thus, forcing $\mymat{w}$ to be low-rank.
+%
+
+A different approach relies on the use of the trace norm of matrix $\mymat{w}$. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ are the eigenvalues of $\mymat{w}$, and thus, forcing $\mymat{w}$ to be low-rank.
 In the work of~\cite{PongTJY10} new formulations for problems with this trace norm penalty and a primal-dual method for solving the problem is developed.
+% ?
 A modification of the trace norm can be found in~\cite{HanZ16}, where a capped-Frobenius norm is defined as $\sum_{i=1}^d \min(\theta, {\lambda_i(\mymat{w})}^2)$. This capped norm, as in the capped-$L_{p, q}$ norm, can enforce a lower rank matrix for small $\theta$ and also degenerates to the trace norm for large enough $\theta$. 
 
 
