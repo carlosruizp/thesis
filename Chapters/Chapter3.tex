@@ -151,11 +151,22 @@ The feature selection methods based on $L_{p, 1}$ regularization are shown to be
 
 
 \subsubsection*{Deep Learning approach}
-
+Deep learning has suffered an enormous development over the last decade, with multiple variants having great success in many fields and applications such as Convolutional Neural Networks for image recognition, Generative Adversarial Networks for generative models or Transformers for Natural Language Processing. 
+In this context of deep neural networks, Multi-Task Learning has also been applied. 
+As proposed in~\cite{Ruder17a} we can divide the Multi-Task approaches with neural networks in hard sharing and soft sharing.
 % Hard parameter sharing
-% Soft parameter sharing
+The hard sharing approach is the most common one, and it consists on sharing between all tasks the hidden layers of the network while keeping some task-specific layers. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. Although this approach has some theoretical properties to improve learning~\cite{baxter2000model}, it is a very rigid approach since it assumes that the learned features and the feature learning process must be the same for all tasks.
 
+% Soft parameter sharing
+The soft sharing approach to Multi-Task learning tries to tackle these problems with different proposed strategies.
 % Linear algorithms for online multitask classification 2010
+In~\cite{CavallantiCG10} the authors propose to learn one perceptron for each task and the update of each perceptron is determined by an interaction matrix $A$ such that
+\begin{equation}
+    \nonumber
+    w_r(\tau+1) = w_r(\tau) - y_t A^{-1}_{r, s} x_i^s
+\end{equation}
+where $w_r$ are the parameters of the perceptron corresponding to task $r$.
+This approach is limited to perceptrons, so its 
 
 % cross-stitch networks for multi-task learning 2016
 
@@ -399,52 +410,52 @@ Other approaches generalize the decomposition method by assuming that the parame
 In~\cite{ZweigW13} the regularizer used is $r(\mymat{W}_l) = \norm{\mymat{W}_l}_{2, 1} + \norm{\mymat{W}_l}_{1, 1}$ to enforce the row and element-sparsity. 
 In~\cite{HanZ15} the regularizer is $r(\mymat{W}_l) = \sum_{r,s=1}^T \norm{(W_l)_r - (W_l)_s}^2$, which alongside some constraints it allows to build a tree of task groups, where the root contains all the tasks and the leafs only correspond to one task.
 
-\subsection{Bayesian Approaches}
-In the Bayesian approaches common prior is shared for all the tasks models, and the diverse sources of data define different posterior distributions for each task.
+% \subsection{Bayesian Approaches}
+% In the Bayesian approaches common prior is shared for all the tasks models, and the diverse sources of data define different posterior distributions for each task.
 
-%\subsubsection*{Bayesian Approach}
-% Bayesian approach
-% Learning to learn with the informative vector machine (2004)
-The work of~\cite{LawrenceP04} presents a GP model where all the tasks share a common prior.
-That is, given $T$ tasks, a noise model with latent variables $\myvec{f}_r$ is considered, i.e. $y_i^r = f_i^r + \epsilon$, and $\myvec{f}_r$ follows a GP prior
-$$ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}) = \normal{0, \mymat{k}_{\myvec{\theta}}} $$
-where $\mymat{k}$ is a kernel matrix parametrized by $\myvec{\theta}$ and evaluated at the points $\mymat{x}$. Note that a single $\myvec{\theta}$ parameter is used to model a prior shared for all tasks.
-Using this idea the posterior probability can be expressed as
-\begin{equation}
-    \nonumber
-    p (\myvec{y}^1, \ldots, \myvec{y}^\ntasks \vert \myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta},  \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto  p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \prod_{r=1}^\ntasks p(\myvec{y}^r \vert \myvec{f}_r, \myvec{\theta}) %p(\myvec{\theta} | \myvec{f}_r)
-\end{equation}
-where it is assumed the distribution for the latent parameters factorizes as
-\begin{equation}
-    \nonumber
-    p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) , %p(\myvec{\theta} | \myvec{f}_r).
-\end{equation}
-where $p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) = \normal{0, K_\theta}$, that is 
-$\Cov(f^r(x), f^r(x')) = k_\theta(x, x') .$
-Although this idea is interesting for MTL, it presents a rigid framework since we use a fixed model for the prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta})$. To use Bayesian induction over the prior too, the hierarchical Bayesian model is considered. That is, we consider a different prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}^r)$ for each task and a hyperprior for $\myvec{\theta}^r$, $p(\myvec{\theta}^r \vert \myvec{\phi})$. Then, the distribution for latent parameters is expressed as
-\begin{equation}
-    \nonumber
-    p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks, \myvec{\phi} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}^r, \myvec{\phi}) p(\myvec{\theta}^r | \myvec{\phi}).
-\end{equation}
-In~\cite{YuTS05}, a Gaussian hyperprior $p(\myvec{\theta}^r | \myvec{\phi})$ is considered. Note that in this formulation, each task parameter $\myvec{\theta}^r$ is an independent from the rest of parameters $\myvec{\theta}^s, s \neq r$ given $\myvec{\phi}$ .
-That is, the joint distribution factorizes as
-\begin{equation}
-    \nonumber
-    p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r | \myvec{\phi}) .
-\end{equation} 
+% %\subsubsection*{Bayesian Approach}
+% % Bayesian approach
+% % Learning to learn with the informative vector machine (2004)
+% The work of~\cite{LawrenceP04} presents a GP model where all the tasks share a common prior.
+% That is, given $T$ tasks, a noise model with latent variables $\myvec{f}_r$ is considered, i.e. $y_i^r = f_i^r + \epsilon$, and $\myvec{f}_r$ follows a GP prior
+% $$ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}) = \normal{0, \mymat{k}_{\myvec{\theta}}} $$
+% where $\mymat{k}$ is a kernel matrix parametrized by $\myvec{\theta}$ and evaluated at the points $\mymat{x}$. Note that a single $\myvec{\theta}$ parameter is used to model a prior shared for all tasks.
+% Using this idea the posterior probability can be expressed as
+% \begin{equation}
+%     \nonumber
+%     p (\myvec{y}^1, \ldots, \myvec{y}^\ntasks \vert \myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta},  \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto  p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \prod_{r=1}^\ntasks p(\myvec{y}^r \vert \myvec{f}_r, \myvec{\theta}) %p(\myvec{\theta} | \myvec{f}_r)
+% \end{equation}
+% where it is assumed the distribution for the latent parameters factorizes as
+% \begin{equation}
+%     \nonumber
+%     p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) , %p(\myvec{\theta} | \myvec{f}_r).
+% \end{equation}
+% where $p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}) = \normal{0, K_\theta}$, that is 
+% $\Cov(f^r(x), f^r(x')) = k_\theta(x, x') .$
+% Although this idea is interesting for MTL, it presents a rigid framework since we use a fixed model for the prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta})$. To use Bayesian induction over the prior too, the hierarchical Bayesian model is considered. That is, we consider a different prior $ p(\myvec{f}_r \vert \mymat{x}, \myvec{\theta}^r)$ for each task and a hyperprior for $\myvec{\theta}^r$, $p(\myvec{\theta}^r \vert \myvec{\phi})$. Then, the distribution for latent parameters is expressed as
+% \begin{equation}
+%     \nonumber
+%     p (\myvec{f}_1, \ldots, \myvec{f}_\ntasks, \myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks, \myvec{\phi} \vert \mymat{x}^1, \ldots, \mymat{x}^\ntasks) \propto \prod_{r=1}^\ntasks p(\myvec{f}_r \vert \mymat{x}^r, \myvec{\theta}^r, \myvec{\phi}) p(\myvec{\theta}^r | \myvec{\phi}).
+% \end{equation}
+% In~\cite{YuTS05}, a Gaussian hyperprior $p(\myvec{\theta}^r | \myvec{\phi})$ is considered. Note that in this formulation, each task parameter $\myvec{\theta}^r$ is an independent from the rest of parameters $\myvec{\theta}^s, s \neq r$ given $\myvec{\phi}$ .
+% That is, the joint distribution factorizes as
+% \begin{equation}
+%     \nonumber
+%     p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r | \myvec{\phi}) .
+% \end{equation} 
 
-%
-% Learning Gaussian processes from multiple tasks (2005)
-% Multi-Task Learning for Classification with Dirichlet Process Priors (2007)
-% Bayesian multitask learning with latent hierarchies (2009)
-Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling the task parameters. An explicit dependence is then defined over the task parameters
-\begin{equation}
-    \nonumber
-    p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r |\myvec{\theta}^{-r} , \myvec{\phi}) .
-\end{equation} 
-where $\myvec{\theta}^{-r}  = \set{\myvec{\theta}^s, s \neq r }$.
-This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
-Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
+% %
+% % Learning Gaussian processes from multiple tasks (2005)
+% % Multi-Task Learning for Classification with Dirichlet Process Priors (2007)
+% % Bayesian multitask learning with latent hierarchies (2009)
+% Then, in~\cite{XueLCK07} a Dirichlet Process Prior is considered for modelling the task parameters. An explicit dependence is then defined over the task parameters
+% \begin{equation}
+%     \nonumber
+%     p(\myvec{\theta}^1, \ldots, \myvec{\theta}^\ntasks | \myvec{\phi}) = \prod_{r=1}^\ntasks p(\myvec{\theta}^r |\myvec{\theta}^{-r} , \myvec{\phi}) .
+% \end{equation} 
+% where $\myvec{\theta}^{-r}  = \set{\myvec{\theta}^s, s \neq r }$.
+% This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
+% Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
 
 \subsection{Combination-based MTL}
 % Joint Learning
@@ -484,13 +495,19 @@ However, in this work we are interested mainly in two extensions: one is the wor
 % \end{equation}
 We can express the optimization problem as
 \begin{equation}
-    \label{eq:mtl_clustered}
+    \label{eq:mtl_combination_primal}
     \begin{aligned}
         &\argmin_{w, \mymat{V}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r + v_r}{x_i^r}) + \lambda (\mu \norm{w}^2 + \trace{V^\intercal V}) ,
     \end{aligned}    
 \end{equation}
 where $\mu$ is a tradeoff parameter to leverage the common and task-specific information and $\fm{V}$ is the matrix with the specific vectors $v_r$ as columns.
-\comm{TODO: Mirar Frustratingly Easy Domain Adaptation}
+%
+When the dual problem of~\eqref{eq:mtl_combination_primal} is obtained, the result is a dual problem where the kernel encodes this combination of common and shared parts, that is the kernel function has the form
+\begin{equation}
+    \nonumber
+    k(x_i^r, x_j^s) = \mu_1 k(x_i^r, x_j^s) +  \mu_2 \delta_{rs} k(x_i^r, x_j^s)
+\end{equation}
+where $\mu_1, \mu_2$ are scalar parameters and $\delta_{rs}$ is $1$ only if $r$ and $s$ are the same task, so it encodes the specific part of the model. In the linear case, this is equivalent to a feature extension strategy, like the domain adaptation scheme proposed in~\cite{Daume07} with only target and source domain, but that can be easily be adapted to MTL.
 
 % Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
 
