@@ -25,12 +25,16 @@ This chapter presents\dots
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Multi-Task Learning Methods: An Overview}\label{sec:ch3_overview}
+In this section a general overview of the MTL methods will be shown, categorizing some of the most relevant approaches. We can consider three main groups in this taxonomy: Feature-Based, Parameter-Based and Combination-Based strategies. 
+A section is developed for each group.
+%, with subcategorizations and examples.
+Most MTL strategies used in deep learning can be categorized as Feature-Based, but given its relevance, MTL with neural networks will be treated separately. 
 
 \subsection{Feature-Based MTL}
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
 The feature-based methods try to find a set of features that are useful for all tasks. Two main approaches are taken: Feature Learning, which tries to learn new features from the original ones, and Feature Selection which selects a subset of the original features.
-Deep Learning is a particular case of Feature Learning that has had a tremendous relevance in Machine Learning and that is treated separately. 
+
 
 \subsubsection*{Feature Learning approach}
 
@@ -40,7 +44,7 @@ Deep Learning is a particular case of Feature Learning that has had a tremendous
 % Convex multi-task feature learning 2008
 % A spectral regularization framework for multi-task structure learning 2007
 Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruana97}, which will be described later, the first work of Multi-Task Feature Learning is presented in~\cite{ArgyriouEP06}. Argyriou et al. assume a multi-task linear model in some RKHS $\rkhs$, where that the task parameters $w_t$ lie in a linear subspace, i.e. $$\underset{\dimx \times \ntasks}{\mymat{w}} = \underset{\dimx \times \dimx}{\mymat{u}}\underset{\dimx \times \ntasks}{\mymat{a}}$$
-< where
+where
 $w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthogonal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
 \begin{equation}
     \label{eq:mtl_feat_learning}
@@ -66,7 +70,7 @@ When $\mu=0$, the regularizer of~\eqref{eq:convmtl_feat_learning} can be express
     \argmin_{\mymat{w} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}}_{*}^2.
 \end{equation}
 %
-Here, $\norm{W}_* = \trace{\left(W^\intercal W \right)^{\frac{1}{2}}}$ denotes the trace norm (also known as Frobenius or nuclear norm), which can be seen as the continuous envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
+Here, $\norm{W}_* = \trace{\left(W^\intercal W \right)^{\frac{1}{2}}}$ denotes the trace norm (also known as nuclear norm), which can be seen as the continuous envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
 %
 This idea can be extended into a kernel setting in the standard way, by replacing the original features by the implicit transformations $\phi(x_i^r)$ in the primal problem.
 %
@@ -148,39 +152,6 @@ Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl
 % tic model for dirty multi-task feature selection. In: Proceedings of the 32nd
 % International Conference on Machine Learning. 2015, 1073–82.
 The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and in~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
-
-
-\subsubsection*{Deep Learning approach}
-Deep learning has suffered an enormous development over the last decade, with multiple variants having great success in many fields and applications such as Convolutional Neural Networks for image recognition, Generative Adversarial Networks for generative models or Transformers for Natural Language Processing. 
-In this context of deep neural networks, Multi-Task Learning has also been applied. 
-As proposed in~\cite{Ruder17a} we can divide the Multi-Task approaches with neural networks in hard sharing and soft sharing.
-% Hard parameter sharing
-The hard sharing approach is the most common one, and it consists on sharing between all tasks the hidden layers of the network while keeping some task-specific layers. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. Although this approach has some theoretical properties to improve learning~\cite{baxter2000model}, it is a very rigid approach since it assumes that the learned features and the feature learning process must be the same for all tasks.
-
-% Soft parameter sharing
-The soft sharing approach to Multi-Task learning tries to tackle these problems with different proposed strategies.
-% Linear algorithms for online multitask classification 2010
-In~\cite{CavallantiCG10} the authors propose to learn one perceptron for each task and the update of each perceptron is determined by an interaction matrix $A$ such that
-\begin{equation}
-    \nonumber
-    w_r(\tau+1) = w_r(\tau) - y_t A^{-1}_{r, s} x_i^s
-\end{equation}
-where $w_r$ are the parameters of the perceptron corresponding to task $r$.
-This approach is limited to perceptrons, so its 
-
-% cross-stitch networks for multi-task learning 2016
-
-% An Overview of Multi-Task Learning in Deep Neural Networks 2017 (incluye los de 2017?)
-
-% sluice-networks 2017
-
-% Deep multi-task representation learning: A tensor factorisation approach 2017
-
-% Trace norm regularised deep multi-task learning 2017
-
-% Latent Multi-Task Architecture Learning 2019
-
-% adashare 2020
 
 
 \subsection{Parameter-Based MTL}
@@ -410,6 +381,7 @@ Other approaches generalize the decomposition method by assuming that the parame
 In~\cite{ZweigW13} the regularizer used is $r(\mymat{W}_l) = \norm{\mymat{W}_l}_{2, 1} + \norm{\mymat{W}_l}_{1, 1}$ to enforce the row and element-sparsity. 
 In~\cite{HanZ15} the regularizer is $r(\mymat{W}_l) = \sum_{r,s=1}^T \norm{(W_l)_r - (W_l)_s}^2$, which alongside some constraints it allows to build a tree of task groups, where the root contains all the tasks and the leafs only correspond to one task.
 
+
 % \subsection{Bayesian Approaches}
 % In the Bayesian approaches common prior is shared for all the tasks models, and the diverse sources of data define different posterior distributions for each task.
 
@@ -457,7 +429,7 @@ In~\cite{HanZ15} the regularizer is $r(\mymat{W}_l) = \sum_{r,s=1}^T \norm{(W_l)
 % This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
 % Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
 
-\subsection{Combination-based MTL}
+\subsection{Combination-based}
 % Joint Learning
 % Sometimes in task clustering approaches, sometimes in task relations learning
 The combination-based methods 
@@ -510,6 +482,109 @@ When the dual problem of~\eqref{eq:mtl_combination_primal} is obtained, the resu
 where $\mu_1, \mu_2$ are scalar parameters and $\delta_{rs}$ is $1$ only if $r$ and $s$ are the same task, so it encodes the specific part of the model. In the linear case, this is equivalent to a feature extension strategy, like the domain adaptation scheme proposed in~\cite{Daume07} with only target and source domain, but that can be easily be adapted to MTL.
 
 % Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
+
+
+
+\subsection{Multi-Task Learning with Neural Networks}
+Deep learning has suffered an enormous development over the last decade, with multiple variants having great success in many fields and applications such as Convolutional Neural Networks for image recognition, Generative Adversarial Networks for generative models or Transformers for Natural Language Processing. 
+The feature-learning process natural to neural networks is usually the main idea behind multi-task learning strategies but not always.
+In this subsection we explore some of these strategies and their connection with other methods used in kernel or linear models.
+
+%The Multi-Task learning adaptations for neural networks can also be categorized 
+% An Overview of Multi-Task Learning in Deep Neural Networks 2017 (incluye los de 2017?)
+As proposed in~\cite{Ruder17a} we can divide the Multi-Task approaches with neural networks in hard sharing and soft sharing.
+% Hard parameter sharing
+The hard sharing approach is the most common one, and it consists on sharing between all tasks the hidden layers of the network while keeping some task-specific layers. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. Although this approach has some theoretical properties to improve learning~\cite{baxter2000model}, it is a very rigid approach since it assumes that the learned features and the feature learning process must be the same for all tasks.
+
+% Soft parameter sharing
+The soft sharing approach to Multi-Task learning tries to tackle these problems with different proposed strategies.
+% Linear algorithms for online multitask classification 2010
+In~\cite{CavallantiCG10} the authors propose to learn one perceptron for each task and the update of each perceptron is determined by an interaction matrix $A$ such that
+\begin{equation}
+    \label{eq:cavallanti_update}
+    w_r(\tau+1) = w_r(\tau) - \nu y_t A^{-1}_{r, s} x_i^s
+\end{equation}
+where $w_r$ are the parameters of the perceptron corresponding to task $r$. That is, the weights of task $r$ are updated when a mistake is committed on task $s$ and the update is scaled according to the position $r, s$ of matrix $\fm{A}^{-1}$. 
+This approach only uses perceptrons, so its expressive power is quite limited. Also, the matrix $A$ has to be defined a priori and is not learned from data.
+%
+In~\cite{Long015a} they propose a model to overcome these limitations. They use a multi-task architecture for computer vision is presented with multiple shared layers and multiple task-specific layers. Moreover, the use a Bayesian approach to learn the task relationships. They place a tensor prior over the network parameters such that in each specific layer $l$, there are $\ntasks$ matrices $W^l_r$ for $r=1, \ldots, \ntasks$ and if we denote as $\mathcal{W}^l$ as the vector (tensor) of such matrices, then 
+$$p(\mathcal{W}^l) = \tensornormal{0, \Sigma_1, \Sigma_2, \Sigma_3},$$
+where $\Sigma_1, \Sigma_2$ model the row-covariance and task-covariance in each matrix $W^l_r$ and $\Sigma_3$ model the intertask covariance.
+The parameters $\mathcal{W}^l$ are learned automatically by using gradient descent and for the covariance matrices a Maximum Likelihood Estimator is used afer each epoch.
+If we take a look at the update rule for the network parameters
+$$ \mymat{W}_r^l(\tau + 1) = \mymat{W}_r^l(\tau) - \nu \left( \diffp{\lossf(f_r(x_i^r), y_i^r)}{\mymat{W}_r^l} + \left[ (\Sigma_1 \otimes \Sigma_2 \otimes \Sigma_3)^{-1} \vect{\mathcal{W}^l}_{:, :, r} \right] \right)$$
+where $\lossf$ is the loss function, we can observe some similarities with the update~\eqref{eq:cavallanti_update}, where the inverse of the Kronecker product of covariances model how each task affect the others.
+Although this approach uses learns the matrix relations, the architecture is still restrictive since it assumes that all tasks can share a number of hidden layers.
+% cross-stitch networks for multi-task learning 2016
+In~\cite{MisraSGH16} they propose a strategy named ``Cross-stitch'' networks which uses one network for each task, but these networks are connected using a linear combination of the outputs of each layer. Considering a case of multi-task learning with two tasks $1$ and $2$, if $h^l_1$, $h^l_2$ are the output values of the $l$-th layers of the networks of tasks $1$ and $2$, respectively, then these outputs are combined as
+\begin{equation}
+    \label{eq:cross-stich_comb}
+    \begin{bmatrix}
+        \tilde{h}^l_1 \\
+        \tilde{h}^l_2
+    \end{bmatrix} 
+    =
+    \fm{A}^l
+    \begin{bmatrix}
+        h^l_1 \\
+        h^l_2
+    \end{bmatrix} ,
+    =
+    \begin{bmatrix}
+        \alpha^l_{11} & \alpha^l_{12} \\
+        \alpha^l_{21} & \alpha^l_{22} 
+    \end{bmatrix}
+    \begin{bmatrix}
+        h^l_1 \\
+        h^l_2
+    \end{bmatrix} ,
+\end{equation}
+where the $2 \times 2$ matrix $A^l$ is a ``cross-stitch'' unit and defines the linear combination to compute $\tilde{h}^l_1, \tilde{h}^l_2$ which will be the input values for the $l+1$-th layer. The network parameters and the ``cross-stitch'' values $\alpha$ can both be learned using backpropagation.
+If $\fm{A}^l = \fm{I}_{2 \times 2}$ in all layers this is equivalent to two independent networks, one for each task. While using constant matrices as ``cross-stitch'' units results in two identical common networks.
+% sluice-networks 2017
+% Latent Multi-Task Architecture Learning 2019
+This strategy is extended in~\cite{RuderBAS17}, where the authors include two modifications: network parameters of each network are divided in two spaces, each expecting to capture different properties of the data, and there are learnable skip-connections for each task.
+The first modification implies that the number of parameters is doubled, that is in each task-specific network and in each layer $l$ there are 2 outputs for each task: $h_{r, a}^l, h_{r, b}^l$, each obtained with a different matrix of parameters $\fm{W}^l_{r, a}, \fm{W}^l_{r, b}$.
+Then, in the combination~\eqref{eq:cross-stich_comb}, $\fm{A}$ is a $4 \times 4$ matrix, because each $\alpha_{., .}^l$ is a $2 \times 2$ matrix. The matrix $\fm{A}$ not only determines how the tasks are related but how each space of each task is related with the rest.
+To enforce that each space capture different properties they use the regularizers
+\begin{equation}
+    \nonumber
+    \norm{(\fm{W}^l_{r, a})^\intercal \fm{W}^l_{r, b}}^2_{2, 2},
+\end{equation}
+where the $L_{2, 2}$ (Frobenius) norm is typically the differentiable substitute used for the rank, so the parameters matrices $\fm{W}^l_{r, a}$ and $\fm{W}^l_{r, b}$ span orthogonal spaces.
+Particular values of the matrices $A^l$ can result in a Combination-based approach where there is a shared common model and task-specific ones.
+The skip-connections are reflected in a final layer in each network that receives as input the linear combination of the activation values $h^l_{r, 1}$ and $h^l_{r, 2}$ for every layer $l$. This linear combination uses learnable parameters $\beta_r$ for each task.
+
+% Deep multi-task representation learning: A tensor factorisation approach 2017
+Other approaches consider tensor-based methods instead of the ``cross-stitch'' networks to learn the networks parameters and the degree of sharing between tasks from data.
+In~\cite{YangH17} the authors propose a tensor-generative strategy to model the the parameters of each layer. If $\fm{W}^l_r$ is the $d^l_1 \times d^l_2$ parameter matrix for task $r$ in layer $l$, in each layer we can consider the collection of such matrices as a $d^l_1 \times d^l_2 \times \ntasks$ tensor $\mathcal{W}^l$.
+We can build these tensors from other pieces in different ways, for example consider a latent basis matrices $d^l_1 \times d^l_2 \times K$ tensor $\mathcal{L}$ and the $K \times \ntasks$ matrix $S$, then
+\begin{equation}
+    \nonumber
+    W^l_r = \mathcal{W}_{:, :, r} = \sum_{\kappa=1}^K \mathcal{L}_{., ., \kappa} S_{\kappa, r} .
+\end{equation}
+That is, all task parameters are linear combinations of the latent-basis matrices defined in $\mathcal{L}$. 
+Observe that this is a generalization of the sparse coding scheme presented in~\cite{Daume09} and shown in equation~\eqref{eq:mtl_sparse_coding}.
+Since all the strategies to build $\mathcal{W}$ from other pieces is based on tensor products, the whole process is differentiable and all those pieces can be learned using gradient descent.
+% Trace norm regularised deep multi-task learning 2017
+The other tensor-based approach is presented in~\cite{YangH17a} where, instead of a tensor-building approach, they consider the tensors $\mathcal{W}^l$ as the collection of matrices $\fm{W}_r^l$ and use tensor-trace norms to enforce the coupling between different tasks.
+% such as
+% \begin{equation}
+%     \nonumber
+%     \norm{\mathcal{W}^l}_{*} = \sum_{i=1}
+% \end{equation}
+Since the tensor-trace norms is not differentiable, they use the subgradient for the backpropagation during training.
+This approach can be seen as a low-rank can be categorized as low-rank, that is, Parameter-Based.
+
+% adashare 2020
+All the previous approaches consider the same architecture for each task, although the skip-connections can alleviate this, the sharing of information is still made in a layer-wise manner, so the same architecture has to be considered for every network.
+In~\cite{SunPFS20} they propose a single network with $L$ layers and with skip-connections between all layers, so each task can use a specific policy. That is, task $1$ can use the first, third and fourth layer while task $2$ might use the second and fourth alone. In this example, the first and third are specific for task $1$, the second layer is specific for task $2$ while the third and fourth are shared layers.
+In general, there is a binary $L \times \ntasks$ policies matrix $U$ that determines which layers are used for each task. The problem is a bi-level optimization
+\begin{equation}
+    \nonumber
+    \min_{\fm{U}} \min_{\fm{W}_1, \ldots, \fm{W}_L} \lossf(\fm{U}, \fm{W}_1, \ldots, \fm{W}_L) .
+\end{equation}
+The optimization with respect the network parameters is done using back-propagtion, while the optimization with respect to $\fm{U}$ uses a specific algorithm.
 
 
 \section{Multi-Task Problems}
