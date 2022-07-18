@@ -31,7 +31,7 @@ This chapter presents\dots
 % Overview of section
  % Ruder and Caruana
 % 
-\subsection{Learning to Learn: A notion of environment of tasks} % Baxter
+\subsection{Multi-Task Learning and Learning to Learn} % Baxter
 % The first theoretical work on MTL... MTL as a Bias Learning Problem
 Typically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\param_0}$ from a space of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$, where $\paramspace$ is any set of parameters. This best candidate can be selected according to different inductive principles, which define a method of approximating a global function $f(x)$ from a training set:
 $ \sample \defeq \set{(x_i, y_i),\; \idotsn} $
@@ -1197,7 +1197,7 @@ This kind of kernels are called separable kernels~\cite{AlvarezRL12, KadriDPCRA1
  
 
 
-\subsection{How to define Multi-Task kernels for regularized learning}
+\subsection{Using Kernels in Multi-Task Learning}
 There exists a plethora of work about Single-Task Learning within regularization theory, some general formulation is
 \begin{equation}
     \label{eq:stl_general_formulation}
@@ -1612,9 +1612,9 @@ Observe that the pseudoinverse is used because the Laplacian matrices are semipo
 In this section a general overview of the MTL methods will be shown, categorizing some of the most relevant approaches. We can consider three main groups in this taxonomy: Feature-Based, Parameter-Based and Combination-Based strategies. 
 A section is developed for each group.
 %, with subcategorizations and examples.
-Most MTL strategies used in deep learning can be categorized as Feature-Based, but given its relevance, MTL with neural networks will be treated separately. 
+Most MTL strategies used in deep learning can be categorized as Feature-Based. Also, most kernel methods use Parameter-Based or Combination-Based strategies, but given the relevance of these models, MTL with neural networks and MTL with kernel methods will be treated separately in their own subsections. 
 
-\subsection{Feature-Based MTL}
+\subsection{Feature-Based MTL}\label{subsec:featbased_mtl}
 % Feature learning or
 %   Feature transformation (relacion con Deep Learning)
 The feature-based methods try to find a set of features that are useful for all tasks. Two main approaches are taken: Feature Learning, which tries to learn new features from the original ones, and Feature Selection which selects a subset of the original features.
@@ -1631,38 +1631,89 @@ Apart from the Multi-Task feedforward Neural Network first shown in~\cite{Caruan
 where
 $w_t$ are the columns of $\mymat{w}$, $\mymat{u}$ is an orthogonal matrix and $\mymat{a}$ is a row-sparse matrix. The minimization problem is
 \begin{equation}
-    \label{eq:mtl_feat_learning}
-    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{x_i^r}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+    \label{eq:mtl_feat_learning_kernel}
+    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{\phi(x_i^r)}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
 \end{equation}
-Here, the $L_{2, 1}$ regularizer is used to impose row-sparsity across tasks, i.e. forcing some rows of $\mymat{a}$ to be zero while the matrix $\mymat{u}$ is restricted to be orthonormal.
-Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
+where
+ the $L_{2, 1}$ regularizer is used to impose row-sparsity across tasks, i.e. forcing some rows of $\mymat{a}$ to be zero while the matrix $\mymat{u}$ is restricted to be orthonormal.
+Instead of solving~\eqref{eq:mtl_feat_learning_kernel}, they show that 
 \begin{equation}
-    \label{eq:convmtl_feat_learning}   
+    \label{eq:convmtl_feat_learning_kernel}
+    \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{\phi(x_i^r)}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+\end{equation}
+Although problem~\eqref{eq:mtl_feat_learning_kernel} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
+\begin{equation}
+    \label{eq:convmtl_feat_learning_kernel}   
     \begin{aligned}
         &\argmin_{\mymat{w} \in \reals^{d \times \ntasks}, \mymat{d}  \in \reals^{d \times d}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) 
         + \lambda \sum_{r=1}^\ntasks \dotp{w_r}{D^{-1}w_r} 
         %+ \lambda \trace{\mymat{w}^\intercal \mymat{d}^{-1} \mymat{w}}
-        + \mu \trace{\mymat{D}^{-1}} \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
+        %+ \mu \trace{\mymat{D}^{-1}} 
+        \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
     \end{aligned}
 \end{equation}
-Here $\fm{D} = \fm{U} \Diag{\left(\frac{\norm{\fv{a}^1}_2}{\norm{\fm{A}_{2, 1}}}\right), \ldots, \left(\frac{\norm{\fv{a}^\dimx}_2}{\norm{\fm{A}_{2, 1}}}\right) } \fm{U}$, $\fv{a}^i$ are the rows of $\fm{A}$, $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices and the trace of $\mymat{D}^{+}$ is added for numerical stability and convenient convergence properties. Problem~\eqref{eq:convmtl_feat_learning} is solved using an alternating two-step optimization algorithm in $\mymat{W}$ and $\mymat{D}$.
-First they fix $\mymat{d}$ and solve for $\mymat{w}$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} \right)$.
-When $\mu=0$, the regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$:
+and if $(\fm{A}^*, \fm{U}^*)$ is an optimal solution of~\eqref{eq:mtl_feat_learning_kernel}, then
+\begin{equation}
+    \nonumber
+    \left(\fm{W}^*, \fm{D}^* \right) = \left(\fm{U}^* \fm{A}^* , \fm{U}^* \Diag{\left(\frac{\norm{\fv{a}^1}_2}{\norm{\fm{A}}_{2, 1}}\right), \ldots, \left(\frac{\norm{\fv{a}^\dimx}_2}{\norm{\fm{A}}_{2, 1}}\right) } (\fm{U}^*)^\intercal \right)
+\end{equation}
+is an optimal solution of problem~\eqref{eq:convmtl_feat_learning_kernel}; conversely, given an optimal solution $\left(\fm{W}^*, \fm{D}^* \right)$, if $\fm{U}^*$ has as columns an orthonormal basis of eigenvectors of $\fm{D}^*$ and $\fm{A}^* = (\fm{U}^*)^\intercal \fm{W}^*$,  $(\fm{A}^*, \fm{U}^*)$ is an optimal solution of~\eqref{eq:mtl_feat_learning_kernel}.
+To obtain an optimal solution $ \left(\fm{W}^*, \fm{D}^* \right)$ the authors use a two-step optimization but for a better stability they use the modified problem
+\begin{equation}
+    \label{eq:convmtl_feat_learning_kernel_stable}   
+    \begin{aligned}
+        &\argmin_{\mymat{w} \in \reals^{d \times \ntasks}, \mymat{d}  \in \reals^{d \times d}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{\phi(x_i^r)}) 
+        + \lambda \sum_{r=1}^\ntasks \dotp{w_r}{D^{-1}w_r} 
+        %+ \lambda \trace{\mymat{w}^\intercal \mymat{d}^{-1} \mymat{w}}
+        + \mu \trace{\mymat{D}^{-1}} 
+        \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
+    \end{aligned}
+\end{equation}
+The optimization with respect to $\fm{W}$ decouples in each task and the standard Representer Theorem can be used to solve it, and the one with respect to $\fm{D}$ has a closed solution $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} \right)$.
+It is interesting to observe that when $\mu=0$, the regularizer of~\eqref{eq:convmtl_feat_learning_kernel} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$:
 %When $\mu=0$ in~\eqref{eq:convmtl_feat_learning} the optimization problem can be reformulated as
 \begin{equation}
     \label{eq:mtl_feat_learning_tracenorm}
-    \argmin_{\mymat{w} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}}_{*}^2.
+    \argmin_{\mymat{w} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{\phi(x_i^r)}) + \lambda \norm{\mymat{w}}_{*}^2.
 \end{equation}
 %
 Here, $\norm{W}_* = \trace{\left(W^\intercal W \right)^{\frac{1}{2}}}$ denotes the trace norm (also known as nuclear norm), which can be seen as the continuous envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
-%
-This idea can be extended into a kernel setting in the standard way, by replacing the original features by the implicit transformations $\phi(x_i^r)$ in the primal problem.
+That is, the initial problem~\eqref{eq:mtl_feat_learning_kernel} is equivalent to a problem where the trace norm regularization for matrix $\fm{W}$ is used.
+
+
+% \begin{equation}
+%     \label{eq:mtl_feat_learning}
+%     \argmin_{\mymat{u} \in \reals^{d \times d}, \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{x_i^r}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i} .
+% \end{equation}
+% Here, the $L_{2, 1}$ regularizer is used to impose row-sparsity across tasks, i.e. forcing some rows of $\mymat{a}$ to be zero while the matrix $\mymat{u}$ is restricted to be orthonormal.
+% Although problem~\eqref{eq:mtl_feat_learning} is not jointly convex in $\mymat{u}$ and $\mymat{a}$, in~\cite{ArgyriouEP06} and~\cite{ArgyriouEP08} is shown to be equivalent to the convex problem
+% \begin{equation}
+%     \label{eq:convmtl_feat_learning}   
+%     \begin{aligned}
+%         &\argmin_{\mymat{w} \in \reals^{d \times \ntasks}, \mymat{d}  \in \reals^{d \times d}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) 
+%         + \lambda \sum_{r=1}^\ntasks \dotp{w_r}{D^{-1}w_r} 
+%         %+ \lambda \trace{\mymat{w}^\intercal \mymat{d}^{-1} \mymat{w}}
+%         + \mu \trace{\mymat{D}^{-1}} \\ &\text{s.t.} \; \mymat{d} \succeq 0,\; \trace{\mymat{d}} \leq 1 .
+%     \end{aligned}
+% \end{equation}
+% where $\mymat{d} \succeq 0$ restricts the $\mymat{d}$ to the semidefinite positive matrices and the trace of $\mymat{D}^{+}$ is added for numerical stability and convenient convergence properties. Problem~\eqref{eq:convmtl_feat_learning} is solved using an alternating two-step optimization algorithm in $\mymat{W}$ and $\mymat{D}$.
+% First they fix $\mymat{d}$ and solve for $\mymat{w}$ which leads to problem with trace norm regularization $\norm{\fm{w}}_*$; while in the second step, with fixed $\mymat{w}$, there exists a closed solution for $\mymat{d}^* = \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} / \Tr\left( \left(\mymat{w}^\intercal \mymat{w} + \mu \fm{I} \right)^\frac{1}{2} \right)$.
+% % When $\mu=0$, the regularizer of~\eqref{eq:convmtl_feat_learning} can be expressed as $\Tr \left( \mymat{w}^\intercal \mymat{d}^+ \mymat{w} \right)$ and by plugging $\mymat{d}^*$ in this formula we obtain the squared-trace norm regularizer for $\mymat{w}$:
+% % %When $\mu=0$ in~\eqref{eq:convmtl_feat_learning} the optimization problem can be reformulated as
+% % \begin{equation}
+% %     \label{eq:mtl_feat_learning_tracenorm}
+% %     \argmin_{\mymat{w} \in \reals^{\dimx \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \norm{\mymat{w}}_{*}^2.
+% % \end{equation}
+% %
+% %Here, $\norm{W}_* = \trace{\left(W^\intercal W \right)^{\frac{1}{2}}}$ denotes the trace norm (also known as nuclear norm), which can be seen as the continuous envelope of the rank, thus favouring low-rank solutions of $\mymat{w}$.
+% %
+% This idea can be extended into a kernel setting in the standard way, by replacing the original features by the implicit transformations $\phi(x_i^r)$ in the primal problem.
 %
 In~\cite{ArgyriouMPY07} this idea is extended to any spectral funcion $F: \mathbb{S}^d_{++} \to \mathbb{S}^d_{++}$ where $\mathbb{S}^d_{++}$ is the set of matrices $A \in \mathbb{R}^{d \times d}$ symmetric and positive definite. The definition for the spectral function $F(\mymat{A})$, where we can diagonalize the matrix $\mymat{A}$ as $\mymat{V}^\intercal \Diag (\lambda_1, \ldots, \lambda_d)  \mymat{V}$ is
 $$ F(\mymat{A}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d)) \mymat{u} \; .$$
-Then, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning} can be expressed as
+Then, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning_kernel} can be expressed as
 $$ \sum_t \langle w_t, F(\mymat{D}) w_t\rangle = \trace{\mymat{w}^\intercal F(\mymat{D}) \mymat{w}} = \trace{F(\mymat{D}) \mymat{w}  \mymat{w}^\intercal} \; .$$
-It is easy to see that problem~\eqref{eq:convmtl_feat_learning} is a particular case where $f(\lambda) = \lambda^{-1}$.
+It is easy to see that problem~\eqref{eq:convmtl_feat_learning_kernel} is a particular case where $f(\lambda) = \lambda^{-1}$.
 In~\cite{Maurer09} some bounds on the excess risks are given for this Multi-Task Feature Learning method.
 
 %  Learning multiple tasks using manifold regularization. Agarwal
@@ -1686,7 +1737,8 @@ Other distinct, relevant approach for Feature Learning is the one described in~\
     \end{equation}
 Here, $\mathcal{D}_k$ is the set of $k$-dimensional dictionaries and every $\mymat{d} \in \mathcal{D}_k$ is a linear map $\mymat{D}: \reals^k \to \rkhs$; in the linear case, where $\rkhs = \reals^d$, the set $\mathcal{D}_k$ is the set of matrices $\reals^{d \times k}$, such that 
 $$\underset{d \times T}{\mymat{w}} = \underset{d \times k}{\mymat{D}} \underset{k \times T}{\mymat{a}} .$$
-Although~\eqref{eq:mtl_feat_learning} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k > d$ columns of bounded norm.
+Although~\eqref{eq:mtl_feat_learning_kernel} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning_kernel} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k > d$ columns of bounded norm. Also, in problem~\eqref{eq:mtl_feat_learning_kernel} non-linear features can be used while problem~\eqref{eq:mtl_sparse_coding} is linear.
+%
 A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{KumarD12} where the idea is the same but the regularizers are the $L_{2, 2}$ (Frobenius) norm for $\mymat{d}$ and the $L_{1, 1}$ norm for $\mymat{a}$:
 \begin{equation}
     \label{eq:mtl_go}
@@ -1759,7 +1811,7 @@ where $\mymat{\Theta} \in \reals^{k \times \dimx}$ spans a shared low dimensiona
     \label{eq:mtl_struct_learn}
     \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta}^\intercal v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k .
 \end{equation}
-Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
+Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning_kernel}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
 Problem~\eqref{eq:mtl_struct_learn} is solved using a two-step optimization iterating between minimizing in $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{u}$. Observe that problem~\eqref{eq:mtl_struct_learn} is not convex but it can be reformulated as
 \begin{equation}
     \label{eq:mtl_struct_learn_ref}
@@ -1848,6 +1900,7 @@ In~\cite{argyriou2013learning} they want to learn a matrix $\mymat{L}$ that is a
     \end{aligned}
 \end{equation}
 where $\mymat{A}_\text{off}$ denotes the off diagonal entries of $\mymat{A}$. The restrictions of problem~\eqref{eq:mtl_laplacian_dual} are to ensure that $\mymat{L}$ is a valid graph Laplacian, and the trace term in the objective function is to force $\mymat{L}$ to be low-rank so it is easier to find clusters of tasks. The objective function is not jointly convex but is convex in each $\myvec{\param}$ and $\mymat{L}$ when we fix the other. For the step to optimize the Laplacian matrix the authors develop an algorithm involving several projection steps using proximal operators.
+%
 Another work focused on learning the task-relations is~\cite{Dinuzzo13}, where the approach the problem a learning problem in an RKHS of vector-valued functions $g: \Xspace \to \reals^\ntasks$, where the associated reproducing kernel is:
 \begin{equation*}
     H(x_1, x_2) = K_\Xspace(x_1, x_2) \cdot \mymat{L}
@@ -2172,13 +2225,88 @@ The optimization with respect the network parameters is done using back-propagat
 
 
 \subsection{Multi-Task Learning with Kernel Methods}
+Kernel Methods are also models that have been successful in a lot of areas. The principal appeal of these models is that the original features are implicitly transformed to a kernel space, possibly infinite-dimensional, where the problems of classification or regression for example are usually easier to solve.
+%
+
+Unlike deep learning models, the kernel features used are not learnable, but are implicitly defined a priori by the kernel function used like Gaussian, polynomial or Matérn kernels for example. This fact makes it more difficult to use a feature-based MTL approach with kernel models. 
+Instead, other of the reviewed approaches can be taken.
+
+% Vector-Valued
+
+    % On learning vector-valued functions 2004  (Vector-Valued)
+
+    % Kernels for multi-task learning 2004 (Vector-Valued)
+
+    % Multi-output learning via spectral filtering 2012 (Vector-Valued)
+
+    % Kernels for vector-valued functions: A review 2012 (Vector-Valued)
+
+    % Bounds for vector-valued function estimation 2016 (Vector-Valued)
+
+    % Operator-valued Kernels for Learning from Functional Response Data 2016 (Vector-Valued)
+One important approximation to MTL with kernel models is learning vector-valued functions, in which the target space is not scalar but a vector one. That is, the sample data $\fm{X}, \fm{y}$  are pairs $(x_i, \fv{y}_i)$ where $x_i \in \Xspace$, e.g. $\Xspace = \reals^\dimx$ and $y_i \in \Yspace^\ntasks$.
+This approach finds its motivation in multi-output learning, where multiple targets are learned are defined for each input.
+Using kernel models the multi-output regularized risk is
+\begin{equation}
+    \label{eq:regrisk_multioutput}
+    \sum_{i=1}^{\nsamples} \lossf(\fm{w}^\intercal {\phi(\fv{x}_i)}+ \fv{b}, \fv{y}_i) + \mu \Omega(\fm{w}) ,
+\end{equation}
+where $\fm{W}$ is the matrix with $\ntasks$ columns, one for each output and $\fv{b}$ is the vector of corresponding biases. A commonly used loss function $\ell$ is 
+$$ \lossf(\fm{w}^\intercal {\phi(\fv{x}_i)}+ \fv{b}, \fv{y}_i) = \norm{\fm{w}^\intercal {\phi(\fv{x}_i)}+ \fv{b} - \fv{y}_i}_2^2$$
+and $\Omega$ is a regularizer for matrix $\fm{w}$ that can enforce different behaviours, for example the trace norm regularizer is used for enforcing a low rank matrix.
+In~\cite{MicchelliP04,MicchelliP05} the authors develop the theory for operator-valued kernels, that are the kernel functions corresponding to vector-valued functions.
+They show an extension of the representer theorem for operator-valued kernels when a Tikhonov regularization for vector-valued functions is used.
+Although these are interesting results, they do not provide explicit algorithms to learn such functions. 
+Moreover, multi-task learning is not that well suited for this formulation, since for each data $x_i^r$ there is a single scalar $y_i^r$. The multi-task regularized risk using this formulation is 
+\begin{equation}
+    \label{eq:regrisk_multioutput_mtl}
+    \sum_{i=1}^{\nsamples} \lossf(\fm{A} \odot \fm{w}^\intercal {\phi(\fv{x}_i)}+ \fv{b}, \fv{y}_i) + \mu \Omega(\fm{w}) ,
+\end{equation}
+where $\fm{A}$ is a binary matrix with the same sparsity pattern that $\fm{Y}$.
+
+% Trace-Norm
+
+    % Convex multi-task feature learning 2008 (Feature-Based Trace)
+
+    % Learning with Whom to Share in Multi-task Feature Learning 2011 (Convex multi-task feature learning + Clustering)
+Other approach is a feature-based strategy presented in~\cite{ArgyriouEP08} presented in subsection~\ref{subsec:featbased_mtl} whose optimization problem is~\eqref{eq:mtl_feat_learning_kernel}, and the corresponding clusterized extension of~\cite{KangGS11} whose corresponding problem is shown in~\eqref{eq:mtl_clustered_featlearn}.
+
+% Task Relation
+
+    % A Convex Formulation for Learning Task Relationships in Multi-Task Learning 2010(Task-Relation Learning)
+
+    % Learning the graph of relations among multiple tasks 2013 (Task-Relation Learning)
+
+% GPs
+
+    % Learning to learn with the informative vector machine 2004 (GP)
+
+    % Multi-task Gaussian Process Prediction 2007 (GP)
+
+    % A Convex Formulation for Learning Task Relationships in Multi-Task Learning 2010 (GP)
+The task relation learning is also a common approach to MTL with kernel models. Using a Gaussian Process formulation, different strategies to learn the task-covariance matrix are shown in~\cite{LawrenceP04, BonillaCW07}. Also, regularized problems are proposed using a inter-task regularization that penalize 
+\begin{equation}
+    \nonumber
+    \sum_{r,s=1}^\ntasks \left(\mymat{L}^{+}\right)_{rs} \dotp{w_r}{w_s} = \sum_{r,s=1}^\ntasks \left(\mymat{A}^{+}\right)_{rs} \norm{w_r - w_s}^2,
+\end{equation}
+is used in~\cite{ZhangY10} and~\cite{argyriou2013learning}, as shown in problems~\eqref{eq:mtl_relation_learn} and~\eqref{eq:mtl_laplacian}, respectively.
+% Combination-Based
+
+    % Regularized MTL 2004 (RMTL Tikhonov)
+
+    % Learning multiple tasks with kernel methods 2005 (RMTL Tikhonov)
+
+    % Cai and Cherkassky
+
+
+
+
 
 
 \section*{Multi-Task Problems}
 % Explanation of an MTL problem, with its characteristics
-The concept of Multi-Task problem is not clear, since different authors consider different definitions. 
+The concept of Multi-Task problem is not clear because different definitions have been considered in the literature. 
 In this work only supervised problems will be considered, so we will refer to them just as problems.
-
 
 Multiple kind of problems can be faced with a Multi-Task Learning approach. 
 %
