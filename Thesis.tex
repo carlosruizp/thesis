@@ -38,6 +38,7 @@
 \usepackage{graphics}      % scalebox
 \usepackage{longtable}      % multi-page tables
 \usepackage{tikz}
+\usepackage{glossaries}
 
 %tikz
 \usetikzlibrary{arrows,positioning} 
@@ -61,6 +62,22 @@
 }
 
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
+
+% gls
+\newacronym{erm}{ERM}{Empirical Risk Minimization}
+\newacronym{srm}{SRM}{Structural Risk Minimization}
+
+\newacronym{mtl}{MTL}{Multi-Task Learning}
+\newacronym{itl}{ITL}{Independent-Task Learning}
+\newacronym{ctl}{CTL}{Common-Task Learning}
+\newacronym{ltl}{LTL}{Learning to Learn}
+
+\newacronym{mt}{MT}{Multi-Task}
+\newacronym{gp}{GP}{Gaussian Process}
+\newacronym{svm}{SVM}{Support Vector Machine}
+
+\newacronym{rkhs}{RKHS}{Reproducing Kernel Hilbert Space}
+
 
 % My definitions
 
@@ -100,6 +117,7 @@
 \newcommand{\cond}[2]{P\left( #1 \;\middle\vert\; #2 \right)}
 \newcommand{\normal}[1]{N \left(#1\right)}
 \newcommand{\multinormal}[1]{MN \left(#1\right)}
+\newcommand{\tensornormal}[1]{TN \left(#1\right)}
 \newcommand{\tendsto}[2]{\xrightarrow[#1]{} #2}
 \newcommand{\diffp}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\optim}[1]{{#1}^*}
@@ -137,6 +155,8 @@
 \newcommand{\naturals}{\mathbb{N}}
 \newcommand{\param}{\alpha}
 \newcommand{\paramspace}{A}
+\newcommand{\fparam}{\beta}
+\newcommand{\fparamspace}{B}
 \newcommand{\hilbertspace}{\mathcal{H}}
 \newcommand{\lagr}{\mathcal{L}}
 \newcommand{\grad}{\nabla}
@@ -383,15 +403,13 @@ Aristotle.
 
 \input{./Chapters/Intro} % Introduction
 
-\input{./Chapters/Chapter1} % Foundations and Concepts
+\input{./Chapters/Chapter2} % Foundations and Concepts
 
-\input{./Chapters/Chapter2} % Multi-Task Learning Overview
+\input{./Chapters/Chapter3} % Multi-Task Learning Overview
 
-\input{./Chapters/Chapter3} % Convex Multi-Task SVM
+\input{./Chapters/Chapter4} % Convex Multi-Task SVM
 
-\input{./Chapters/Chapter4} % Adaptive Graph Laplacian Multi-Task Learning SVM
-
-% \input{./Chapters/Chapter5} % Parallel predictive entropy search for multi-objective bayesian optimization with constraints
+\input{./Chapters/Chapter5} % Adaptive Graph Laplacian Multi-Task Learning SVM
 
 % \input{./Chapters/Chapter6} % Dealing with categorical and integer-valued variables in Bayesian optimization with Gaussian processes
 
