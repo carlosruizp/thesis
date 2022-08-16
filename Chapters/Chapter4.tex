@@ -800,22 +800,177 @@ A natural alternative to the convex MTL formulation that we have developed is to
     \nonumber
     h_r(\cdot) = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) .
 \end{equation}
-These are models that combines a common and task-specific models that have been trained separately. Since both $g(\cdot)$ and $g_r(\cdot)$ are fixed functions, the training phase only involves the process of learning the parameters $\lambda_r, r=1, \ldots, \ntasks$. The goal is to select the parameters $\lambda_r$ that minimize the training error:
+These are models that combines a common and task-specific models that have been trained separately. Since both $g(\cdot)$ and $g_r(\cdot)$ are fixed functions, the training phase only involves the process of learning the parameters $\lambda_r, r=1, \ldots, \ntasks$. The goal is to select the parameters $\lambda_r$ that minimize the training error
 \begin{equation}
     \nonumber
     \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) ,
 \end{equation}
 which depends on the choice of the loss function $\ell$. 
-In~\cite{RuizAD21} we consider the following popular loss functions:
+In~\cite{RuizAD21} we consider the training error with four popular loss functions:
 \begin{itemize}
-    \item hinge loss:
+    \item Training error using hinge loss (classification)
     \begin{equation}
-        f
+        \nonumber
+        \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
     \end{equation}
-    \item squared hinge loss
-    \item absolute error error
-    \item squared error
+    \item Training error using squared hinge loss (classification)
+    \begin{equation}
+        \nonumber
+        \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace}^2 .
+    \end{equation}
+    \item Training error using absolute loss (regression)
+    \begin{equation}
+        \nonumber
+        \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \abs{y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
+    \end{equation}
+    \item Training error using squared loss (regression)
+    \begin{equation}
+        \nonumber
+        \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \left( {y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} \right)^2 .
+    \end{equation}
 \end{itemize}
+% Here,
+% apart from the squared function, we use three piece-wise functions: the positive part function 
+% \begin{equation}
+%     \nonumber
+%     \begin{aligned}
+%         \left[x \right]_+ = 
+%         \begin{cases}
+%             0 &, x  \leq 0 \\
+%             x &, x  > 0 \\
+%         \end{cases} \; ,
+%     \end{aligned}
+% \end{equation}
+% the squared positive part function
+% \begin{equation}
+%     \nonumber
+%     \begin{aligned}
+%         \left[x \right]_+ = 
+%         \begin{cases}
+%             0 &, x  \leq 0 \\
+%             x^2 &, x  > 0 \\
+%         \end{cases} \; ,
+%     \end{aligned}
+% \end{equation}
+% and the absolute value function
+% \begin{equation}
+%     \nonumber
+%     \begin{aligned}
+%         \abs{x} = 
+%         \begin{cases}
+%             -x &, x  \leq 0 \\
+%             x &, x  > 0 \\
+%         \end{cases} \; .
+%     \end{aligned}
+% \end{equation}
+Observe that using these training errors we can cover the kernel methods that we have considered. The L1-SVM uses the hinge loss for the classification error and the absolute error can be seen as a special case of the regression error when $\epsilon = 0$. The L2-SVM used the squared hinge loss for classification and, again, the squared loss is a special case of the regression error when $\epsilon=0$. Finally, the squared loss function is used in the LS-SVM for both regression and classification.
+
+\subsection{Unified Formulation}
+For simplicity, we consider the following renaming of error terms in the classification errors, that is those using hinge and squared hinge loss,
+\begin{equation}\nonumber
+    1 - \left\{\lambda_r g(x_i^r) + (1-\lambda_r) g_r(x_i^r)  \right\} y_i^r = \lambda_r \left\{ y_i^r (g_r(x_i^r) - g(x_i^r)) \right\} +  1 - y_i^r g_r(x_i^r) 
+     = \lambda_r c_i^r + d_i^r ,
+\end{equation}
+where we are using the variables
+\begin{equation}
+    \label{eq:changevar_clas}
+    c_i^r =  y_i^r (g_r(x_i^r) - g(x_i^r))  , \;  d_i^r =  1 - y_i^r g_r(x_i^r) .
+\end{equation}
+Also, for regression, where the absolute and squared losses are used,
+\begin{equation}\nonumber
+    \lambda_r g(x_i^r) + (1-\lambda_r)g_r(x_i^r) - y_i^r = \lambda_r \left\{g(x_i^r) - g_r(x_i^r) \right\} + \left\{g_r(x_i^r) - y_i^r \right\} 
+    = \lambda_r c_i^r + d_i^r,
+\end{equation}
+where we are using the change of variables
+\begin{equation}
+    \label{eq:changevar_reg}
+    c_i^r = g(x_i^r) - g_r(x_i^r)  , \;  d_i^r =  g_r(x_i^r) - y_i^r .
+\end{equation}
+Recall that the functions $g(\cdot)$ and $g_r(\cdot)$ are fixed, and we want to learn the optimal parameters $\lambda_1^*, \ldots, \lambda_\ntasks^*$. Also, observe that each particular $\lambda_r$ is only present in the training error terms concerning task $r$. That is, using the change of variables~\eqref{eq:changevar_clas} and~\eqref{eq:changevar_reg}, we can consider the for each task $r=1, \ldots, \ntasks$ the problem
+\begin{equation}
+    \nonumber
+    \argmin_{\lambda_r \in [0, 1]} \mathcal{J}(\lambda_r) = \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r),
+\end{equation}
+where, for a simpler formulation we remove the task index, that is 
+\begin{equation}
+    \label{eq:subproblem_lambda}
+    \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} u(\lambda c_i + d_i),
+\end{equation}
+where $u$ can be different functions depending on the selected loss: the positive part for the hinge loss, the squared positive part for the squared hinge loss, and the absolute and squared functions for their corresponding losses.
+These functions, except for the squared one, are not differentiable in their whole domain, but piece-wise differentiable, so we will use the subdifferential when necessary.  That is, let ${\lambda}_{(1)} < \ldots < {\lambda}_{(p)},\; p \leq m$ be those points where $\mathcal{J}$ is not differentiable, clipped to $[0, 1]$ and sorted, we will refer to these points as elbows.
+To find the optimal parameters $\lambda_r^*$ we will consider the subdifferential of $\mathcal{J}(\lambda)$ in the elbows, that is, the set $\partial \mathcal{J}(\lambda) = \{c \in \mathbb{R}, \mathcal{J}(z)-\mathcal{J}(\lambda) \leq c (z - \lambda)  \}$ with $z$ in a neighbourhood of $x$.
+% Here $c_i^r, d_i^r$ are the variables described in~\eqref{eq:changevar_clas} when using the hinge or squared hinge loss, or those described in~\eqref{eq:changevar_reg} when using the absolute or squared loss.
+%
+
+The criterion to define an optimal value $\lambda^* \in [0, 1]$ when using subdifferentials is
+\begin{equation}
+    \nonumber
+    \lambda^* = \argmin_{0 \leq \lambda \leq 1} \mathcal{J}(\lambda) \iff (0 \in \partial \mathcal{J}(\lambda^*) \text{ and } \lambda^* \in (0, 1) ) \text{ or } \lambda^*=0 \text{ or } \lambda^*=1 .
+\end{equation}
+To compute $\partial \mathcal{J}(\lambda)$ we use that all functions $u(\lambda c_i + d_i)$ share the same domain, that is, $\lambda \in [0, 1]$ and therefore the subdifferential of the sum is the sum of subdifferentials.
+%
+Moreover, a result that is common for all loss functions is~\citet[Proposition 1]{RuizAD21}, which states the following.
+\begin{prop}\label{prop:elbows_neurocom2020}
+    For the absolute error and hinge losses, $\partial J(\lambda)$ is single valued and constant between the elbows $\lambda_j$.
+    Moreover, if $\partial J(\lambda) = J'(\lambda) = \gamma$ for some $\lambda$ between two consecutive distinct elbows, i.e., $\lambda_{(j)} < \lambda < \lambda_{(j+1)}$, then $\gamma \in \partial J(\lambda_{(j)})$ and $\gamma \in \partial J(\lambda_{(j+1)})$. 
+\end{prop}
+Using this idea, we can show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
+
+\subsection{Hinge loss}
+Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
+\begin{equation}
+    \label{eq:opt_hinge_l1}
+    \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \pospart{\lambda c_i + d_i}.
+\end{equation}
+Observe that in each term of the sum the subdifferential is 
+\begin{align*}
+    \partial \left[\lambda c_i + d_i \right]_+ = 
+    \begin{cases}
+        0 &, \lambda c_i + d_i  < 0 \\
+        [\min(0, c_i), \max(0, c_i)] &, \lambda c_i + d_i  = 0 \\
+        c_i &, \lambda c_i + d_i  > 0 \\
+    \end{cases} \; .
+\end{align*}
+That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < \tilde{\lambda}_{(m)}$.
+In~\citet[Proposition 2]{RuizAD21} we show the form of the optimal $\lambda^*$.
+\begin{prop}[Optimal $\lambda^*$ with hinge loss]\label{prop:hinge_neurocom2020}
+    Set first $\lambda_0 = 0$ and $\lambda_{\npertask+1} = 1$. A value $\lambda^*$ is optimal for problem~\eqref{eq:opt_hinge_l1} if and only if $\lambda^* \in \set{0, 1}$ or $\lambda^*$ is an elbow, that is, $\lambda^* = \lambda_{(k)}$ for some $k=1, \dotsc, \npertask$, and
+    \begin{equation}\label{sol_hinge}
+    Q(k) = -\sum_{j = 1}^{k - 1} \max(0, c_{(j)}) - \sum_{j = k + 1}^{\npertask} \min(0, c_{(j)}) \in \left[\min(0, c_{(k)}), \max(0, c_{(k)}) \right] .
+    \end{equation}
+    Observe that $Q(k)$ defined for $k=1, \ldots, \npertask$ is a non-decreasing function.
+\end{prop}
+
+
+\subsection{Squared hinge loss}
+Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
+\begin{equation}
+    \label{eq:opt_hinge_l2}
+    \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \pospart{\lambda c_i + d_i}^2.
+\end{equation}
+In each term of the sum the subdifferential is 
+\begin{align*}
+    \partial \left[\lambda c + d \right]_+^2 = 
+    \begin{cases}
+        0 &, \lambda c + d  \leq 0 \\
+        2c(\lambda c + d) &, \lambda c + d  > 0 \\
+    \end{cases} \; .
+\end{align*}
+The elbows are again related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+In~\citet[Proposition 2]{RuizAD21} we show the form of the optimal $\lambda^*$ when using the squared hinge loss.
+\begin{prop}[Optimal $\lambda^*$ with squared hinge loss]\label{prop:sqhinge_neurocom2020}
+    For the error of ~\eqref{eq:opt_hinge_l2}, set first $\lambda_0 = 0$ and $\lambda_{\npertask+1} = 1$, and for each $\lambda_k$ value, $0 \leq k \leq \npertask$, define $\widehat{\lambda}_k$ as 
+%
+\begin{equation}\label{sol_hinge_2}
+ \widehat{\lambda}_k = - \frac{\sum_{j = 1}^{k - 1} \max(0, c_{j}) d_{j} + \sum_{j = k + 1}^{\npertask} \min(0, c_{j}) d_{j}}{\sum_{j = 1}^{k - 1} \max(0, c_{j})^2 + \sum_{j = k + 1}^{\npertask} \min(0, c_{j})^2} .
+\end{equation}
+%
+Then, when $\widehat{\lambda}_0 < 0$, problem~\eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 0$.
+On the other hand, if $\lambda_k \leq \widehat{\lambda}_k \leq  \lambda_{k+1}$ for some $\widehat{\lambda}_k$, then $\lambda^* = \widehat{\lambda}_k$ is a minimum of ~\eqref{eq:opt_hinge_l2}.
+Finally, if neither of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda = 1$.
+\end{prop}
+
+
 
 \section{Convex Multi-Task Learning with Neural Networks}
 
