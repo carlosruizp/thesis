@@ -793,9 +793,9 @@ Again, $\widehat{\fm{Q}}$ is the convex MTL kernel matrix defined in~\eqref{eq:c
 In contrast to the L1 and L2-SVM, where the dual problem is a convex quadratic optimization problem, in the LS-SVM case the dual problem is a system of equations. In the primal problem, the inequalities are replaced by equalities, which removes the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
 
 
-\section{Optimal Convex Combination of fitted Models}
+\section{Optimal Convex Combination of Pre-trained Models}
 % A natural alternative to convexMTL is to direclty combine models
-A natural alternative to the convex MTL formulation that we have developed is to directly combine pre-trained models in a convex manner. That is, given a model $g(\cdot)$ trained with the pooled data from all tasks, and task-specific models $g_r(\cdot)$ that have been trained with only the data from the corresponding task, for each task $r=1,\ldots,\ntasks$ we can define the combination
+A natural alternative to the convex MTL formulation that we have developed is to directly combine pre-trained models in a convex manner. That is, given a model $g(\cdot)$ trained with the data from all tasks, and task-specific models $g_r(\cdot)$ that have been trained with only the data from the corresponding task, for each task $r=1,\ldots,\ntasks$ we can define the combination
 \begin{equation}
     \nonumber
     h_r(\cdot) = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) .
@@ -897,24 +897,75 @@ where, for a simpler formulation we remove the task index, that is
     \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} u(\lambda c_i + d_i),
 \end{equation}
 where $u$ can be different functions depending on the selected loss: the positive part for the hinge loss, the squared positive part for the squared hinge loss, and the absolute and squared functions for their corresponding losses.
-These functions, except for the squared one, are not differentiable in their whole domain, but piece-wise differentiable, so we will use the subdifferential when necessary.  That is, let ${\lambda}_{(1)} < \ldots < {\lambda}_{(p)},\; p \leq m$ be those points where $\mathcal{J}$ is not differentiable, clipped to $[0, 1]$ and sorted, we will refer to these points as elbows.
-To find the optimal parameters $\lambda_r^*$ we will consider the subdifferential of $\mathcal{J}(\lambda)$ in the elbows, that is, the set $\partial \mathcal{J}(\lambda) = \{c \in \mathbb{R}, \mathcal{J}(z)-\mathcal{J}(\lambda) \leq c (z - \lambda)  \}$ with $z$ in a neighbourhood of $x$.
+
+%
+These functions, except for the squared loss, are not differentiable in their whole domain, but piece-wise differentiable, so we will use the subdifferential when necessary.  That is, let ${\lambda}_{(1)} < \ldots < {\lambda}_{(p)}$ be the sorted list of points where $\mathcal{J}$ is not differentiable, we will refer to these points as elbows.
+To find the optimal parameters $\lambda_r^*$ we will consider the subdifferential of $\mathcal{J}(\lambda)$ in the elbows, that is, the set $\partial \mathcal{J}(\lambda) = \{c \in \mathbb{R}, \mathcal{J}(z)-\mathcal{J}(\lambda) \leq c (z - \lambda)\;  \forall z \in (0, 1) \}$.
 % Here $c_i^r, d_i^r$ are the variables described in~\eqref{eq:changevar_clas} when using the hinge or squared hinge loss, or those described in~\eqref{eq:changevar_reg} when using the absolute or squared loss.
 %
-
-The criterion to define an optimal value $\lambda^* \in [0, 1]$ when using subdifferentials is
+Using the generalizad Fermat theorem,
 \begin{equation}
     \nonumber
     \lambda^* = \argmin_{0 \leq \lambda \leq 1} \mathcal{J}(\lambda) \iff (0 \in \partial \mathcal{J}(\lambda^*) \text{ and } \lambda^* \in (0, 1) ) \text{ or } \lambda^*=0 \text{ or } \lambda^*=1 .
 \end{equation}
-To compute $\partial \mathcal{J}(\lambda)$ we use that all functions $u(\lambda c_i + d_i)$ share the same domain, that is, $\lambda \in [0, 1]$ and therefore the subdifferential of the sum is the sum of subdifferentials.
+To compute $\partial \mathcal{J}(\lambda)$ we use that all functions $u(\lambda c_i + d_i)$ share the same domain, that is, $\lambda \in [0, 1]$, and therefore the subdifferential of the sum is the sum of subdifferentials.
 %
-Moreover, a result that is common for all loss functions is~\citet[Proposition 1]{RuizAD21}, which states the following.
+
+Moreover, a result that is common for the linear loss functions is presented in~\citet[Proposition 1]{RuizAD21}.
 \begin{prop}\label{prop:elbows_neurocom2020}
-    For the absolute error and hinge losses, $\partial J(\lambda)$ is single valued and constant between the elbows $\lambda_j$.
+    For the absolute value and hinge losses, $\partial J(\lambda)$ is single valued and constant between the elbows $\lambda_j$.
     Moreover, if $\partial J(\lambda) = J'(\lambda) = \gamma$ for some $\lambda$ between two consecutive distinct elbows, i.e., $\lambda_{(j)} < \lambda < \lambda_{(j+1)}$, then $\gamma \in \partial J(\lambda_{(j)})$ and $\gamma \in \partial J(\lambda_{(j+1)})$. 
 \end{prop}
-Using this idea, we can show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
+This proposition states that in the case the linear losses considered, absolute and hinge losses, we find the optimal value $\lambda^*$ in the elbows.
+In the following subsections we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
+
+\subsection{Squared loss}
+Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the squared loss is
+\begin{equation}
+    \label{eq:opt_sq}
+    \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \left({\lambda c_i + d_i}\right)^2 .
+\end{equation}
+In this case, $\mathcal{J}(\lambda)$ is a differentiable function, and its gradient is 
+\begin{equation}
+    \nonumber
+    \mathcal{J}'(\lambda) = \sum_{i=1}^\npertask 2 c_i (\lambda c_i + d_i) .
+\end{equation}
+Solving $\mathcal{J}'(\lambda)= 0$ results in
+%
+\begin{equation*}
+\lambda' =  -\frac{\sum_{i=1}^{\npertask} d_i c_i }{\sum_{i=1}^{\npertask} (c_i)^2 } ,
+\end{equation*}
+and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
+
+\subsection{Absolute loss}
+Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the absolute value loss is
+\begin{equation}
+    \label{eq:opt_abs}
+    \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \abs{\lambda c_i + d_i}.
+\end{equation}
+Observe that in each term of the sum the subdifferential is 
+\begin{align*}
+    \partial \abs{\lambda c_i + d_i} = 
+    \begin{cases}
+        -\abs{c_i} &, \lambda c_i + d_i  < 0 \\
+        [-\abs{c_i}, \abs{c_i}] &, \lambda c_i + d_i  = 0 \\
+        \abs{c_i} &, \lambda c_i + d_i  > 0 \\
+    \end{cases} 
+\end{align*}
+Again, the elbows are obtained using the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to get ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lambda^*$.
+\begin{prop}[Optimal $\lambda^*$ with absolute value loss]\label{prop:abs_neurocom2020}
+    In problem~\eqref{eq:opt_abs} $\lambda^*=0$ is optimal iff
+    \begin{equation}\nonumber
+        - \sum_{j: \lambda_{(j)} < 0} \abs{c_{j}} + \sum_{j: \lambda_{(j)} > 0} \abs{c_{j}} < 0.
+        \end{equation}
+    If this condition does not hold, $\lambda^* \in (0,1)$ is optimal iff $\lambda^*$ is a feasible elbow, that is, $0 \leq \lambda^* = \lambda_{(k)} \leq 1$ for some $k=1, \dotsc, \npertask$, and
+    \begin{equation}\label{sol_abs_e}
+    - \sum_{j: \lambda_{(j)} < \lambda_{(k)}} \abs{c_{j}} + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \abs{c_{j}} \in \left[ -  \abs{c_{k}},  \abs{c_{k}}  \right] .
+    \end{equation}
+    If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
+\end{prop}
+
 
 \subsection{Hinge loss}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
@@ -931,14 +982,18 @@ Observe that in each term of the sum the subdifferential is
         c_i &, \lambda c_i + d_i  > 0 \\
     \end{cases} \; .
 \end{align*}
-That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < \tilde{\lambda}_{(m)}$.
-In~\citet[Proposition 2]{RuizAD21} we show the form of the optimal $\lambda^*$.
+That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lambda^*$.
 \begin{prop}[Optimal $\lambda^*$ with hinge loss]\label{prop:hinge_neurocom2020}
-    Set first $\lambda_0 = 0$ and $\lambda_{\npertask+1} = 1$. A value $\lambda^*$ is optimal for problem~\eqref{eq:opt_hinge_l1} if and only if $\lambda^* \in \set{0, 1}$ or $\lambda^*$ is an elbow, that is, $\lambda^* = \lambda_{(k)}$ for some $k=1, \dotsc, \npertask$, and
-    \begin{equation}\label{sol_hinge}
-    Q(k) = -\sum_{j = 1}^{k - 1} \max(0, c_{(j)}) - \sum_{j = k + 1}^{\npertask} \min(0, c_{(j)}) \in \left[\min(0, c_{(k)}), \max(0, c_{(k)}) \right] .
+    In~\eqref{eq:opt_hinge_l1}, $\lambda^*=0$ is optimal iff
+    \begin{equation}\label{eq:sol_hinge_0}
+        -\sum_{j: \lambda_{(j)}<0} \max(0, c_{(j)}) - \sum_{\lambda_{(j)}>0} \min(0, c_{(j)}) \leq 0 .
+        \end{equation}
+        If this condition does not hold, a value $\lambda^* \in (0, 1)$ is optimal for problem~\eqref{eq:opt_hinge_l1} iff $\lambda^* \in \set{0, 1}$ or $\lambda^*$ is a feasible elbow, that is, $0 \leq \lambda^* = \lambda_{(k)} \leq 1$ for some $k=1, \dotsc, \npertask$, and
+    \begin{equation}\label{eq:sol_hinge}
+        -\sum_{j: \lambda_{(j)}< \lambda_{(k)}} \max(0, c_{(j)}) - \sum_{j: \lambda_{(j)}>  \lambda_{(k)}} \min(0, c_{(j)}) \in \left[\min(0, c_{(k)}), \max(0, c_{(k)}) \right] .
     \end{equation}
-    Observe that $Q(k)$ defined for $k=1, \ldots, \npertask$ is a non-decreasing function.
+    If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
 \end{prop}
 
 
@@ -950,30 +1005,42 @@ Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corres
 \end{equation}
 In each term of the sum the subdifferential is 
 \begin{align*}
-    \partial \left[\lambda c + d \right]_+^2 = 
+    \partial \left[\lambda c_i + d_i \right]_+^2 = 
     \begin{cases}
-        0 &, \lambda c + d  \leq 0 \\
-        2c(\lambda c + d) &, \lambda c + d  > 0 \\
+        0 &, \lambda c_i + d_i  \leq 0 \\
+        2 c_i (\lambda c_i + d_i) &, \lambda c_i + d_i  > 0 \\
     \end{cases} \; .
 \end{align*}
 The elbows are again related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
-In~\citet[Proposition 2]{RuizAD21} we show the form of the optimal $\lambda^*$ when using the squared hinge loss.
+In~\citet[Proposition 2]{RuizAD21} we give a result to get the optimal $\lambda^*$ when using the squared hinge loss.
 \begin{prop}[Optimal $\lambda^*$ with squared hinge loss]\label{prop:sqhinge_neurocom2020}
-    For the error of ~\eqref{eq:opt_hinge_l2}, set first $\lambda_0 = 0$ and $\lambda_{\npertask+1} = 1$, and for each $\lambda_k$ value, $0 \leq k \leq \npertask$, define $\widehat{\lambda}_k$ as 
-%
+    In~\eqref{eq:opt_hinge_l2},
+    $\lambda^*=0$ is optimal iff 
+    \begin{equation}\nonumber
+         - \frac{\sum_{j: \lambda_{j} < 0} \max(0, c_{j}) d_{j} + \sum_{j: \lambda_{j} > 0} \min(0, c_{j}) d_{j}}{\sum_{j: \lambda_{j} < 0} \max(0, c_{j})^2 + \sum_{j: \lambda_{j} > 0} \min(0, c_{j})^2} < 0.
+       \end{equation}
+    If this condition does not hold, 
+    consider the extended sorted list of feasible elbows $\lambda_{(p-1)} = 0 \leq \lambda_{(p)} \leq \ldots, \lambda_{(q)} \leq \lambda_{(q+1)}=1$, with $1 \leq p, q \leq m$, and
+    define for $k=p-1, \ldots,  q$ $\widehat{\lambda}_k$ as %
 \begin{equation}\label{sol_hinge_2}
- \widehat{\lambda}_k = - \frac{\sum_{j = 1}^{k - 1} \max(0, c_{j}) d_{j} + \sum_{j = k + 1}^{\npertask} \min(0, c_{j}) d_{j}}{\sum_{j = 1}^{k - 1} \max(0, c_{j})^2 + \sum_{j = k + 1}^{\npertask} \min(0, c_{j})^2} .
+ \widehat{\lambda}_k = - \frac{\sum_{j: \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j}) d_{j} + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j}) d_{j}}{\sum_{j: \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j})^2 + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j})^2} .
 \end{equation}
 %
-Then, when $\widehat{\lambda}_0 < 0$, problem~\eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 0$.
-On the other hand, if $\lambda_k \leq \widehat{\lambda}_k \leq  \lambda_{k+1}$ for some $\widehat{\lambda}_k$, then $\lambda^* = \widehat{\lambda}_k$ is a minimum of ~\eqref{eq:opt_hinge_l2}.
-Finally, if neither of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda = 1$.
+Then, if $\lambda_k \leq \widehat{\lambda}_k \leq  \lambda_{k+1}$ for some $\widehat{\lambda}_k$, then $\lambda^* = \widehat{\lambda}_k$ is optimal.
+Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 1$.
 \end{prop}
 
 
-
 \section{Convex Multi-Task Learning with Neural Networks}
+The convex MTL formulation is easily applicable and interpretable, so it has good properties for kernel models, but also for a broader class of learning models.
+Neural networks, in particular deep ones, have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for MTL with neural networks.
 
+%
+In Chapter~\ref{Chapter3} we have reviewed the taxonomy for MTL methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
+We also show in Subsection~\ref{subsec:deep_mtl} some of the most famous approaches to MTL with neural networks. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense, see~\cite{Long015a, YangH17a}.
+However, to the best of my knowledge, the first purely combination-based approach to MTL with neural networks is presented in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks.
+
+In this work, the 
 \section{Experiments}
 
 \section{Conclusions}\label{sec-conclusions-3}
