@@ -40,6 +40,14 @@
 \usepackage{tikz}
 \usepackage{glossaries}
 
+%algorithm2e
+%%% Coloring the comment as blue
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+
+\SetKwInput{KwInput}{Input}                % Set the Input
+\SetKwInput{KwOutput}{Output}              % set the Output
+
 %tikz
 \usetikzlibrary{arrows,positioning} 
 \tikzset{
@@ -60,6 +68,26 @@
            shorten <=2pt,
            shorten >=2pt,}
 }
+\usetikzlibrary{calc}
+%Tikz picture
+% Input layer neurons'number
+\newcommand{\inputnum}{2} 
+ 
+% Hidden layer neurons'number
+\newcommand{\hiddennum}{2}  
+
+% Hidden layer neurons'number hard sharing
+\newcommand{\hiddennumhs}{4}  
+
+% Hidden layer neurons'number hard sharing
+\newcommand{\hiddennumsp}{3}  
+ 
+% Output layer neurons'number
+\newcommand{\outputnum}{2} 
+
+% Min Node size
+\newcommand{\minnodesize}{5mm} 
+
 
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
 
@@ -218,6 +246,10 @@
 \newcommand{\fmaxn}[1]{\textbf{#1}}
 \newcommand{\fdata}[1]{\textsf{#1}}
 
+% Macros
+\newcommand{\diagrams}{../Diagrams}
+
+
 
 % Theorems
 \newtheorem{prop}{Proposition}
@@ -328,7 +360,7 @@ Aristotle.
 \addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
 
 \small{
-.
+Small.
 }
 	
 }
@@ -404,15 +436,15 @@ Aristotle.
 % Include the chapters of the thesis, as separate files
 % Just uncomment the lines as you write the chapters
 
-\input{./Chapters/Intro} % Introduction
+\include{./Chapters/Intro} % Introduction
 
-\input{./Chapters/Chapter2} % Foundations and Concepts
+\include{./Chapters/Chapter2} % Foundations and Concepts
 
-\input{./Chapters/Chapter3} % Multi-Task Learning Overview
+\include{./Chapters/Chapter3} % Multi-Task Learning Overview
 
-\input{./Chapters/Chapter4} % Convex Multi-Task SVM
+\include{./Chapters/Chapter4} % Convex Multi-Task SVM
 
-\input{./Chapters/Chapter5} % Adaptive Graph Laplacian Multi-Task Learning SVM
+\include{./Chapters/Chapter5} % Adaptive Graph Laplacian Multi-Task Learning SVM
 
 % \input{./Chapters/Chapter6} % Dealing with categorical and integer-valued variables in Bayesian optimization with Gaussian processes
 

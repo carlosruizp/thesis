@@ -934,6 +934,7 @@ This proposition states that in the case the linear losses considered, absolute 
 In the following subsections we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
 
 \subsection{Squared loss}
+This is the simplest case, since the squared loss is differentiable.
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the squared loss is
 \begin{equation}
     \label{eq:opt_sq}
@@ -952,6 +953,12 @@ Solving $\mathcal{J}'(\lambda)= 0$ results in
 and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
 
 \subsection{Absolute loss}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{ejemplo1_mae.pdf}
+    \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
+    \label{fig:abs_loss}
+\end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the absolute value loss is
 \begin{equation}
     \label{eq:opt_abs}
@@ -966,7 +973,7 @@ Observe that in each term of the sum the subdifferential is
         \abs{c_i} &, \lambda c_i + d_i  > 0 \\
     \end{cases} 
 \end{align*}
-Again, the elbows are obtained using the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to get ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+The elbows are obtained using the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to get ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lambda^*$.
 \begin{prop}[Optimal $\lambda^*$ with absolute value loss]\label{prop:abs_neurocom2020}
     In problem~\eqref{eq:opt_abs} $\lambda^*=0$ is optimal iff
@@ -979,9 +986,20 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \end{equation}
     If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
 \end{prop}
-
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{ejemplo2_mae.pdf}
+    \caption{Error using absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \label{fig:abs_error}
+\end{figure}
 
 \subsection{Hinge loss}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{ejemplo1_hinge.pdf}
+    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
+    \label{fig:hinge_loss}
+\end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
 \begin{equation}
     \label{eq:opt_hinge_l1}
@@ -1009,7 +1027,12 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \end{equation}
     If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
 \end{prop}
-
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{ejemplo2_hinge.pdf}
+    \caption{Error using hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \label{fig:hinge_error}
+\end{figure}
 
 \subsection{Squared hinge loss}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
@@ -1051,12 +1074,16 @@ Neural networks, in particular deep ones, have had a massive success in multiple
 
 %
 In Chapter~\ref{Chapter3} we have reviewed the taxonomy for MTL methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
-We also show in Subsection~\ref{subsec:deep_mtl} some of the most famous approaches to MTL with neural networks. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense, see~\cite{Long015a, YangH17a}.
+We also show in Subsection~\ref{subsec:deep_mtl} some of the most famous approaches to MTL with neural networks. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks, as shown in Figure~\ref{fig:hardsharing_nn}; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense, see~\cite{Long015a, YangH17a}.
 However, to the best of my knowledge, the first purely combination-based approach to MTL with neural networks is presented in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks.
 
+\input{Diagrams/hardharing_nn_image.tex}
+
 \subsection{Model Definition}
-Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to the model the common part $ g(x_i^r; w, \Theta) = w^\intercal f(x_i^r; \Theta) + b$ and task-specific parts
-$ g_r(x_i^r; w_r, \Theta_r) =  w_r^\intercal f_r(x_i^r; \Theta_r) + b_r$.
+Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to the model the common part 
+$$ g(x_i^r; w, \Theta) = w^\intercal f(x_i^r; \Theta) + b,$$
+and task-specific parts
+$$ g_r(x_i^r; w_r, \Theta_r) =  w_r^\intercal f_r(x_i^r; \Theta_r) + b_r.$$
 Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$, $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $b_r$ the output biases.
 Observe that the feature transformations $ f(x_i^r; \Theta)$ and $f_r(x_i^r; \Theta_r)$ are not fixed like $\phi(x_i^r)$ and $\phi_r(x_i^r)$ in the kernel methods, instead, here, they are automatically learned in the training process.
 The full MTL models are then
@@ -1116,29 +1143,69 @@ Then, the corresponding gradients of $h_t$ needed to compute the loss gradients 
 Putting all together, the gradient of the loss with respect to $w$, for example, is 
 $$  \nabla_w \lossf(h_t(x_i^t), y_i^t)  =\lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta), \rbrace $$
 and the same for the rest of parameters.
+%
+Observe that the convex combination information is transferred in the back-propagation, the loss gradients with respect to common parameters are scaled by $\lambda$, while those of the task-specific parameters are scaled by $(1 - \lambda)$.
+%
 Moreover, the regularization of each set of parameters, i.e., $\set{w}, \Theta$ and $\set{w_r}, \Theta_r$, is done independently, so their gradients can be computed in the standard way.
-That is, when using vanilla \acrshort{sgd}, the update rule  for the common network parameters is
-\begin{equation}
+%
+During the back propagation procedure, we only update the parameters that have been used in the forward pass, with possibly different learning rates for each network. 
+That is, given an example $(x_i^t, y_i^t)$, when using vanilla \acrshort{sgd} the update rules for the common network parameters would be
+\begin{equation}\label{eq:convexmtl_nn_commonupdate}
     \begin{aligned}
-        w^{\tau + 1} &\gets w^\tau + \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace + \mu w^\tau \right] \\,
-        \Theta^{\tau + 1} &\gets \Theta^\tau + \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace + \mu \lbrace \nabla_\Theta \Omega( \Theta)  \vert_{\Theta = \Theta^\tau} \rbrace \right]
+        w^{\tau + 1} &\gets w^\tau + \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace + \mu w^\tau \right], \\
+        \Theta^{\tau + 1} &\gets \Theta^\tau + \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace + \mu \lbrace \nabla_\Theta \Omega( \Theta)  \rbrace \right];
     \end{aligned}
 \end{equation}
-The convex combination information is transferred in the back propagation step.
-the gradients of the loss function with respect to the common network parameters
-%, either with respect to the output weights $\fv{w}$ or the hidden parameters $\Theta$, 
-are scaled by $\lambda$, the gradients with respect to the $t$-th specific network parameters are scaled by $1 - \lambda$, and the rest of the task-specialized networks parameters have null gradients, so they are not updated.
+while the update rules for $t$-th task network parameters would be
+\begin{equation}\label{eq:convexmtl_nn_specificupdate}
+    \begin{aligned}
+        w_t^{\tau + 1} &\gets w_t^\tau + \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda) \lbrace f(x_i^t, \Theta) \rbrace + \mu w_t^\tau \right], \\
+        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau + \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda) \lbrace w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t)\rbrace + \mu \lbrace \nabla_{\Theta_t} \Omega( \Theta_t) \rbrace \right];
+    \end{aligned}
+\end{equation}
+and the parameters from the rest of task-specific network are not updated.
 %
-The regularization is independent in each network, so the gradients of the regularizers are also computed independently.
-%
-That is, no specific training algorithm has to be developed for the Convex MTL NN, so~\eqref{eq:regrisk_convex_nn} can be minimized with any stochastic gradient descent strategy using back propagation.
-In Figure~\ref{fig:convexmtl_nn}, a Convex MTL NN is shown. % in the gradient update step.
-    In particular, the updated shared weights are represented in red, and in blue the updated specific weights. 
-    Specific networks are framed in black boxes and the common one in a blue box.
-    The input neurons are shown in yellow, the hidden ones in cyan (except those in grey), and the output ones in magenta. 
-    We use the grey color for hidden neurons containing the intermediate functions that will be combined for the final output: $g_1(\fv{x})$, $g_2(\fv{x})$ and $g(\fv{x})$.
-    The thick lines are the hyperparameters $\lambda$ and $1-\lambda$ of the convex combination.
+That is, no specific algorithm has to be developed for training the convex MTL NN. In~\eqref{eq:convexmtl_nn_commonupdate} and~\eqref{eq:convexmtl_nn_specificupdate} we have shown the update rules for vanilla SGD, but any other algorithm, e.g., Adam, can be used scaling properly the loss gradients.
 
+\input{Diagrams/convexmtl_nn_image.tex}
+
+
+% In Figure~\ref{fig:convexmtl_nn}, a Convex MTL NN is shown. % in the gradient update step.
+%     In particular, the updated shared weights are represented in red, and in blue the updated specific weights. 
+%     Specific networks are framed in black boxes and the common one in a blue box.
+%     The input neurons are shown in yellow, the hidden ones in cyan (except those in grey), and the output ones in magenta. 
+%     We use the grey color for hidden neurons containing the intermediate functions that will be combined for the final output: $g_1(\fv{x})$, $g_2(\fv{x})$ and $g(\fv{x})$.
+%     The thick lines are the hyperparameters $\lambda$ and $1-\lambda$ of the convex combination.
+
+\subsection{Implementation Details}
+% Task-batches of minibatches
+% Automatic differentiation
+
+Our implementation of the convex MTL neural network is based on \texttt{PyTorch}~\citep{PyTorch}.
+Although we include the gradients expressions in equation~\eqref{eq:gradients_losses}, the \texttt{PyTorch} package implements automatic differentiation, so the gradients are not explicitly implemented.
+Instead, we implement each network, common or specific, using (possibly different) \texttt{PyTorch} modules.
+In the forward pass of the network, the output for an example $x_i^r$ from task $r$ is computed using a pass of the common module and the corresponding specific module, combining both passes with the convex formulation to obtain the final output $h_r(x_i^r)$.
+In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
+By doing this, when using examples from the $r$-th task only the parameters corresponding to common module and its corresponding specific one are updated.
+Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
+
+{In Algorithm~\ref{alg:forward} we show the pseudo-code of the forward pass of the convex MTL neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on PyTorch automatic differentiation.}
+
+\begin{algorithm}[!t]
+    \DontPrintSemicolon
+      
+      \KwInput{$X_\text{mb}, t_\text{mb}$ \tcp*{Minibatch data and task labels}}
+      \KwOutput{$f$ \tcp*{Forward pass for the minibatch}}
+      \KwData{$\lambda$ \tcp*{Parameter of convex combination}}
+      \KwData{$g; g_1, \ldots, g_\ntasks$ \tcp*{Modules of the common and specific networks}}      
+      \For{$x_i, t_i \in(X_\text{mb}, t_\text{mb}) $}    
+            { 
+                $f_i \gets \lambda g(x_i) + (1 - \lambda) g_{t_i}(x_i)$   \tcp*{Convex combination}
+
+            }
+    \caption{Forward pass for Convex MTL neural network.}
+    \label{alg:forward}
+\end{algorithm}
 
 
 \section{Experiments}
