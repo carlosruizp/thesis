@@ -557,6 +557,80 @@ which is the dual problem of the additive formulation.
 
 Finally, observe that the results in Proposition~\ref{prop:add_conv_equiv} is only valid for $\lambda$ in the open set $(0, 1)$. The results in the extremes of the interval, i.e. $\lambda=0, 1$, have been already exposed. When $\lambda=0$, we obtain an ITL approach, where an independent model is learned for each task. When $\lambda=1$, the convex formulation is equivalent to a CTL approach, where a single, common model is trained using all tasks.
 
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_example-crop.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_comparison-crop.pdf}
+    \end{subfigure}
+    \caption{Left: Synthetic example dataset, where the data of each task (corresponding to a different function $f_i$) are represented with a different color.
+        Right: Comparison of the weights obtained by the {convex} and {additive} approaches.}
+    \label{fig:lines_slopes}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_add-crop.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_conv-crop.pdf}
+    \end{subfigure}
+    \caption{{Convex} (right) and {additive} (left) MTLSVR slope estimates weights as a function of $\lambda$. We represent the common part of the models, $w$ for the {additive} and $\lambda u$ for the {convex}, as well as each task specific deviation $v_t$ and $(1 - \lambda) u_t$.}
+    \label{fig:synthetic_specWeights}
+\end{figure}
+
+
+\begin{table}[t]
+    \caption{Hyper-parameters, grids used to find them (when appropriate) and hyper-parameter selection method for each model.}
+    \label{table:hyperpars_grid}
+    \centering
+     \begin{tabular}{*{5}{c}}
+     \toprule
+     \fhead{Par.} & \fhead{Grid} & \fhead{\texttt{ctlSVR}} & \fhead{\texttt{itlSVR}} & \fhead{\texttt{cvxMTL}} \\
+     \midrule
+      $C_\text{conv}$ &  $\set{10^k: -5 \leq k \leq 6}$ & CV & CV & CV  \\ 
+      $\epsilon_\text{conv}$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
+      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & \texttt{ctlSVR} \\
+      $\gamma_t$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & \texttt{itlSVR}\\
+      $\lambda$ & $\set{10^{-1}k: 1 \leq k \leq 9}$ & - & - & CV \\
+      \bottomrule
+     \end{tabular}
+\end{table}
+
+\begin{table*}[t]
+    \caption{Test MAE's (top) and R2 scores (bottom) of the models considered.}
+    \label{tab:r2_mae_models}
+    \centering
+    \begin{tabular}{l*{2}{S[table-format=1.3]}S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
+    \toprule
+    & \fhead{\fcode{majorca}} & \fhead{\fcode{tenerife}} & \fheadmulti{2}{\fcode{boston}} &  \fheadmulti{2}{\fcode{abalone}} & \fheadmulti{2}{\fcode{crime}} \\
+    \midrule
+    \fheadmulti{9}{MAE} \\
+    \midrule
+    {\texttt{ctlSVR}} & 5.264 &  5.785 & 2.254 & 0.055 & 1.483 & 0.036 & 0.078& 0.001 \\
+    {\texttt{itlSVR}} & 5.102 & \fmax{5.351} & 2.574 & 0.083 & 1.499 & 0.041 & 0.081 & 0.006 \\
+    {\texttt{cvxMTL}} & \fmax{4.966} & 5.352 &  \fmax{2.244} & \fmax{0.041} & \fmax{1.466} & \fmax{0.027} & \fmax{0.074} & \fmax{0.003} \\
+    \midrule        
+         \fheadmulti{9}{R2} \\
+         \midrule
+        {\texttt{ctlSVR}} & 0.831 &  0.901 & 0.856 & 0.030 & \fmax{0.563} & \fmax{0.016} & 0.743 & 0.022 \\
+        {\texttt{itlSVR}} & 0.843 & 0.903 & 0.777 & 0.049 & 0.506 & 0.060 & 0.714 & 0.008 \\
+        {\texttt{cvxMTL}} & \fmax{0.849} & \fmax{0.906} & \fmax{0.860} & \fmax{0.047} & 0.561 & 0.017 & \fmax{0.755} & \fmax{0.015} \\
+        \bottomrule
+        \end{tabular}
+\end{table*}
+
+
 % TODO: Equivalence results for \lambda=0,1
 
 \subsection{L2 Support Vector Machine}
@@ -955,7 +1029,7 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
 \subsection{Absolute loss}
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\textwidth]{ejemplo1_mae.pdf}
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mae.pdf}
     \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
     \label{fig:abs_loss}
 \end{figure}
@@ -988,7 +1062,7 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
 \end{prop}
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\textwidth]{ejemplo2_mae.pdf}
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mae.pdf}
     \caption{Error using absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:abs_error}
 \end{figure}
@@ -996,7 +1070,7 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
 \subsection{Hinge loss}
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\textwidth]{ejemplo1_hinge.pdf}
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_hinge.pdf}
     \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
     \label{fig:hinge_loss}
 \end{figure}
@@ -1029,7 +1103,7 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
 \end{prop}
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\textwidth]{ejemplo2_hinge.pdf}
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_hinge.pdf}
     \caption{Error using hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:hinge_error}
 \end{figure}
@@ -1066,6 +1140,214 @@ In~\citet[Proposition 2]{RuizAD21} we give a result to get the optimal $\lambda^
 Then, if $\lambda_k \leq \widehat{\lambda}_k \leq  \lambda_{k+1}$ for some $\widehat{\lambda}_k$, then $\lambda^* = \widehat{\lambda}_k$ is optimal.
 Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 1$.
 \end{prop}
+
+
+
+\begin{table*}[t!]
+    \caption{Sample sizes, dimensions and number of tasks of the datasets used.}
+    \label{table:size_dim_tasks}
+    \centering
+    \scalebox{.65}{
+    \begin{tabular}{l*{7}{S[table-format=5]}}
+    \toprule
+    \fhead{Dataset} & \fhead{Size} & \fhead{No. feat.} & \fhead{No. tasks} & \fhead{Avg. task size} & \fhead{Min. t. s.} & \fhead{Max. t. s.}\\
+    \midrule
+    \fdata{majorca} & 15330 & 765 & 14 & 1095 & 1095 & 1095 \\ 
+    \fdata{tenerife} & 15330 & 765 & 14 & 1095 & 1095 & 1095 \\
+    \fdata{california} & 19269 & 9 & 5 & 3853 & 5 & 8468\\
+    \fdata{boston} & 506 & 12 & 2 & 253 & 35 & 471 \\
+    \fdata{abalone} & 4177 & 8 & 3 & 1392 & 1307 & 1527 \\
+    \fdata{crime} & 1195 & 127 & 9 & 132 & 60  & 278 \\
+    \fdata{binding} & 32302 & 184 & 47 & 687 & 59 & 3089 \\ 
+    \fdata{landmine} & 14820 & 10 & 28 & 511 & 445 & 690 \\
+    \fdata{adult\_(G)} & 48842 & 106 & 2 & 24421 & 16192 & 32650 \\
+    \fdata{adult\_(R)} & 48842 & 103 & 5 & 9768 & 406 & 41762 \\
+    \fdata{adult\_(G, R)} & 48842 & 101 & 10 & 4884 & 155 & 28735 \\
+    \fdata{compas\_(G)} & 3987 & 11 & 2 & 1993 & 840 & 3147 \\
+    \fdata{compas\_(R)} & 3987 & 9 & 4 & 997 & 255 & 1918 \\
+    \fdata{compas\_(G, R)} & 3987 & 7 & 8 & 498 & 50 & 1525 \\
+    \bottomrule
+   \end{tabular}}
+\end{table*}
+
+
+\begin{table}[t]
+    \caption{Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model.}
+    \label{table:hyperpars_grid}
+    \centering
+    \scalebox{.65}{
+     \begin{tabular}{*{9}{c}}
+     \toprule
+     \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL-L1,2}} & \fhead{\fmod{ITL-L1,2}} & \fhead{\fmod{cvxMTL-L1,2}}  & \fhead{\fmod{CTL-LS}} & \fhead{\fmod{ITL-L,S}} & \fhead{\fmod{cvxMTL-LS}}   \\
+     \midrule
+      $C$ &  \scalebox{.9}{$\set{4^k: -2 \leq k \leq 6}$} & CV & CV & CV & CV & CV & CV  \\ 
+      $\epsilon$ & \scalebox{.9}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & CV & CV & CV & - & - & - \\
+      $\gamma_c$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & CV & - & \fmod{CTL-L1,2} & CV & - & \fmod{CTL-LS} \\
+      $\gamma_s^r$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & CV & \fmod{ITL-L1,2} & - & CV & \fmod{ITL-LS}\\
+      $\lambda$ & \scalebox{.9}{$\set{0.1 k : 0 \leq k \leq 10}$} & - & - & CV & - & - & CV \\
+      \bottomrule
+     \end{tabular}
+     }
+  \end{table}
+
+
+
+  \begin{table*}[t]
+    \captionsetup{font=scriptsize}
+    \caption{Test MAE (top) and R2 score (bottom) and Wilcoxon-based ranking for the models selected using the MAE for hyperparametrization. The best models are shown in bold.}
+    \label{tab:error_models_reg_mae_mae}
+    \centering
+    \scalebox{.65}{
+    \begin{tabular}{l*{2}{c@{ }l}*{4}{r@{$\pm$}l@{ }l } }
+    \toprule
+    & \fheadmulti{2}{\fdata{maj.}} & \fheadmulti{2}{\fdata{ten.}} & \fheadmulti{3}{\fdata{boston}} & \fheadmulti{3}{\fdata{california}} &  \fheadmulti{3}{\fdata{abalone}} & \fheadmulti{3}{\fdata{crime}}\\
+    \midrule
+    & \fheadmulti{16}{MAE} \\
+    \midrule
+    \fmod{ITL-L1}            &  {5.087} &   (6) &  {5.743} &   (3) &  {2.341} & {0.229} &   \fmaxn{(1)} &  {36883.582} & {418.435} &   (2) &  {1.481} & {0.051} &   (3) &  {0.078} & {0.001} &   (2) \\
+    \fmod{CTL-L1}            &  {5.175} &   (7) &  {5.891} &   (5) &  \fmaxn{2.192} & \fmaxn{0.244} &   \fmaxn{(1)} &  {41754.337} & {270.908} &   (6) &  {1.482} & {0.050} &   (3) &  {0.078} & {0.001} &   (2) \\
+    \fmod{cvxCMB-L1} &  \fmaxn{5.047} &   (5) &  \fmaxn{5.340} &  \fmaxn{(1)} &  {2.239} & {0.255} &   \fmaxn{(1)} &  {36880.238} & {420.417} &   \fmaxn{(1)} &  {1.470} & {0.052} &   (2) &  {0.077} & {0.002} &   (2) \\
+    \fmod{cvxMTL-L1}     &  {5.050} &   (5) &  {5.535} &   (2) &  {2.206} & {0.292} &   \fmaxn{(1)} &  \fmaxn{36711.383} & \fmaxn{343.333} &  \fmaxn{(1)} &  \fmaxn{1.454} & \fmaxn{0.048} &  \fmaxn{(1)} &  \fmaxn{0.074} & \fmaxn{0.002} &  \fmaxn{(1)} \\
+    \midrule
+    \fmod{ITL-L2}            &  {4.952} &   (3) &  \fmaxn{5.629} &   (3) &  {2.356} & {0.300} &   \fmaxn{(1)} &  {37374.618} & {433.511} &   (5) &  {1.498} & {0.054} &   (4) &  {0.079} & {0.002} &   (2) \\
+    \fmod{CTL-L2}            &  {5.193} &   (7) &  {6.107} &   (8) &  \fmaxn{2.083} & \fmaxn{0.136} &   \fmaxn{(1)} &  {42335.612} & {163.773} &   (8) &  {1.503} & {0.047} &   (5) &  {0.080} & {0.002} &   (2) \\
+    \fmod{cvxCMB-L2} &  {4.869} &   (3) &  {5.963} &   (6) &  {2.089} & {0.128} &   \fmaxn{(1)} &  {37374.618} & {433.511} &   (4) &  {1.494} & {0.050} &   (4) &  {0.077} & {0.003} &   (2) \\
+    \fmod{cvxMTL-L2}     &  \fmaxn{4.854} &   (2) &  {5.784} &   (4) &  {2.089} & {0.134} &   \fmaxn{(1)} &  \fmaxn{37202.603} & \fmaxn{419.166} &   (3) &  \fmaxn{1.482} & \fmaxn{0.049} &   (3) &  \fmaxn{0.077} & \fmaxn{0.002} &   (2) \\
+    \midrule
+    \fmod{ITL-LS}            &  {4.937} &   (3) &  {5.649} &   (3) &  {2.204} & {0.116} &   \fmaxn{(1)} &  {37348.347} & {441.240} &   (4) &  {1.496} & {0.051} &   (4) &  {0.079} & {0.002} &   (2) \\
+    \fmod{CTL-LS}            &  {5.193} &   (7) &  {6.005} &   (7) &  \fmaxn{2.072} & \fmaxn{0.143} &  \fmaxn{(1)} &  {42259.492} & {146.825} &   (7) &  {1.502} & {0.052} &   (5) &  {0.079} & {0.002} &   (2) \\
+    \fmod{cvxCMB-LS} &  {4.977} &   (4) &  \fmaxn{5.593} &   (3) &  {2.081} & {0.146} &   \fmaxn{(1)} &  {37339.179} & {430.288} &   (4) &  {1.486} & {0.049} &   (4) &  {0.079} & {0.002} &   (2) \\
+    \fmod{cvxMTL-LS}     &  \fmaxn{4.824} &  \fmaxn{(1)} &  {5.754} &   (4) &  {2.077} & {0.152} &   \fmaxn{(1)} &  \fmaxn{37231.043} & \fmaxn{420.992} &   (4) &  \fmaxn{1.478} & \fmaxn{0.050} &   (3) &  \fmaxn{0.076} & \fmaxn{0.002} &   (2) \\
+    \midrule
+    & \fheadmulti{16}{R2} \\
+    \midrule
+    \fmod{ITL-L1}            &  {0.845} &   (6) &  {0.901} &   (7) &  {0.821} & {0.041} &   (2) &  {0.699} & {0.009} &   (7) &  {0.543} & {0.022} &   (8) &  {0.732} & {0.021} &   (3) \\
+    \fmod{CTL-L1}            &  {0.837} &   (9) &  {0.901} &   (6) &  {0.854} & {0.036} &   \fmaxn{(1)} &  {0.639} & {0.006} &  (10) &  {0.559} & {0.014} &   (6) &  {0.740} & {0.027} &   (3) \\
+    \fmod{cvxCMB-L1} &  {0.844} &   (6) &  {0.905} &   (4) &  {0.845} & {0.053} &   \fmaxn{(1)} &  {0.699} & {0.009} &   (6) &  {0.555} & {0.018} &   (7) &  {0.741} & {0.029} &   (3) \\
+    \fmod{cvxMTL-L1}     &  \fmaxn{0.846} &   (4) &  \fmaxn{0.908} &   (2) &  \fmaxn{0.858} & \fmaxn{0.057} &   \fmaxn{(1)} &  \fmaxn{0.703} & \fmaxn{0.007} &   (6) &  \fmaxn{0.568} & \fmaxn{0.012} &   (5) &  \fmaxn{0.760} & \fmaxn{0.024} &   (2) \\
+    \midrule
+    \fmod{ITL-L2}            &  {0.846} &   (5) &  {0.906} &   (3) &  {0.836} & {0.045} &   (2) &  {0.707} & {0.009} &   (5) &  {0.565} & {0.025} &   (6) &  {0.743} & {0.017} &   (3) \\
+    \fmod{CTL-L2}            &  {0.840} &   (8) &  {0.901} &   (8) &  \fmaxn{0.889} & \fmaxn{0.017} &   \fmaxn{(1)} &  {0.645} & {0.005} &   (9) &  {0.574} & {0.013} &   (4) &  {0.744} & {0.028} &   (3) \\
+    \fmod{cvxCMB-L2} &  {0.850} &   (3) &  {0.900} &   (9) &  {0.885} & {0.013} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (4) &  {0.571} & {0.018} &   (4) &  {0.755} & {0.024} &   (3) \\
+    \fmod{cvxMTL-L2}     &  \fmaxn{0.863} &   (2) &  \fmaxn{0.908} &   \fmaxn{(1)} &  {0.888} & {0.015} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &  \fmaxn{(1)} &  \fmaxn{0.580} & \fmaxn{0.014} &   (3) &  \fmaxn{0.762} & \fmaxn{0.028} &   \fmaxn{(1)} \\
+    \midrule
+    \fmod{ITL-LS}            &  {0.849} &   (3) &  {0.907} &   (3) &  {0.856} & {0.008} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (3) &  {0.573} & {0.015} &   (4) &  {0.743} & {0.022} &   (3) \\
+    \fmod{CTL-LS}            &  {0.838} &   (9) &  {0.904} &   (5) &  \fmaxn{0.894} & \fmaxn{0.015} &  \fmaxn{(1)} &  {0.646} & {0.005} &   (8) &  {0.576} & {0.016} &   (4) &  {0.746} & {0.032} &   (3) \\
+    \fmod{cvxCMB-LS} &  {0.843} &   (7) &  {0.907} &   (2) &  {0.886} & {0.024} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (2) &  {0.581} & {0.012} &   (2) &  {0.746} & {0.021} &   (3) \\
+    \fmod{cvxMTL-LS}     &  \fmaxn{0.863} &  \fmaxn{(1)} &  \fmaxn{0.910} &  \fmaxn{(1)} &  {0.890} & {0.016} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &   (2) &  \fmaxn{0.581} & \fmaxn{0.015} &  \fmaxn{(1)} &  \fmaxn{0.763} & \fmaxn{0.028} &  \fmaxn{(1)} \\
+    \bottomrule
+    \end{tabular}}
+  \end{table*}
+
+
+
+
+
+
+  \begin{table*}[t]
+    \captionsetup{font=scriptsize}
+    \caption{Test MAE (top) and R2 score (bottom) and Wilcoxon-based ranking for the models selected using the MSE for hyperparametrization. The best models are shown in bold.}
+      \label{tab:error_models_reg_mse_mae}
+      \centering
+      \scalebox{.65
+      }{
+          \begin{tabular}{l*{2}{c@{ }l}*{4}{r@{$\pm$}l@{ }l } }
+              \toprule
+              & \fheadmulti{2}{\fdata{maj.}} & \fheadmulti{2}{\fdata{ten.}} & \fheadmulti{3}{\fdata{boston}} & \fheadmulti{3}{\fdata{california}} &  \fheadmulti{3}{\fdata{abalone}} & \fheadmulti{3}{\fdata{crime}}\\
+      \midrule
+      & \fheadmulti{16}{MAE} \\
+      \midrule
+      \fmod{ITL-L1}            &  {5.087} &   (7) &  {5.743} &   (3) &  {2.437} & {0.281} &   (3) &  {36941.516} & {450.767} &   (1) &  {1.480} & {0.058} &   (3) &  {0.079} & {0.002} &   (3) \\
+      \fmod{CTL-L1}            &  {5.175} &   (8) &  {5.891} &   (7) &  {2.315} & {0.192} &   (2) &  {41857.602} & {235.021} &   (6) &  {1.479} & {0.047} &   (3) &  {0.078} & {0.000} &   (2) \\
+      \fmod{cvxCMB-L1} &  \fmaxn{4.920} &   (4) &  {5.743} &   (4) &  {2.315} & {0.192} &   (3) &  \fmaxn{36941.476} & \fmaxn{450.711} &  \fmaxn{(1)} &  {1.471} & {0.057} &   (2) &  {0.079} & {0.002} &   (2) \\
+      \fmod{cvxMTL-L1}     &  {5.050} &   (6) &  \fmaxn{5.535} &  \fmaxn{(1)} &  \fmaxn{2.244} & \fmaxn{0.150} &   (1) &  {36999.003} & {360.445} &   (2) &  \fmaxn{1.455} & \fmaxn{0.046} &  \fmaxn{(1)} &  \fmaxn{0.074} & \fmaxn{0.001} &  \fmaxn{(1)} \\
+      \midrule
+      \fmod{ITL-L2}            &  {4.924} &   (5) &  {5.752} &   (5) &  {2.437} & {0.324} &   (3) &  {37407.929} & {461.878} &   (5) &  {1.497} & {0.050} &   (5) &  {0.079} & {0.002} &   (2) \\
+      \fmod{CTL-L2}            &  {5.193} &   (8) &  {6.107} &   (9) &  {2.096} & {0.112} &   (1) &  {42335.612} & {163.773} &   (7) &  {1.504} & {0.048} &   (6) &  {0.079} & {0.002} &   (2) \\
+      \fmod{cvxCMB-L2} &  \fmaxn{4.813} &  \fmaxn{(1)} &  \fmaxn{5.623} &   (3) &  {2.116} & {0.131} &   (1) &  {37398.940} & {449.498} &   (5) &  {1.495} & {0.051} &   (5) &  {0.078} & {0.003} &   (2) \\
+      \fmod{cvxMTL-L2}     &  {4.854} &   (4) &  {5.784} &   (6) &  \fmaxn{2.082} & \fmaxn{0.130} &   (1) &  \fmaxn{37356.599} & \fmaxn{390.629} &   (4) &  \fmaxn{1.481} & \fmaxn{0.041} &   (4) &  \fmaxn{0.076} & \fmaxn{0.000} &   (2) \\
+      \midrule
+      \fmod{ITL-LS}            &  {4.937} &   (5) &  {5.649} &   (3) &  {2.326} & {0.231} &   (3) &  {37385.244} & {403.331} &   (4) &  {1.495} & {0.045} &   (5) &  {0.079} & {0.002} &   (2) \\
+      \fmod{CTL-LS}            &  {5.193} &   (8) &  {6.005} &   (8) &  \fmaxn{2.072} & \fmaxn{0.143} &  \fmaxn{(1)} &  {42339.063} & {156.624} &   (7) &  {1.504} & {0.043} &   (6) &  {0.078} & {0.002} &   (2) \\
+      \fmod{cvxCMB-LS} &  \fmaxn{4.820} &   (2) &  {5.578} &   (2) &  {2.136} & {0.106} &   (1) &  {37377.005} & {391.694} &   (4) &  {1.491} & {0.048} &   (5) &  {0.078} & {0.002} &   (2) \\
+      \fmod{cvxMTL-LS}     &  {4.824} &   (3) &  \fmaxn{5.754} &   (6) &  {2.090} & {0.090} &   (1) &  \fmaxn{37232.918} & \fmaxn{397.866} &   (3) &  \fmaxn{1.478} & \fmaxn{0.042} &   (3) &  \fmaxn{0.076} & \fmaxn{0.000} &   (2) \\
+      \midrule
+      & \fheadmulti{16}{R2} \\
+      \midrule
+      \fmod{ITL-L1}            &  {0.845} &   (6) &  {0.901} &   (9) &  {0.800} & {0.050} &   (3) &  {0.703} & {0.009} &   (8) &  {0.534} & {0.053} &  (10) &  {0.732} & {0.017} &   (4) \\
+      \fmod{CTL-L1}            &  {0.837} &   (7) &  {0.901} &   (8) &  {0.860} & {0.026} &   (2) &  {0.642} & {0.006} &  (10) &  {0.564} & {0.011} &   (8) &  {0.748} & {0.017} &   (3) \\
+      \fmod{cvxCMB-L1} &  \fmaxn{0.852} &   (4) &  {0.901} &  (10) &  {0.860} & {0.026} &   (3) &  {0.703} & {0.009} &   (7) &  {0.550} & {0.036} &   (9) &  {0.733} & {0.018} &   (3) \\
+      \fmod{cvxMTL-L1}     &  {0.846} &   (5) &  \fmaxn{0.908} &   (5) &  \fmaxn{0.871} & \fmaxn{0.019} &   (1) &  \fmaxn{0.705} & \fmaxn{0.008} &   (6) &  \fmaxn{0.573} & \fmaxn{0.011} &   (7) &  \fmaxn{0.764} & \fmaxn{0.019} &   (1) \\
+      \midrule
+      \fmod{ITL-L2}            &  {0.850} &   (4) &  {0.906} &   (6) &  {0.819} & {0.053} &   (3) &  {0.707} & {0.009} &   (4) &  {0.573} & {0.020} &   (6) &  {0.744} & {0.018} &   (3) \\
+      \fmod{CTL-L2}            &  {0.840} &   (6) &  {0.901} &  (11) &  {0.886} & {0.014} &   (1) &  {0.645} & {0.005} &   (9) &  {0.574} & {0.013} &   (6) &  {0.747} & {0.025} &   (3) \\
+      \fmod{cvxCMB-L2} &  {0.857} &   (3) &  \fmaxn{0.910} &  \fmaxn{(1)} &  {0.883} & {0.016} &   (1) &  {0.707} & {0.009} &   (2) &  {0.574} & {0.021} &   (5) &  {0.751} & {0.029} &   (3) \\
+      \fmod{cvxMTL-L2}     &  \fmaxn{0.863} &   (2) &  {0.908} &   (4) &  \fmaxn{0.887} & \fmaxn{0.015} &   (1) &  \fmaxn{0.708} & \fmaxn{0.007} &   (2) &  \fmaxn{0.581} & \fmaxn{0.011} &   (2) &  \fmaxn{0.768} & \fmaxn{0.020} &  \fmaxn{(1)} \\
+      \midrule
+      \fmod{ITL-LS}            &  {0.849} &   (4) &  {0.907} &   (5) &  {0.841} & {0.028} &   (3) &  {0.707} & {0.009} &   (5) &  {0.577} & {0.012} &   (4) &  {0.743} & {0.021} &   (3) \\
+      \fmod{CTL-LS}            &  {0.838} &   (7) &  {0.904} &   (7) &  \fmaxn{0.894} & \fmaxn{0.015} &  \fmaxn{(1)} &  {0.645} & {0.005} &   (9) &  {0.575} & {0.012} &   (4) &  {0.754} & {0.022} &   (3) \\
+      \fmod{cvxCMB-LS} &  {0.856} &   (3) &  {0.909} &   (3) &  {0.877} & {0.009} &   (1) &  {0.707} & {0.009} &   (3) &  {0.580} & {0.013} &   (3) &  {0.750} & {0.024} &   (3) \\
+      \fmod{cvxMTL-LS}     &  \fmaxn{0.863} &  \fmaxn{(1)} &  \fmaxn{0.910} &   (2) &  {0.890} & {0.014} &   (1) &  \fmaxn{0.710} & \fmaxn{0.008} &  \fmaxn{(1)} &  \fmaxn{0.582} & \fmaxn{0.011} &  \fmaxn{(1)} &  \fmaxn{0.763} & \fmaxn{0.019} &   (2) \\
+      \bottomrule
+      \end{tabular}}
+    \end{table*}
+  
+
+
+
+
+
+\begin{table*}[t]
+    \captionsetup{font=scriptsize}
+    \caption{Test F1 (top) and accuracy (bottom) scores, global and block-wise Wilcoxon-based rankings for classification problems. The best models in each block are shown in bold.}
+    \label{tab:error_models_class_f1}
+    \centering
+    \scalebox{.65}{
+      \begin{tabular}{ l*{8}{c} c c c}
+        \toprule
+        & \fhead{\fdata{comp\_(G)}} & \fhead{\fdata{comp\_(R)}} & \fhead{\fdata{comp\_(G,R)}} & \fhead{\fdata{ad\_(G)}} & \fhead{\fdata{ad\_(R)}} & \fhead{\fdata{ad\_(G,R)}} & \fhead{\fdata{landmine}} & \fhead{\fdata{binding}} & \fhead{mean} & \fhead{rank} & \fhead{Wil.}\\
+        \midrule
+        & \fheadmulti{8}{F1}  \\
+        \midrule
+        \fmod{ITL-L1}    &          0.625 &           \fmax{0.639} &                  0.630 &         \fmax{0.659} &          0.653 &                 0.657 &    0.231 &   0.867 & 0.620 &     10 & 1 \\
+        \fmod{CTL-L1}    &          0.623 &           0.638 &                  0.638 &         0.657 &          0.650 &                 0.653 &    0.255 &   0.901 & 0.627 &      7 & 1 \\
+        \fmod{cvxCMB-L1} &          0.616 &           0.638 &                  0.638 &         0.658 &          0.650 &                 0.653 &    \fmax{0.270} &   0.901 & \fmax{0.628} &      6 & 1 \\
+        \fmod{cvxMTL-L1}    &          \fmax{0.627} &           0.636 &                  \fmax{0.640} &         \fmax{0.659} &          \fmax{0.655} &                 \fmax{0.659} &    0.242 &   \fmax{0.907} & \fmax{0.628} &      5 & 1 \\
+        \midrule
+        \fmod{ITL-L2}    &          0.636 &           0.623 &                  0.607 &         \fmax{0.668} &          \fmax{0.666} &                 \fmax{0.668} &    0.256 &   0.867 & 0.624 &      8 & 3 \\
+        \fmod{CTL-L2}    &          \fmax{0.640} &           0.647 &                  \fmax{0.651} &         0.665 &          0.661 &                 0.659 &    \fmax{0.270} &   0.903 & 0.637 &      2 & 2 \\
+        \fmod{cvxCMB-L2} &          0.629 &           0.640 &                  0.645 &         0.666 &          0.662 &                 0.661 &    \fmax{0.270} &   0.903 & 0.634 &      3 & 2 \\
+        \fmod{cvxMTL-L2}    &          0.634 &           \fmax{0.651} &                  0.650 &         \fmax{0.668} &          \fmax{0.666} &                 \fmax{0.668} &    0.263 &   \fmax{0.909} & \fmax{0.639} &      1 & 1 \\
+        \midrule
+        \fmod{ITL-LS}    &          \fmax{0.631} &           0.622 &                  0.608 &         \fmax{0.659} &          \fmax{0.659} &                 \fmax{0.660} &    0.243 &   0.867 & 0.619 &     12 & 2 \\
+        \fmod{CTL-LS}    &          0.628 &           \fmax{0.644} &                  \fmax{0.649} &         0.650 &          0.653 &                 0.647 &    0.230 &   0.853 & 0.619 &     11 & 2 \\
+        \fmod{cvxCMB-LS} &          0.630 &           0.635 &                  0.642 &         0.657 &          0.658 &                 0.654 &    0.238 &   0.873 & 0.623 &      9 & 2 \\
+        \fmod{cvxMTL-LS}    &          0.630 &           0.641 &                  0.648 &         \fmax{0.659} &          \fmax{0.659} &                 0.659 &    \fmax{0.257} &   \fmax{0.906} & \fmax{0.632} &      4 & 1 \\
+        \midrule
+        & \fheadmulti{8}{Accuracy}  \\
+        \midrule
+        \fmod{ITL-L1}    &          0.750 &           0.749 &                  0.746 &         0.852 &          0.851 &                 \fmax{0.853} &    \fmax{0.941} &   0.790 & 0.817 &     11 & 3 \\
+        \fmod{CTL-L1}    &          \fmax{0.757} &           0.759 &                  \fmax{0.763} &         0.852 &          0.847 &                 0.849 &    0.938 &   0.850 & 0.827 &      6 & 2 \\
+        \fmod{cvxCMB-L1} &          0.754 &           0.759 &                  \fmax{0.763} &         0.852 &          0.847 &                 0.849 &    0.935 &   0.850 & 0.826 &      7 & 2 \\
+        \fmod{cvxMTL-L1}    &          0.753 &           \fmax{0.760} &                  \fmax{0.763} &         \fmax{0.853} &          \fmax{0.852} &                 \fmax{0.853} &    0.933 &   \fmax{0.861} & \fmax{0.829} &      5 & 1 \\
+        \midrule
+        \fmod{ITL-L2}    &          0.754 &           0.762 &                  0.751 &         \fmax{0.856} &          \fmax{0.855} &                 \fmax{0.856} &    \fmax{0.942} &   0.791 & 0.821 &      8 & 2 \\
+        \fmod{CTL-L2}    &          \fmax{0.762} &           0.765 &                  \fmax{0.767} &         0.854 &          0.853 &                 0.851 &    0.933 &   0.853 & 0.830 &      3 & 1 \\
+        \fmod{cvxCMB-L2} &          0.757 &           0.764 &                  0.766 &         0.854 &          0.853 &                 0.853 &    0.934 &   0.853 & 0.829 &      4 & 1 \\
+        \fmod{cvxMTL-L2}    &          0.753 &           \fmax{0.766} &                  0.766 &         \fmax{0.856} &          \fmax{0.855} &                 \fmax{0.856} &    0.933 &   \fmax{0.864} & \fmax{0.831} &      1 & 1 \\
+        \midrule
+        \fmod{ITL-LS}    &          0.754 &           0.761 &                  0.750 &         \fmax{0.851} &          \fmax{0.850} &                 \fmax{0.851} &    0.943 &   0.791 & 0.819 &      9 & 2 \\
+        \fmod{CTL-LS}    &          \fmax{0.757} &           \fmax{0.764} &                  0.766 &         0.845 &          0.847 &                 0.842 &    0.914 &   0.750 & 0.811 &     12 & 3 \\
+        \fmod{cvxCMB-LS} &          0.754 &           \fmax{0.764} &                  0.765 &         0.849 &          \fmax{0.850} &                 0.848 &    0.925 &   0.793 & 0.818 &     10 & 3 \\
+        \fmod{cvxMTL-LS}    &          \fmax{0.757} &           \fmax{0.764} &                  \fmax{0.767} &         \fmax{0.851} &          \fmax{0.850} &                 \fmax{0.851} &    \fmax{0.944} &   \fmax{0.858} & \fmax{0.830} &      2 & 1 \\
+        \bottomrule
+      \end{tabular}}
+  \end{table*}
+
+
+
+
+
 
 
 \section{Convex Multi-Task Learning with Neural Networks}
