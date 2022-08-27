@@ -116,7 +116,7 @@ The proposal of~\cite{RuizAD19} is made for L1-SVM, but it is extended to L2 and
 
 
 
-\subsection{L1 Support Vector Machine}
+\subsection{L1-SVM and Equivalence Results}
 The L1-SVM~\cite{Vapnik00} is the original and most popular variant of the SVMs and is also the basis of the MTL formulation in~\cite{EvgeniouP04}.
 I will present the development for the {additive} approach and the one for the {convex} using an L1-SVM setting. Then I will show the equivalence between the two approaches and discuss its differences.
 
@@ -476,7 +476,7 @@ Studying the influence of $\lambda_r$ hyperparameters in the dual problem we can
 \end{itemize}
 The properties that are found in the primal formulation are also present in the dual one. All the values of $\lambda_r$ in the open interval $(0, 1)$ correspond to pure MTL approaches while the extreme values $\lambda_r=1$ and $\lambda_r=0$ correspond to CTL and ITL approaches, respectively.
 
-\subsubsection{Equivalence results}
+\subsubsection{Equivalence Results}
 % Equivalence results
 Both the {additive} and {convex} MTL SVM approaches solve a similar problem, but there is a change in the formulation to get rid of a regularization hyperparameter $\mu$ in favor of those defining convex combination of models, hyperparameters $\lambda_r$.
 Both approaches offer similar properties: ranging the value of their hyperparameters to go from completely common to completely independent models, and passing through pure multi-task models.
@@ -557,83 +557,10 @@ which is the dual problem of the additive formulation.
 
 Finally, observe that the results in Proposition~\ref{prop:add_conv_equiv} is only valid for $\lambda$ in the open set $(0, 1)$. The results in the extremes of the interval, i.e. $\lambda=0, 1$, have been already exposed. When $\lambda=0$, we obtain an ITL approach, where an independent model is learned for each task. When $\lambda=1$, the convex formulation is equivalent to a CTL approach, where a single, common model is trained using all tasks.
 
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_example-crop.pdf}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_comparison-crop.pdf}
-    \end{subfigure}
-    \caption{Left: Synthetic example dataset, where the data of each task (corresponding to a different function $f_i$) are represented with a different color.
-        Right: Comparison of the weights obtained by the {convex} and {additive} approaches.}
-    \label{fig:lines_slopes}
-\end{figure}
-
-
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_add-crop.pdf}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_conv-crop.pdf}
-    \end{subfigure}
-    \caption{{Convex} (right) and {additive} (left) MTLSVR slope estimates weights as a function of $\lambda$. We represent the common part of the models, $w$ for the {additive} and $\lambda u$ for the {convex}, as well as each task specific deviation $v_t$ and $(1 - \lambda) u_t$.}
-    \label{fig:synthetic_specWeights}
-\end{figure}
-
-
-\begin{table}[t]
-    \caption{Hyper-parameters, grids used to find them (when appropriate) and hyper-parameter selection method for each model.}
-    \label{table:hyperpars_grid}
-    \centering
-     \begin{tabular}{*{5}{c}}
-     \toprule
-     \fhead{Par.} & \fhead{Grid} & \fhead{\texttt{ctlSVR}} & \fhead{\texttt{itlSVR}} & \fhead{\texttt{cvxMTL}} \\
-     \midrule
-      $C_\text{conv}$ &  $\set{10^k: -5 \leq k \leq 6}$ & CV & CV & CV  \\ 
-      $\epsilon_\text{conv}$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
-      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & \texttt{ctlSVR} \\
-      $\gamma_t$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & \texttt{itlSVR}\\
-      $\lambda$ & $\set{10^{-1}k: 1 \leq k \leq 9}$ & - & - & CV \\
-      \bottomrule
-     \end{tabular}
-\end{table}
-
-\begin{table*}[t]
-    \caption{Test MAE's (top) and R2 scores (bottom) of the models considered.}
-    \label{tab:r2_mae_models}
-    \centering
-    \begin{tabular}{l*{2}{S[table-format=1.3]}S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
-    \toprule
-    & \fhead{\fcode{majorca}} & \fhead{\fcode{tenerife}} & \fheadmulti{2}{\fcode{boston}} &  \fheadmulti{2}{\fcode{abalone}} & \fheadmulti{2}{\fcode{crime}} \\
-    \midrule
-    \fheadmulti{9}{MAE} \\
-    \midrule
-    {\texttt{ctlSVR}} & 5.264 &  5.785 & 2.254 & 0.055 & 1.483 & 0.036 & 0.078& 0.001 \\
-    {\texttt{itlSVR}} & 5.102 & \fmax{5.351} & 2.574 & 0.083 & 1.499 & 0.041 & 0.081 & 0.006 \\
-    {\texttt{cvxMTL}} & \fmax{4.966} & 5.352 &  \fmax{2.244} & \fmax{0.041} & \fmax{1.466} & \fmax{0.027} & \fmax{0.074} & \fmax{0.003} \\
-    \midrule        
-         \fheadmulti{9}{R2} \\
-         \midrule
-        {\texttt{ctlSVR}} & 0.831 &  0.901 & 0.856 & 0.030 & \fmax{0.563} & \fmax{0.016} & 0.743 & 0.022 \\
-        {\texttt{itlSVR}} & 0.843 & 0.903 & 0.777 & 0.049 & 0.506 & 0.060 & 0.714 & 0.008 \\
-        {\texttt{cvxMTL}} & \fmax{0.849} & \fmax{0.906} & \fmax{0.860} & \fmax{0.047} & 0.561 & 0.017 & \fmax{0.755} & \fmax{0.015} \\
-        \bottomrule
-        \end{tabular}
-\end{table*}
-
 
 % TODO: Equivalence results for \lambda=0,1
 
-\subsection{L2 Support Vector Machine}
+\subsection{Extensions to L2 and LS-SVM}
 The L2-SVM~\cite{Burges98} is a variant of the standard SVM where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the epsilon-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are not penalized is kept, but the errors which are larger than such margin are penalized using its squared value.
 In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
 
@@ -752,12 +679,12 @@ Note that instead of having the box constraints for the dual coefficients $\alph
 The difference between the convex MTL based on the L1-SVM and this one, based on the L2-SVM, can be seen in the primal formulation, where the square of the errors is penalized, and, therefore, no inequality constraint is needed for the $\xi_i^r$ variables. This is reflected in the dual problem, where there is no longer an upper bound for the dual coefficients, but a diagonal term is added to the kernel matrix, which acts as a soft constraint for the size of these dual coefficients.
 
 
-\subsection{LS Support Vector Machine}
-The LS-SVM~\citep{SuykensV99} is a variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
-In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
 
 % Convex Approach
 \subsubsection{{Convex} MTL LS-SVM}
+The LS-SVM~\citep{SuykensV99} is a variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
+In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
+
 % Additive Approach
 %   Primal
 The primal problem for the convex MTL LS-SVM, presented in~\cite{RuizAD21}, is
@@ -881,7 +808,7 @@ Again, $\widehat{\fm{Q}}$ is the convex MTL kernel matrix defined in~\eqref{eq:c
 In contrast to the L1 and L2-SVM, where the dual problem is a convex quadratic optimization problem, in the LS-SVM case the dual problem is a system of equations. In the primal problem, the inequalities are replaced by equalities, which removes the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
 
 
-\section{Optimal Convex Combination of Pre-trained Models}
+\subsection{Optimal Convex Combination of Pre-trained Models}
 % A natural alternative to convexMTL is to direclty combine models
 A natural alternative to the convex MTL formulation that we have developed is to directly combine pre-trained models in a convex manner. That is, given a model $g(\cdot)$ trained with the data from all tasks, and task-specific models $g_r(\cdot)$ that have been trained with only the data from the corresponding task, for each task $r=1,\ldots,\ntasks$ we can define the combination
 \begin{equation}
@@ -953,7 +880,7 @@ In~\cite{RuizAD21} we consider the training error with four popular loss functio
 % \end{equation}
 Observe that using these training errors we can cover the kernel methods that we have considered. The L1-SVM uses the hinge loss for the classification error and the absolute error can be seen as a special case of the regression error when $\epsilon = 0$. The L2-SVM used the squared hinge loss for classification and, again, the squared loss is a special case of the regression error when $\epsilon=0$. Finally, the squared loss function is used in the LS-SVM for both regression and classification.
 
-\subsection{Unified Formulation}
+\subsubsection{Unified Formulation}
 For simplicity, we consider the following renaming of error terms in the classification errors, that is those using hinge and squared hinge loss,
 \begin{equation}\nonumber
     1 - \left\{\lambda_r g(x_i^r) + (1-\lambda_r) g_r(x_i^r)  \right\} y_i^r = \lambda_r \left\{ y_i^r (g_r(x_i^r) - g(x_i^r)) \right\} +  1 - y_i^r g_r(x_i^r) 
@@ -1007,7 +934,13 @@ Moreover, a result that is common for the linear loss functions is presented in~
 This proposition states that in the case the linear losses considered, absolute and hinge losses, we find the optimal value $\lambda^*$ in the elbows.
 In the following subsections we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
 
-\subsection{Squared loss}
+\subsubsection{Squared loss}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mse.pdf}
+    \caption{Squared value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
+    \label{fig:sq_loss}
+\end{figure}
 This is the simplest case, since the squared loss is differentiable.
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the squared loss is
 \begin{equation}
@@ -1025,12 +958,18 @@ Solving $\mathcal{J}'(\lambda)= 0$ results in
 \lambda' =  -\frac{\sum_{i=1}^{\npertask} d_i c_i }{\sum_{i=1}^{\npertask} (c_i)^2 } ,
 \end{equation*}
 and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mse.pdf}
+    \caption{Error using squared loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \label{fig:sq_error}
+\end{figure}
 
-\subsection{Absolute loss}
+\subsubsection{Absolute loss}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mae.pdf}
-    \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
+    \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:abs_loss}
 \end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the absolute value loss is
@@ -1063,15 +1002,15 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mae.pdf}
-    \caption{Error using absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \caption{Error using absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:abs_error}
 \end{figure}
 
-\subsection{Hinge loss}
+\subsubsection{Hinge loss}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_hinge.pdf}
-    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The blue dot is the point that is not differentiable and the red dots mark the interval of the corresponding subdifferential.}
+    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:hinge_loss}
 \end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
@@ -1104,11 +1043,17 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_hinge.pdf}
-    \caption{Error using hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The green dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \caption{Error using hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:hinge_error}
 \end{figure}
 
-\subsection{Squared hinge loss}
+\subsubsection{Squared hinge loss}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_sqhinge.pdf}
+    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
+    \label{fig:sqhinge_loss}
+\end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
 \begin{equation}
     \label{eq:opt_hinge_l2}
@@ -1140,9 +1085,167 @@ In~\citet[Proposition 2]{RuizAD21} we give a result to get the optimal $\lambda^
 Then, if $\lambda_k \leq \widehat{\lambda}_k \leq  \lambda_{k+1}$ for some $\widehat{\lambda}_k$, then $\lambda^* = \widehat{\lambda}_k$ is optimal.
 Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 1$.
 \end{prop}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_sqhinge.pdf}
+    \caption{Error using squared hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \label{fig:sqhinge_error}
+\end{figure}
 
 
 
+
+
+
+
+\subsection{Experiments}
+In this subsection we show the experiments used to test the convex MTL formulation with kernel models, which have been presented in~\citep{RuizAD19} and~\citep{RuizAD21}. 
+%
+First, following the work in~\citep{RuizAD19}, experiments comparing convex and additive MTL formulations in the L1-SVM are described. 
+%
+Then, the experiments of~\citep{RuizAD21} are exposed, where all convex MTL models using L1, L2 and LS-SVMs as well as optimal convex combination of pre-trained models are compared using multiple real problems.
+
+Before diving into the results, some technical details have to be explained. The convex MTL formulation, as presented in Equation~\eqref{eq:svmmtl_primal_convex}, uses task-specific hyperparameters $\lambda_r$, as well as common and task-specific kernels, with their corresponding hyperparameters; however, the selection of hyperparameters is always a challenge because of the curse of dimensionality. 
+%
+To select the hyperparameters of a learning algorithm using CV the following problem is solved:
+\begin{equation}
+    \label{eq:hp-selection_general}
+    p_1^*, \ldots, p_L^* = \argmin_{p_i \in \mathcal{S}_{p_i}, i=1, \ldots, L} \sum_{j=1}^{F} \rho(\mathcal{A}(p_1, \ldots, p_L; (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
+\end{equation}
+where $\rho$ is some measure, $\mathcal{A}$ is our choice of learning algorithm; $p_1, \ldots, p_L$ are the parameters on which $\mathcal{A}$ depends and $\mathcal{S}_{p_i}$ a feasible space for the parameter $p_i$; and $(X^j_\text{train}, y^j_\text{train}), (X^j_\text{val}, y^j_\text{val})$ are the training and validation sets, respectively. We are using $F$ folds, that is, for $j=1, \ldots, F$ we select different training and validation sets and we train our algorithm $\mathcal{A}$ on the training set $(X^j_\text{train}, y^j_\text{train})$, then we use $\rho$ to measure the wellness of our model on $(X^j_\text{val}, y^j_\text{val})$. 
+%
+Observe that our search space is the product space $\mathcal{S}_{p_1} \times \ldots \times \mathcal{S}_{p_L}$, so the difficulty of selecting an optimal combination of hyperparameters scales exponentially with the number of such parameters.
+
+%
+In a standard Gaussian kernel SVM, the definition of the problem depends on two hyperparameters: $C$ and $\gamma$.
+In the L1 and L2-SVM for regression problems we also add a third parameter: $\epsilon$. 
+That is, to select the hyperparameters of a standard SVM for a single task we have to solve the problem
+\begin{equation}
+    \nonumber
+    C^*, \gamma^* (, \epsilon^*) = \argmin_{\substack{C \in \mathcal{S}_C ; \\ \substack{\gamma \in \mathcal{S}_\gamma} ; \\ \left(\substack{\epsilon \in \mathcal{S}_\epsilon} \right); }}
+     \sum_{j=1}^{F} \rho(\mathcal{A}(C, \gamma (, \epsilon); (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
+\end{equation}
+which is typically feasible by using a grid search method in the space $\mathcal{S}_{C} \times \mathcal{S}_{\gamma} (\times \mathcal{S}_{\epsilon}) .$
+%
+
+However, using the convex MTL formulation, 
+%as shown in the MTL kernel expression~\eqref{eq:conv_mtl_kernel_fun}, there are a common width $\gamma$ and task-specific widths $\gamma_1, \ldots, \gamma_\ntasks$.
+we have the following hyperparameters: the regularization parameter $C$; the common kernel width $\gamma$, and task-specific ones $\gamma_1, \ldots, \gamma_\ntasks$; and the convex combination parameters $\lambda_1, \ldots, \lambda_\ntasks$; and possibly the $\epsilon$ parameter. That is, there are at least $2\ntasks + 2$ hyperparameters that have to be selected. Even with $\ntasks=2$, a search space of dimension $6$ is computationally unfeasible to cover.
+% \begin{equation}
+%     \nonumber
+%     C^*, \gamma^*, \gamma_1^*, \ldots, \gamma_\ntasks^*, \lambda_1^*, \ldots, \lambda_\ntasks^*   (, \epsilon^*) = \argmin_{\substack{C \in \mathcal{S}_C ; \\ \substack{\gamma \in \mathcal{S}_\gamma} ; \\ \left(\substack{\epsilon \in \mathcal{S}_\epsilon} \right); }}
+%      \sum_{j=1}^{F} \rho(\mathcal{A}(C, \gamma (, \epsilon); (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
+% \end{equation}
+To solve this issue and select the optimal parameters for the convex MTL formulation we follow the following strategy.
+%
+For the kernel widths, we proceed as follows: we first hyperparametrize the corresponding CTL and ITL kernel models, which have a common and task-specific kernel widths, respectively. 
+Observe that in the CTL approach where a single virtual task is solved and in the ITL approach, where we solve the tasks independently, we have $2$ or $3$ parameters. We solve problems, which are represented in Equation~\eqref{eq:hp-selection_general}, using standard methods, and we obtain optimal common $C^*, \gamma^*$ and task-specific ones $C_r^*, \gamma^*_r$ for $r=1, \ldots, \ntasks$.
+Then, we reutilize the optimal widths for these models, and fix them in the MTL one.
+%
+Moreover, for the convex combination parameters we use a single $\lambda$ for all tasks, that is, $\lambda_1 = \ldots = \lambda_\ntasks = \lambda$.
+%
+With these considerations, the problem to select the remaining hyperparameters is 
+\begin{equation}
+    \nonumber
+    C^*, \lambda^* (, \epsilon^*) = \argmin_{\substack{C \in \mathcal{S}_C ; \\ \substack{\lambda \in \mathcal{S}_\lambda} ; \\ \left(\substack{\epsilon \in \mathcal{S}_\epsilon} \right); }}
+     \sum_{j=1}^{F} \rho(\mathcal{A}(C, \lambda, \gamma^*, \gamma_1^*, \ldots, \gamma_\ntasks^* (, \epsilon); (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
+\end{equation}
+where we have a maximum of $3$ hyperparameters.
+
+%
+The first modification concerning kernel widths does not change the model definition, but it assumes that kernel widths that are good for CTL or ITL models are good for the MTL one. This assumption is a sensible one, since kernel widths are not that descriptive of the model but of the data used. The combined data from all tasks, which is used in CTL approach, is well ``characterized'' by a width $\sigma^*$ so we expect that this width is also useful for the common part of the MTL model. The same reasoning applies to task-specific data and ITL approach.
+%
+The second modification does change the models definition, using a single $\lambda$ that determines the specifity of all models. However, we expect that the possible difference in specifity among tasks can be corrected in the training process by selecting larger task-specific weights $v_r$ if necessary.
+
+\subsubsection{Comparison of Convex and Additive Formulations}
+
+%The work shown in~\cite{RuizAD19} focuses on 
+
+In~\citep{RuizAD19}, we illustrate the results of equivalence between the additive and convex formulations in an empirical way. To do this we generate a synthetic problem, shown in Figure~\ref{fig:lines_slopes}, as a four linear regression tasks problem. 
+%
+We use four different functions $f_0, f_1, f_2, f_3$ by considering a base function $f(x) = 2x - 1$ with slope $m=2$ and bias $n=1$, then we sample $z_m^r, z_n^r \sim \normal{0, 1}$ for each task $r=0, \ldots, 3$ and create the $r$-th slope and bias by adding these Gaussian samples, i.e., $m_r = m + z_m^r$ and $n_r = n + z_n^r$. Also, we sample the noise $\sigma_r$ for each task uniformly in $(0, 5)$. 
+%
+Then, the $r$-th task consists on estimating $m_r$ and $n_r$ from data. To do this, for each task we uniformly sample $30$ points $x_i^r \in [1, 50)$, and the target values are defined as $y_i^r = f_r(x_i^r) + \epsilon^i_r$ where $\epsilon^i_r \sim \normal{0, \sigma_r}$.
+%
+Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes; in this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
+%
+With this synthetic problem, we train four convex MTL models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding additive MTL models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$.
+%
+In order for the regularization 
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_example-crop.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_comparison-crop.pdf}
+    \end{subfigure}
+    \caption{Left: Synthetic example dataset, where the data of each task (corresponding to a different function $f_i$) are represented with a different color.
+        Right: Comparison of the weights obtained by the {convex} and {additive} approaches.}
+    \label{fig:lines_slopes}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_add-crop.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Chapter4/HAIS2019/synthetic_specWeights_conv-crop.pdf}
+    \end{subfigure}
+    \caption{{Convex} (right) and {additive} (left) MTLSVR slope estimates weights as a function of $\lambda$. We represent the common part of the models, $w$ for the {additive} and $\lambda u$ for the {convex}, as well as each task specific deviation $v_t$ and $(1 - \lambda) u_t$.}
+    \label{fig:synthetic_specWeights}
+\end{figure}
+
+\begin{table}[t]
+    \caption{Hyper-parameters, grids used to find them (when appropriate) and hyper-parameter selection method for each model.}
+    \label{table:hyperpars_grid}
+    \centering
+     \begin{tabular}{*{5}{c}}
+     \toprule
+     \fhead{Par.} & \fhead{Grid} & \fhead{\texttt{ctlSVR}} & \fhead{\texttt{itlSVR}} & \fhead{\texttt{cvxMTL}} \\
+     \midrule
+      $C_\text{conv}$ &  $\set{10^k: -5 \leq k \leq 6}$ & CV & CV & CV  \\ 
+      $\epsilon_\text{conv}$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
+      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & \texttt{ctlSVR} \\
+      $\gamma_t$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & \texttt{itlSVR}\\
+      $\lambda$ & $\set{10^{-1}k: 1 \leq k \leq 9}$ & - & - & CV \\
+      \bottomrule
+     \end{tabular}
+\end{table}
+
+\begin{table*}[t]
+    \caption{Test MAE's (top) and R2 scores (bottom) of the models considered.}
+    \label{tab:r2_mae_models}
+    \centering
+    \begin{tabular}{l*{2}{S[table-format=1.3]}S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
+    \toprule
+    & \fhead{\fcode{majorca}} & \fhead{\fcode{tenerife}} & \fheadmulti{2}{\fcode{boston}} &  \fheadmulti{2}{\fcode{abalone}} & \fheadmulti{2}{\fcode{crime}} \\
+    \midrule
+    \fheadmulti{9}{MAE} \\
+    \midrule
+    {\texttt{ctlSVR}} & 5.264 &  5.785 & 2.254 & 0.055 & 1.483 & 0.036 & 0.078& 0.001 \\
+    {\texttt{itlSVR}} & 5.102 & \fmax{5.351} & 2.574 & 0.083 & 1.499 & 0.041 & 0.081 & 0.006 \\
+    {\texttt{cvxMTL}} & \fmax{4.966} & 5.352 &  \fmax{2.244} & \fmax{0.041} & \fmax{1.466} & \fmax{0.027} & \fmax{0.074} & \fmax{0.003} \\
+    \midrule        
+         \fheadmulti{9}{R2} \\
+         \midrule
+        {\texttt{ctlSVR}} & 0.831 &  0.901 & 0.856 & 0.030 & \fmax{0.563} & \fmax{0.016} & 0.743 & 0.022 \\
+        {\texttt{itlSVR}} & 0.843 & 0.903 & 0.777 & 0.049 & 0.506 & 0.060 & 0.714 & 0.008 \\
+        {\texttt{cvxMTL}} & \fmax{0.849} & \fmax{0.906} & \fmax{0.860} & \fmax{0.047} & 0.561 & 0.017 & \fmax{0.755} & \fmax{0.015} \\
+        \bottomrule
+        \end{tabular}
+\end{table*}
+
+
+\subsubsection{Comparison of Convex MTL and Optimal Convex Combination}
 \begin{table*}[t!]
     \caption{Sample sizes, dimensions and number of tasks of the datasets used.}
     \label{table:size_dim_tasks}
@@ -1345,11 +1448,6 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
   \end{table*}
 
 
-
-
-
-
-
 \section{Convex Multi-Task Learning with Neural Networks}
 The convex MTL formulation is easily applicable and interpretable, so it has good properties for kernel models, but also for a broader class of learning models.
 Neural networks, in particular deep ones, have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for MTL with neural networks.
@@ -1490,7 +1588,9 @@ Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorc
 \end{algorithm}
 
 
-\section{Experiments}
+\subsection{Experiments}
+
+\section{Application to Renewable Energy Prediction}
 
 \section{Conclusions}\label{sec-conclusions-3}
 
