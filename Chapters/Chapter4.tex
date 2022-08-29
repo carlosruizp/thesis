@@ -116,11 +116,11 @@ The proposal of~\cite{RuizAD19} is made for L1-SVM, but it is extended to L2 and
 
 
 
-\subsection{L1-SVM and Equivalence Results}
+\subsection{L1-SVM and Equivalence Results}\label{subsec:cvx_l1-svm}
 The L1-SVM~\cite{Vapnik00} is the original and most popular variant of the SVMs and is also the basis of the MTL formulation in~\cite{EvgeniouP04}.
 I will present the development for the {additive} approach and the one for the {convex} using an L1-SVM setting. Then I will show the equivalence between the two approaches and discuss its differences.
 
-\subsubsection{{Additive} MTL L1-SVM}
+\paragraph*{{Additive} MTL L1-SVM.\\}
 % Additive Approach
 %   Primal
 The {additive} MTL primal problem formulation, presented in~\cite{EvgeniouP04} 
@@ -320,7 +320,7 @@ Hyperparameter $C$ is an upper bound for the dual coefficients, as in the standa
 
 
 % Convex Approach
-\subsubsection{{Convex} MTL L1-SVM}
+\paragraph*{{Convex} MTL L1-SVM.\\}
 % Additive Approach
 %   Primal
 The {convex} MTL primal problem formulation, presented in~\cite{RuizAD19}, changes the formulation of the {additive} MTL SVM but changes its formulation for a convex one that is more interpretable one. The primal problem is
@@ -476,7 +476,7 @@ Studying the influence of $\lambda_r$ hyperparameters in the dual problem we can
 \end{itemize}
 The properties that are found in the primal formulation are also present in the dual one. All the values of $\lambda_r$ in the open interval $(0, 1)$ correspond to pure MTL approaches while the extreme values $\lambda_r=1$ and $\lambda_r=0$ correspond to CTL and ITL approaches, respectively.
 
-\subsubsection{Equivalence Results}
+\paragraph*{Equivalence Results.\\}
 % Equivalence results
 Both the {additive} and {convex} MTL SVM approaches solve a similar problem, but there is a change in the formulation to get rid of a regularization hyperparameter $\mu$ in favor of those defining convex combination of models, hyperparameters $\lambda_r$.
 Both approaches offer similar properties: ranging the value of their hyperparameters to go from completely common to completely independent models, and passing through pure multi-task models.
@@ -560,12 +560,12 @@ Finally, observe that the results in Proposition~\ref{prop:add_conv_equiv} is on
 
 % TODO: Equivalence results for \lambda=0,1
 
-\subsection{Extensions to L2 and LS-SVM}
+\subsection{Extensions to L2 and LS-SVM}\label{subsec:cvx_l2ls-svm}
 The L2-SVM~\cite{Burges98} is a variant of the standard SVM where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the epsilon-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are not penalized is kept, but the errors which are larger than such margin are penalized using its squared value.
 In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
 
 % Convex Approach
-\subsubsection{{Convex} MTL L2-SVM}
+\paragraph*{{Convex} MTL L2-SVM.\\}
 % Additive Approach
 %   Primal
 The primal problem for the convex MTL L2-SVM, presented in~\cite{RuizAD21}, is
@@ -681,7 +681,7 @@ The difference between the convex MTL based on the L1-SVM and this one, based on
 
 
 % Convex Approach
-\subsubsection{{Convex} MTL LS-SVM}
+\paragraph*{{Convex} MTL LS-SVM.\\}
 The LS-SVM~\citep{SuykensV99} is a variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
 In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
 
@@ -808,7 +808,7 @@ Again, $\widehat{\fm{Q}}$ is the convex MTL kernel matrix defined in~\eqref{eq:c
 In contrast to the L1 and L2-SVM, where the dual problem is a convex quadratic optimization problem, in the LS-SVM case the dual problem is a system of equations. In the primal problem, the inequalities are replaced by equalities, which removes the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
 
 
-\subsection{Optimal Convex Combination of Pre-trained Models}
+\subsection{Optimal Convex Combination of Pre-trained Models}\label{subsec:optimal_comb}
 % A natural alternative to convexMTL is to direclty combine models
 A natural alternative to the convex MTL formulation that we have developed is to directly combine pre-trained models in a convex manner. That is, given a model $g(\cdot)$ trained with the data from all tasks, and task-specific models $g_r(\cdot)$ that have been trained with only the data from the corresponding task, for each task $r=1,\ldots,\ntasks$ we can define the combination
 \begin{equation}
@@ -880,7 +880,7 @@ In~\cite{RuizAD21} we consider the training error with four popular loss functio
 % \end{equation}
 Observe that using these training errors we can cover the kernel methods that we have considered. The L1-SVM uses the hinge loss for the classification error and the absolute error can be seen as a special case of the regression error when $\epsilon = 0$. The L2-SVM used the squared hinge loss for classification and, again, the squared loss is a special case of the regression error when $\epsilon=0$. Finally, the squared loss function is used in the LS-SVM for both regression and classification.
 
-\subsubsection{Unified Formulation}
+\paragraph*{Unified Formulation.\\}
 For simplicity, we consider the following renaming of error terms in the classification errors, that is those using hinge and squared hinge loss,
 \begin{equation}\nonumber
     1 - \left\{\lambda_r g(x_i^r) + (1-\lambda_r) g_r(x_i^r)  \right\} y_i^r = \lambda_r \left\{ y_i^r (g_r(x_i^r) - g(x_i^r)) \right\} +  1 - y_i^r g_r(x_i^r) 
@@ -934,7 +934,7 @@ Moreover, a result that is common for the linear loss functions is presented in~
 This proposition states that in the case the linear losses considered, absolute and hinge losses, we find the optimal value $\lambda^*$ in the elbows.
 In the following subsections we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, with each of the losses considered.
 
-\subsubsection{Squared loss}
+\paragraph*{Squared loss.\\}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mse.pdf}
@@ -965,7 +965,7 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
     \label{fig:sq_error}
 \end{figure}
 
-\subsubsection{Absolute loss}
+\paragraph*{Absolute loss.\\}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mae.pdf}
@@ -1006,7 +1006,7 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \label{fig:abs_error}
 \end{figure}
 
-\subsubsection{Hinge loss}
+\paragraph*{Hinge loss.\\}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_hinge.pdf}
@@ -1047,7 +1047,7 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \label{fig:hinge_error}
 \end{figure}
 
-\subsubsection{Squared hinge loss}
+\paragraph*{Squared hinge loss.\\}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_sqhinge.pdf}
@@ -1136,7 +1136,8 @@ we have the following hyperparameters: the regularization parameter $C$; the com
 %     C^*, \gamma^*, \gamma_1^*, \ldots, \gamma_\ntasks^*, \lambda_1^*, \ldots, \lambda_\ntasks^*   (, \epsilon^*) = \argmin_{\substack{C \in \mathcal{S}_C ; \\ \substack{\gamma \in \mathcal{S}_\gamma} ; \\ \left(\substack{\epsilon \in \mathcal{S}_\epsilon} \right); }}
 %      \sum_{j=1}^{F} \rho(\mathcal{A}(C, \gamma (, \epsilon); (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
 % \end{equation}
-To solve this issue and select the optimal parameters for the convex MTL formulation we follow the following strategy.
+
+To solve this difficulty and select the optimal parameters for the convex MTL formulation we follow the following strategy.
 %
 For the kernel widths, we proceed as follows: we first hyperparametrize the corresponding CTL and ITL kernel models, which have a common and task-specific kernel widths, respectively. 
 Observe that in the CTL approach where a single virtual task is solved and in the ITL approach, where we solve the tasks independently, we have $2$ or $3$ parameters. We solve problems, which are represented in Equation~\eqref{eq:hp-selection_general}, using standard methods, and we obtain optimal common $C^*, \gamma^*$ and task-specific ones $C_r^*, \gamma^*_r$ for $r=1, \ldots, \ntasks$.
@@ -1153,25 +1154,13 @@ With these considerations, the problem to select the remaining hyperparameters i
 where we have a maximum of $3$ hyperparameters.
 
 %
-The first modification concerning kernel widths does not change the model definition, but it assumes that kernel widths that are good for CTL or ITL models are good for the MTL one. This assumption is a sensible one, since kernel widths are not that descriptive of the model but of the data used. The combined data from all tasks, which is used in CTL approach, is well ``characterized'' by a width $\sigma^*$ so we expect that this width is also useful for the common part of the MTL model. The same reasoning applies to task-specific data and ITL approach.
+These are the two adjustments that we make to carry out the experiments shown in this subsection.
+The first adjustment concerning kernel widths does not change the model definition, but it assumes that kernel widths that are good for CTL or ITL models are good for the MTL one. This assumption is a sensible one, since kernel widths are not that descriptive of the model but of the data used. The combined data from all tasks, which is used in CTL approach, is well ``characterized'' by a width $\sigma^*$ so we expect that this width is also useful for the common part of the MTL model. The same reasoning applies to task-specific data and ITL approach.
 %
-The second modification does change the models definition, using a single $\lambda$ that determines the specifity of all models. However, we expect that the possible difference in specifity among tasks can be corrected in the training process by selecting larger task-specific weights $v_r$ if necessary.
+The second adjustment does change the models definition, using a single $\lambda$ that determines the specifity of all models. However, we expect that the possible difference in specifity among tasks can be corrected in the training process by selecting larger task-specific weights $v_r$ if necessary.
 
-\subsubsection{Comparison of Convex and Additive Formulations}
-
-%The work shown in~\cite{RuizAD19} focuses on 
-
-In~\citep{RuizAD19}, we illustrate the results of equivalence between the additive and convex formulations in an empirical way. To do this we generate a synthetic problem, shown in Figure~\ref{fig:lines_slopes}, as a four linear regression tasks problem. 
-%
-We use four different functions $f_0, f_1, f_2, f_3$ by considering a base function $f(x) = 2x - 1$ with slope $m=2$ and bias $n=1$, then we sample $z_m^r, z_n^r \sim \normal{0, 1}$ for each task $r=0, \ldots, 3$ and create the $r$-th slope and bias by adding these Gaussian samples, i.e., $m_r = m + z_m^r$ and $n_r = n + z_n^r$. Also, we sample the noise $\sigma_r$ for each task uniformly in $(0, 5)$. 
-%
-Then, the $r$-th task consists on estimating $m_r$ and $n_r$ from data. To do this, for each task we uniformly sample $30$ points $x_i^r \in [1, 50)$, and the target values are defined as $y_i^r = f_r(x_i^r) + \epsilon^i_r$ where $\epsilon^i_r \sim \normal{0, \sigma_r}$.
-%
-Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes; in this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
-%
-With this synthetic problem, we train four convex MTL models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding additive MTL models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$.
-%
-In order for the regularization 
+\paragraph*{Comparison of Convex and Additive Formulations.\\}
+% Figure Synthetic Problem HAIS2019
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
@@ -1188,7 +1177,7 @@ In order for the regularization
     \label{fig:lines_slopes}
 \end{figure}
 
-
+% Figure Convex vs Additive HAIS2019
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
@@ -1204,51 +1193,76 @@ In order for the regularization
     \label{fig:synthetic_specWeights}
 \end{figure}
 
-\begin{table}[t]
-    \caption{Hyper-parameters, grids used to find them (when appropriate) and hyper-parameter selection method for each model.}
-    \label{table:hyperpars_grid}
-    \centering
-     \begin{tabular}{*{5}{c}}
-     \toprule
-     \fhead{Par.} & \fhead{Grid} & \fhead{\texttt{ctlSVR}} & \fhead{\texttt{itlSVR}} & \fhead{\texttt{cvxMTL}} \\
-     \midrule
-      $C_\text{conv}$ &  $\set{10^k: -5 \leq k \leq 6}$ & CV & CV & CV  \\ 
-      $\epsilon_\text{conv}$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
-      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & \texttt{ctlSVR} \\
-      $\gamma_t$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & \texttt{itlSVR}\\
-      $\lambda$ & $\set{10^{-1}k: 1 \leq k \leq 9}$ & - & - & CV \\
-      \bottomrule
-     \end{tabular}
-\end{table}
+%The work shown in~\cite{RuizAD19} focuses on 
 
-\begin{table*}[t]
-    \caption{Test MAE's (top) and R2 scores (bottom) of the models considered.}
-    \label{tab:r2_mae_models}
-    \centering
-    \begin{tabular}{l*{2}{S[table-format=1.3]}S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
-    \toprule
-    & \fhead{\fcode{majorca}} & \fhead{\fcode{tenerife}} & \fheadmulti{2}{\fcode{boston}} &  \fheadmulti{2}{\fcode{abalone}} & \fheadmulti{2}{\fcode{crime}} \\
-    \midrule
-    \fheadmulti{9}{MAE} \\
-    \midrule
-    {\texttt{ctlSVR}} & 5.264 &  5.785 & 2.254 & 0.055 & 1.483 & 0.036 & 0.078& 0.001 \\
-    {\texttt{itlSVR}} & 5.102 & \fmax{5.351} & 2.574 & 0.083 & 1.499 & 0.041 & 0.081 & 0.006 \\
-    {\texttt{cvxMTL}} & \fmax{4.966} & 5.352 &  \fmax{2.244} & \fmax{0.041} & \fmax{1.466} & \fmax{0.027} & \fmax{0.074} & \fmax{0.003} \\
-    \midrule        
-         \fheadmulti{9}{R2} \\
-         \midrule
-        {\texttt{ctlSVR}} & 0.831 &  0.901 & 0.856 & 0.030 & \fmax{0.563} & \fmax{0.016} & 0.743 & 0.022 \\
-        {\texttt{itlSVR}} & 0.843 & 0.903 & 0.777 & 0.049 & 0.506 & 0.060 & 0.714 & 0.008 \\
-        {\texttt{cvxMTL}} & \fmax{0.849} & \fmax{0.906} & \fmax{0.860} & \fmax{0.047} & 0.561 & 0.017 & \fmax{0.755} & \fmax{0.015} \\
-        \bottomrule
-        \end{tabular}
-\end{table*}
+In~\citep{RuizAD19}, we illustrate the results of equivalence between the additive and convex formulations in an empirical way. To do this we generate a synthetic problem, shown in Figure~\ref{fig:lines_slopes}, left, as a four linear regression tasks problem. 
+%
+We use four different functions $f_0, f_1, f_2, f_3$ by considering a base function $f(x) = 2x - 1$ with slope $m=2$ and bias $n=1$, then we sample $z_m^r, z_n^r \sim \normal{0, 1}$ for each task $r=0, \ldots, 3$ and create the $r$-th slope and bias by adding these Gaussian samples, i.e., $m_r = m + z_m^r$ and $n_r = n + z_n^r$. Also, we sample the noise $\sigma_r$ for each task uniformly in $(0, 5)$. 
+%
+Then, the $r$-th task consists on estimating $m_r$ and $n_r$ from data. To do this, for each task we uniformly sample $30$ points $x_i^r \in [1, 50)$, and the target values are defined as $y_i^r = f_r(x_i^r) + \epsilon^i_r$ where $\epsilon^i_r \sim \normal{0, \sigma_r}$.
+%
+Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes; in this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
+%
+With this synthetic problem, we train four convex MTL models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding additive MTL models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
+%
+Our goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so the regularization and, therefore, $\mu$ are relevant; then, we use $C_{\text{conv}} = 10^{-2}$. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:lines_slopes}, right, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the convex slopes and in the $y$ axis the additive ones. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
+
+%
+To further compare the two formulations, to visualize how the change on the hyperparameters imposes a change on the final models. Using the already described synthetic problem of Figure~\ref{fig:lines_slopes}, left, we select values of $\lambda$ ranging from $0$ to $1$, and their corresponding values $\mu = (1-\lambda)^2 / \lambda^2$, and fit convex and additive MTL linear SVMs using these values. In Figure~\ref{fig:synthetic_specWeights} we show the coefficients obtained for the common and task-specific parts with the additive formulation (left) and convex one (right).
+%
+We can observe how both graphics show a similar behaviour, with the common model starting in $0$ when $\mu$ is large or $\lambda=0$, and, as $\mu$ decreases and $\lambda$ grow, the task-specific parts go to zero and the common model reaches the optimal value for CTL.
+%
+However, two facts are noticeable, the first one is the range of hyperparameters needed for each formulation. While the convex formulation always uses $[0, 1]$, with the additive formulation it seems that $(10^{-3}, 10^3)$ is useful in this problem, but we cannot extrapolate to other problems. The second one is the smoother transition of the convex formulation, where the changes are steadily made, while with the additive one the changes look more abrupt.
 
 
-\subsubsection{Comparison of Convex MTL and Optimal Convex Combination}
+
+\paragraph*{Performance of Convex MTL and Optimal Convex Combination.\\}
+
+To test the performance of the convex MTL formulation, in~\citep{RuizAD19} we also conduct experiments with real problems, which are extended in~\citep{RuizAD21}. 
+% Models
+\paragraph*{Models.}
+Considering that {LX} can stand for {L1}, {LS} or {LS}, we use the following approaches:
+\begin{itemize}
+    \item {Common Task Learning LX-SVM (\fmod{CTL-LX})}: A single LX-SVM which is fitted using data from all the tasks and does not use of the task information.
+    \item {Independent Task Learning LX-SVM (\fmod{ITL-LX})}: Multiple task-specific LX-SVMs, each of which is fitted with the data from its own task.
+    \item {Direct Convex Combination of LX-SVMs (\fmod{cvxCMB-LX})}: A combination of the best \fmod{CTL-LX} and \fmod{ITL-LX} as described in Subsection~\ref{subsec:optimal_comb}.
+    \item {Convex Multi-Task Learning LX-SVM (\fmod{cvxMTL-LX})}: The Convex MTL formulations shown in Subsection~\ref{subsec:cvx_l1-svm} for the L1-SVM and in Subsection~\ref{subsec:cvx_l2ls-svm} for the L2- and LS-SVM.
+\end{itemize}
+
+% Problems
+\paragraph*{Problems.}
+To compare these approaches we will use several regression and classification problems. We use a total of six regression problems:
+\begin{itemize}
+    \item \fdata{majorca}: The goal is to predict the photovoltaic energy production of a park installed in Mallorca. The tasks are defined as the energy prediction at each hour with sunlight (we remove the night hours).
+    \item \fdata{tenerife}: The goal is to predict the photovoltaic energy production of a park installed in Tenerife. The tasks are defined as the energy prediction at each hour with sunlight (we remove the night hours).
+    \item \fdata{boston}: This is the housing problem in Boston, where the goal is to predict house prices, and the tasks are defined as the predictions in different areas of the city. In Boston we have the houses that are next to the river and those that are not.
+    \item \fdata{california}: This is the housing problem in California, where the goal is also to predict house prices. Here the tasks correspond to 4 different areas of the city, related to their distance to the sea.
+    \item \fdata{abalone}: The goal is to predict the number of rings of a specie of marine molluscs. The tasks are male, female or infant.
+    \item \fdata{crime}: The goal is to predict the number of crimes per $100.000$ habitants in the U.S., the tasks are the prediction of the crime rate in different states.
+\end{itemize}
+For the classification setting, we consider eight problems, six of which are generated by applying different task definitions to two different problems.
+\begin{itemize}
+    \item \fdata{landmine}: This is a binary classification problem in which the goal is to detect landmines. Detection of different types of landmines determines a different task each. 
+    \item \fdata{binding}: This is a binary classification problem where the goal is to determine if a given molecule will bind peptides. Different molecules define different tasks.
+    \item \fdata{adult}: The goal is to predict whether the salary of a particular person is greater than 50K based on sociocultural data. We can define different tasks dividing the population by either gender or race, so we have the problems:
+    \begin{itemize}
+        \item \fdata{ad\_\{G\}}: dividing by gender
+        \item \fdata{ad\_\{R\}}: dividing by race
+        \item \fdata{ad\_\{G, R\}}: dividing by both gender and race
+    \end{itemize}
+    \item \fdata{compas}: The goal is to predict whether the COMPAS algorithm will assign "low" or "high" scores of recidivism to a particular subject. We can also divide the sample by either race or gender, so we obtain:
+    \begin{itemize}
+        \item \fdata{comp\_\{G\}}: dividing by gender
+        \item \fdata{comp\_\{R\}}: dividing by race
+        \item \fdata{comp\_\{G, R\}}: dividing by both gender and race
+    \end{itemize}
+\end{itemize}
+The characteristics of some of the problems considered are present in Table~\ref{tab:mtl_problems} but, considering the different task definitions for \fdata{compas} and \fdata{adult} we give a more complete table in Table~\ref{tab:problems_hais19}.
+
+% Table Problems HAIS19
 \begin{table*}[t!]
     \caption{Sample sizes, dimensions and number of tasks of the datasets used.}
-    \label{table:size_dim_tasks}
+    \label{tab:problems_hais19}
     \centering
     \scalebox{.65}{
     \begin{tabular}{l*{7}{S[table-format=5]}}
@@ -1273,10 +1287,12 @@ In order for the regularization
    \end{tabular}}
 \end{table*}
 
+% Experimental Procedure
 
+% Table Hyperparameters HAIS19
 \begin{table}[t]
     \caption{Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model.}
-    \label{table:hyperpars_grid}
+    \label{tab:hyperpars_grid}
     \centering
     \scalebox{.65}{
      \begin{tabular}{*{9}{c}}
@@ -1293,6 +1309,43 @@ In order for the regularization
      }
   \end{table}
 
+\paragraph*{Experimental Procedure.}
+To obtain the experimental results, we have to select the optimal hyperparameters for each model in a training-validation set and measure its performance on a test set. To do this, we follow the adjustments and experimental procedure described at the beginning of this subsection: reusing the kernel widths from CTL and ITL approaches and limiting the convex MTL formulation to a single parameter $\lambda$.
+%
+In all models considered we use Gaussian kernels, so all features have been scaled to the $[0, 1]$ interval.
+As previously explained, the hyperparameters for the CTL and ITL approaches in the classification setting are $\set{C, \gamma}$ for all variants L1, L2 and LS-SVM.
+In the regression setting we have $\set{C, \gamma, \epsilon}$ for the L1 and L2 variants, and $\set{C, \gamma}$ for the LS-SVM.
+%
+After selecting the optimal kernel widths in the CTL approach $\sigma^*$, and the task-specific widths $\sigma_r^*$ in the ITL approach, we use these values to fix them in the convex MTL formulation.
+Then, the hyperparameters that we are considering for CV search in the convex MTL approaches in the classification settings are $\set{C, \lambda}$ for all variants, while in the regression problems they are $\set{C, \lambda, \epsilon}$ for the L1 and L2 variants and $\set{C, \lambda}$ for the LS-SVM.
+%
+The optimal combination approaches do not have proper hyperparameters, since $\lambda$ can be considered a training parameter.
+%
+In all problems, the hyperparameters considered are selected with a grid search using a task-stratified $3$-fold CV. That is, given a training-validation set, we divide it in three different folds where the task proportions are kept constant, and we use two of these folds for training the model and evaluate its performance in the remaining one.
+%
+In the regression problems, we will measure the validation performance using the MAE, see Table~\ref{tab:error_models_reg_mae_mae}, and MSE, see Table~\ref{tab:error_models_reg_mse_mae}.  Observe that the objective function of L1-SVM based models is more aligned with minimizing the MAE, while those of L2 and LS-SVM based models are more related to minimizing the MSE.
+In the classification problems, see Table~\ref{tab:error_models_class_f1}, we will consider the F1 score to deal with the class-imbalance ratio that we find, for example, in the \fdata{landmine} dataset where we have 200 negative examples for every 13 positive ones.
+%
+In Table~\ref{tab:hyperpars_grid} we show for each hyperparameter of the considered approaches if they are selected using a CV procedure or recycling them from other approach, as well as the grids used for the CV search.
+
+We have explained how we select the hyperparameters given a training-validation set, but it is necessary also to describe how we get the final results that we show on tables.
+In every problem, except for \fdata{majorca} and \fdata{tenerife}, we will consider three external folds, each with the internal three folds for cross-validation. That is, the whole dataset of each problem is first divided in three task-stratified external folds: $F_1, F_
+2, F_3$; then, two folds will form the training-validation set and the third one will be used as the test set. All folds have the same task proportions. There are three different combinations to do this division: $\set{F_1, F_2; F_3}, \set{F_1, F_3; F_2}$ and $\set{F_2, F_3; F_1}$, where the first two folds form the train-validation set and the other one is the test set.
+%
+In each train-validation set we follow the procedure described above to select the optimal hyperparameters, and the performance model with the optimal hyperparameters will be tested in the remaining fold, i.e., the test set.
+%
+
+The problems of \fdata{majorca} and \fdata{tenerife} have a temporal dependency, so it is not possible to use training data from a time that is ahead of that of the test or validation data. Therefore, we use data from years 2013, 2014 and 2015, each corresponding to train, validation and test sets, respectively.
+%
+We consider different metrics to measure the test performance. Therefore, in every problem, except \fdata{majorca} and \fdata{tenerife}, for each metric we obtain three different scores, each corresponding to a different test set, so we will show the mean and standard deviation of such scores. In \fdata{majorca} and \fdata{tenerife} we obtain a single test score corresponding to data from the year 2015.
+% 
+For the regression problems, in Tables~\ref{tab:error_models_reg_mae_mae} and~\ref{tab:error_models_reg_mse_mae}, we show both the MAE and R2 score, closely related to MSE, obtained in the test set, and for classification, in Table~\ref{tab:error_models_class_f1}, we show the F1 and the accuracy scores.
+%
+
+
+
+
+% Results
 
 
   \begin{table*}[t]
@@ -1341,7 +1394,6 @@ In order for the regularization
     \bottomrule
     \end{tabular}}
   \end{table*}
-
 
 
 
@@ -1398,8 +1450,6 @@ In order for the regularization
 
 
 
-
-
 \begin{table*}[t]
     \captionsetup{font=scriptsize}
     \caption{Test F1 (top) and accuracy (bottom) scores, global and block-wise Wilcoxon-based rankings for classification problems. The best models in each block are shown in bold.}
@@ -1412,41 +1462,65 @@ In order for the regularization
         \midrule
         & \fheadmulti{8}{F1}  \\
         \midrule
-        \fmod{ITL-L1}    &          0.625 &           \fmax{0.639} &                  0.630 &         \fmax{0.659} &          0.653 &                 0.657 &    0.231 &   0.867 & 0.620 &     10 & 1 \\
+        \fmod{ITL-L1}    &          0.625 &           \fmaxn{0.639} &                  0.630 &         \fmaxn{0.659} &          0.653 &                 0.657 &    0.231 &   0.867 & 0.620 &     10 & 1 \\
         \fmod{CTL-L1}    &          0.623 &           0.638 &                  0.638 &         0.657 &          0.650 &                 0.653 &    0.255 &   0.901 & 0.627 &      7 & 1 \\
-        \fmod{cvxCMB-L1} &          0.616 &           0.638 &                  0.638 &         0.658 &          0.650 &                 0.653 &    \fmax{0.270} &   0.901 & \fmax{0.628} &      6 & 1 \\
-        \fmod{cvxMTL-L1}    &          \fmax{0.627} &           0.636 &                  \fmax{0.640} &         \fmax{0.659} &          \fmax{0.655} &                 \fmax{0.659} &    0.242 &   \fmax{0.907} & \fmax{0.628} &      5 & 1 \\
+        \fmod{cvxCMB-L1} &          0.616 &           0.638 &                  0.638 &         0.658 &          0.650 &                 0.653 &    \fmaxn{0.270} &   0.901 & \fmaxn{0.628} &      6 & 1 \\
+        \fmod{cvxMTL-L1}    &          \fmaxn{0.627} &           0.636 &                  \fmaxn{0.640} &         \fmaxn{0.659} &          \fmaxn{0.655} &                 \fmaxn{0.659} &    0.242 &   \fmaxn{0.907} & \fmaxn{0.628} &      5 & 1 \\
         \midrule
-        \fmod{ITL-L2}    &          0.636 &           0.623 &                  0.607 &         \fmax{0.668} &          \fmax{0.666} &                 \fmax{0.668} &    0.256 &   0.867 & 0.624 &      8 & 3 \\
-        \fmod{CTL-L2}    &          \fmax{0.640} &           0.647 &                  \fmax{0.651} &         0.665 &          0.661 &                 0.659 &    \fmax{0.270} &   0.903 & 0.637 &      2 & 2 \\
-        \fmod{cvxCMB-L2} &          0.629 &           0.640 &                  0.645 &         0.666 &          0.662 &                 0.661 &    \fmax{0.270} &   0.903 & 0.634 &      3 & 2 \\
-        \fmod{cvxMTL-L2}    &          0.634 &           \fmax{0.651} &                  0.650 &         \fmax{0.668} &          \fmax{0.666} &                 \fmax{0.668} &    0.263 &   \fmax{0.909} & \fmax{0.639} &      1 & 1 \\
+        \fmod{ITL-L2}    &          0.636 &           0.623 &                  0.607 &         \fmaxn{0.668} &          \fmaxn{0.666} &                 \fmaxn{0.668} &    0.256 &   0.867 & 0.624 &      8 & 3 \\
+        \fmod{CTL-L2}    &          \fmaxn{0.640} &           0.647 &                  \fmaxn{0.651} &         0.665 &          0.661 &                 0.659 &    \fmaxn{0.270} &   0.903 & 0.637 &      2 & 2 \\
+        \fmod{cvxCMB-L2} &          0.629 &           0.640 &                  0.645 &         0.666 &          0.662 &                 0.661 &    \fmaxn{0.270} &   0.903 & 0.634 &      3 & 2 \\
+        \fmod{cvxMTL-L2}    &          0.634 &           \fmaxn{0.651} &                  0.650 &         \fmaxn{0.668} &          \fmaxn{0.666} &                 \fmaxn{0.668} &    0.263 &   \fmaxn{0.909} & \fmaxn{0.639} &      1 & 1 \\
         \midrule
-        \fmod{ITL-LS}    &          \fmax{0.631} &           0.622 &                  0.608 &         \fmax{0.659} &          \fmax{0.659} &                 \fmax{0.660} &    0.243 &   0.867 & 0.619 &     12 & 2 \\
-        \fmod{CTL-LS}    &          0.628 &           \fmax{0.644} &                  \fmax{0.649} &         0.650 &          0.653 &                 0.647 &    0.230 &   0.853 & 0.619 &     11 & 2 \\
+        \fmod{ITL-LS}    &          \fmaxn{0.631} &           0.622 &                  0.608 &         \fmaxn{0.659} &          \fmaxn{0.659} &                 \fmaxn{0.660} &    0.243 &   0.867 & 0.619 &     12 & 2 \\
+        \fmod{CTL-LS}    &          0.628 &           \fmaxn{0.644} &                  \fmaxn{0.649} &         0.650 &          0.653 &                 0.647 &    0.230 &   0.853 & 0.619 &     11 & 2 \\
         \fmod{cvxCMB-LS} &          0.630 &           0.635 &                  0.642 &         0.657 &          0.658 &                 0.654 &    0.238 &   0.873 & 0.623 &      9 & 2 \\
-        \fmod{cvxMTL-LS}    &          0.630 &           0.641 &                  0.648 &         \fmax{0.659} &          \fmax{0.659} &                 0.659 &    \fmax{0.257} &   \fmax{0.906} & \fmax{0.632} &      4 & 1 \\
+        \fmod{cvxMTL-LS}    &          0.630 &           0.641 &                  0.648 &         \fmaxn{0.659} &          \fmaxn{0.659} &                 0.659 &    \fmaxn{0.257} &   \fmaxn{0.906} & \fmaxn{0.632} &      4 & 1 \\
         \midrule
         & \fheadmulti{8}{Accuracy}  \\
         \midrule
-        \fmod{ITL-L1}    &          0.750 &           0.749 &                  0.746 &         0.852 &          0.851 &                 \fmax{0.853} &    \fmax{0.941} &   0.790 & 0.817 &     11 & 3 \\
-        \fmod{CTL-L1}    &          \fmax{0.757} &           0.759 &                  \fmax{0.763} &         0.852 &          0.847 &                 0.849 &    0.938 &   0.850 & 0.827 &      6 & 2 \\
-        \fmod{cvxCMB-L1} &          0.754 &           0.759 &                  \fmax{0.763} &         0.852 &          0.847 &                 0.849 &    0.935 &   0.850 & 0.826 &      7 & 2 \\
-        \fmod{cvxMTL-L1}    &          0.753 &           \fmax{0.760} &                  \fmax{0.763} &         \fmax{0.853} &          \fmax{0.852} &                 \fmax{0.853} &    0.933 &   \fmax{0.861} & \fmax{0.829} &      5 & 1 \\
+        \fmod{ITL-L1}    &          0.750 &           0.749 &                  0.746 &         0.852 &          0.851 &                 \fmaxn{0.853} &    \fmaxn{0.941} &   0.790 & 0.817 &     11 & 3 \\
+        \fmod{CTL-L1}    &          \fmaxn{0.757} &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.938 &   0.850 & 0.827 &      6 & 2 \\
+        \fmod{cvxCMB-L1} &          0.754 &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.935 &   0.850 & 0.826 &      7 & 2 \\
+        \fmod{cvxMTL-L1}    &          0.753 &           \fmaxn{0.760} &                  \fmaxn{0.763} &         \fmaxn{0.853} &          \fmaxn{0.852} &                 \fmaxn{0.853} &    0.933 &   \fmaxn{0.861} & \fmaxn{0.829} &      5 & 1 \\
         \midrule
-        \fmod{ITL-L2}    &          0.754 &           0.762 &                  0.751 &         \fmax{0.856} &          \fmax{0.855} &                 \fmax{0.856} &    \fmax{0.942} &   0.791 & 0.821 &      8 & 2 \\
-        \fmod{CTL-L2}    &          \fmax{0.762} &           0.765 &                  \fmax{0.767} &         0.854 &          0.853 &                 0.851 &    0.933 &   0.853 & 0.830 &      3 & 1 \\
+        \fmod{ITL-L2}    &          0.754 &           0.762 &                  0.751 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    \fmaxn{0.942} &   0.791 & 0.821 &      8 & 2 \\
+        \fmod{CTL-L2}    &          \fmaxn{0.762} &           0.765 &                  \fmaxn{0.767} &         0.854 &          0.853 &                 0.851 &    0.933 &   0.853 & 0.830 &      3 & 1 \\
         \fmod{cvxCMB-L2} &          0.757 &           0.764 &                  0.766 &         0.854 &          0.853 &                 0.853 &    0.934 &   0.853 & 0.829 &      4 & 1 \\
-        \fmod{cvxMTL-L2}    &          0.753 &           \fmax{0.766} &                  0.766 &         \fmax{0.856} &          \fmax{0.855} &                 \fmax{0.856} &    0.933 &   \fmax{0.864} & \fmax{0.831} &      1 & 1 \\
+        \fmod{cvxMTL-L2}    &          0.753 &           \fmaxn{0.766} &                  0.766 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    0.933 &   \fmaxn{0.864} & \fmaxn{0.831} &      1 & 1 \\
         \midrule
-        \fmod{ITL-LS}    &          0.754 &           0.761 &                  0.750 &         \fmax{0.851} &          \fmax{0.850} &                 \fmax{0.851} &    0.943 &   0.791 & 0.819 &      9 & 2 \\
-        \fmod{CTL-LS}    &          \fmax{0.757} &           \fmax{0.764} &                  0.766 &         0.845 &          0.847 &                 0.842 &    0.914 &   0.750 & 0.811 &     12 & 3 \\
-        \fmod{cvxCMB-LS} &          0.754 &           \fmax{0.764} &                  0.765 &         0.849 &          \fmax{0.850} &                 0.848 &    0.925 &   0.793 & 0.818 &     10 & 3 \\
-        \fmod{cvxMTL-LS}    &          \fmax{0.757} &           \fmax{0.764} &                  \fmax{0.767} &         \fmax{0.851} &          \fmax{0.850} &                 \fmax{0.851} &    \fmax{0.944} &   \fmax{0.858} & \fmax{0.830} &      2 & 1 \\
+        \fmod{ITL-LS}    &          0.754 &           0.761 &                  0.750 &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    0.943 &   0.791 & 0.819 &      9 & 2 \\
+        \fmod{CTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  0.766 &         0.845 &          0.847 &                 0.842 &    0.914 &   0.750 & 0.811 &     12 & 3 \\
+        \fmod{cvxCMB-LS} &          0.754 &           \fmaxn{0.764} &                  0.765 &         0.849 &          \fmaxn{0.850} &                 0.848 &    0.925 &   0.793 & 0.818 &     10 & 3 \\
+        \fmod{cvxMTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  \fmaxn{0.767} &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    \fmaxn{0.944} &   \fmaxn{0.858} & \fmaxn{0.830} &      2 & 1 \\
         \bottomrule
       \end{tabular}}
   \end{table*}
 
+
+\paragraph*{Results.}
+The tables with the numerical results have three blocks, one for each variant L1, L2 or LS-SVMs, and, in each block, for each problem we show in bold the model with best test results.
+%
+We also provide a statistical significant ranking based on the Wilcoxon test. The Wilcoxon test is a pairwise test that checks whether the difference of two samples has its median in 0, i.e., the distribution is symmetric around 0. Instead of showing every Wilcoxon test result between all pairs of models, which would result in a $12x12$ matrix difficult to interpret, we take the following approach. We first sort the models, according to some criterion, and test the significance between one model and next in the sorting order. Then we create a new significant ranking, the ranking increases only if this difference is significant. For example, if there are no significant differences between the first and second model, according the sorting order, they both obtain the ranking of $1$.
+
+%Regression
+In the regression tables, apart from the test scores, we provide a Wilcoxon-based ranking for each problem. 
+%
+To apply the Wilcoxon test, in each problem we sort the models (using all blocks) according to their mean score. Then, we test if the difference between each model and the next one in the ranking is significant. To do this, we take the list of errors committed by each model in the test set, that is, $e_1 = y - \hat{y_1}$ and $e_2 = y - \hat{y_2}$ are the list of errors of each model. Then, we use the Wilcoxon test to check if $e_1 - e_2$ is centered around 0.
+If the null hypothesis is rejected at a $5\%$ level, then we say that the difference is significant.
+%
+% For instance, according to MAE, in Table~\ref{tab:error_models_reg_mae_mae}, for the \fdata{majorca} dataset, the best model is the convex \fmod{cvxMTL-LS} proposal and the second best is the \fmod{cvxMTL-L2} model, while the \fmod{cvxMTL-L1} ties for fifth place with \fmod{cvxCMB-L1}.
+%
+The results for regression problems are shown in Table~\ref{tab:error_models_reg_mae_mae}, where the best parameters are selected according to the MAE validation score, and in Table~\ref{tab:error_models_reg_mse_mae}, where the MSE is used as the validation metric.
+%
+Although we cannot pick a single overall winner, we can still draw some conclusions from the tables. Note that the convex MTL approaches usually perform better, obtaining the best result in 11 out of 18 MAE blocks and 16 out of 18 R2 blocks of Table~\ref{tab:error_models_reg_mae_mae}; in Table~\ref{tab:error_models_reg_mse_mae} it obtains 12 out of 18 MAE blocks and 15 out of 18 R2 blocks.
+Also, a convex MTL approach obtains the single best overall model in four problems, while ties for the first place in \fdata{boston} and, only in \fdata{tenerife} ends up as second, after the \fmod{cvxCMB-L1} model.
+
+%Classification
+The classification results, in Table~\ref{tab:error_models_class_f1} show a similar behavior. In this table, the ranking is not computed for each problem, but in general, computing the mean of scores across all problems. This mean score is used to rank the models, which is the second left-most column, and, using the Wilcoxon-based procedure we produce a statistical significant ranking shown in the last column. Now, the Wilcoxon tests are done with samples of size $8$, the number of classification problems, so it is more difficult to find significant differences.
+The convex MTL approaches get 18 out of 24 F1 blocks and 22 out 26 accuracy blocks. The best overall model is the \fmod{cvxMTL-L2}, while the other convex MTL models are tied with it in the significant ranking.
+In any case, the Wilcoxon test here uses a very small sample size and is given only for illustration purposes.
+%%%%%%%%%%%%%%%%%
 
 \section{Convex Multi-Task Learning with Neural Networks}
 The convex MTL formulation is easily applicable and interpretable, so it has good properties for kernel models, but also for a broader class of learning models.
@@ -1590,7 +1664,61 @@ Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorc
 
 \subsection{Experiments}
 
+\begin{figure}[t!]
+    \includegraphics[width=\linewidth]{Chapter4/HAIS2022/hais22_datasets.pdf}
+    \caption{Images of the four classification problems used. Each image has a title indicating the corresponding task. The rows correspond to \fdata{var-MNIST}, \fdata{rot-MNIST}, \fdata{var-FMNIST} and \fdata{rot-FMNIST} (from top to bottom).}
+    \label{fig:problems_hais2022}
+\end{figure}
+
+\begin{table}[t!]
+    \centering
+        \caption{Test Accuracy with Majority Voting.}
+        \label{tab:test_accuracy_majority}
+    \begin{tabular}{l*{4}{c}}
+        \hline
+                           &   \fdata{var-MNIST} &   \fdata{rot-MNIST} &   \fdata{var-FMNIST} &   \fdata{rot-FMNIST} \\
+        \hline
+         \fmod{ctlNN} &              0.964 &           0.973 &                     0.784 &                  0.834 \\
+         \fmod{itlNN} &              0.968 &           0.981 &                     0.795 &                  0.873 \\
+         \fmod{hsNN}  &              0.971 &           0.980  &                    0.770  &                 0.852 \\
+         \multirow{2}*{\fmod{cvxmtlNN}} &              \fmaxn{0.974} &           \fmaxn{0.984} &                     \fmaxn{0.812} &                  \fmaxn{0.880} \\
+         & ($\lambda^* = {0.6}$)  & ($\lambda^* = {0.8}$) & ($\lambda^* = {0.6}$)  & ($\lambda^* = {0.6}$) \\
+         \hline
+        \end{tabular}
+        
+\end{table}
+
+\begin{table}[t!]
+    \centering
+        \caption{Test Mean Categorical Cross Entropy.}
+        \label{tab:test_crossentropy_mean}
+    \begin{tabular}{l*{4}{c}}
+        \hline
+                           & \fdata{var-MNIST}   & \fdata{rot-MNIST}     & \fdata{var-FMNIST}   & \fdata{rot-FMNIST}   \\
+        \hline
+         \fmod{ctlNN} & 1.274 $\pm$ 0.143  & 1.145 $\pm$ 0.039 & 2.369 $\pm$ 0.183         & 1.757 $\pm$ 0.075      \\
+         \fmod{itlNN} & 1.072 $\pm$ 0.029  & 0.873 $\pm$ 0.058 & 2.356 $\pm$ 0.130         & 1.598 $\pm$ 0.042      \\
+         \fmod{hsNN}  & 1.087 $\pm$ 0.253  & 0.898 $\pm$ 0.073 & 3.067 $\pm$ 0.888         & 1.888 $\pm$ 0.075      \\
+         \multirow{2}*{\fmod{cvxmtlNN}} & \fmaxn{0.924} $\pm$ \fmaxn{0.024}  & \fmaxn{0.831} $\pm$ \fmaxn{0.029} & \fmaxn{2.147} $\pm$ \fmaxn{0.090}         & \fmaxn{1.482} $\pm$ \fmaxn{0.063}      \\
+         & ($\lambda^* = {0.6}$)  & ($\lambda^* = {0.8}$) & ($\lambda^* = {0.6}$)  & ($\lambda^* = {0.6}$)      \\
+         \hline
+        \end{tabular}
+\end{table}
+
+\paragraph*{Problems Description.\\}
+
+
+\paragraph*{Experimental Procedure.\\}
+
+
+
+\paragraph*{Results.\\}
+
 \section{Application to Renewable Energy Prediction}
+
+\subsection{Solar Energy}
+
+\subsection{Wind Energy}
 
 \section{Conclusions}\label{sec-conclusions-3}
 
