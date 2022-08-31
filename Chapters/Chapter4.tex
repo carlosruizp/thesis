@@ -38,7 +38,7 @@ In this chapter we will show how this formulation can be applied to two of the m
 
 
 
-\section{Convex Multi-Task Learning with Kernel Models}
+\section{Convex Multi-Task Learning with Kernel Methods}
 % Kernel Models are powerful: Kernel trick, high dimensionality representation
 As explained in the previous chapters, kernel models offer many good properties such as an implicit transformation to a possibly infinite-dimensional space and the convexity problems that have to be solved in the training process. With these models a regularized risk problem is solved.
 % General formulation for a kernel model
@@ -562,7 +562,10 @@ Finally, observe that the results in Proposition~\ref{prop:add_conv_equiv} is on
 
 \subsection{Extensions to L2 and LS-SVM}\label{subsec:cvx_l2ls-svm}
 The L2-SVM~\cite{Burges98} is a variant of the standard SVM where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the epsilon-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are not penalized is kept, but the errors which are larger than such margin are penalized using its squared value.
-In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
+
+The LS-SVM~\citep{SuykensV99} is another variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
+
+In this subsection I present an extension of the convex MTL formulation to both L2 and LS-SVM.
 
 % Convex Approach
 \paragraph*{{Convex} MTL L2-SVM.\\}
@@ -682,9 +685,6 @@ The difference between the convex MTL based on the L1-SVM and this one, based on
 
 % Convex Approach
 \paragraph*{{Convex} MTL LS-SVM.\\}
-The LS-SVM~\citep{SuykensV99} is a variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
-In this subsection I present directly an MTL approach using L2-SVMs with a convex formulation.
-
 % Additive Approach
 %   Primal
 The primal problem for the convex MTL LS-SVM, presented in~\cite{RuizAD21}, is
@@ -1098,7 +1098,7 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
 
 
 
-\subsection{Experiments}
+\subsection{Experiments}\label{subsec:convexmtlsvm_exp}
 In this subsection we show the experiments used to test the convex MTL formulation with kernel models, which have been presented in~\citep{RuizAD19} and~\citep{RuizAD21}. 
 %
 First, following the work in~\citep{RuizAD19}, experiments comparing convex and additive MTL formulations in the L1-SVM are described. 
@@ -1632,19 +1632,6 @@ That is, no specific algorithm has to be developed for training the convex MTL N
 %     The thick lines are the hyperparameters $\lambda$ and $1-\lambda$ of the convex combination.
 
 \subsection{Implementation Details}
-% Task-batches of minibatches
-% Automatic differentiation
-
-Our implementation of the convex MTL neural network is based on \texttt{PyTorch}~\citep{PyTorch}.
-Although we include the gradients expressions in equation~\eqref{eq:gradients_losses}, the \texttt{PyTorch} package implements automatic differentiation, so the gradients are not explicitly implemented.
-Instead, we implement each network, common or specific, using (possibly different) \texttt{PyTorch} modules.
-In the forward pass of the network, the output for an example $x_i^r$ from task $r$ is computed using a pass of the common module and the corresponding specific module, combining both passes with the convex formulation to obtain the final output $h_r(x_i^r)$.
-In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
-By doing this, when using examples from the $r$-th task only the parameters corresponding to common module and its corresponding specific one are updated.
-Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
-
-{In Algorithm~\ref{alg:forward} we show the pseudo-code of the forward pass of the convex MTL neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on PyTorch automatic differentiation.}
-
 \begin{algorithm}[!t]
     \DontPrintSemicolon
       
@@ -1660,6 +1647,20 @@ Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorc
     \caption{Forward pass for Convex MTL neural network.}
     \label{alg:forward}
 \end{algorithm}
+% Task-batches of minibatches
+% Automatic differentiation
+
+Our implementation of the convex MTL neural network is based on \texttt{PyTorch}~\citep{PyTorch}.
+Although we include the gradients expressions in equation~\eqref{eq:gradients_losses}, the \texttt{PyTorch} package implements automatic differentiation, so the gradients are not explicitly implemented.
+Instead, we implement each network, common or specific, using (possibly different) \texttt{PyTorch} modules.
+In the forward pass of the network, the output for an example $x_i^r$ from task $r$ is computed using a pass of the common module and the corresponding specific module, combining both passes with the convex formulation to obtain the final output $h_r(x_i^r)$.
+In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
+By doing this, when using examples from the $r$-th task only the parameters corresponding to common module and its corresponding specific one are updated.
+Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
+
+{In Algorithm~\ref{alg:forward} we show the pseudo-code of the forward pass of the convex MTL neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on PyTorch automatic differentiation.}
+
+
 
 
 \subsection{Experiments}
@@ -1669,6 +1670,74 @@ Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorc
     \caption{Images of the four classification problems used. Each image has a title indicating the corresponding task. The rows correspond to \fdata{var-MNIST}, \fdata{rot-MNIST}, \fdata{var-FMNIST} and \fdata{rot-FMNIST} (from top to bottom).}
     \label{fig:problems_hais2022}
 \end{figure}
+
+\paragraph*{Problems Description.\\}
+To test the Convex MTL neural networks we use four Multi-Task image datasets:
+\fdata{var-MNIST}, \fdata{rot-MNIST}, based on MNIST~\citep{LeCunBBH98}, and \fdata{var-FMNIST}, \fdata{rot-FMNIST}, based on fashion-MNIST~\citep{xiao2017}.
+%
+The MNIST and fashion-MNIST datasets are both composed of \num{70000} examples of $28\times 28$ grey-scale images. The MNIST dataset contains images of handwritten numbers, while the fashion-MNIST has images of clothes and fashion-related objects.
+Both are used as classification problems, where the images have to be classified in one of $10$ possible classes. These classes are balanced in both datasets.
+%
+To generate the Multi-Task image datasets that we use, we take the images from MNIST or fashion-MNIST and use either the \emph{variations} procedure or the \emph{rotation} one.
+
+%
+For the \fdata{var-MNIST} and \fdata{var-FMNIST} we use the \emph{variations} procedure. Inspired by the work of~\cite{BergstraB12}, we consider three transformations:
+\begin{itemize}
+    \item \textit{random}: adding random noise to the original image.
+    \item \textit{image}: adding a random patch of another image to the original image.
+    \item \textit{standard}: no transformations are applied to the original image.
+\end{itemize}
+Then, we use a random split to divide the original datasets in three groups. Each group is applied one of the transformations defined, so we get three tasks: two with \num{23333} examples and the third one with \num{23334}.
+
+%
+For the \fdata{rot-MNIST} and \fdata{rot-FMNIST} we use the \emph{rotations} procedure. Using the definitions of~\cite{GhifaryKZB15}, we consider six transformations:
+\begin{itemize}
+    \item \textit{0}: rotating $0^{\circ}$ the original image.
+    \item \textit{15}: rotating $15^{\circ}$ the original image.
+    \item \textit{30}: rotating $30^{\circ}$ the original image.
+    \item \textit{45}: rotating $45^{\circ}$ the original image.
+    \item \textit{60}: rotating $60^{\circ}$ the original image.
+    \item \textit{75}: rotating $75^{\circ}$ the original image.
+\end{itemize}
+Again, we use a random split to divide the original datasets in six groups and each group is applied one of the transformations defined, so we get six tasks: four with \num{11667} examples and two with \num{11666}.
+%
+
+In Figure~\ref{fig:problems_hais2022} we show examples of the four MTL image problems that we generate, with the corresponding task annotation for each one.
+
+
+
+\paragraph*{Experimental Procedure.\\}
+% Models Considered
+For testing the performance of our proposal we consider the following models:
+\begin{itemize}
+    \item \fmod{ctlNN}: a CTL-based neural network, that is, a single network for all tasks.
+    \item \fmod{itlNN}: an ITL-based neural network, that is, an independent network for each task.
+    \item \fmod{hsNN}: a MTL-based neural network using the hard sharing strategy. That is, a single neural network is used for all tasks, where the first layers are shared among tasks, but a task-specific output layer is used for each task.
+    \item \fmod{cvxmtlNN}: a MTL-based neural network using the convex formulation we propose.
+\end{itemize}
+% convNet
+All of these models are based on convolutional network, which we will name \fmod{convNet}, whose architecture is based on the Spatial Transformer Network~\citep{Jaderberg_2015} used in Pytorch\footnote{\href{www.pytorch.org/tutorials/intermediate/spatial\_transformer\_tutorial.html}{www.pytorch.org/tutorials/intermediate/spatial\_transformer\_tutorial.html}}.
+The architecture of \fmod{convNet} consists, in this order, on two convolutional layers of kernel size $5$, with $10$ and $20$ output channels each; then a dropout layer, followed by a max pooling layer, and two hidden layers with $320$ and $50$ neurons. After this, the output layers follow.
+
+%
+In the \fmod{ctlNN}, we use a single network with the \fmod{convNet} architecture with $10$ output neurons, one for each class.
+%
+In the \fmod{itlNN}, an independent network, with the \fmod{convNet} architecture and $10$ output neurons, is used for each task.
+%
+For the \fmod{hsNN}, a single network with the \fmod{convNet} architecture is used, but we have a group of $10$ output neurons for each task in the problem. For example, if we are using of the \emph{rotation}-based problems, we would have $60$ output neurons, but only the group of $10$ corresponding to each task is used with each example.
+%
+In the \fmod{cvxmtlNN} we use a network with the \fmod{convNet} architecture and $10$ output neurons to model the common network and each of the task-specific networks. That is, given an example from task $r$, the $10$ common output neurons and the  $r$-th task-specific ones are combined to obtain the final output. 
+
+% Optimizer and Hyperparameters
+We use the AdamW algorithm~\citep{LoshchilovH19} to train all the models considered, and the weight decay parameter $\mu$ for each model is selected using a CV-based search over the values $\set{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}, 10^{0}}$. The rest of the parameters, which are part of the architecture, are fixed and set to the default values: the dropout rate is $0.5$ and we use a $2\times 2$ max pooling layer with a stride of $2$.
+%
+The \fmod{cvxmtlNN} model also has $\lambda$ as a hyperparameter, and it is selected, alongside $\mu$, using a CV grid search, where the grid for $\lambda$ is $\set{0, 0.2, 0.4, 0.6, 0.8, 1}$.
+
+%
+The train and test sets are generates using a task-stratified split of $70\%$ and $30\%$, respectively.
+The CV grid searches are carried out using the training set, where we use a $5$-fold CV scheme. These folds are task-stratified, that is, all have the same task proportions. Also, since the problems are class-balanced and the sample size is reasonably large, the folds are expected to be class-balanceda as well.
+
+\paragraph*{Results.\\}
 
 \begin{table}[t!]
     \centering
@@ -1705,20 +1774,592 @@ Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorc
         \end{tabular}
 \end{table}
 
-\paragraph*{Problems Description.\\}
+% Refitting models
+To get more accurate results, less sensitive to randomness, we train each model $5$ different times. To do this, once the optimal hyperparameters have been selected using the CV in the training set, we refit the model with these hyperparameters using the whole training set. That is, the CV is done only once for each model in each problem, but then we repeat $5$ times the procedure of training the network over the whole training set.
+
+% Accuracy vs Categorical CE
+Although maximizing the accuracy is ultimately the goal in classification problems, it is not a differentiable measure, so we use the categorical cross entropy instead as the loss function to train the networks. Both measures are correlated, but they do not represent exactly the same behavior. We will show the results using both for completeness.
+
+% Tables
+Since we have $5$ instances of each model, a typical strategy to combine their predictions is majority voting. We perform this majority voting directly using the logits, in the output neurons, of each instance and averaging them, so we have $10$ values, one for each class.
+In Table~\ref{tab:test_accuracy_majority} we show the test accuracy, using the logits average already described, for each of the approaches considered.
+%
+Other approach to visualize these results is to compute the categorical cross entropy directly on the averaged logits, which we show in Table~\ref{tab:test_crossentropy_mean}.
+%
+In both tables we also show the optimal values for $\lambda$ selected in the CV.
+
+% Analysis
+Our proposal, the \fmod{cvxmtlNN} model, obtains the best results in all the problems, either in terms of accuracy or cross entropy.
+The ITL approach comes second in all problems, except for the accuracy score in \fdata{var-MNIST}, where the \fdata{hsNN} is second and \fdata{itlNN} goes third.
+The \fdata{hsNN} model goes third in the rest of problems, while the \fdata{ctlNN} gets the worst results consistently in all problems, sometimes by a large margin.
+%
+By looking at the tables, it seems that a CTL approach is not able to capture the different properties of each task at once. On the other hand, the \fmod{ITL} approach obtains good results, because it is specialized in each task.
+Considering the optimal values for $\lambda$, there are, however, common information shared among the tasks. These values fall far from the margins, so neither the CTL nor the ITL are optimal approaches. This is reflected in the tables, where the \fmod{cvxMTLNN} outperforms consistently \fmod{ctlNN} and \fmod{itlNN}. We can assume, then, that the information learned by the common network and the task-specific ones is complementary, because their combination lead to better results.
+%
+The hard sharing approach, although better than a CTL one, seems to be too rigid to effectively capture the differences among different tasks, so it is frequently surpassed by the ITL network.
 
 
-\paragraph*{Experimental Procedure.\\}
 
 
+% Complementing common and task-specific
 
-\paragraph*{Results.\\}
+
 
 \section{Application to Renewable Energy Prediction}
+%There is a worldwide energy transition towards renewable sources, with a particular emphasis in wind and solar generation.
+%As a consequence, both are having a big impact on electricity markets and on the management of electrical systems.
+%This implies, among other things, a great demand of accurate energy forecasts, an area where machine learning (ML) techniques have a growing presence.
+%e
+There is a worldwide energy transition towards renewable sources, with~a particular emphasis in wind and solar generation,
+%As a consequence, both are having a big impact on electricity markets and on the management of electrical systems.
+which implies, among~other things, a~great demand by transmission system operators, wind and solar farm managers or market agents, of~accurate energy forecasts to be made at the time horizons of interest for each actor.
+These go from the very short (up to one hour), short (up to a few~hours), or medium-long (from one to several days ahead).
+In this work, we will deal with a particular case of the latter, namely, the hourly, day-ahead prediction, where tomorrow's energy production at each hour must be predicted today.
+%This day ahead prediction is particularly important for system operators to plan and organize next day's energy generation and, in several countries, Spain among them, for market operators, as the energy price for a given day is settled the day before.
+%More precisely, in the case of Spain's daily market, energy predictions are to be given at least about fourteen hours in advance, as farm operators and market agents must make available by hour 10 in Spain's legal time their predictions of the energy produced at each hour of the next day.
+
+Machine learning (ML) techniques have a growing presence among the different approaches to renewable energy forecasting.
+ML models require first to choose the predictive features to be used, which depends again on the forecasting horizon.
+For instance, in~short-term prediction one can use past energy production values and/or real-time meteorological information, if~available; on the other hand, for~medium--long forecasts the features more widely used are those derived from numerical weather predictions (NWPs) provided by entities such as the European Centre for {Medium-Range  Weather Forecasts} (ECMWF; the~ones we will use) or the {National Centers for Environmental Prediction} %
+ (NCEP). %Please change it not to be capitalized if unnecessary. %which are given for up to ten days in advance.
+%
+%The ECMWF offers NWP forecasts twice a day, the first one from  a run that starts at \utc{00} and which is widely available at about \utc{06}, and the second one from a run that starts at \utc{12} and is available at about \utc{18}.
+For the day-ahead energy predictions of interest here, we will use the NWP forecasts given in today's ECMWF run at \utc{00} to predict either PV or wind energy production for tomorrow's hours between 00 and \utc{23}.
+In other words, we use NWP forecasts from {the} %Please confirm 00UTC. Should it have a space between 00 and UTC?
+ \utc{00} run to predict energy production on the horizons between 24 and 47~h.
+ 
+Once the predictive features are selected, the~usual ML approach is to choose the method deemed to be better suited to the problem at hand, carefully adjust the model hyperparameters and finally build, exploit,~and maintain the optimally hyperparametrized model.
+In particular, we can either build local models for a single installation or global models for all the installations within a more or less large geographic area.
+%
+Many ML models have been proposed for renewable energy prediction, and in Section~\ref{literature} we give  a literature review with a particular emphasis on MTL methods.
+%Once the predictive features are selected, the usual ML approach is to choose the method deemed better suited to the problem at hand, carefully adjust the model hyper-parameters and finally build, exploit and maintain the optimally hyper-parametrized model.
+%This model can incorporate several feature sources, such as past energy production values, real time meteorological information or numerical weather predictions (NWPs); also, we can either build local models for a single installation or global models for all the installations within a more or less large geographic area.
+%Many ML models have been proposed for renewable energy prediction.
+%In the case of wind energy,~\cite{giebel_soa,pinson2013,colak} are general reviews of the application of ML models while~\cite{heinermann,zhu_genton} propose concrete models for more specific prediction horizons.
+%For solar energy there is again a very large literature addressing many different approaches to short, medium and long term solar irradiation and energy forecasting;
+%such as physical, engineering, statistical or machine learning (ML) methods; 
+%recent surveys are~\cite{Antonanzas2016,Inman2013,Wan2015} and a good comprehensive reference for many aspects of solar energy is~\cite{SEK} (see also Section~\ref{literature} for a literature review).
+
+However, any ML approach has to handle the behavior of either a single wind or solar farm or of a collection of them, behavior that may change substantially according to different time or operating conditions.
+This is obviously the case in photovoltaic (PV) energy, which presents markedly hourly effects and where an installation behavior at midday is very different from that at sunrise or sunset.
+The same can be said about seasonal effects, with~summers obviously having stronger radiation and more stable atmospheric conditions than winters.
+Turning our attention to wind energy, the~effect of individual hours in a farm's production is much less substantial than in the PV case, but~the day--night shift in the boundary layer behavior 
+%(rising during the day and sinking at night) 
+can have substantial effects on wind farms~\cite{Porte-Agel} %Interaction between Large Wind Farms and the Atmospheric Boundary Layer
+and, therefore, be also reflected in the energy produced.
+A second example is the effect of wind direction on the output of a wind farm, as~they are usually  built to take advantage of the prevalent wind directions at their sites.
+% but if these directions become, say, orthogonal to the prevalent one, wake effects will appear and result in lower energy production.
+Finally, the~power curve of wind turbines has three different response zones: a first one for low speed and near zero production, an~intermediate one with power growing with wind velocity and a third one, with~maximum constant power up to a cut-off~speed.
+
+
+\subsection{Experimental~Methodology.\\}
+
+%
+\begin{table}[t!]
+    \caption{Hyperparameters, grids used to find them (when appropriate), and hyperparameter selection method for each model. Here, $d$ is the number of {dimensions} % Please chang the font in the Table.
+     of the data and $\sigma$ is the standard deviation of the~target.}
+    \label{tab:hyperpars_grid_energies}
+    \centering
+     \begin{tabular}{*{5}{c}}
+     \toprule
+     \fhead{Par.} & \fhead{Grid} & \fhead{ctlSVR} & \fhead{itlSVR} & \fhead{cvxMTL} \\
+     \midrule
+      $C$ &  $\set{10^k: -1 \leq k \leq 6}$ & CV & CV & CV  \\
+      $\epsilon$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
+      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & ctlSVR \\
+      $\gamma_r$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & itlSVR\\
+      $\lambda$ & $\set{10^{-1}k: 0 \leq k \leq 10}$ & - & - & CV \\
+      \bottomrule
+     \end{tabular}
+\end{table}
+
+Here we describe the methodology that we have followed to conduct the experiments of renewable energy prediction.
+%
+For the solar and wind energy we use the same procedure. In each problem, we have a train, validation and test sets, each corresponding to one year of data. In the solar energy problems we have 2013, 2014 and 2015 as train, validation and test sets, respectively; while for wind energy problems we use 2016, 2017 and 2018.
+%
+For both solar and wind problems we use different definition of tasks. To define these tasks we use only the training data, which partition the data, then, with these tasks' definition, we apply them to get the tasks of the validation and test examples.
+%
+For example, if we use the wind velocity to define three tasks, we study the velocities of the training examples to set the boundaries that define each task; then, we use this definitions on the validation and test sets.
+%
+We will represent the task definition applied with the nomenclature: \fmodt{taskDef}{modelName}, where \fmod{taskDef} is a name for the task definition and \fmod{modelName} is the name of the model.
+
+%
+We consider three different models based on the standard Gaussian kernel SVR:
+\begin{itemize}
+    \item \fmod{ctlSVR}: a CTL model, that is, a single SVR for all tasks. Its set of hyperparameters is $\set{C, \gamma, \epsilon}$, where $C$ is the regularization trade-off parameter, $\gamma$ is the kernel width, and $\epsilon$ the width of the error insensitive area.
+    \item \fmod{itlSVR}: an ITL model, that is, an independent SVR for each task. For each task, we have standard SVR with its hyperparameters: $\set{C_r, \gamma_r, \epsilon_r}$ for $r=1, \ldots, \ntasks$.
+    \item \fmod{mtlSVR}: a convex MTL model, as shown in Subsection~\ref{subsec:cvx_l1-svm}, with its corresponding set of hyperparameters is $\set{C, \epsilon, \gamma, \gamma_1, \ldots, \gamma_\ntasks, \lambda_1, \ldots, \lambda_\ntasks}$, where $\gamma$ is the kernel width of the common part and $\gamma_r$ the one of the $r$-th specific part; also, $\lambda_r$ is the convex combination parameter corresponding to the $r$-th task.
+\end{itemize}
+%
+Although the CTL approach does not use the tasks information, the ITL and MTL models depend on the task definition that we use. For example, prediction at different hours can define different tasks, where the possible values are, for example, (\fmod{hour}=14) or (\fmod{hour}=12). The models using this task definition will be named \fmodt{hour}{itlSVR} and \fmodt{hour}{mtlSVR}. 
+%
+Since each task definition partition the data, we can also use multiple task definitions, combining them and creating finer partitions. 
+We will name \fmod{(taskDef1,...,taskDefM)} the combination of task definitions \fmod{taskDef1}, ..., \fmod{taskDefM}. For example, consider the \fmod{(hour)} definition, which, in our definition consider 14 different hours, hence, 14 tasks; and consider the \fmod{season} definition, which considers the prediction in each season as a different task, hence, four tasks. The combined definition \fmod{(hour, season)} generates $14 \times 4$ possible tasks, whose values can be, for example, \fmod{(hour = 12, season = summer)}.
+The models using this combination will be named \fmodt{hour, season}{itlSVR} or \fmodt{hour, season}{mtlSVR}.
+
+%
+As explained in Subsection~\ref{subsec:cvx_l1-svm}, the cost of methods to select the optimal hyperparameters scale exponentially with the dimension, so it is not feasible to use a CV grid search, for example, if we have more than $3$ hyperparameters.
+%
+In the \fmod{ctlSVR} and \fmod{itlSVR} it is not a problem, since we have $3$ hyperparameters, for the common, single SVR, and for the task-independent ones, respectively. We use then a CV grid search, using as train and validation sets described above.
+However, to find the hyperparameters of \fmod{mtlSVR} we have to make some adjustements, as shown in Subsection~\ref{subsec:convexmtlsvm_exp}. 
+%
+First, we use a convex MTL formulation with a single $\lambda$ parameter, common to all tasks.
+%
+Second, we use the optimal kernel widths selected in validation for the CTL and ITL approaches as the widths in the MTL approach. That is, we get the optimal common $\gamma^*$ and task-specific $\gamma^*_1, \ldots, \gamma^*_\ntasks$, and fix them in the \fmod{mtlSVR} model, not including them in the grid search procedure.
+Then, we use a CV grid search to find the optimal values of the remaining hyperparameters, that is, $\set{C, \epsilon, \lambda}$.
+%
+In Table~\ref{tab:hyperpars_grid_energies} we show the method to obtain each hyperparameter, as well as the grids used in the CV grid search procedures.
+We use the \acrshort{mae} as the validation metric, because is the most natural to the $\epsilon$-insensitive loss that is used in the SVRs.
+
+%
+The whole procedure to get the final scores is:
+\begin{enumerate}
+    \item \textbf{Scaling the target and normalizing the features.} We scale the target values to $[0, 1]$ and we normalize each feature, so it has $0$ mean and a standard deviation of $1$. This is done using the training data only. 
+    For the target scale, we select the target minimum and maximum values of the training set, that is, $y_\text{min} = 0$, when no energy is produced, and $y_\text{max}$ is the maximum capacity of the park.    
+    %Then, the target in train, validation and test sets is normalized as     $y_\text{scaled} = (y - y^\text{tr}_\text{min}) / (y^\text{tr}_\text{max} - y^\text{tr}_\text{min} )$.
+    %For example, for feature normalization, we compute the training mean $\mu_d^\text{tr}$ and standard deviation $\sigma_d^\text{tr}$ of feature $d$, then we normalize the corresponding feature in the whole dataset using $\hat{X}_d = (\hat{X}_d - \mu_d^\text{tr}) /  \sigma_d^\text{tr}$.
+    \item \textbf{Using a CV grid search to select the optimal hyperparameters.} This is done using the train and validation sets, with the grids and adjustements already explained. We use the MAE as our validation metric.
+    \item \textbf{Predict on the test set and rescale to the original scale.} That is, we use the corresponding model $f(\cdot)$ to compute the prediction of the normalized $i$-th test example from task $r$, $\tilde{x}_i^r$, as $f(\tilde{x}_i^r)$. Then, we rescale it back to obtain the final prediction $\hat{y}_i^r = f(x_i^r) \times (y_\text{max} - y_\text{min} ) + y_\text{min}$
+    \item \textbf{Compute the test score.} Using the target values $y_i^r$ and their corresponding predictions, $\hat{y}_i^r$, we measure the performance of our model using both MAE and MSE.
+\end{enumerate}
+The whole process is carried out using a \fcode{Pipeline} object, where we make use of class \fcode{StandardScaler} to normalize the data, and \fcode{TransformedTargetRegressor} class to scale the targets. All these classes are part of the \emph{scikit-learn} library.
+
+%
+To put our results in perspective, we also show the errors of simple persistence models and of multilayer perceptrons. For the perceptron we use the \fcode{MLPRegressor} class of \emph{scikit-learn}. The architecture for both problems consists on fully connected networks with two hidden layers, with $100$ and $50$ neurons. We train these networks using the L-BFGS solver with a maximum of $800$ iterations a tolerance of $10^{-10}$. The regularization hyperparameter is selected using a CV grid search, as those described above, where the grid is $\set{4^k: -2 \leq j \leq 3}$.
+
+
+
+
+
 
 \subsection{Solar Energy}
+The goal is to predict the hourly energy production in two parks, located in the islands of Majorca and Tenerife, and name the corresponding problems as \fdata{majorca} and \fdata{tenerife}, respectively. 
+%
+In this subsection the experiments with these solar problems are presented, using the experimental procedure already shown. First a description of the problems is given and the data used, then the results are given and analyzed.
+
+\paragraph*{Data and~Tasks.\\}
+For both problems, \fdata{majorca} and \fdata{tenerife}, the same variables, extracted from the Numerical Weather Prediction (NWP), are used. These variables, extracted from NWP predictions made by the European Center for Medium Weather Forecasts 
+(ECMWF;~\cite{ECMWF}), are:
+\begin{itemize}
+    \item Surface net solar {radiation} (\ftt{SSR}).
+    \item Surface solar radiation {downwards} (\ftt{SSRD}).
+    \item {Total Cloud Cover} %Please change it not to be captitalized if unnecessary.
+     (\ftt{TCC}).
+    \item Temperature at 2 {meters} (\ftt{T2M}).
+    \item Module of the speed of wind at {10 meters} (\ftt{v10}).
+\end{itemize}
+The radiation variables \ftt{SSR}, solar radiation, and \ftt{SSRD}, solar radiation plus the diffuse radiation scattered by the atmosphere, as well as the \ftt{TCC}, have all a direct impact on PV production.
+%
+The \ftt{T2M} and \ftt{v10} features are also considered because they influence the conversion of photon energy into electrical one, and also the overall performance of PV stations.
+%
+
+To collect these features, geographical grids with a $\ang{0.125}$ spatial resolution are considered. For \fdata{majorca}, the grid has its northeast coordinates at $(\ang{2}, \ang{40})$, and its southwest coordinates at $(\ang{4}, \ang{39})$. For \fdata{tenerife}, the coordinates are $(\ang{-17.5}, \ang{28.75})$ for the northeast corner, and $(\ang{-15.5}, \ang{27.75})$ for the southwest one.
+%
+That is, both grids have a longitude width of 2 degrees and a latitude height of 1 degree. With the spatial resolution considered, this results in a total number of $17 \times 9 = 153$ grid points; since we use five variables at every point, the total dimension of our data is thus $5 \times 153 = 765$. 
+
+
+%
+Observe that we obtain large dimensional patterns, where the features might be highly correlated. That is, a feature, \ftt{SSR} for example, measured in one point of the grid and another close point might be very correlated, since the grids are squares with sides of about $\km{12}$.
+This correlation will affect those models based on matrix-vector computations, such as linear models, which are the most obvious, but, also, to some extent, to neural networks.
+Although Ridge or Tikhonov regularization can alleviate this issue for these models, the kernel-methods, such as the kernel SVMs, seems better suited for these kind of problems.
+When we use kernel methods, such as the Gaussian kernel $\exp{-\gamma \norm{x-y}^2}$, the algorithm learns using the distances among patterns $\norm{x - y}$, instead of its features.
+%
+These distances scale linearly with the dimension of data, that is, consider the features scaled to $[0, 1]$, then a rough estimate of the distance between two patterns would be $d$. In the extreme case where all features are equal, i.e. $x_j = x_1$ for all $j=1, \ldots, \dimx$; then, $\norm{x - x'} = d(x_1 - {x'}_1)$.
+However, this influence of the dimension can be easily controlled by $\gamma$, and, if selected properly, should not affect the performance of a Gaussian SVR.
+
+%
+Recall that we use data from years 2013, 2014 and 2015 as train, validation and test sets, respectively.
+%
+We show the errors in both total \mwhu{} and as percentages, in the range $[0, 100]$ of the total install PV power in each photovoltaic park, {\mw{72.46}} in \fdata{majorca} and \mw{107.68} in \fdata{tenerife}.
+%
+We remove night data for obvious reasons and make predictions between \utc{06} and \utc{19} {for} \fcode{majorca} and between \utc{07} and \utc{20} for \fcode{tenerife}.
+%
+The hour of the day has a direct influence on the solar radiation, and, therefore, on energy production. Also, the season of the year has a similar impact on the production. This leads to two obvious task definitions:
+\begin{itemize}
+    \item	\fcode{hour}: The prediction at each hour is defined as a different task; there are thus 14 tasks in \fcode{majorca} (from 06 to \utc{19}) and \fcode{tenerife} (from 07 to \utc{20}).
+    %We observe in Figures~\ref{fig:maj_groupby_hour} and~\ref{fig:ten_groupby_hour} that the distribution of the target, i.e.,~the photovoltaic energy, is very dependent on the hour chosen.
+    \item	\fcode{season}: The prediction at each season is defined as different task.  With~a slight abuse of language, the definitions for each season used are: Spring, from~16 February to 15 May; Summer, from~16 May to 15 August; Autumn, from~16~August to 15 November; and~Winter, from~16 November to 15 February.
+    %We can observe in Figures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season} that different seasons have different means of the target.
+\end{itemize}
+%
+In Subfigures~\ref{fig:maj_groupby_hour} and~\ref{fig:ten_groupby_hour} the hourly averages of the PV energy in \mwhu{} are shown for \fdata{majorca} and \fdata{tenerife}.
+Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season} the monthly averages, colored by season.
+\begin{figure}[H]
+    \centering%
+    \subfloat[][]{%    
+    \includegraphics[width=.35 \textwidth]{Chapter4/energies/majorca_groupby_hour_train.pdf}
+    \label{fig:maj_groupby_hour}}\quad%
+    \subfloat[][]{%
+    \includegraphics[width=.35 \textwidth]{Chapter4/energies/tenerife_groupby_hour_train.pdf}
+    \label{fig:ten_groupby_hour}}\\
+    \subfloat[][]{%
+    \includegraphics[width=.35 \textwidth]{Chapter4/energies/hist_season_majorca_train_byMonth.pdf}
+    \label{fig:maj_groupby_season}}\quad%
+    \subfloat[][]{%
+    \includegraphics[width=.35 \textwidth]{Chapter4/energies/hist_season_tenerife_train_byMonth.pdf}
+    \label{fig:ten_groupby_season}}
+ \caption{\label{fig:solar_task_def}Hourly photovoltaic energy mean {in} \fcode{majorca}~\protect\subref{fig:maj_groupby_hour} {and}~\fcode{tenerife}~\protect\subref{fig:ten_groupby_hour} measured in \mwhu{}. Photovoltaic energy monthly averages for \fcode{majorca}~\protect\subref{fig:maj_groupby_season} and \fcode{tenerife}~\protect\subref{fig:ten_groupby_season} , colored using the tasks defined using the season and measured in \mwhu{}. All the histograms have been computed using data from year~2016.}
+ \end{figure}
+ 
+
+
+
+
+\paragraph*{Experimental~Results.\\}
+
+\begin{table}[H]
+    \caption{Test MAEs (left), test MSEs (center), and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{majorca}. {Base units} %Is the bold in the Table necessary? If is not necessary, please remove it. Also, please remove the font in the table. Same as below.
+     are either \mwhu{} or percentages (\%). The~best model errors are shown in~bold.}
+    \centering
+    \label{table:solar_scores_m}
+ \begin{tabular}{lccccccc}
+    \toprule
+     & \fheadmulti{3}{MAE} & \fheadmulti{3}{MSE} & \fhead{$\lambda^*$}\\
+    & {{\mwhu}}	& {{\%}} & {rank} & {{\mwhu}}	& {{\textpertenthousand}} & {Rank}& \\
+    \midrule
+    \fmod{ctlSVR}    &  5.265 &  7.265  & (6) &  59.322 &  112.985  & (6) &  - \\
+    \fmod{(season)\_itlSVR}   &  5.305 &  7.384  & (7) &  59.591 &  113.498  & (7) &  - \\
+    \fmod{(season)\_mtlSVR}   &  \fmaxn{4.884} &  \fmaxn{6.740}  & \fmaxn{(1)} &  53.222 &  101.366  & (2) &  0.4 \\
+    \fmod{(hour)\_itlSVR}   &  5.083 &  7.015  & (4) &  54.540 &  103.877  & (3) &  - \\
+    \fmod{(hour)\_mtlSVR}   &  4.957 &  6.840  & (2) &  \fmaxn{52.614} &  \fmaxn{100.208}  & \fmaxn{(1)} &  0.3 \\
+    \fmod{(hour, season)\_itlSVR}   &  5.250 &  7.251  & (5) &  57.927 &  110.328  & (5) &  - \\
+    \fmod{(hour, season)\_mtlSVR}   &  5.038 &  6.952  & (3) &  54.601 &  103.992  & (4) &  0.3 \\
+    \bottomrule
+    \end{tabular}
+ \end{table}
+\unskip
+
+
+ \begin{table}[H]
+    \caption{Test MAEs (left), test MSEs (center), and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{tenerife}. Base units are either \mwhu{} or percentages (\%). The~best model errors are shown in~bold. The positions with hyphens correspond to the model ranked first in terms of MAE or MSE, as indicated by its column.}
+    \centering
+    \label{table:solar_scores_t}
+ \begin{tabular}{lccccccc}
+    \toprule
+     & \fheadmulti{3}{MAE} & \fheadmulti{3}{MSE} & \fhead{$\lambda^*$}\\
+    & {{\mwhu}}	& {{\%}} & {Rank} & {{\mwhu}}	& {{\textpertenthousand}} & {Rank}& \\
+    \midrule
+    \fmod{ctlSVR}    &  5.786 &  5.373  & (5) &   88.323 &  76.174  & (5) &  - \\
+    \fmod{(season)\_itlSVR}   &  5.930 &  5.545  & (6) &   97.454 &  84.611  & (6) &  - \\
+    \fmod{(season)\_mtlSVR}   &  5.579 &  5.181  & (4) &   86.227 &  74.366  & (3) &  0.8 \\
+    \fmod{(hour)\_itlSVR}   &  5.403 &  5.018  & (2) &   86.686 &  74.762  & (4) &  - \\
+    \fmod{(hour)\_mtlSVR}   &  \fmaxn{5.376} &  \fmaxn{4.993}  & \fmaxn{(1)} &   \fmaxn{84.207} &  \fmaxn{72.624}  & \fmaxn{(1)} &  0.7 \\
+    \fmod{(hour, season)\_itlSVR}   &  6.025 &  5.554  & (7) &  104.536 &  90.297  & (7) &  - \\
+    \fmod{(hour, season)\_mtlSVR}   &  5.494 &  5.102  & (3) &   85.440 &  73.687  & (2) &  0.7 \\
+    \bottomrule
+    \end{tabular}
+ \end{table}
+\unskip
+
+
+\begin{table}[H]
+   \caption{Wilcoxon $p$-values for absolute (left) and quadratic (right) errors.}
+   \centering
+   \label{table:solar_wilcoxon}
+   %% \tablesize{} %% You can specify the fontsize here, e.g.,~\tablesize{\footnotesize}. If commented out \small will be used. Is the bold necessary. Same as others in the table.
+   \begin{tabular}{lcccc}
+      \toprule
+      & \fheadmulti{2}{MAE} &  \fheadmulti{2}{MSE}\\
+      & {\fcode{majorca}}	& {\fcode{tenerife}} & {\fcode{majorca}}	& {\fcode{tenerife}}\\
+      \midrule
+   \fmod{ctlSVR}                           &    0.014 (4) &    0.000 (5) &    0.081 (4) &    0.000 (5) \\
+   \fmod{(season)\_itlSVR}                &    0.008 (5) &    0.636 (5) &    0.215 (4) &    0.354 (5) \\
+   \fmod{(season)\_mtlSVR}         &   ------ %MDPI: We changed it into minus, please confirm.
+{(1)} &    0.000 (4) &    0.036 (2) &    0.000 (3) \\
+   \fmod{(hour)\_itlSVR}                  &    0.693 (2) &    0.006 (2) &    0.000 (3) &    0.000 (4) \\
+   \fmod{(hour)\_mtlSVR}           &    0.067 (1) &   ------ {(1)} &   ------ {(1)} &   ------ {(1)} \\
+   \fmod{(hour, season)\_itlSVR}        &    0.000 (3) &    0.000 (6) &    0.000 (4) &    0.098 (5) \\
+   \fmod{(hour, season)\_mtlSVR} &    0.000 (2) &    0.000 (3) &    0.745 (3) &    0.000 (2) \\
+   \bottomrule
+\end{tabular}
+\end{table}
+
+In Tables~\ref{table:solar_scores_m} and~\ref{table:solar_scores_t} we show the numerical results for \fdata{majorca} and \fdata{tenerife}, respectively. We give the test MAE, which is the most natural metric for SVRs, as well as the MSE. 
+In the case of percentages, for MAE, we give the percentage corresponding to the total installed power, and for the MSE, the permyriad, that is per \num{10000}, of the installed power.
+%
+We also show the rankings in terms of MAE or MSE, and the optimal hyperparameter $\lambda^*$ selected in the CV for the MTL models.
+%
+
+To show statistical significance the Wilcoxon test is used, but instead of testing every pair of models, the rankings of Tables~\ref{table:solar_scores_m} and~\ref{table:solar_scores_t} are used. The Wilcoxon test is applied between each model and the next in ranking at the $0.05$ level, to determine if the difference is significant.
+The test is applied over the list of errors commited by each model in the patterns of the test set. When the null hypothesis of the Wilcoxon test is refused, it implies that the distribution of the difference between the errors does not have its median at $0$.
+In Table~\ref{table:solar_wilcoxon}, we show the $p$-values of the pairwise tests. If the $p$-value is smaller than the level considered level of 0.05, then the different between models is considered significant.
+%
+With these procedure, a new significant ranking, shown in Table~\ref{table:solar_wilcoxon},  is generated: starting from the best model, we compare each model with the next best one, and we increase the ranking only if the difference is significant.
+%
+For example, in Table~\ref{table:solar_scores_m}, in terms of MAE, the first model, \fmod{(season)\_mtlSVR}, is tested against the second one, \fmod{(hour)\_mtlSVR}. In Table~\ref{table:solar_wilcoxon}, we show the $p$-value corresponding to that test, which is $0.067$, and since it is larger than the level $0.05$, the ranking is not increased and both models have the same significant ranking. 
+
+%
+Looking at the tables, it is easy to see that the MTL approaches obtain the best results in both problems, while \fmod{ctlSVR} has the worst performance in \fcode{tenerife} and second worst in \fcode{majorca}.
+ITL models are more difficult to interpret, although they are always behind their corresponding MTL approaches, they can obtain good results, like the \fmodt{hour}{itlSVR} in \fdata{majorca} which is second; but they can also have bad performances, like the \fmodt{season}{itlSVR} in \fdata{tenerife}.
+
+%
+The $\lambda^*$ values can help to understand this behaviour. In both problems, the selected values lie far from the extremes $0$ or $1$, which distances the MTL approaches from the CTL or ITL ones. If these values are optimal, then the CTL or ITL equivalent models, with $\lambda=1$ and $\lambda=0$, respectively, obtain a worse result in validation. This is reflected also in the test set, as shown in the tables.
+Also, it is noticeable that the optimal values for \fdata{majorca} are all smaller than $0.5$, which can be intepreted as models with a stronger common part, while in \fdata{tenerife}, the optimal values are larger than $0.5$ which reflects stronger independent parts.
+%
+Although the MTL approaches get the best results with any task definition, the \fmod{(hour)} definition seems to work best than the \fmod{(season)} one. The \fmodt{hour}{mtlSVR} gets a second best result, which is not significantly worse than the best one in \fdata{majorca}, and the single best result in \fdata{tenerife}.
+
+%
+For completeness the scores of persistence models and a neural network are given.
+The persistence forecasts are obtained by predicting at each hour the target value 24 hours prior. By doing this, the MAE scores for majorca are \mwh{5.776} and \mwh{7.766}, which scaled to $[0, 100]$ correspond to 7.97\% and 7.21\%; which are an 18\% and 44\% error increase of the best MTL models.
+The neural network errors are \mwh{5.140} and \mwh{5.763}, that is, 7.09\% and 5.35\% of the total PV installed. While this results are still competitive, this performance is worse than those of the convex MTL models proposed.
+
+
+\begin{figure}[H]
+    \centering%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_ctl_majorca.pdf}
+    \label{fig:best_ctl_majorca}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_itl_majorca.pdf}
+    \label{fig:best_itl_majorca}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_mtl_majorca.pdf}
+    \label{fig:best_mtl_majorca}}\\
+ \caption{\label{fig:majorca_best_plots} Real energy production against prediction made by the best CTL~\protect\subref{fig:best_ctl_majorca}, ITL~\protect\subref{fig:best_itl_majorca}, and MTL~\protect\subref{fig:best_mtl_majorca} models {in} \fcode{majorca} in terms of MAE; the perfect prediction line is shown in orange. The~units of the axis are \mwhu{}.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_ctl_tenerife.pdf}
+    \label{fig:best_ctl_tenerife}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_itl_tenerife.pdf}
+    \label{fig:best_itl_tenerife}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_mtl_tenerife.pdf}
+    \label{fig:best_mtl_tenerife}}\\
+ \caption{\label{fig:tenerife_best_plots} Real energy production against prediction made by the best CTL~\protect\subref{fig:best_ctl_tenerife}, ITL~\protect\subref{fig:best_itl_tenerife}, and MTL~\protect\subref{fig:best_mtl_tenerife} models {in} \fcode{tenerife} in terms of MAE; the perfect prediction  line is shown in orange. The~units of the axis are \mwhu{}.}
+\end{figure}
+
+
+%
+To get a better understanding of the results we plot the predictions against the target values of the CTL model and the best ITL and MTL ones.
+%
+In the case of \fdata{majorca}, we plot the predictions \fmod{ctlSVR}, \fmodt{hour}{itlSVR} and \fmodt{season}{mtlSVR} in Figure~\ref{fig:majorca_best_plots}.
+From these scatter plots it seems that the CTL approach has a larger deviation in its predictions, while the ITL one has a bias, that is, it systematically underestimates the prediction corresponding to larger values of energy production.
+The MTL approach seems to correct, to a certain degree, this bias of the ITL model, while preserving a smaller variance than the CTL one.
+%
+For \fdata{tenerife} we plot the predictions of \fmod{ctlSVR}, \fmodt{hour}{itlSVR} and \fmodt{hour}{mtlSVR}, which are shown in Figure~\ref{fig:tenerife_best_plots}.
+It is more difficult to interpret the plots in this case, although it is possible to highlight that the MTL approach seems less prone to overestimate the production at lower values than either the CTL or ITL models.
+
+
+
+
+
+
+
 
 \subsection{Wind Energy}
+
+\paragraph*{Data and~Tasks.\\}
+
+\begin{figure}[H]
+    \centering%
+    \subfloat[]{%
+    \includegraphics[width=.38 \textwidth]{Chapter4/energies/polarhist_tasks_angle_stv_train.pdf}
+    \label{fig:stv_task_angle}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.38 \textwidth]{Chapter4/energies/hist_tasks_velocity_stv_train.pdf}
+    \label{fig:stv_task_velocity}}\\
+ \caption{\label{fig:wind_task_def} Histograms of wind. ~\protect\subref{fig:stv_task_angle} {Histogram} %Please add figure caption. For example. Figure 4. xxxx (a)xxxx (b)xxxxxx.
+  of wind angles derived from NWP data for the year 2016 in Sotavento colored by task \fmod{angle}. ~\protect\subref{fig:stv_task_velocity}  Histogram of wind velocity derived from NWP data for the year 2016 and measured in m/s in Sotavento colored by {task} \fmod{velocity}.}
+\end{figure}
+
+ \begin{figure}[H]
+   \centering
+   \subfloat[]{%
+   \includegraphics[width=.45 \textwidth]{Chapter4/energies/hist_timeOfDay_stv_train_byHour.pdf}
+   \label{fig:hist_timeOfDay_stv_target}}%
+\subfloat[]{%
+    \includegraphics[width=.45 \textwidth]{Chapter4/energies/hist_timeOfDay_stv_vel100_byHour.pdf}
+    \label{fig:hist_timeOfDay_stv_vel100}}
+% \hspace{\fill}
+\caption{\label{fig:wind_task_def_tday} Histograms of wind. ~\protect\subref{fig:hist_timeOfDay_stv_target} {Hourly mean measured} %Please add figure caption. For example. Figure 5. xxxxx (a)xxxxx (b)xxxx. In addition, is it necessary to add explanations of different color cylinders?
+ in \si{\kilo{\watt\hour}} of generated energy during the year 2016 in Sotavento colored by {task} \fmod{timeOfDay}. ~\protect\subref{fig:hist_timeOfDay_stv_vel100} Hourly mean of velocity in Sotavento derived from NWP data for the year 2016 and measured in m/s at \SI{100}{\metre} colored by {task} \fmod{timeOfDay}.}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=.5\textwidth]{Chapter4/energies/hist_timeOfDay_stv_vel100_normal.pdf}
+ \caption{\label{fig:stv_vel100} Histograms of the velocity of wind at 100m derived from NWP data for the year 2016 and measured in m/s during the day and night in Sotavento.
+%  \comm{decir para qué año. Hay una cosa que no entiendo: a ojo parece que hay más datos de night que de day, lo que no debería ser. Pero mirando la fig anterior hay 11 horas night-azul- y 13 day naranja. Claramente está mal, pero así las cosas los colores de abajo están al revés}
+}
+\end{figure}
+
+We want to predict the wind energy production at the Sotavento wind park located in Galicia, Spain. The variables from the NWP that we consider as predictors are:
+\begin{itemize}
+    \item	Eastward component of the wind at {10 m} %Please remove the font. Same as below
+     (\ftt{U10}).
+    \item	Northward  component of the wind at {10 m} (\ftt{V10}).
+    \item   Module of velocity of the wind at 10 m.
+    \item	Eastward  component of the wind at {100 m} (\ftt{U100}).
+    \item	Northward component of the wind at {100 m} (\ftt{V100}).
+    \item   Module of velocity of the wind at 100 m.
+    \item   Surface {Pressure} (\ftt{sp}).
+    \item	2 meter {temperature} (\ftt{2t})
+\end{itemize}
+These variables are collected in a grid, which is approximately centered at the farm, with northeast and southwest coordinates at $(\ang{-9.5}, \ang{44})$ and $(\ang{-6}, \ang{42.25})$, respectively, and a spatial resolution of $\ang{0.125}$.
+This results in a grid with $435$ points, that, with the $8$ variables considered at each point, gives a total number of {3480} predictive features.
+We scale the energy productions values to $[0, 100]$ using the maximum power installed (\mw{17.56}), which corresponds to the value $100$.
+%
+Recall that we have three years of data: 2016, 2017 and 2018, which are used as train, validation and test sets.
+%
+Although there are no obvious task definitions, we consider three different criteria:
+\begin{itemize}
+    \item \fmod{angle}: Here the wind angle at a height of $100m$ is considered, which is obtained from the \ftt{U100} and \ftt{V100} variables. 
+    First, the most frequent angle is estimated, which is $\ang{56}$, and then, we use it as the center of the first quadrant. That is, the patterns that correspond to the first task as those whose wind angle lies between ${11}$ and $\ang{101}$  The other three quadrants, corresponding to a task each, are defined by the remaining sectors of $\ang{90}$.
+    The histogram of wind angles, and the defined quadrants in different colors, are shown in Figure~\ref{fig:stv_task_angle}
+    \item \fmod{velocity}: Here the wind velocity at a height of $100m$ is considered, which is again obtained from the \ftt{U100} and \ftt{V100} variables. The speed boundaries selected to define three tasks are $4$ and $10$m/s, which, for an ideal generator, are approximately the starting point of wind energy generation and its maximum power plateau, before cut-off speed.   
+    In Figure~\ref{fig:stv_task_velocity} the histrogram of velocities is shown with the task regions colored. 
+    \item \fmod{timeOfDay}: Here the 24 hours of a day are divided in two 12 hours periods: a day period between 08 and \utc{19}, and~a night one between 20 to \utc{07}.
+    In Figures~\ref{fig:hist_timeOfDay_stv_target} and~\ref{fig:hist_timeOfDay_stv_vel100} the hourly average energy production and wind speed are shown, with the hours colored according to the two tasks defined. In Figure~\ref{fig:stv_vel100} the histograms of wind velocity in the night and day periods are shown.
+\end{itemize}
+%
+For these task definitions, it is necessary to perform an analysis of the data, which is done only using the train set, corresponding to 2016.
+The tasks in this case are not as clear as that defined for the solar energy. For the \fmod{angle} and \fmod{velocity} definitions some differences across tasks in the histograms can be found, but not definitive ones.
+For the \fmod{timeOfDay} definition, the two histograms of Figure~\ref{fig:stv_vel100} look very similar.
+Moreover, the boundaries of the tasks are set in a way that is partially arbitrary, and a bad selection of tasks could lead to poor results.
+
+
+\paragraph*{Experimental~Results.\\}
+
+
+\begin{table}[H]
+    \caption{Test MAEs (left), {MSEs} %Please remove the font in the table. Same in Table 6.
+     scores (center), and optimal mixing $\lambda^*$ (right) of the Sotavento wind energy models considered. The~best model errors are shown in~bold.}
+    \centering
+    \label{table:wind_scores}
+    %% \tablesize{} %% You can specify the fontsize here, e.g.,~\tablesize{\footnotesize}. If commented out \small will be used.
+    \begin{tabular}{lccc}
+    \toprule
+    & \fhead{MAE} &  \fhead{MSE} &  \fhead{$\lambda^*$}\\
+%    & \fhead{\fcode{stv}}	& \fhead{\fcode{stv}} & \fhead{\fcode{stv}} \\
+    \midrule
+    \fmod{ctlSVR}                                           &   \fmaxn{6.132} (1) &    90.228 (2) & - \\
+    \fmod{(velocity)\_itlSVR}                              &  6.211 (7) &   93.363 (7) & - \\
+    \fmod{(velocity)\_mtlSVR}                       &   6.208 (6) &    93.199 (6) & 0 \\
+    \fmod{(timeOfDay)\_itlSVR}                             &  6.283 (9) &   93.594 (9) & - \\
+    \fmod{(timeOfDay)\_mtlSVR}                      &   \fmaxn{6.132} (1) &    90.228 (2) & 1 \\
+    \fmod{(timeOfDay, velocity)\_itlSVR}                 &  6.341 (11) &   97.250 (11) & - \\
+    \fmod{(timeOfDay, velocity)\_mtlSVR}          &  6.312 (10) &   94.774 (10) & 0.4 \\
+    \fmod{(timeOfDay, angle)\_itlSVR}                    &  6.266 (8) &   93.517 (8) & - \\
+    \fmod{(timeOfDay, angle)\_mtlSVR}             &   \fmaxn{6.132} (1) &    90.228 (2) & 1 \\
+    \fmod{(timeOfDay, angle, velocity)\_itlSVR}        &  6.410 (12) &  102.031 (12) & - \\
+    \fmod{(timeOfDay, angle, velocity)\_mtlSVR} &   \fmaxn{6.132} (1) &    90.228 (2) & 1 \\
+    \fmod{(angle)\_itlSVR}                                 &   6.170 (4) &    91.586 (4) & - \\
+    \fmod{(angle)\_mtlSVR}                          &   6.135 (2) &    \fmaxn{90.026} (1) & 0.9 \\
+    \fmod{(angle, velocity)\_itlSVR}                     &   6.173 (5) &    92.529 (5) & - \\
+    \fmod{(angle, velocity)\_mtlSVR}              &   6.168 (3) &    90.990 (3) & 0.7 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+
+
+\begin{table}[H]
+    \caption{Wilcoxon $p$-values and {corresponding} %Please add explanations of ``—''. In addition, please remove bold if appropritate.
+     ranking for absolute (right) and quadratic (left) wind energy errors in~Sotavento. The positions with hyphens correspond to the model ranked first in terms of MAE or MSE, as indicated by its column.}
+    \centering
+    \label{table:wind_wilcoxon}
+    %% \tablesize{} %% You can specify the fontsize here, e.g.,~\tablesize{\footnotesize}. If commented out \small will be used.
+    \begin{tabular}{lcc}
+    \toprule
+    & \fhead{MAE} &  \fhead{MSE}\\
+%    & \fhead{\fcode{stv}}	& \fhead{\fcode{stv}} \\
+    \midrule
+\fmod{ctlSVR}                                           &     ------  {(1)} &    ------   (2)  \\
+\fmod{(velocity)\_itlSVR}                              &    0.570  (3) &    0.150  (3)  \\
+\fmod{(velocity)\_mtlSVR}                       &    0.356  (3) &    0.466 (3)  \\
+\fmod{(timeOfDay)\_itlSVR}                             &    0.195  (4) &    0.258  (4)  \\
+\fmod{(timeOfDay)\_mtlSVR}                      &      ------   {(1)} &      ------   (2)  \\
+\fmod{(timeOfDay, velocity)\_itlSVR}                 &    0.941  (4) &    0.021  (5)  \\
+\fmod{(timeOfDay, velocity)\_mtlSVR}          &    0.428  (4) &    0.650 (4)  \\
+\fmod{(timeOfDay, angle)\_itlSVR}                    &    0.000  (4) &    0.015  (4)  \\
+\fmod{(timeOfDay, angle)\_mtlSVR}             &      ------   {(1)} &      ------   (2)  \\
+\fmod{(timeOfDay, angle, velocity)\_itlSVR}        &    0.090  (4) &    0.024  (6)  \\
+\fmod{(timeOfDay, angle, velocity)\_mtlSVR} &   ------  {(1)} &    ------   (2)  \\
+\fmod{(angle)\_itlSVR}                                 &    0.855  (3) &    0.644  (3)  \\
+\fmod{(angle)\_mtlSVR}                          &    0.035  (2) &   ------  {(1)} \\
+\fmod{(angle, velocity)\_itlSVR}                     &    0.253  (3) &    0.465  (3)  \\
+\fmod{(angle, velocity)\_mtlSVR}              &    0.018  (3) &    0.001 (3)   \\
+\bottomrule
+    \end{tabular}
+\end{table}
+
+In Table~\ref{table:wind_scores} the MAE and MSE scores are shown, and also the ranking is given in parentheses. 
+Unlike the solar energy case, here the CTL approach seems to better suited than using an ITL one. This is also reflected in the selection of $\lambda^*$ values, that are close to $1$, the CTL equivalent case, in the models that get best results, see all the models using $\lambda^*=1$, which are equivalent to \fmod{ctlSVR} but also the cases of \fmodt{angle}{mtlSVR} and \fmodt{angle, velocity}{mtlSVR}, that are second and third using $\lambda^*=0.9$ and $\lambda^*=0.7$.
+Those models who put the emphasis on the independent parts, like \fmodt{timeOfDay, velocity}{mtlSVR}, and, of course, the ITL approaches, get worse results.
+%
+%
+As with the solar energy problems, the statistical significance of the results is tested using the Wilcoxon test. As before, using the ranking of Table~\ref{table:wind_scores}, the significance of the difference between one model and its immediate succesor is tested. 
+%
+In Table~\ref{table:wind_wilcoxon} the $p$-values of these Wilcoxon tests are given, and the statistical significant ranking is shown. Recall that two models have different significant ranking only if the Wilcoxon test hypothesis is refused.
+%
+The CTL approach obtains the best results, being the best model in terms of MAE and second best in terms of MSE. Nevertheless, the equivalent MTL approaches that use $\lambda^*=1$ trivially tie at first place, these are \fmodt{timeOfDay}{mtlSVR}, \fmodt{timeOfDay, angle}{mtlSVR} and \fmodt{timeOfDay, angle, velocity}{mtlSVR}; while the \fmodt{angle}{mtlSVR} gets the second best MAE score.
+When the MSE scores are analyzed, the roles are reversed, the \fmodt{angle}{mtlSVR} gets the best result, and the \fmod{ctlSVR} and the equivalents MTL approaches are second.
+
+%
+This advantage of the CTL approach can find its roots on poorly defined tasks, which do not have a strong relation with the energy production. Also, the definition of the tasks is made using the train set, data from year 2016, which may not be useful to the validation or test years.
+Nevertheless, the MTL approaches, having the possibility of blending to either CTL or ITL approaches get the best results too.
+
+%
+In this wind energy problem, the persistence forecasts, which again predict the energy production the previous day at the same hour, obtain an error of $15.64\%$, which is quite large and represent a $150\%$ increase on the lowest error using SVRs. This is not unusual, since the wind velocity or angle between two different days are not necessarily correlated.
+%
+With the neural network regressor, the error is a $6.66\%$, which is also greater than any of the models considered.
+
+\begin{figure}[H]
+    \centering%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_ctl_stv.pdf}
+    \label{fig:best_ctl_stv}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_itl_stv.pdf}
+    \label{fig:best_itl_stv}}\quad%
+    \subfloat[]{%
+    \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter4/energies/best_mtl_stv.pdf}
+    \label{fig:best_mtl_stv}}\\
+ \caption{\label{fig:stv_best_plots} Real energy production against prediction made by the best CTL~\protect\subref{fig:best_ctl_stv}, ITL~\protect\subref{fig:best_itl_stv}, and MTL~\protect\subref{fig:best_mtl_stv} models for Sotavento; the perfect prediction line is shown in orange. The~units of the axis are percentages points of the total PV energy~installed.}
+ \end{figure}
+
+%
+Again, we plot the predictions agains the target values of the CTL model and best ITL,~\fmodt{angle}{itlSVR}, and pure MTL, \fmodt{angle}{mtlSVR} approaches.
+The presence of points with zero production is noticeable, but this is relatively frequent in wind energy. It can be caused either by energy curtailments or by maintenance periods of the wind farm.
+Also, it is appreciable the frequency of small production values, below \SI{20}{\percent}, which is due to the approximate Weibull distribution of wind speeds, where small speed values have higher frequencies. 
+With these considerations, it is difficult to compare the plots and find significant differences in model performance.
+
+
+
+
+
+
+
+\subsection{Conclusions}
+
+\paragraph*{old\\}%
+
+We finally observe that while the wind MAEs in percentage are similar to those in PV, when compared with the energy produced, the~performance of wind models is actually worse.
+In fact, in~Table~\ref{table:comparison} we compare the percentage MAE against the average generated energy as a percentage of installed power.
+As~it can be seen, the~ratio between the percentage MAE and the percentage average energy is about $34.78\%$ for Sotavento, much higher than the $22.50\%$ of Majorca and the $14.92\%$ of~Tenerife.
+
+\begin{table}[H]
+    \caption{{Comparison}        %Please remove font in the Table
+     of the percentage MAEs with the average energy produced as a percentage of installed~power.}
+    \centering
+    \label{table:comparison}
+    %% \tablesize{} %% You can specify the fontsize here, e.g.,~\tablesize{\footnotesize}. If commented out \small will be used.
+    \begin{tabular}{lccc}
+    \toprule
+ & \fhead{MAE (\%)} & \fhead{Avg. Target (\%)} & \fhead{Ratio} \\
+	\midrule
+\fdata{majorca} & 6.740 & 29.954 & 22.50 \\
+\fdata{tenerife} & 4.993 & 33.462 & 14.92 \\
+\fdata{sotavento} & 6.186	& 17.784 & 34.78 \\
+\bottomrule
+    \end{tabular}
+\end{table}
+
+
 
 \section{Conclusions}\label{sec-conclusions-3}
 

@@ -41,6 +41,8 @@
 \usepackage{glossaries}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{textcomp}   % to use the permyriad symbol
+
 
 %algorithm2e
 %%% Coloring the comment as blue
@@ -110,6 +112,9 @@
 \newacronym{cv}{CV}{Cross Validation}
 
 \newacronym{rkhs}{RKHS}{Reproducing Kernel Hilbert Space}
+
+\newacronym{mae}{MAE}{Mean Absolute Error}
+\newacronym{mse}{MSE}{Mean Squared Error}
 
 
 % My definitions
@@ -241,6 +246,7 @@
 \newcommand{\Var}{\mathrm{Var}}
 \newcommand{\Cov}{\mathrm{Cov}}
 
+
 % Tables
 \newcommand{\fcode}[1]{\texttt{#1}}
 \newcommand{\fheadmulti}[2]{\multicolumn{#1}{c}{\boldmath\textbf{#2}}}
@@ -249,6 +255,18 @@
 \newcommand{\fmaxn}[1]{\textbf{#1}}
 \newcommand{\fdata}[1]{\textsf{#1}}
 \newcommand{\fmod}[1]{\textsf{#1}}
+\newcommand{\ftt}[1]{\text{#1}}
+
+% energies
+\newcommand{\fmodt}[2]{\fmod{(#1)}\_\fmod{#2}}
+
+% Units
+\DeclareSIUnit\utc{UTC}
+\newcommand{\utc}[1]{\SI[parse-numbers=false]{#1}{\utc}}
+\newcommand{\mwh}[1]{\SI{#1}{\mega{\watt\hour}}}
+\newcommand{\mw}[1]{\SI{#1}{\mega\watt}}
+\newcommand{\mwhu}{\si{\mega{\watt\hour}}}
+\newcommand{\km}[1]{\SI{#1}{\kilo\metre}}
 
 % Macros
 \newcommand{\diagrams}{../Diagrams}

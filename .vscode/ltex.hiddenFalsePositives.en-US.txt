@@ -1,0 +1,1 @@
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QTo test the Convex MTL neural networks we use four Multi-Task image datasets: var-MNIST, rot-MNIST, based on MNIST \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q, and var-FMNIST, rot-FMNIST, based on fashion-MNIST \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
