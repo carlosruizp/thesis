@@ -305,9 +305,13 @@ Combined, we have a multi-task kernel matrix $\widehat{\fm{Q}} = (1/\mu) \fm{Q} 
     \nonumber
     \widehat{k}(\fv{x}_i^r, \fv{x}_j^s) = \frac{1}{\mu} k(\fv{x}_i^r, \fv{x}_j^s) + \delta_{rs} k_r(\fv{x}_i^r, \fv{x}_j^s) .
 \end{equation}
+Here we are using two different kernels: a common one $k(x, \tilde{x})$ and a task-specific one $k_r(x, \tilde{x})$, each being the reproducing kernels for the common and task-specific transformations, respectively. That is,
+$k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and $k_r(x, \tilde{x}) = \dotp{\phi_r(x)}{\phi_r(\tilde{x})}$.
+
 %   Discussion: Primal vs Dual
 The dual problem~\eqref{eq:svmmtl_dualvec_add} is very similar to the standard one but we have two major differences: the use of the multi-task kernel matrix $\widehat{\fm{Q}}$ and the multiple equality constraints. These constraints, which appear in~\eqref{eq:specific_eqconstr_add} are consequence of the specific biases used in the primal problem~\eqref{eq:svmmtl_primal_add}. In~\cite{CaiC12} the authors develop a Generalized SMO algorithm to account for these multiple equality constraints.
-Hyperparameter $C$ is an upper bound for the dual coefficients, as in the standard case, but with a different bound for each task. The hyperparameter of interest for this MTL formulation is $\mu$, which, in the dual problem, scales the common matrix $\fm{Q}$. As with the primal formulation, we can define three different cases:
+
+Analyzing the hyperparameters influence in the dual problem, note that $C$ is an upper bound for the dual coefficients, as in the standard case, but with a different bound for each task; and, the hyperparameter of interest for this MTL formulation, which is $\mu$, scales the common matrix $\fm{Q}$. As with the primal formulation, we can define three different cases:
 \begin{itemize}
     \item Reduction to an ITL approach:
     $$\mu \tendsto{}{\infty} \implies  h_r(\hat{x}) = \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace k_r(x_i^r, \hat{x}) \right\rbrace + b_r .$$
@@ -361,9 +365,9 @@ In~\eqref{eq:svmmtl_primal_convex}, depending on the value of hyperparameters $C
     \item Pure MTL approach:
     $$ 0 < \lambda_r < 1 ; r=1, \ldots, \ntasks \implies h_r(\hat{x}) = \lambda_r ({w} \cdot \phi(\hat{x}) + b ) + (1 - \lambda_r) ({v}_r \cdot \phi_r(\hat{x}) + b_r) .$$
 \end{itemize}
-Observe that now the cases are not asymptotical but have clear values, 0 for ITL and 1 for MTL, while all the values in the open $(0, 1)$ yield pure MTL models. Also, the parameter $C$ no longer interferes with these cases and only $\lambda_r$ calibrates the specifity of the models.
+Observe that now the cases are not asymptotical but have attainable values, 0 for ITL and 1 for MTL, while all the values in the open $(0, 1)$ yield pure MTL models. Also, the parameter $C$ no longer interferes with these cases and only $\lambda_r$ calibrates the specifity of the models.
 %   Lagrangian/KKT
- To obtain the dual problem the Lagrangian of problem~\eqref{eq:svmmtl_primal_convex}:
+ The Lagrangian of problem~\eqref{eq:svmmtl_primal_convex} is
 \begin{equation}\label{eq:svmmtl_lagrangian_convex}
     \begin{aligned}
         & \lagr({w}, {v}_1, \ldots, {v}_\ntasks, b, d_1, \ldots, d_\ntasks, \fv{\xi}, \fv{\alpha}, \fv{\beta}) \\
@@ -451,7 +455,8 @@ whose corresponding multi-task kernel function can be expressed as
     \label{eq:conv_mtl_kernel_fun}
     \widehat{k}(\fv{x}_i^r, \fv{x}_j^s) = \lambda_r^2 k(\fv{x}_i^r, \fv{x}_j^s) +  \delta_{rs} (1-\lambda_r)^2 k_r(\fv{x}_i^r, \fv{x}_j^s) ,
 \end{equation}
-and then, we can define the kernel matrix as 
+where again we are using the common kernel $k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and task-specific kernels $k_r(x, \tilde{x}) = \dotp{\phi_r(x)}{\phi_r(\tilde{x})}$ for $r=1, \ldots, \ntasks$.
+Then, we can define the kernel matrix as 
 \begin{equation}
     \nonumber
     \widehat{\fm{Q}} = 
@@ -483,7 +488,7 @@ The properties that are found in the primal formulation are also present in the 
 % Equivalence results
 Both the {additive} and {convex} MTL SVM approaches solve a similar problem, but there is a change in the formulation to get rid of a regularization hyperparameter $\mu$ in favor of those defining convex combination of models, hyperparameters $\lambda_r$.
 Both approaches offer similar properties: ranging the value of their hyperparameters to go from completely common to completely independent models, and passing through pure multi-task models.
-However, it is not totally trivial what is the relation between those two approaches.
+However, it is not obvious what is the relation between those two approaches.
 % Lemmas
 In~\cite{RuizAD19} we provide two propositions to show the equivalence between {additive} and {convex} MTL SVM formulations.
 \begin{prop}\label{prop:add_conv_equiv}
@@ -533,10 +538,10 @@ Consider the dual problem of the convex formulation when $\lambda_1 = \ldots = \
     & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\frac{\lambda^2}{(1 - \lambda)^2} \fm{Q} + \frac{(1 - \lambda)^2}{(1 - \lambda)^2} \fm{K} \right) \fv{\alpha} - \frac{1}{(1 - \lambda)^2} \fv{p} \fv{\alpha} \\
     & \text{s.t.}
     & & 0 \leq \alpha_i^r \leq C_\text{conv} ; \; i=1, \ldots, m_r; r=1, \ldots, \ntasks \\
-    & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;  r=1, \ldots, \ntasks , \\
+    & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
-and consider the change of variables 
+Now consider the change of variables 
 $ \fv{\beta} = (1 - \lambda)^2 \fv{\alpha}$, then we obtain the problem
 \begin{equation}\nonumber
     \begin{aligned}
@@ -568,7 +573,7 @@ The L2-SVM~\cite{Burges98} is a variant of the standard SVM where the hinge loss
 
 The LS-SVM~\citep{SuykensV99} is another variant of the standard SVM where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive class.
 
-In this subsection I present an extension of the convex MTL formulation to both L2 and LS-SVM.
+In this subsection an extension of the convex MTL formulation to both L2 and LS-SVM is presented.
 
 % Convex Approach
 \paragraph*{{Convex} MTL L2-SVM.\\}
@@ -694,11 +699,12 @@ The primal problem for the convex MTL LS-SVM, presented in~\cite{RuizAD21}, is
 \begin{equation}\label{eq:svmmtl_primal_convex_ls}
     \begin{aligned}
     & \argmin_{w, {v}_r, \xi}
-    & & {J({w}, {v}_r, \xi) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r}^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
+    & & {J({w}, {v}_r, \xi) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} \left({\xi_{i}^r}\right)^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
     & \text{s.t.}
     & & y_{i}^r \left(\lambda_r \left\lbrace {w} \cdot \phi(x_{i}^r) + b  \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r \cdot \phi_r(x_{i}^r) + b_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r .  \\
     \end{aligned}
 \end{equation}
+Observe that it differs with the L1-SVM from~\eqref{eq:svmmtl_primal_convex} and L2-SVM from~\eqref{eq:svmmtl_primal_convex_l2}
 The prediction model is again
 \begin{equation}
     \nonumber
@@ -712,7 +718,7 @@ for regression and
 for classification.
 %
 
-As in the standard variant, hyperparameter $C$ regulates the trade-off between the loss and the margin size of each task-specialized model $h_r$, while $\lambda_r$ indicates how specific or common these models are in the range of $[0, 1]$. With $\lambda_1, \ldots, \lambda_\ntasks=0$ we have independent models for each task and for $\lambda_1, \ldots, \lambda_\ntasks=1$ we have a common model for all tasks. 
+As in the standard variant, hyperparameter $C$ regulates the trade-off between the loss and the margin size, while $\lambda_r$ indicates how specific or common these models are in the range of $[0, 1]$. With $\lambda_1, \ldots, \lambda_\ntasks=0$ we have independent models for each task and for $\lambda_1, \ldots, \lambda_\ntasks=1$ we have a common model for all tasks. 
  
 
 
@@ -743,15 +749,15 @@ The gradients with respect to the primal variables are
 Since all $\alpha_i^r \in \reals$ are feasible, we can also write the corresponding KKT conditions as
 \begin{equation}
     \nonumber
-    \diffp{\lagr}{\alpha_i^r} = 0 \implies y_{i}^r \left(\lambda_r \left\lbrace {w} \cdot \phi(x_{i}^r) + b  \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r \cdot \phi_r(x_{i}^r) + b_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r  .
+    \diffp{\lagr}{\alpha_i^r} = 0 \implies y_{i}^r \left(\lambda_r \left\lbrace {w} \cdot \phi(x_{i}^r) + b  \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r \cdot \phi_r(x_{i}^r) + b_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r  ,
 \end{equation}
-Using Equations~\eqref{eq:common_repr_conv_ls} and~\eqref{eq:specific_repr_conv_ls} to substitute $w$ and $v_r$, and~\eqref{eq:xi_feas_conv_ls} to replace $\xi_i^r$, we can express these conditions as 
+and, using Equations~\eqref{eq:common_repr_conv_ls} and~\eqref{eq:specific_repr_conv_ls} to substitute $w$ and $v_r$, and~\eqref{eq:xi_feas_conv_ls} to replace $\xi_i^r$, we can express this condition as 
 \begin{equation}
     \begin{aligned}
         &y_{i}^r \left(\lambda_r \left\lbrace \left\langle\sum_{s= 1}^\ntasks \lambda_s \sum_{j=1}^{m_s} {\alpha_j^s} y_j^s \phi(x_j^s) , \phi(x_{i}^r) \right\rangle  \right\rbrace \right) \\
         &\qquad y_{i}^r \left( (1 - \lambda_r) \left\lbrace \left\langle (1 - \lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r}  y_j^r \phi_r(x_j^r) , \phi_r(x_{i}^r) \right\rangle + b_r \right\rbrace  \right) = p_{i}^r - \frac{1}{C}\alpha_{i}^r  \\
         &\quad\implies  \left(\lambda_r \left\lbrace \sum_{s= 1}^\ntasks \lambda_s \sum_{j=1}^{m_s} {\alpha_j^s} y_{i}^r y_j^s k(x_j^s, x_{i}^r)  + y_i^r b \right\rbrace \right) \\
-        &\qquad  \left( (1 - \lambda_r) \left\lbrace (1 - \lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r} y_{i}^r  y_j^r k_r(x_j^r, x_{i}^r)  + y_i^r b_r \right\rbrace  \right) + \frac{1}{C}\alpha_{i}^r  = p_{i}^r 
+        &\qquad  \left( (1 - \lambda_r) \left\lbrace (1 - \lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r} y_{i}^r  y_j^r k_r(x_j^r, x_{i}^r)  + y_i^r b_r \right\rbrace  \right) + \frac{1}{C}\alpha_{i}^r  = p_{i}^r .
     \end{aligned}
 \end{equation}
 % The corresponding system of equations can be written as
@@ -791,7 +797,7 @@ where $\fv{0}_\ntasks$ is the zero vector of length $\ntasks$, $\fm{0}_{\ntasks 
     \nonumber
     \underset{\ntasks \times N}{\fm{A}^\intercal} =
     \begin{bmatrix}
-      \overbrace{1  \ldots 1}^{n_1} & \ldots & \overbrace{0 \ldots 0}^{n_\ntasks} \\
+      \overbrace{1  \ldots 1}^{\npertask_1} & \ldots & \overbrace{0 \ldots 0}^{\npertask_\ntasks} \\
        \ddots   & \ddots & \ddots \\
       0 \ldots 0 & \ldots &  1  \ldots 1
     \end{bmatrix} , \;
@@ -800,7 +806,7 @@ where $\fv{0}_\ntasks$ is the zero vector of length $\ntasks$, $\fm{0}_{\ntasks 
         y_1^1 & 0 & \ldots & 0 \\
         0 & y_2^1 & \ldots & 0 \\
         \vdots & \vdots & \ddots & \vdots \\
-        0 & 0 & \ldots & y_{n_\ntasks}^\ntasks
+        0 & 0 & \ldots & y_{\npertask_\ntasks}^\ntasks
     \end{bmatrix} .
 \end{equation}
 Again, $\widehat{\fm{Q}}$ is the convex MTL kernel matrix defined in~\eqref{eq:conv_mtl_kernel_matrix} and, as in the L2-SVM, a diagonal term $\frac{1}{C} \fm{I}_\nsamples$ is added.
@@ -944,7 +950,10 @@ In the following subsections we show how to select the optimal parameters $\lamb
     \caption{Squared value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:sq_loss}
 \end{figure}
-This is the simplest case, since the squared loss is differentiable.
+This is the simplest case, since the squared function,
+$f(x) = x^2 ,$
+is differentiable, and its derivative is 
+$\nabla f(x) = 2x$; both are shown in Figure~\ref{fig:sq_loss}.
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the squared loss is
 \begin{equation}
     \label{eq:opt_sq}
@@ -968,6 +977,8 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
     \label{fig:sq_error}
 \end{figure}
 
+In Figure~\ref{fig:sq_error} the error function using $10$ random pairs $(c_i, d_i)$ and its corresponding differential is shown.
+
 \paragraph*{Absolute loss.\\}
 \begin{figure}[t!]
     \centering
@@ -975,6 +986,26 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
     \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:abs_loss}
 \end{figure}
+The absolute function 
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    -x & x \leq 0, \\
+    x & x > 0    
+    \end{cases}
+\end{equation}
+is not differentiable at $0$, but the subgradient can be expressed at any point as
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    -1 & x < 0, \\
+    [-1, 1] & x = 0 , \\
+    1 & x > 0 
+    \end{cases},
+\end{equation}
+which is illustrated in Figure~\ref{fig:abs_loss}.
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the absolute value loss is
 \begin{equation}
     \label{eq:opt_abs}
@@ -1008,8 +1039,29 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \caption{Error using absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:abs_error}
 \end{figure}
+The result of this proposition is depicted in Figure~\ref{fig:abs_error}, where the error and its corresponding subgradient is computed for $10$ random pairs $(c_i, d_i)$.
 
 \paragraph*{Hinge loss.\\}
+The positive part function 
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    0 & x \leq 0, \\
+    x & x > 0    
+    \end{cases}
+\end{equation}
+is not differentiable at $0$, but, again, the subgradient can be expressed at any point as
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    0 & x < 0, \\
+    [0, 1] & x = 0 , \\
+    1 & x > 0 
+    \end{cases},
+\end{equation}
+which is illustrated in Figure~\ref{fig:hinge_loss}.
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_hinge.pdf}
@@ -1050,7 +1102,29 @@ In~\citet[Proposition 2]{RuizAD21} we present a result to get the optimal $\lamb
     \label{fig:hinge_error}
 \end{figure}
 
+Again, the results of the proposition are illustrated in Figure~\ref{fig:hinge_error}, where $10$ pairs $(c_i, d_i)$ are randomly sampled, and the corresponding error function $\mathcal{J}(\lambda)$ and its subgradient are shown.
+
 \paragraph*{Squared hinge loss.\\}
+The squared positive part function is
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    0 & x \leq 0, \\
+    x^2 & x > 0    
+    \end{cases}
+\end{equation}
+and its gradient can be expressed at any point as
+\begin{equation}
+    \nonumber
+    f(x) = 
+    \begin{cases}
+    0 & x \leq 0, \\
+    2x & x > 0 
+    \end{cases},
+\end{equation}
+which is illustrated in Figure~\ref{fig:hinge_loss}.
+Although the gradient can be defined at any point, the definition by parts makes it difficult to obtain results.
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_sqhinge.pdf}
@@ -1095,7 +1169,7 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
     \label{fig:sqhinge_error}
 \end{figure}
 
-
+As with the other losses, the error function and respective gradient for $10$ random pairs $(c_i, d_i)$ are represented in Figure~\ref{fig:sqhinge_error}.
 
 
 
@@ -1110,7 +1184,7 @@ Then, the experiments of~\citep{RuizAD21} are exposed, where all convex MTL mode
 
 Before diving into the results, some technical details have to be explained. The convex MTL formulation, as presented in Equation~\eqref{eq:svmmtl_primal_convex}, uses task-specific hyperparameters $\lambda_r$, as well as common and task-specific kernels, with their corresponding hyperparameters; however, the selection of hyperparameters is always a challenge because of the curse of dimensionality. 
 %
-To select the hyperparameters of a learning algorithm using CV the following problem is solved:
+To select the hyperparameters $p_1, \ldots, p_L$ of a learning algorithm using CV the following problem is solved:
 \begin{equation}
     \label{eq:hp-selection_general}
     p_1^*, \ldots, p_L^* = \argmin_{p_i \in \mathcal{S}_{p_i}, i=1, \ldots, L} \sum_{j=1}^{F} \rho(\mathcal{A}(p_1, \ldots, p_L; (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
@@ -1206,16 +1280,16 @@ Then, the $r$-th task consists on estimating $m_r$ and $n_r$ from data. To do th
 %
 Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes; in this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
 %
-With this synthetic problem, we train four convex MTL models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding additive MTL models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
+With this synthetic problem, we train four convex MTL models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding equivalent additive MTL models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
 %
-Our goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so the regularization and, therefore, $\mu$ are relevant; then, we use $C_{\text{conv}} = 10^{-2}$. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:lines_slopes}, right, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the convex slopes and in the $y$ axis the additive ones. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
+Our goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so the regularization and, therefore, $\mu$ are relevant; the value $C_{\text{conv}} = 10^{-2}$ is found to be useful. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:lines_slopes}, right, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the convex slopes and in the $y$ axis the additive ones. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
 
 %
 To further compare the two formulations, to visualize how the change on the hyperparameters imposes a change on the final models. Using the already described synthetic problem of Figure~\ref{fig:lines_slopes}, left, we select values of $\lambda$ ranging from $0$ to $1$, and their corresponding values $\mu = (1-\lambda)^2 / \lambda^2$, and fit convex and additive MTL linear SVMs using these values. In Figure~\ref{fig:synthetic_specWeights} we show the coefficients obtained for the common and task-specific parts with the additive formulation (left) and convex one (right).
 %
 We can observe how both graphics show a similar behaviour, with the common model starting in $0$ when $\mu$ is large or $\lambda=0$, and, as $\mu$ decreases and $\lambda$ grow, the task-specific parts go to zero and the common model reaches the optimal value for CTL.
 %
-However, two facts are noticeable, the first one is the range of hyperparameters needed for each formulation. While the convex formulation always uses $[0, 1]$, with the additive formulation it seems that $(10^{-3}, 10^3)$ is useful in this problem, but we cannot extrapolate to other problems. The second one is the smoother transition of the convex formulation, where the changes are steadily made, while with the additive one the changes look more abrupt.
+However, two facts are noticeable, the first one is the range of hyperparameters needed for each formulation; while the convex formulation always uses $[0, 1]$, with the additive formulation it seems that $(10^{-3}, 10^3)$ is useful in this problem, but we cannot extrapolate to other problems; the second one is the smoother transition of the convex formulation, where the changes are steadily made, while with the additive one the changes look more abrupt.
 
 
 
@@ -1504,7 +1578,7 @@ For the regression problems, in Tables~\ref{tab:error_models_reg_mae_mae} and~\r
 \paragraph*{Results.}
 The tables with the numerical results have three blocks, one for each variant L1, L2 or LS-SVMs, and, in each block, for each problem we show in bold the model with best test results.
 %
-We also provide a statistical significant ranking based on the Wilcoxon test. The Wilcoxon test is a pairwise test that checks whether the difference of two samples has its median in 0, i.e., the distribution is symmetric around 0. Instead of showing every Wilcoxon test result between all pairs of models, which would result in a $12x12$ matrix difficult to interpret, we take the following approach. We first sort the models, according to some criterion, and test the significance between one model and next in the sorting order. Then we create a new significant ranking, the ranking increases only if this difference is significant. For example, if there are no significant differences between the first and second model, according the sorting order, they both obtain the ranking of $1$.
+We also provide a statistical significant ranking based on the Wilcoxon test. The Wilcoxon test is a pairwise test that checks whether the difference of two samples has its median in 0, i.e., the distribution is symmetric around 0. Instead of showing every Wilcoxon test result between all pairs of models, which would result in a $12 \times 12$ matrix difficult to interpret, we take the following approach. We first sort the models, according to some criterion, and test the significance between one model and next in the sorting order. Then we create a new significant ranking, the ranking increases only if this difference is significant. For example, if there are no significant differences between the first and second model, according the sorting order, they both obtain the ranking of $1$.
 
 %Regression
 In the regression tables, apart from the test scores, we provide a Wilcoxon-based ranking for each problem. 
