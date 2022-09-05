@@ -1376,16 +1376,16 @@ Since the regularizer is clearly increasing in $\norm{w}^2$, we can apply the Re
 Using the correspondence between $\myvec{u}^*$ and $\myvec{w}^*$, 
 \begin{equation}
     \nonumber
-    \myvec{u}^* = B^\intercal \myvec{w}^* =  \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r)).
+    \myvec{u}^* = (B^\intercal \otimes I) \myvec{w}^* =  \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r)).
 \end{equation}
 Then, we can recover the predictions corresponding to the solutions $u_r^*$ as
 \begin{equation}
     \nonumber
     \begin{aligned}
-        \dotp{u_r}{\phi(\hat{x}^s)} &= \dotp{\myvec{u}}{e_s \otimes \phi(\hat{x}^s)} \\
-        &= \dotp{\sum_{s=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r))}{e_s \otimes \phi(\hat{x}^s)} \\
-        &= \sum_{s=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  \dotp{B_s}{B_r} \dotp{\phi(x_i^r)}{\phi(x_s)} \\
-        &= \sum_{s=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  (E^{-1})_{rs} k(x_i^r, \hat{x}^s).
+        \dotp{u_s}{\phi(\hat{x}^s)} &= \dotp{\myvec{u}}{e_s \otimes \phi(\hat{x}^s)} \\
+        &= \dotp{\sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r))}{e_s \otimes \phi(\hat{x}^s)} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  \dotp{B_s}{B_r} \dotp{\phi(x_i^r)}{\phi(x_s)} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  (E^{-1})_{rs} k(x_i^r, \hat{x}^s).
     \end{aligned}
 \end{equation}
 \end{proof}
