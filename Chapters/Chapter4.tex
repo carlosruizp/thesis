@@ -96,7 +96,7 @@ In~\cite{RuizAD19} we propose an alternative formulation for this joint learning
 where $\lambda \in \left[0, 1\right]$ is a hyperparameter.
 More specifically, and using the formulation of~\eqref{eq:convexmtl_general}, we define the common part as $g(x) =  {w}^\intercal {\phi(x)} + b$ and the task-specific parts as $g_r(x) = {v_r}^\intercal {\phi_r(x)} + b_r$, so the MTL models are
 \begin{equation}
-    \nonumber
+    \label{eq:convexmtl_modeldef}
     h_r(x_i^r) = \lambda \left\lbrace {w}^\intercal {\phi(x_i^r)} + b \right\rbrace + (1 - \lambda) \left\lbrace {v}_r^\intercal {\phi_r(x_i^r)} + b_r \right\rbrace ,
 \end{equation}
 and the corresponding regularized risk is 

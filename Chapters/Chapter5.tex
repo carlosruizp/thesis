@@ -22,14 +22,15 @@ In the graph Laplacian strategies, the idea is based on penalizing the distance 
     f_r(x) = w_r \cdot \phi({x}) + b_r
 \end{equation}
 where $\phi(x)$ is a transformation, which can be the identity $\phi(x)=x$ in linear models, or an implicit transformation to an \acrshort{rkhs} in kernel models.
-Here, the models are defined by the parameter $w_r$, so pushing together these parameters enforces the models to be similar. Then, the regularization used is 
+Here, the models are defined by the parameter $w_r$, so pushing together these parameters enforces the models to be similar. 
+The idea is to assume that the relationship between tasks can be modelled using a graph, then the adjacency matrix $\fm{A}$ of such graph is used to define the regularization
 \begin{equation}
     \label{eq:gl_regularization}
     \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{w_r - w_s}^2
 \end{equation}
 where $A_{rs}$ are positive scalars that weight the pairwise distances.
 Although the meaning of~\eqref{eq:gl_regularization} is clear for the linear case, it is not that direct in the case of kernel models where, as shown in the Representer Theorem, the optimal parameters $w_r^*$ are elements of an \acrshort{rkhs}.
-Here, a framework to use the graph Laplacian regularization with kernel models is presented. This is implemented with L1, L2 and LS-SVMs. Moreover, the graph Laplacian strategy is combined with the convex joint learning one presented in Chapter~\ref{Chapter3}.
+In this Chapter, a framework to use the graph Laplacian regularization with kernel models is presented. This is implemented with L1, L2 and LS-SVMs. Moreover, the graph Laplacian strategy is combined with the convex joint learning one presented in Chapter~\ref{Chapter3}.
 %
 
 Besides, the definition of the weights $A_{rs}$ is not trivial, and it is crucial for the good performance of this strategy. 
@@ -47,12 +48,13 @@ Observe that we can express the Laplacian regularization as
     \nonumber
     \Omega(w_1, \ldots, w_\ntasks) = \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 =  \sum_{r=1}^T \sum_{s=1}^T A_{rs} \left\{ \norm{w_r}^2 + \norm{w_s}^2 - 2 \langle w_r, w_s \rangle \right\}.
 \end{equation}
-Here, the complexity of the models is being controlled by penalizing the norms of the parameters $w_r$. However, we also substract the cross inner products, and it can be possible that some tasks are very similar, which would result in models $w_r$ and $w_s$ that are roughly equal. In the extreme case where all the tasks are equal, a single model $w_r = w$ can be used for all tasks, and therefore there is no regularization. This means that the common model $w$ can be as complex as necessary, which may result in an overfitting model, which can be solved with an additional regularization.
+Here, only the distance between model parameters is penalized, and in the extreme case where all the tasks can use the same model, i.e. $w_r = w$, there would be no regularization for the complexity of such model $w$.
+This problem can be solved by adding the individual model regularization aside from the Laplacian one.
 To illustrate this, we first use a linear L1-SVM, whose primal problem is
 \begin{equation}\label{eq:linear_gl_primal}
 \begin{aligned}
-& \argmin_{w_r, \xi}
-& & {J(w_r, \xi) =  \sum_{r=1}^T C_r \sum_{i=1}^m{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 }\\
+& \argmin_{\substack{w_1, \ldots, w_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}; }}
+& & {\sum_{r=1}^T C_r \sum_{i=1}^m{\xi_{i}^r} + \frac{\nu}{4} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 }\\
 & \text{s.t.}
 & & y_{i}^r ( w_r \cdot x_{i}^r + b_r) \geq p_{i}^r - \xi_{i}^r , \;  i=1,\ldots,m_r; \;  r=1,\ldots,T,\\
 & & & \xi_{i}^r \geq 0, \;  i=1,\ldots,m_r; \;  r=1,\ldots,T \; .
@@ -61,13 +63,13 @@ To illustrate this, we first use a linear L1-SVM, whose primal problem is
 The corresponding Lagrangian is
 \begin{equation}\label{eq:svmmtl_lagr_GL_addreg}
 \begin{aligned}
-        \mathcal{L}&(w_r, b_r, \fv{\alpha}, \beta) = C \sum_{r=1}^T \sum_{i=1}^{m_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 \\
+        \mathcal{L}&(w_1, \ldots, w_\ntasks, b_r, \fv{\alpha}, \fv{\beta}) = C \sum_{r=1}^T \sum_{i=1}^{m_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 \\
         & - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \alpha_i^r [y_{i}^r (w_r \cdot x_{i}^r + b_r) - p_{i}^r + \xi_{i}^r]   } - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \beta_i^r \xi_i^r } \; .
 \end{aligned}
 \end{equation}
 And the derivatives of the Lagrangian with respect the primal variables are
 \begin{align}
-& \frac{\partial \mathcal{L}}{\partial w_r} = 0 \implies  w_r^* + \nu \sum_{s=1}^T (A_{rs} + A_{sr}) (w_r^* - w_s^*)= \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r} \label{eq:partial_w_r_addreg} \; , \\
+& \frac{\partial \mathcal{L}}{\partial w_r} = 0 \implies  w_r^* + \frac{\nu}{2} \sum_{s=1}^T (A_{rs} + A_{sr}) (w_r^* - w_s^*)= \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r} \label{eq:partial_w_r_addreg} \; , \\
 & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0 \label{eq:partial_b_r_addreg} \; ,\\
 & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C_r - \alpha_i^r - \beta_i^r = 0 \; \label{eq:partial_xi_addreg}\; .
 \end{align}
@@ -85,9 +87,9 @@ and consider also the matrices
     \underset{\ntasks \dimx \times \ntasks \dimx}{E} = \left\lbrace I_T + \nu L \right\rbrace \otimes I_d, \;
     \underset{\ntasks \times \ntasks}{L} =
     \begin{bmatrix}
-        \sum_s A_{1s} & - A_{12} & \ldots & - A_{1T} \\
+        \sum_{s \neq 1} A_{1s} & - A_{12} & \ldots & - A_{1T} \\
         \vdots & \vdots & \ddots & \vdots \\
-        A_{\ntasks 1} & A_{\ntasks 2} & \ldots & \sum_s A_{\ntasks s}
+        A_{\ntasks 1} & A_{\ntasks 2} & \ldots & \sum_{s \neq \ntasks} A_{\ntasks s}
     \end{bmatrix}
 \end{equation*}
 and
@@ -115,7 +117,7 @@ With these definitions and using the derivatives to substitute in the Lagrangian
 \end{align*}
 Here, the block structure of $\Phi$ and $E$ allow to write the following result 
 \begin{equation}
-    \nonumber
+    \label{eq:laplacian_block_linear}
     \Phi E^{-1} \Phi^\intercal = 
     \begin{bmatrix}
         E^{-1}_{11} X_1 X_1^\intercal & E^{-1}_{12} X_1 X_2^\intercal & \ldots & E^{-1}_{1\ntasks} X_1 X_\ntasks^\intercal \\
@@ -126,11 +128,13 @@ Here, the block structure of $\Phi$ and $E$ allow to write the following result
 \end{equation}
 That is, $\Phi E^{-1} \Phi^\intercal = \widetilde{Q}$, where $ \widetilde{Q}$ is the kernel matrix corresponding to the kernel function 
 \begin{equation}
-    \nonumber
+    \label{eq:kernelfun_gl}
     \widetilde{k}(x_i^r, y_j^s) =  (I_T + \nu L)^{-1}_{rs} \dotp{x_i^r}{x_j^s}.
 \end{equation}
+Here, the individual regularization of the primal problem leads to the diagonal term added, which ensures the invertibility of the matrix $(I_T + \nu L)$.
+Thus, this additional regularization ultimately makes the solution of the problem more numerically stable.
 Using this result, the corresponding dual problem is
-\begin{equation}\label{eq:gl_linear_dual}
+\begin{equation}\label{eq:linear_gl_dual}
     \begin{aligned}
         & \argmin_{\fv{\alpha}} 
         & & \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^t \widetilde{Q} \fv{\alpha} - p \fv{\alpha} \\
@@ -142,55 +146,46 @@ Using this result, the corresponding dual problem is
 
 
 \paragraph*{Non-Linear Case.\\}
-
-
-\subsection{Graph Laplacian and Convex Combination MTL}
-
-
-
-In~\cite{RuizAD21_hais} we proposed a convex formulation of the Graph Laplacian MTL SVM which includes a common regularization term and whose primal problem is
-%
-\begin{equation}\label{eq:primal_cvx-graphLap}
-  \begin{aligned}
-  & \argmin_{\myvec{w}, \myvec{v}_1, \ldots, \myvec{v}_T, b , \myvec{\xi}}
-  & & { \sum_{r=1}^T C_r \sum_{i=1}^{n_r} {\xi_i^r}  + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} {\| \myvec{v}_r - \myvec{v}_s \|}^2 + \frac{1}{2} \sum_r \norm{\myvec{v}_r}^2 + \frac{1}{2} \norm{\myvec{w}}^2} \\
-  & \text{s.t.}
-  & & y_i^r (\lambda (\myvec{w} \cdot \myvec{x}_i^r) + (1 - \lambda) (\myvec{v}_r \cdot \myvec{x}_i^r) + b_r) \geq p_i^r - \xi_i^r  ,\\
-  & & & \xi_i^r \geq 0,  \;  i = 1, \dotsc, n_r, \; r=1, \dotsc, T .
-  \end{aligned}
+When we use an implicit kernel transformation, the result~\eqref{eq:laplacian_block_linear} is not direct. However, we can use the result from Lemma~\ref{lemma:regproblems_kernel}.
+Observe that
+\begin{align*}
+    \myvec{v}^\intercal (I_T \otimes I_d) \myvec{v} &= \sum_{r=1}^T \norm{v_r}^2 , \\
+    \myvec{v}^\intercal (L \otimes I_d) \myvec{v} &= \frac{1}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{v_r - v_s}^2 .
+\end{align*}
+To check the second equation, see
+\begin{align*}
+    \myvec{v} (\mymat{L} \otimes \mymat{I}_d) \myvec{v} &= \myvec{v} (\mymat{D} \otimes \mymat{I}_d) \myvec{v} - \myvec{v} (\mymat{A} \otimes \mymat{I}_d) \myvec{v} \\
+    &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks D_{rs} v_r^\intercal v_s - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
+    &= \sum_{r=1}^\ntasks D_{rr} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
+    &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
+    &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s)  \\
+    &= \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace A_{rs}  (v_r^\intercal v_r - v_r^\intercal v_s) + A_{sr} (v_s^\intercal v_s - v_s^\intercal v_r) \rbrace \\
+    &=
+    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  (v_r^\intercal v_r + v_s^\intercal v_s - 2v_r^\intercal v_s) \rbrace \\
+    &=
+    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
+    &=
+    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
+    &=
+     \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace A_{rs}  \norm{v_r - v_s}^2 \rbrace .\\
+\end{align*}
+where
+$$ \myvec{v} = \sum_{t=1}^T e_r \otimes v_r ,$$
+and $e_1, \ldots, e_\ntasks$ are the canonical base of $\reals^\ntasks$.
+Then, we can write a general primal problem with Laplacian regularization using kernels as 
+\begin{equation}
+    \begin{aligned}
+        &R(\myvec{v}) = C \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{v}}{e_r \otimes \phi(x_i^r)}) + \left(  \myvec{v}^\intercal ((\nu L + I_\ntasks ) \otimes I) \myvec{v} \right),\\
+    \end{aligned}
 \end{equation}
-%
-% Note that with $\lambda=0$ this problem reduces to the one shown in~\cite{evgeniou2005learning}, since the vector $w$ would not have any influence in the errors $\xi_i^r$ and then $w = 0$ would be optimal.
-% This formulation is also interesting because it combines in a convex manner a common and task-specific models which can be built using two different kernels, one for $w$ and another for the $v_r$ vectors;
-% % in other words,  
-% The corresponding Lagrangian is
-% \begin{equation}\label{eq:lagr_cvx-graphLap}
-% \begin{aligned}
-%         \mathcal{L}&(\myvec{w}, \myvec{v}_r, b_r, \xi_i^r, \myvec{\fv{\alpha}}, \myvec{\beta}) \\
-%         &= \sum_{r=1}^T C_r \sum_{i=1}^{n_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{\myvec{v}_r - \myvec{v}_s}^2 + \frac{1}{2} \sum_r \norm{\myvec{v}_r}^2  + \frac{1}{2} \norm{\myvec{w}}^2
-%         \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{n_r}{ \alpha_i^r [y_{i}^r (\lambda (\myvec{w} \cdot \myvec{x}_i^r) + (1 - \lambda) (\myvec{v}_r \cdot \myvec{x}_i^r) + b_r) - p_{i}^r + \xi_{i}^r]   } - \sum_{r=1}^T \sum_{i=1}^{n_r}{ \beta_i^r \xi_i^r }.
-% \end{aligned}
-% \end{equation}
-% Taking derivatives
-% \begin{align*}
-%     & \frac{\partial \mathcal{L}}{\partial \myvec{w}} = 0 \implies \myvec{w} = \lambda \sum_{r=1}^\ntasks \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r}  \; , \\
-%     & \frac{\partial \mathcal{L}}{\partial \myvec{v}_r} = 0 \implies \myvec{v}_r + \sum_{s=1}^T (L_{rs} + L_{sr}) (\myvec{v}_r^* - \myvec{v}_s^*)= \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r}  \; , \\
-%     & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0  \; ,\\
-%     & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C_r - \alpha_i^r - \beta_i^r = 0 \; \; .
-% \end{align*}
-% Observe that
-% \begin{align*}
-%     \myvec{v}^\intercal (I_T \otimes I_d) \myvec{v} &= \sum_{r=1}^T \norm{v_r}^2 , \\
-%     \myvec{v}^\intercal (L \otimes I_d) \myvec{v} &= \frac{1}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{v_r - v_s}^2 , 
-% \end{align*}
-% Proof:
-% \begin{align*}
-%     \myvec{v} (\mymat{L} \otimes \mymat{I}_d) \myvec{v} &= \myvec{v} (\mymat{D} \otimes \mymat{I}_d) \myvec{v} - \myvec{v} (\mymat{A} \otimes \mymat{I}_d) \myvec{v} \\
-%     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks D_{rs} v_r^\intercal v_s - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
-%     &= \sum_{r=1}^\ntasks D_{rr} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
-%     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
-%     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s)  \\
-% \end{align*}
+As shown in Lemma~\ref{lemma:regproblems_kernel}, this is equivalent to solving a dual problem where the kernel function is
+\begin{equation}
+    \nonumber
+    \widetilde{k}(x_i^r, x_j^s) = \left( \nu \fm{L} + \fm{I}_\ntasks \right)^{-1}_{rs} k(x_i^r, x_j^s)
+\end{equation}
+where $k(\cdot, \cdot)$ is the reproducing kernel induced by the implicit transformation $\phi(\cdot)$.
+One example, using the L1-SVM would be the primal problem shown in~\eqref{eq:linear_gl_primal} where an implicit transformation $\phi(\cdot)$ is used.
+The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:linear_gl_dual}, but where the kernel matrix $\widetilde{Q}$ is defined using the kernel function~\eqref{eq:kernelfun_gl}.
 % If $A$ is symmetric, that is $A_{rs} = A_{sr}$, then
 % \begin{align*}
 %     \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s) &=
@@ -205,6 +200,90 @@ In~\cite{RuizAD21_hais} we proposed a convex formulation of the Graph Laplacian 
 %      \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace A_{rs}  \norm{w_r - w_s}^2 \rbrace .\\
 % \end{align*}
 
+
+
+\subsection{Graph Laplacian and Convex Combination MTL}
+
+
+
+In~\cite{RuizAD21_hais} we proposed a convex formulation of the Graph Laplacian MTL SVM which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
+That is, the models for each task are
+\begin{equation}
+    \nonumber
+    h_r(x) = \lambda_r w \cdot \phi(x) + \lambda_r v_r \cdot \psi(x) + b_r ,
+\end{equation}
+where $\phi(\cdot)$ and $\psi(\cdot)$ are the implicit transformations for the common part and task-specific parts, and can be possibly distinct, trying to capture different properties of the data.
+However, unlike the model definition for Convex MTL in~\eqref{eq:convexmtl_modeldef}, all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
+Again, as with the Convex MTL approach, parameters $\lambda_r \in [0, 1]$ define how relevant the common part for each task. When $\lambda=1$, only the common part is present, while $\lambda=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
+
+
+\paragraph*{Convex Graph Laplacian L1-SVM.\\}
+%
+The primal problem for the linear L1-SVM using this approach, as shown in~\citep*{RuizAD21_hais}, is the following one
+%
+\begin{equation}\label{eq:primal_cvxgl_l1_linear}
+  \begin{aligned}
+  & \argmin_{\substack{v_1, \ldots, v_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
+  & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\xi_i^r}  + \frac{\nu}{2} \sum_{r=1}^\ntasks \sum_{s=1}^T A_{rs} {\| {v}_r - {v}_s \|}^2 + \frac{1}{2} \sum_r \norm{{v}_r}^2 + \frac{1}{2} \norm{{w}}^2} \\
+  & \text{s.t.}
+  & & y_i^r (\lambda_r ({w} \cdot {x}_i^r) + (1 - \lambda_r) ({v}_r \cdot {x}_i^r) + b_r) \geq p_i^r - \xi_i^r  ,\\
+  & & & \xi_i^r \geq 0,  \;  i = 1, \dotsc, \npertask_r, \; r=1, \dotsc, \ntasks .
+  \end{aligned}
+\end{equation}
+%
+Note that with $\mu=0$, this problem is equivalent to the one shown in~\eqref{eq:svmmtl_primal_convex}.
+%
+Extending this problem to the kernel case requires using a different formulation, that is
+\begin{equation}\label{eq:primal_cvxgl_l1_kernel}
+    \begin{aligned}
+    & \argmin_{\substack{\fv{v} ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
+    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\xi_i^r}  + \frac{\nu}{2} \fv{v}^\intercal (\fm{L} \otimes I_\rkhs) \fv{v} + \frac{1}{2} \fv{v}^\intercal (\fm{I}_\ntasks \otimes I_\rkhs) \fv{v} + \frac{1}{2} \norm{{w}}^2} \\
+    & \text{s.t.}
+    & & y_i^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) \geq p_i^r - \xi_i^r  ,\\
+    & & & \xi_i^r \geq 0,  \;  i = 1, \dotsc, \npertask_r, \; r=1, \dotsc, \ntasks .
+    \end{aligned}
+  \end{equation}
+
+
+% in other words,  
+The corresponding Lagrangian is then
+\begin{equation}\label{eq:lagr_cvx-graphLap}
+\begin{aligned}
+        \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
+        &= C \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{\xi_{i}^r} + \frac{\nu}{2} \fv{v}^\intercal (\fm{L} \otimes I_\rkhs) \fv{v} + \frac{1}{2} \fv{v}^\intercal (\fm{I}_\ntasks \otimes I_\rkhs) \fv{v} + \frac{1}{2} \norm{{w}}^2
+        \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r + \xi_{i}^r]   } \\
+        &\quad - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \beta_i^r \xi_i^r }.
+\end{aligned}
+\end{equation}
+Taking derivatives
+\begin{align*}
+    & \frac{\partial \mathcal{L}}{\partial {w}} = 0 \implies {w} = \sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}  \; , \\
+    & \frac{\partial \mathcal{L}}{\partial {v}_r} = 0 \implies \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}  \; , \\
+    & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0  \; ,\\
+    & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C - \alpha_i^r - \beta_i^r = 0 \; \; .
+\end{align*}
+With 
+$$E =  \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right),$$ 
+and using these results to substitute in the Lagrangian, the result is
+\begin{equation}\nonumber
+    \begin{aligned}
+            \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
+            &= \frac{1}{2} \dotp{\fv{v}}{E\fv{v}} + \frac{1}{2} \dotp{w}{w}
+            \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r]   } \\
+            &= \frac{1}{2} \dotp{E^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E E^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
+            &\quad + \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
+            &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
+            &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r
+    \end{aligned}
+\end{equation}
+
+\paragraph*{Convex Graph Laplacian L2-SVM.\\}
+
+
+
+
+
+\paragraph*{Convex Graph Laplacian LS-SVM.\\}
 
 
 \section{Adaptive Graph Laplacian Algorithm}

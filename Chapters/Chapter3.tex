@@ -1310,7 +1310,7 @@ Here we show another approach which makes it is possible to replicate the result
     \end{aligned}
 \end{equation}
 where $u_1, \ldots, u_T \in \hilbertspace$ and $E$ is a $\ntasks \times \ntasks$ matrix. The following lemma illustrates how to solve this problem as a single task problem.
-\begin{lemma}
+\begin{lemma}\label{lemma:regproblems_kernel}
     The predictions $\dotp{u_r^*}{\phi(x)}$ of the solutions $u_1^*, \ldots, u_\ntasks^*$ from the Multi-Task optimization problem~\eqref{eq:mtl_kernel_altext_original} can be obtained solving the problem
     \begin{equation}
         \label{eq:mtl_kernel_tensor}
