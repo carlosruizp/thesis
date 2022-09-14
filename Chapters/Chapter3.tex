@@ -1345,7 +1345,7 @@ $B$ is full rank. Rewriting \eqref{eq:mtl_kernel_altext_tensor} using $\myvec{w}
 \begin{equation}
     \nonumber
     \begin{aligned}
-        R((B^\intercal \otimes I) \myvec{w}) &= \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{(B^\intercal \otimes I) \myvec{w}}{ (e_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal (B^\intercal \otimes I)^\intercal (E \otimes I) (B^\intercal \otimes I)\myvec{w} \\
+        R(\myvec{w}) &= \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{(B^\intercal \otimes I) \myvec{w}}{ (e_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal (B^\intercal \otimes I)^\intercal (E \otimes I) (B^\intercal \otimes I)\myvec{w} \\
         &= \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{(B \otimes I) (e_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal \myvec{w} ,\\
     \end{aligned}
 \end{equation}

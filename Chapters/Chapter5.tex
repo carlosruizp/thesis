@@ -202,7 +202,7 @@ The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:lin
 
 
 
-\subsection{Graph Laplacian and Convex Combination MTL}
+\subsection{Convex Graph Laplacian MTL}
 
 
 
@@ -210,11 +210,98 @@ In~\cite{RuizAD21_hais} we proposed a convex formulation of the Graph Laplacian 
 That is, the models for each task are
 \begin{equation}
     \nonumber
-    h_r(x) = \lambda_r w \cdot \phi(x) + \lambda_r v_r \cdot \psi(x) + b_r ,
+    h_r(x) = \lambda_r w \cdot \phi(x) + \lambda_r v_r \cdot \psi(x) ,
 \end{equation}
 where $\phi(\cdot)$ and $\psi(\cdot)$ are the implicit transformations for the common part and task-specific parts, and can be possibly distinct, trying to capture different properties of the data.
-However, unlike the model definition for Convex MTL in~\eqref{eq:convexmtl_modeldef}, all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
+That is, $\phi: \Xspace \to \hilbertspace_\phi$ and $\psi: \Xspace \to \hilbertspace_\psi$, where $\hilbertspace_\phi$ and $\hilbertspace_\psi$ are RKHS's with reproducing kernels $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$, respectively.
+Unlike the model definition for Convex MTL in~\eqref{eq:convexmtl_modeldef}, where each task-specific part can use a different Hilbert space, here all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
 Again, as with the Convex MTL approach, parameters $\lambda_r \in [0, 1]$ define how relevant the common part for each task. When $\lambda=1$, only the common part is present, while $\lambda=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
+
+\paragraph*{A general result for Convex Graph Laplacian MTL.\\}
+In general, we can use the Representer Theorem with the tensor kernels defined in Chapter~\ref{Chapter3} to find the result of kernel problems using this approach.
+Using the same approach used in Section~\ref{sec:ch3_mtl_kernelmethods}, we define
+$$ \fv{v} = \sum_{t=1}^T e_r \otimes v_r \in \reals^\ntasks \otimes \hilbertspace_\psi, $$
+such that
+$\dotp{\fv{v}}{e_r \otimes \psi(x_i^r)} = \dotp{v_r}{\psi(x_i^r)}$.
+If we consider then the product space $\hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)$, where the norm of $(w, \fv{v})$ is 
+$$\dotp{(w, \fv{v})}{(w, \fv{v})} =  \dotp{w}{w} + \dotp{\fv{v}}{\fv{v}} = \norm{w}^2 + \norm{\fv{v}^2},$$
+then a general kernelized problem for convex graph Laplacian MTL can be expressed as
+\begin{equation}\label{eq:cvxgl_general_problem}
+    \begin{aligned}
+    \argmin_{(w, \fv{v}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)} R((w, \fv{v})) &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \ell(y_i^r, (\dotp{(w, \fv{v})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))}))\\
+    &\quad + \dotp{(w, \fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, \fv{v})}  ,
+    \end{aligned}
+\end{equation}
+where $\ell$ is a loss function, $\rkhs_\phi$, in our case it is the identity operator in $\rkhs_\phi$, and $E$ is a positive definite operator in $\reals^\ntasks$ in our case, $E = ((\nu \fm{L} + I))$, with $L$ being a graph Laplacian matrix.
+% With both $A$ and $E$ are positive definite, the function $ \dotp{(w, \fv{v})}{(A \times E) (w, \fv{v})}$ is strictly increasing in $\norm{(w, \fv{v})}$; then, we can apply the Representer Theorem to problem~\eqref{eq:cvxgl_general_problem}, that is, the solutions of this problem can be expressed as
+% \begin{equation}
+%     \nonumber
+%     (w^*, \fv{v}^*) = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r y_i^r (\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))
+% \end{equation}
+Using a modification of Lemma~\ref{lemma:regproblems_kernel}, we can state the following one 
+\begin{lemma}\label{lemma:regproblems_kernel_convex}
+    The predictions $\dotp{(w^*, \fv{v}^*)}{(\phi(x_i^r), e_r \otimes \psi(x_i^r))}$ of the solution $(w^*, \fv{v}^*)$ from the Multi-Task optimization problem~\eqref{eq:cvxgl_general_problem} can be obtained solving the problem
+    \begin{equation}
+        \label{eq:cvxgl_general_problem_alt}
+        \begin{aligned}
+            &S((w, \fv{u})) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{(w, \fv{u})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (B_r \otimes \psi(x_i^r)))}) + \mu \left( \dotp{w}{w} + \dotp{\fv{u}}{\fv{u}}\right),\\
+        \end{aligned}
+    \end{equation}
+    where $w \in \rkhs_\phi$ and $\fv{u} \in \reals^p \otimes \hilbertspace_\psi$ with $p \geq \ntasks$ and $B_r$ are the columns of a full rank matrix $B \in \reals^{p \times \ntasks}$ such that $\mymat{E}^{-1} = \mymat{B}^\intercal \mymat{B}$.
+\end{lemma}
+\begin{proof}
+Again, since ${E} \in \reals^{\ntasks \times \ntasks}$ is positive definite, we can find $B \in \reals^{p \times \ntasks}, p \geq \ntasks$ and $\rank{B} = \ntasks$ such that $E^{-1} = 
+{B^\intercal} {B}$, using for example the SVD;
+% In the case that ${E} \in \reals^{\ntasks \times \ntasks}$ is a semipositive definite matrix with rank $r$ we can find $B \in \reals^{p \times r}, p \geq \ntasks$ and $\rank{B} = r$ such that $E^{+} = 
+% {B^\intercal} {B}$.
+% For the rest of the analysis we will consider a positive definite matrix $\mymat{E}$ but the results are also valid for positive semidefinite matrices.
+% 
+then,  
+$$ E^{-1} \otimes I = (B^\intercal B) \otimes I = (B^\intercal \otimes I_{\rkhs_\psi}) (B \otimes I),$$
+%
+Consider the change of variable $\fv{v} = (B^\intercal \otimes I_{\rkhs_\psi}) \fv{u}$, where $\fv{u} \in \reals^p \otimes \hilbertspace$, which can always be done because 
+%the columns of $B$ generates $\reals^T$, so we can always find $\hat{w}$ such that $e_r = B w$   .The condition of full rank for $B$ is necessary in this step.
+$B$ is full rank, then
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        R(w, \fv{u}) &= \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{(w, (B^\intercal \otimes I_{\rkhs_\psi}) \fv{v})}{ (\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi(x_i^r)))}) \\
+        &\quad + \mu \dotp{(w, (B^\intercal \otimes I_{\rkhs_\psi})\fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, (B^\intercal \otimes I_{\rkhs_\psi}) \fv{v}) } \\
+    \end{aligned}
+\end{equation}
+This is equivalent to problem~\eqref{eq:cvxgl_general_problem_alt}, where the regularizer is increasing in $\norm{(w, \fv{u})}^2$, so can apply the Representer theorem, which states that the minimizer of $S(w, \fv{u})$ has the form
+\begin{equation}
+    \nonumber
+    %\label{eq:representer_tensor}
+    (w^*, \fv{u}^*) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (\lambda_r \phi(x_i^r), (1-\lambda_r) (B_r \otimes \psi(x_i^r))) ,
+\end{equation}
+Using the correspondence between $\fv{u}^*$ and $\fv{v}^*$, 
+\begin{equation}\nonumber
+    \begin{aligned}
+        (w^*, \fv{v}^*) 
+         &= (w^*, (B^\intercal \otimes I_{\rkhs_\psi}) \fv{u}^*) \\
+         &=  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (\lambda_r \phi(x_i^r), (1 - \lambda_r)\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \psi(x_i^r)).
+    \end{aligned}
+\end{equation}
+Then, we can recover the predictions corresponding to the solutions $(w^*, \fv{v}^*)$ as
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        &\dotp{(w^*, \fv{v}^*)}{(\lambda_t \phi(\hat{x}^t), (1 - \lambda_t) e_t \otimes \psi(\hat{x}^t))} \\
+        &= \dotp{\sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (w, \vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r))}{(\phi(\hat{x}^t), e_t \otimes \psi(\hat{x}^t))} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r  (\lambda_r \lambda_t \dotp{\phi(x_i^r)}{\phi(x_i^r)} + (1-\lambda_r) (1 - \lambda_t) \dotp{B_s}{B_r} \dotp{\psi(x_i^r)}{\psi(\hat{x}^t)}) \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r  (\lambda_r \lambda_t \dotp{\phi(x_i^r)}{\phi(x_i^r)} + (1-\lambda_r) (1 - \lambda_t) E_{rs}^{-1} \dotp{\psi(x_i^r)}{\psi(\hat{x}^t)}) .
+    \end{aligned}
+\end{equation}
+\end{proof}
+As with Lemma~\ref{lemma:regproblems_kernel}, the Multi-Task problem~\ref{eq:cvxgl_general_problem} can be expressed as a Single-Task problem with the Multi-Task kernel function
+\begin{equation}
+    \label{eq:dual_cvxgl_kernel_function}
+    \widehat{\widetilde{k}}(x_i^r, x_j^s) = \lambda_r \lambda_s k_\phi(x_i^r, x_j^s) + (1 - \lambda_r) (1 - \lambda_s) (\nu \fm{L} + \fm{I}_\ntasks)^{-1}_{rs} k_\psi(x_i^r, x_j^s) ,
+\end{equation}
+where $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$ are the reproducing kernels corresponding to transformations $\phi$ and $\psi$, respectively.
+%
+
 
 
 \paragraph*{Convex Graph Laplacian L1-SVM.\\}
@@ -243,25 +330,32 @@ Extending this problem to the kernel case requires using a different formulation
     & & & \xi_i^r \geq 0,  \;  i = 1, \dotsc, \npertask_r, \; r=1, \dotsc, \ntasks .
     \end{aligned}
   \end{equation}
-
-
-% in other words,  
-The corresponding Lagrangian is then
-\begin{equation}\label{eq:lagr_cvx-graphLap}
+%
+Although the result from Lemma~\ref{lemma:regproblems_kernel_convex} can be applied for this problem, for illustration purposes the whole procedure is shown for this particular case.
+%
+The Lagrangian corresponding to~\eqref{eq:primal_cvxgl_l1_kernel} is
+\begin{equation}\label{eq:lagr_cvxgl_l1_kernel}
 \begin{aligned}
         \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
         &= C \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{\xi_{i}^r} + \frac{\nu}{2} \fv{v}^\intercal (\fm{L} \otimes I_\rkhs) \fv{v} + \frac{1}{2} \fv{v}^\intercal (\fm{I}_\ntasks \otimes I_\rkhs) \fv{v} + \frac{1}{2} \norm{{w}}^2
         \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r + \xi_{i}^r]   } \\
-        &\quad - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \beta_i^r \xi_i^r }.
+        &\quad - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \beta_i^r \xi_i^r },
 \end{aligned}
 \end{equation}
+where $\alpha_i^r, \beta_i^r \geq 0$.
 Taking derivatives
-\begin{align*}
-    & \frac{\partial \mathcal{L}}{\partial {w}} = 0 \implies {w} = \sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}  \; , \\
-    & \frac{\partial \mathcal{L}}{\partial {v}_r} = 0 \implies \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}  \; , \\
-    & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0  \; ,\\
-    & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C - \alpha_i^r - \beta_i^r = 0 \; \; .
-\end{align*}
+% \begin{align*}
+%     & \frac{\partial \mathcal{L}}{\partial {w}} = 0 \implies {w} = \sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}  \; , \\
+%     & \frac{\partial \mathcal{L}}{\partial {v}_r} = 0 \implies \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}  \; , \\
+%     & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0  \; ,\\
+%     & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C - \alpha_i^r - \beta_i^r = 0 \; .
+% \end{align*}
+\begin{align}
+    \grad_{{w}} \lagr = 0  &\implies \optim{{w}} = \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace , \label{eq:common_repr_cvxgl_l1} \\
+    \grad_{\fv{v}} \lagr = 0 &\implies  \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}, \label{eq:specific_repr_cvxgl_l1} \\
+    \grad_{{b}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_cvxgl_l1} \\
+    \grad_{\xi_i^r} \lagr = 0 &\implies C - \alpha_i^r - \beta_i^r = 0 . \label{eq:xi_feas_cvxgl_l1}
+\end{align}
 With 
 $$E =  \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right),$$ 
 and using these results to substitute in the Lagrangian, the result is
@@ -271,13 +365,70 @@ and using these results to substitute in the Lagrangian, the result is
             &= \frac{1}{2} \dotp{\fv{v}}{E\fv{v}} + \frac{1}{2} \dotp{w}{w}
             \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r]   } \\
             &= \frac{1}{2} \dotp{E^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E E^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
-            &\quad + \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
+            &\quad  \frac{1}{2} + \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
             &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
-            &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r
+            &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
+            &= \frac{1}{2} \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E^{-1} (e_r \otimes \psi(x_i^r))} \\ 
+            &\quad +\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} \\
+            &\quad - \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E^{-1} (e_r \otimes \psi(x_i^r))} \\ 
+            &\quad - \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
+            &= -\frac{1}{2} \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r (\nu \fm{L} + \fm{I}_\ntasks)^{-1}_{rs} \dotp{\psi(x_j^s)}{\psi(x_i^r)} \\ 
+            &\quad -\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r .
     \end{aligned}
 \end{equation}
+Then, the dual problem is 
+\begin{equation}\label{eq:dual_cvxgl_l1_kernel}
+    \begin{aligned}
+        & \argmin_{\fv{\alpha}} 
+        & & \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^t \left( \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{\widetilde{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right) \right) \fv{\alpha} - p \fv{\alpha} \\
+        & \text{s.t.}
+        & & 0 \leq \alpha_i^r \leq C, \;  i=1,\ldots,m_r; r=1,\ldots,T\; \text{(box constraints)} \; , \\
+        & & & \sum_{i=1}^{n_r}{\alpha_i^r y_i^r} = 0, \; r=1,\ldots,T\; \text{(equality constraints)} \; .
+        \end{aligned}
+\end{equation}
+where
+$
+\Lambda = \Diag(\lambda_1, \ldots, \lambda_\ntasks)
+$
+and $\fm{I}_{\nsamples}$ is the $\nsamples \times \nsamples$ identity matrix.
+%
+Here $Q$ is the common, standard, kernel matrix, and $\widetilde{Q}$ is the kernel matrix with the graph Laplacian information. We can define the kernel matrix
+\begin{equation}
+    \label{eq:dual_cvxgl_kernel_matrix}
+    \widehat{\widetilde{\fm{Q}}} = \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{\fm{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right),
+\end{equation}
+as the matrix that is generated using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
+
 
 \paragraph*{Convex Graph Laplacian L2-SVM.\\}
+The primal problem for convex graph Laplacian MTL based on the L2-SVM is 
+\begin{equation}\label{eq:primal_cvxgl_l2_kernel}
+    \begin{aligned}
+    & \argmin_{\substack{\fv{v} ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
+    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {(\xi_i^r)^2}  + \frac{\nu}{2} \fv{v}^\intercal (\fm{L} \otimes I_\rkhs) \fv{v} + \frac{1}{2} \fv{v}^\intercal (\fm{I}_\ntasks \otimes I_\rkhs) \fv{v} + \frac{1}{2} \norm{{w}}^2} \\
+    & \text{s.t.}
+    & & y_i^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) \geq p_i^r - \xi_i^r  ,\\
+    \end{aligned}
+\end{equation}
+Its corresponding Lagrangian is 
+\begin{equation}\label{eq:lagr_cvxgl_l2_kernel}
+    \begin{aligned}
+            \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}) \\
+            &= C \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{(\xi_{i}^r)^2} + \frac{\nu}{2} \fv{v}^\intercal (\fm{L} \otimes I_\rkhs) \fv{v} + \frac{1}{2} \fv{v}^\intercal (\fm{I}_\ntasks \otimes I_\rkhs) \fv{v} + \frac{1}{2} \norm{{w}}^2
+            \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r + \xi_{i}^r]   } ,
+    \end{aligned}
+\end{equation}
+where $\alpha_i^r \geq 0$.
+Taking derivatives with respect to the primal variables the results are
+The gradients with respect to the primal variables are
+\begin{align}
+    \grad_{{w}} \lagr = 0  &\implies \optim{{w}} = \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace , \label{eq:common_repr_cvxgl_l2} \\
+    \grad_{\fv{v}} \lagr = 0 &\implies  \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}, \label{eq:specific_repr_cvxgl_l2} \\
+    \grad_{{b}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_cvxgl_l2} \\
+    \grad_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_cvxgl_l2}
+\end{align}
+    
+
 
 
 
@@ -285,6 +436,10 @@ and using these results to substitute in the Lagrangian, the result is
 
 \paragraph*{Convex Graph Laplacian LS-SVM.\\}
 
+
+
+
+\subsection{Experiments}
 
 \section{Adaptive Graph Laplacian Algorithm}
 
@@ -294,7 +449,10 @@ If we want to learn $A$ from data we would like the matrix to meet some requirem
     \item The rows of $A$ add up to 1. 
 \end{itemize} 
 
-\section{Experiments}
+\subsection{Experiments}
+
+
+%\section{Experiments}
 
 \section{Conclusions}\label{sec-conclusions-4}
 
