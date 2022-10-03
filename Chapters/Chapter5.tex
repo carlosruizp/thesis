@@ -84,7 +84,7 @@ Consider the following definitions of vectors
 \end{equation}
 and consider also the matrices
 \begin{equation*}
-    \underset{\ntasks \dimx \times \ntasks \dimx}{E} = \left\lbrace I_T + \nu L \right\rbrace \otimes I_d, \;
+    \underset{\ntasks \dimx \times \ntasks \dimx}{E_\otimes} = \left\lbrace I_T + \nu L \right\rbrace \otimes I_d, \;
     \underset{\ntasks \times \ntasks}{L} =
     \begin{bmatrix}
         \sum_{s \neq 1} A_{1s} & - A_{12} & \ldots & - A_{1T} \\
@@ -129,7 +129,7 @@ Here, the block structure of $\Phi$ and $E$ allow to write the following result
 That is, $\Phi E^{-1} \Phi^\intercal = \widetilde{Q}$, where $ \widetilde{Q}$ is the kernel matrix corresponding to the kernel function 
 \begin{equation}
     \label{eq:kernelfun_gl}
-    \widetilde{k}(x_i^r, y_j^s) =  (I_T + \nu L)^{-1}_{rs} \dotp{x_i^r}{x_j^s}.
+    \widetilde{k}(x_i^r, y_j^s) =  \left((I_T + \nu L)^{-1}\right)_{rs} \dotp{x_i^r}{x_j^s}.
 \end{equation}
 Here, the individual regularization of the primal problem leads to the diagonal term added, which ensures the invertibility of the matrix $(I_T + \nu L)$.
 Thus, this additional regularization ultimately makes the solution of the problem more numerically stable.

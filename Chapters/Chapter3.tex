@@ -42,9 +42,9 @@ Typically in Machine Learning the goal is to find the best hypothesis $\hyp{x}{\
 $ \sample = \set{(x_i, y_i),\; \idotsn}, $
 where $(x_i, y_i)$ are sampled from a distribution $\distf$.
 %
-In the classical statistics we find the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypotheses space is parametric, i.e. $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the likelihood of the data given the hypothesis.
+In classical statistics we have the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypotheses space is $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the likelihood of the data given the hypothesis.
 %
-Another more direct inductive principle is \acrfull{erm}, which is the most common one. In \acrshort{erm} the densities are ignored and an empirical error $\emprisk(\hyp{\cdot}{\param})$ is minimized with the hope of minimizing the true expected error $\exprisk(\hyp{\cdot}{\param})$, which would result in a good generalization. 
+Another more direct inductive principle is \acrfull{erm}, which is the most common one. In \acrshort{erm} the densities are ignored and an empirical error $\emprisk(\hyp{\cdot}{\param})$ is minimized as a proxy of the true expected error $\exprisk(\hyp{\cdot}{\param})$, which would result in a good generalization. 
 %
 Several models use the \acrshort{erm} principle to generalize from data such as the \acrfull{nn} or \acrfull{svm}. These methods are designed to find a good hypothesis $\hyp{x}{\param}$ from a given space $\hypspace$. The definition of such space $\hypspace$ determines the bias for these problems and its selection is crucial. If $\mathcal{H}$ does not contain any good hypothesis, the learner will not be able to learn.
 Also, if the hypotheses space is too large, the learning process will be more difficult.
@@ -923,7 +923,7 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 % \end{equation}
 % Now, only the $w_r$ variables are included, and it is clearer that $\mu$ penalizes the variance of the $w_r$ vectors, so all models $w_r$ will tend to a common model as $\mu$ grows.
 
-\comm{TODO:} Add introductory paragraph
+\comm{TODO: Add introductory paragraph} 
 
 % Learning Multiple Tasks with Kernel Methods
 The \acrshort{mtl} paradigm can be seen as learning a vector-valued function
