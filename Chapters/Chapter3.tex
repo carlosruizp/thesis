@@ -20,6 +20,59 @@ This chapter presents\dots
 % Some important references
 % Caruana, Baxter... (ver review de Caruana para ver más)
 
+In \acrfull{ml}, we typically try to minimize some loss metric that defines the performance on a single task. Given a data sample, we choose a model, select its hyperparameters and optimize the parameters of such model to achieve a minimal sample-dependent error. However, this process can seem to focus on the task at hand, since it ignores any other information that could be useful in the learning process. 
+\acrfull{mtl} aims at solving different related tasks simultaneously, so that the information of each task can leverage the learning process in the rest, thus achieving an overall greater generalization ability.
+This goal requires selecting which tasks should be learned together, that is, defining \acrshort{mt} problems, and also designing algorithms that can benefit from the presence of different tasks.
+On the early stages of \acrfull{mtl}~\citep{Caruana97,baxter2000model}, one motivation was data scarcity, since by combining different sources of information this problem could be solved. Nowadays, in the age of ``big data'' this is not the main motivation, but other benefits can be extracted from \acrshort{mtl}, such as bias mitigation, domain adaptation or the avoidance of overfitting. 
+% Explanation of an \acrshort{mtl} problem, with its characteristics
+The concept of a \acrshort{mt} problem is not clear because different definitions have been considered in the literature. 
+In this thesis, only supervised problems will be considered, so we will refer to them just as problems, and we will omit the discussion about unsupervised ones. 
+%In this section, we try to shed some light on this topic and give some definitions for \acrshort{mtl} problems.
+%
+Multiple kind of problems can be faced with an \acrshort{mtl} approach. 
+%
+The most common definition of \acrshort{mt} problem is a homogeneous setting, where all tasks are sampled from the same space. That is, we have a space $\Xspace \times \Yspace$ where $\Xspace$ is the feature space and $\Yspace$ is the target space, which can be $\reals$ in the regression case or $\set{0, 1}$ in the binary classification one, and each task has a possibly different distribution $P_r(x, y)$ over this shared space.
+In this type of problems, all the tasks have the same number of features and the same target space, that is, every task is either a regression or classification problem, there cannot be a mix of regression and classification tasks.
+%
+There are other heterogeneous definitions where each task can be sampled from a different space $\Xspace_r \times \Yspace_r$, and, therefore, a mix of regression or classification tasks can be considered. However, in this work we are only interested in the homogeneous case.
+%
+
+Within the homogeneous \acrshort{mtl} problems we can consider the following cases, depending on the nature of each task and the task definition procedure:
+\begin{itemize}
+    \item Pure \acrshort{mt} Problems. These are problems where each task has been sampled from a possibly different distribution, so we have possibly different samples $(X_r, Y_r)$.
+    \begin{itemize}
+        \item \acrshort{mt} single-reg: This is the case where each task is a regression problem with a single target, e.g. $\Yspace = \reals$. 
+        \item \acrshort{mt} bin-clas: This is the case where each task is a binary classification problem, e.g. $\Yspace = \set{0, 1}$. 
+        \item \acrshort{mt} multi-reg: This is the case where each task is a regression problem with multiple targets, e.g. $\Yspace = \reals^m$, where $m$ is the number of targets. 
+        \item \acrshort{mt} multi-clas: This is the case where each task is a multi-class classification problem, e.g. $\Yspace = \set{1, \ldots, C}$, where $C$ is the number of classes.
+    \end{itemize}
+    \item Artificial \acrshort{mt} Problems: These are problems that can be seen as \acrshort{mt} and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$.
+    \begin{itemize}
+        \item multi-reg: This is the case where an $m$-target regression problem is converted into a multi-task problem by replicating $m$ times the features $X$ and using one of the targets on each repetition, so we have $m$ single target regression problems, each considered a different task.
+        \item multi-clas: This is the case where a multi-class classification problem with $C$ classes is converted into a multi-task problem by replicating $C$ times the features $X$ and considering a one-vs-all scheme for each repetition, with a different positive class in each one, so we have $C$ binary classification problems, each considered a different task.
+    \end{itemize}
+\end{itemize}
+In Table~\ref{tab:mtl_problems} we give some of the most used \acrshort{mtl} problems, along with its characteristics and the papers that use them.
+
+% Algorithms design
+Even when we have a \acrshort{mt} problem with tasks that are related and, hence, could be beneficial in the learning process of the others, it is still necessary to design algorithms that can exploit this additional information. 
+% Taxonomy
+The first approaches~\citep{Caruana97} were focused on sharing a common representation, and, therefore, the models based on a \acrfull{nn} were the most commonly used. Other approaches with linear models present techniques based on matrix regularization, where some coupling between the parameters of each task is enforced. Kernel methods, however, are not as adaptable to the regularizers crafted for \acrshort{mtl}, so different techniques, typically based on combinations of common and specific parts, are used.
+% Theory
+Independently of the method used to exploit the information of different tasks, the mechanisms of the advantage obtained by using \acrfull{mtl} have also been studied. These results show how using different tasks can improve the generalization ability of the learning processes, and under what circumstances this is possible.
+
+% Chapter
+In this chapter, in Section~\ref{sec:ch3_mtl_theory}, we present the fundamentals of \acrshort{mtl} theory. We introduce the concept of \acrfull{ltl}, related tasks, and review some of the most relevant works in this field. Moreover, we present the \acrfull{lupi} paradigm and connect it with the \acrshort{mtl} framework.
+%
+In Section~\ref{sec:ch3_mtl_kernelmethods} we define the operator-valued kernels, typically used in \acrfull{mtl}, and show their connection with the kernels defined over the tensor product of spaces, leading to an easier formulation.
+%
+In Section~\ref{sec:ch3_overview} we present a survey of the most relevant \acrshort{mtl} works, and we also update a taxonomy presented in~\cite{ZhangY17aa} defining three main groups: feature-based, parameter-based and combination-based methods.
+Given the importance of \acrfull{nns} and kernel methods, we also present a survey of \acrshort{mtl} strategies for each of them. 
+
+
+
+
+
 
 
 
@@ -27,7 +80,7 @@ This chapter presents\dots
   %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Why does Multi-Task Learning work?}
+\section{Why does Multi-Task Learning work?}\label{sec:ch3_mtl_theory}
 %\comm{TODO: Repasar sección entera después escribir capítulo 2}
 % TODO: Write intro paragraph for Section
 % The first theoretical work on \acrshort{mtl}... \acrshort{mtl} as a Bias Learning Problem
@@ -249,7 +302,7 @@ Also, as intuitively expected, the bound for $\npertask$ is inversely proportion
 
 % \acrshort{mtl} (strictly speaking, with fixed tasks)
 \subsubsection*{Multi-Task Learning as a special case of Bias Learning}
-The previous result is for pure Bias Learning, where we have a $(\bprobspace, \bdistf)$-environment of tasks. In \acrshort{mtl}, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks),\; \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the Multi-Task expected risk is
+The previous result is for pure Bias Learning, where we have a $(\bprobspace, \bdistf)$-environment of tasks. In \acrshort{mtl}, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks),\; \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the \acrshort{mt} expected risk is
 \begin{equation}\label{eq:mtlearn_exprisk}
     \risk_{\bprobseq}(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} \lossf(\hypf_r(x), y) d{P_r}(x, y),
 \end{equation}
@@ -425,7 +478,7 @@ With this results we can see that the condition~\eqref{eq:bound_npertask_genvcdi
 \begin{itemize}
     \item It is a computable bound, given that we know how to compute $d_\hypspacef(\ntasks)$.
     \item It provides a sufficient condition for the uniform convergence (in probability) of the empirical risk to the expected risk.
-    \item It provides a necessary condition for the consistency of Multi-Task Learners, i.e. uniform convergence of the best empirical risk to the best expected risk.
+    \item It provides a necessary condition for the consistency of \acrshort{mt} Learners, i.e. uniform convergence of the best empirical risk to the best expected risk.
 \end{itemize}
 
 % \subsubsection*{Conclusion}
@@ -438,7 +491,7 @@ Using the work of~\cite{baxter2000model} as the foundation, several important no
 % task relatedness
 One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned. In~\cite{Ben-DavidB08} a precise mathematical definition for task relatedness is given.
 % task individual risks
-The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the Multi-Task empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not establish a sharp bound of the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
+The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the \acrshort{mt} empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not establish a sharp bound of the risk of each particular task. This is specially relevant if we are in a Transfer Learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
 
 % F-related tasks
 \subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
@@ -464,7 +517,7 @@ $$\hypspace_\frelset = \hypspace / \sim_\frelset = \set{\equivclass{\hypf}, \hyp
 It is important to observe that $\hypspace_\frelset = \hypspacef'$ is a hypothesis space family, since it is a set of equivalence classes $\equivclass{\hypf} = \hypspace'$, which are sets of hypotheses.
 %
 
-\subsubsection*{The Multi-Task Empirical Risk Minimization}
+\subsubsection*{The \acrshort{mt} Empirical Risk Minimization}
 This equivalence classes are useful to divide the learning process in two stages; this is called the \emph{Multi-Task \acrshort{erm}}. Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tasks; then
 \begin{enumerate}
     \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
@@ -509,10 +562,10 @@ Now, one of the main results in~\citet[Theorem~2]{baxter2000model} can be given.
 Note that, in contrast to Theorem~\ref{th:baxter_vcdim}, this result bounds the expected risk of a single task, not the average risk. This is the consequence of applying Theorem~\ref{th:baxter_vcdim} and substituting the average empirical error using the result from~\eqref{eq:ben-david_lemma2}.
 Also observe that here the hypothesis space family used is the quotient space $\hypspace_\frelset$, and the VC-dimension of such family, namely $d_{\hypspace_\frelset}(\ntasks)$, is used.
 %
-Using this result, a bound for learners using the Multi-Task \acrshort{erm} principle is given~\cite[Theorem~3]{Ben-DavidB08}
+Using this result, a bound for learners using the \acrshort{mt} \acrshort{erm} principle is given~\cite[Theorem~3]{Ben-DavidB08}
 \begin{theorem}\label{th:ben-david_th3}
     Consider $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequence of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Consider $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$.
-    Let $h^\diamond$ be the hypothesis selected using the Multi-Task \acrshort{erm} principle. Then for every $\epsilon_1, \epsilon_2 > 0$
+    Let $h^\diamond$ be the hypothesis selected using the \acrshort{mt} \acrshort{erm} principle. Then for every $\epsilon_1, \epsilon_2 > 0$
     \begin{equation}
         \nonumber
         {\hat{\risk}_{\sample_1}(\hypf^\diamond) - \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')}  \leq 2(\epsilon_1 + \epsilon_2)
@@ -531,7 +584,7 @@ Using this result, a bound for learners using the Multi-Task \acrshort{erm} prin
 The idea of the proof of this theorem helps to understand how using different tasks can help to improve the performance in the target task. 
 Consider $\hypf^* = \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf)$ the best hypothesis for the $P_1$ distribution.
 %
-In the first stage of Multi-Task \acrshort{erm} principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
+In the first stage of \acrshort{mt} \acrshort{erm} principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
 According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^\frelset}$ we have that
 \begin{equation}
     \nonumber
@@ -574,7 +627,7 @@ the VC-dimension of this subset, compared to the VC-dimension of the whole set o
 
 % Analysis of generalized VCdim
 \subsubsection*{Analysis of generalized VC-dimension with $\frelset$-related tasks}
-As we have seen in Theorem~\ref{th:ben-david_th3}, the VC-dimensions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$, defined in Definition~\ref{def:gen_vcdim}, are crucial for stating the advantage of Multi-Task over Single Task Learning. 
+As we have seen in Theorem~\ref{th:ben-david_th3}, the VC-dimensions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$, defined in Definition~\ref{def:gen_vcdim}, are crucial for stating the advantage of \acrshort{mt} over Single Task Learning. 
 To understand better how these concepts interact, Ben-David \emph{et al.} give some theoretical results.
 Recall that, given a hypothesis space $\hypspace$, $\hypspace_\frelset$ is a family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$, then
 \begin{align*}
@@ -607,27 +660,27 @@ The following result~\cite[Theorem~6]{Ben-DavidB08} shows this.
         d_{\hypspace_\frelset}(\ntasks) \leq 2 \log(\cardinal{\frelset})
     \end{equation}
 \end{theorem}
-This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the Multi-Task bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$, is a better one in these cases. 
+This inequality indicates that, given a finite set of transformation $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the \acrshort{mt} bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$, is a better one in these cases. 
 
 % \subsubsection*{Conclusion}
 % \comm{TODO?}
 
 
-\subsection{Other bounds for Multi-Task Learning}
+\subsection{Other results for Multi-Task Learning}
 %\comm{TODO: Completar después de escribir capítulo 2. Usar discusión de cotas en Maurer \emph{et al.} 2016 para estructurar la subsección.}
 The work of~\cite{baxter2000model} set the foundations for the theoretical analysis of \acrshort{mtl} and \acrshort{ltl}. 
-In this work, an \acrshort{mtl} extension to the VC-dimension is given, and it is used to develop some results bounding the difference between the Multi-Task empirical and expected risks 
+In this work, an \acrshort{mtl} extension to the VC-dimension is given, and it is used to develop some results bounding the difference between the \acrshort{mt} empirical and expected risks 
 \begin{equation}
     \nonumber
     \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})}
 \end{equation}
-for any sequence of hypothesis $\myvec{\hypf} \in \hypspace^\ntasks$, see Theorem~\ref{th:baxter_vcdim}. This is a necessary condition for the consistency of Multi-Task Learners, but not a sufficient one.
-Then, Ben-David \emph{et al.} define a notion of task relatedness~\citep{Ben-DavidS03,Ben-DavidB08}, see Definition~\ref{def:frel_tasks}. Using this notion and building an appropiate hypothesis space $\hypspace = \equivclass{h}$, they bound the \emph{excess risk} of an Empirical Multi-Task Learner, that is, the difference between the best empirical risk, achieved by such Learner, and the best possible expected risk (Theorem~\ref{th:ben-david_th3})
+for any sequence of hypothesis $\myvec{\hypf} \in \hypspace^\ntasks$, see Theorem~\ref{th:baxter_vcdim}. This is a necessary condition for the consistency of \acrshort{mt} Learners, but not a sufficient one.
+Then, Ben-David \emph{et al.} define a notion of task relatedness~\citep{Ben-DavidS03,Ben-DavidB08}, see Definition~\ref{def:frel_tasks}. Using this notion and building an appropiate hypothesis space $\hypspace = \equivclass{h}$, they bound the \emph{excess risk} of an Empirical \acrshort{mt} Learner, that is, the difference between the best empirical risk, achieved by such Learner, and the best possible expected risk (Theorem~\ref{th:ben-david_th3})
 \begin{equation}
     \nonumber
     \abs{\inf_{\myvec{\hypf} \in \hypspace^\ntasks} \risk_{\bprobseq}(\myvec{\hypf}) - \inf_{\myvec{\hypf} \in \hypspace^\ntasks} \bemprisk(\myvec{\hypf})} .
 \end{equation}
-Moreover, using this task relatedness definition not only the Multi-Task average excess risk is bounded, but the individual excess risk of each task (Theorem~\ref{th:ben-david_th6}).
+Moreover, using this task relatedness definition not only the \acrshort{mt} average excess risk is bounded, but the individual excess risk of each task (Theorem~\ref{th:ben-david_th6}).
 
 %
 The works discussed until this point use the VC-dimension, and the corresponding extensions to the \acrshort{mtl} framework expressed in Definition~\ref{def:gen_vcdim}, to bound the differences between empirical and expected risks.
@@ -638,7 +691,7 @@ However in~\cite{AndoZ05}, the authors rely on another notion  of complexity, th
 %To control the complexity or VC-dimension of the hypothesis space regularization is used, so bounds for regularized methods are also of interest.
 Other theoretical works obtain bounds for linear feature extractor methods for \acrshort{mtl}, such as~\cite{CavallantiCG10,Maurer06, Maurer06rad}.
 In the more general case of \acrshort{ltl}, some improved bounds are found for specific cases like the trace norm regularized \acrshort{mtl} models~\citep{MaurerPR13}.
-Then, in~\cite{MaurerPR16} bounds for a wide class of \acrshort{mtl} models based on Multi-Task Representation Learning (MTRL) are given, in both an \acrshort{mtl} and an \acrshort{ltl} setting. These bounds are not dependent on the data dimensions, as other bounds for linear models, and use an approach based on empirical process theory instead of the generalized VC-dimension to derive these bounds.
+Then, in~\cite{MaurerPR16} bounds for a wide class of \acrshort{mtl} models based on \acrshort{mt} Representation Learning (MTRL) are given, in both an \acrshort{mtl} and an \acrshort{ltl} setting. These bounds are not dependent on the data dimensions, as other bounds for linear models, and use an approach based on empirical process theory instead of the generalized VC-dimension to derive these bounds.
 
 
 \subsection{Learning Under Privileged Information}\label{subsec:ch3_lupi}
@@ -884,7 +937,7 @@ If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a 
 $$ \xi(x, y) = y (w^* \phi^*(x) + b^*)  .$$
 That is, it is a relaxation of the original problem~\eqref{eq:svmplus_delta_primal}, where the second constraint to model the positive part of the slack variables disappears.
 This relaxation gives place to some important differences between both models. Since the auxiliary primal variables $\zeta_i$ are no longer required, this is reflected in a simpler dual form~\eqref{eq:mtlsvm_dual}, where only $\nsamples$ dual variables have to be estimated, instead of the $2\nsamples$ dual variables of~\eqref{eq:svmplus_delta_dual}.
-The Multi-Task part in~\eqref{eq:mtlsvm_dual} resides in the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
+The \acrshort{mt} part in~\eqref{eq:mtlsvm_dual} resides in the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
 %
 
 A major remark can be made about the differences between MTLSVM and \acrshort{svm}+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid with MTLSVM, since we are not modelling the slack variables $\xi$ adequately. 
@@ -977,7 +1030,7 @@ One of them is interpreting \acrshort{mtl} paradigm can be seen as learning a ve
 %
 Also, here we propose a reformulation where tensor product of scalar \acrfull{rkhs} is used instead of the vector-valued ones, which leads to some more general results, including another extension of the Representer Theorem.
 %
-Finally, we take these definitions to show how to use them to solve \acrshort{mtl} problems and also give some examples of commonly used Multi-Task kernels.
+Finally, we take these definitions to show how to use them to solve \acrshort{mtl} problems and also give some examples of commonly used \acrshort{mt} kernels.
 
 
 \subsection{Vector-Valued Reproducing Kernel Hilbert Spaces}%Single-Task Learning with \acrshort{mtl} Kernels}
@@ -1283,7 +1336,7 @@ can be expressed as
 $$ k_\rkhs \otimes K_\Yspace(x \otimes y, \hat{x} \otimes \hat{y}) = k_\rkhs(x, \hat{x}) K_\Yspace(y, \hat{y}) = k_\rkhs(x, \hat{x}) \ydotp{y}{M \hat{y}} .$$
 Moreover, observe that using this kernel with the basis of $\Yspace$,  $\set{e_1, \ldots, e_\dimx}$, 
     $$ k_\rkhs \otimes K_\Yspace((x \otimes e_r) , (\hat{x} \otimes e_s)) = k_\rkhs(x, \hat{x}) (M)_{rs}.$$
-This last result will be useful for expressing Multi-Task Learning problems as standard or Single-Task ones, as it is shown in the following sections.
+This last result will be useful for expressing \acrshort{mt} Learning problems as standard or Single-Task ones, as it is shown in the following sections.
 
 % \begin{lemma}
 %     Let $\Yspace$ be a finite-dimensional Hilbert space and
@@ -1330,7 +1383,7 @@ Given $w$ represented as in~\eqref{eq:representerth_sol}, we write
     \dotp{w}{\phi(\hat{x})} = \sum_{i=1}^\nsamples c_j \dotp{\phi(x_j)}{\phi(\hat{x})}.
 \end{equation}
 This is very useful because we can apply the kernel trick and use the transformations $\phi$ only implicitly.
-In this subsection it is shown how a broad class of Multi-Task problems can be expressed as regularized Single-Task problems.
+In this subsection it is shown how a broad class of \acrshort{mt} problems can be expressed as regularized Single-Task problems.
 
 \subsubsection*{Linear \acrshort{mtl} Models}
 Building upon the ideas discussed in~\cite{EvgeniouP04}, two useful results are presented in~\cite{EvgeniouMP05}, which show how we can apply Single-Task Learning methods to \acrshort{mtl} problems.
@@ -1424,7 +1477,7 @@ Here we show another approach which makes it possible to replicate the results f
 \end{equation}
 where $\phi$ is a feature transformation; $u_1, \ldots, u_T \in \hilbertspace$; and $E$ is a $\ntasks \times \ntasks$ symmetric, positive definite matrix. The following lemma illustrates how to minimize this functional as a single task problem.
 \begin{lemma}\label{lemma:regproblems_kernel}
-    The predictions $\dotp{u_r^*}{\phi(x)}$ of the solutions $u_1^*, \ldots, u_\ntasks^*$ from the Multi-Task risk~\eqref{eq:mtl_kernel_altext_original} can be obtained solving the problem
+    The predictions $\dotp{u_r^*}{\phi(x)}$ of the solutions $u_1^*, \ldots, u_\ntasks^*$ from the \acrshort{mt} risk~\eqref{eq:mtl_kernel_altext_original} can be obtained solving the problem
     \begin{equation}
         \label{eq:mtl_kernel_tensor}
         \begin{aligned}
@@ -1514,7 +1567,7 @@ Observe that, applying the corresponding feature map $\mymat{B} \otimes I$, the 
         &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (E^{-1})_{rs} k(x_i^r, \hat{x}^s).
     \end{aligned}
 \end{equation}
-That is, we have expressed the Multi-Task problem as a Single-Task problem with the Multi-Task kernel is
+That is, we have expressed the \acrshort{mt} problem as a Single-Task problem with the \acrshort{mt} kernel is
 \begin{equation}
     \nonumber
     \hat{k}(x_i^r, x_j^s) = (E^{-1})_{rs} k(x_i^r, x_j^s).
@@ -1565,8 +1618,8 @@ These are separable kernels~\citep{AlvarezRL12}, but, to the best of our knowled
 
 % For the other direction we have a problem because we need to decompose the operator E = T T* which is not trivial
 
-\subsubsection*{Examples of Multi-Task Kernels}
-Using the framework for \acrshort{mtl} with Kernel methods we can choose different regularizations, induced by the matrix $\mymat{E}$, which lead to different Multi-Task approaches. 
+\subsubsection*{Examples of \acrshort{mt} Kernels}
+Using the framework for \acrshort{mtl} with Kernel methods we can choose different regularizations, induced by the matrix $\mymat{E}$, which lead to different \acrshort{mt} approaches. 
 
 \paragraph*{Independent Tasks} This is the trivial case when $E = I_{\ntasks}$ and therefore $B =  I_{\ntasks}$ , that is 
 $$B_r^\intercal =  (\overbrace{0}^1, \ldots, \overbrace{1}^{r}, \ldots, \overbrace{0}^T), $$
@@ -1767,10 +1820,10 @@ where $a_r \in \reals^k$ are the parameters of the linear models $g_r$.
 Observe that in the linear case, we can describe this models as $h_r(x_i^r) = w_r^\intercal  x_i^r ,$
 with $w_r = \fm{U} a_r$ where $\fm{U} = (u_1, \ldots, u_k)$. 
 % Caruana R. Multitask learning. 1997 (multi-task feedforward NN)
-% Multi-Task feature Learning 2006
+% \acrshort{mt} feature Learning 2006
 % Convex multi-task feature learning 2008^
 % A spectral regularization framework for multi-task structure learning 2007
-This idea, named Multi-Task Feature Learning, is presented in~\cite{ArgyriouEP06}, where they consider the linear case with $k = \dimx$, the original dimension of the data. Then, the matrix $W = (w_1, \ldots, w_\ntasks)$ can be expressed as $$\underset{\dimx \times \ntasks}{\mymat{w}} = \underset{\dimx \times \dimx}{\mymat{u}}\underset{\dimx \times \ntasks}{\mymat{a}}.$$
+This idea, named \acrshort{mt} Feature Learning, is presented in~\cite{ArgyriouEP06}, where they consider the linear case with $k = \dimx$, the original dimension of the data. Then, the matrix $W = (w_1, \ldots, w_\ntasks)$ can be expressed as $$\underset{\dimx \times \ntasks}{\mymat{w}} = \underset{\dimx \times \dimx}{\mymat{u}}\underset{\dimx \times \ntasks}{\mymat{a}}.$$
 The authors impose also some restrictions to enforce that
  the features represented by $u_1, \ldots, u_\ntasks$ capture different information and only a subset of them is necessary for each task. The minimization problem to obtain the optimal model parameters is
 \begin{equation}
@@ -1862,7 +1915,7 @@ $$ F(\mymat{A}) = \mymat{u}^\intercal \Diag (f(\lambda_1), \ldots, f(\lambda_d))
 Then, since the trace is invariant under cyclic permutations, a generalized regularizer for problem~\eqref{eq:convmtl_feat_learning} can be expressed as
 $$ \sum_t \langle w_t, F(\mymat{D}) w_t\rangle = \trace{\mymat{w}^\intercal F(\mymat{D}) \mymat{w}} = \trace{F(\mymat{D}) \mymat{w}  \mymat{w}^\intercal} \; .$$
 It is easy to see that problem~\eqref{eq:convmtl_feat_learning} is a particular case where $f(\lambda) = \lambda^{-1}$.
-In~\cite{Maurer09} some bounds on the excess risks are given for this Multi-Task Feature Learning method.
+In~\cite{Maurer09} some bounds on the excess risks are given for this \acrshort{mt} Feature Learning method.
 
 %  Learning multiple tasks using manifold regularization. Agarwal
 Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assuming that the task parameters $w_r$ lie in a linear subspace, i.e. $w_r = \fm{U} a_r$, the authors generalize this idea by assuming that the parameter $w_r$ lies in a manifold $\mathcal{M}$. The resultant optimization problem to train the model is
@@ -1895,7 +1948,7 @@ A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{Kum
     \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, 2} +\mu \norm{\mymat{a}}_{1, 1} .
 \end{equation}
 Here, we can interpret this model as a linear sparse combination, encoded in $\fm{a}$, of some features encoded in $\fm{D}$: ${w}_r^\intercal {x}_i^r = \sum_{\kappa=1}^k a_r^\kappa \left({D}_\kappa^\intercal {x}_i^r \right)$.
-Unlike the Multi-Task Feature Learning approach of Argyriou et al, this sparse coding formulation is only presented in the linear setting.
+Unlike the \acrshort{mt} Feature Learning approach of Argyriou et al, this sparse coding formulation is only presented in the linear setting.
 
 \subsubsection*{Feature Selection approaches}
 %   Feature selection or block sparse regularization
@@ -1903,7 +1956,7 @@ The feature selection approaches are also driven by learning a good set of featu
 
 % G. Obozinski, B. Taskar, and M. Jordan, “Multi-task feature selection,” (2006)
 % H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009.
-Most works on Multi-Task Feature Selection use an $L_{p, q}$ regularization of the weights matrix $\mymat{w}$. The first work using this idea is~\cite{obozinski2006multi}, where the authors solve the problem
+Most works on \acrshort{mt} Feature Selection use an $L_{p, q}$ regularization of the weights matrix $\mymat{w}$. The first work using this idea is~\cite{obozinski2006multi}, where the authors solve the problem
 \begin{equation}
     \label{eq:mtl_feat_selection}   
     \begin{aligned}
@@ -1940,10 +1993,10 @@ Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl
 The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and in~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
 
 
-\subsection{Parameter-based \acrshort{mtl}}
+\subsection{Parameter-based Multi-Task Learning}
 The parameter-based approaches, instead of trying to find a good shared feature space, enforce the coupling through the regularization of the parameters of linear models $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$, where $\phi$ is a fixed, non-learnable transformation. Since we have one vector $w_r$ for each task, we can consider the matrix $\fm{W} = (w_1 \ldots w_\ntasks)$.
 % The parameter-based \acrshort{mtl} does not focus on shared sets of features across tasks, instead other types of dependencies among the task like the task-parameters $w_r$, are taken into account. 
-Some approaches rely on the assumption that the Multi-Task weight matrix $\mymat{w}$ has a low-rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices. We summarize each approach below.
+Some approaches rely on the assumption that the \acrshort{mt} weight matrix $\mymat{w}$ has a low-rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices. We summarize each approach below.
 
 \subsubsection*{Low-rank approaches}
 % Low-rank
@@ -2005,7 +2058,7 @@ where $\fv{f} = ({f}_1, \ldots, {f}_\ntasks)$, $K^f$ is the inter-task covarianc
 %      \Sigma = \mymat{K}^f \otimes \mymat{K}^\Xspace_\theta + \Diag(\sigma_1, \ldots, \sigma_\ntasks) \otimes \mymat{i}_{\nsamples}.
 % \end{equation}
 However, the interest resides in learning the task-covariance matrix $\mymat{K}^f$, but this leads to a non-convex problem. The authors propose a low-rank approximation of $\mymat{K}^f$, which weakens its expressive power.
-To overcome this disadvantage, in~\cite{ZhangY10,ZhangY13a}, using the idea of the Multi-Task \acrshort{gp}, they consider linear models $f(x_i^r) = \dotp{w_r}{x_i^r} + b_r$ and the prior on matrix $\mymat{w} = (w_1 \ldots, w_\ntasks)$ is defined as
+To overcome this disadvantage, in~\cite{ZhangY10,ZhangY13a}, using the idea of the \acrshort{mt} \acrshort{gp}, they consider linear models $f(x_i^r) = \dotp{w_r}{x_i^r} + b_r$ and the prior on matrix $\mymat{w} = (w_1 \ldots, w_\ntasks)$ is defined as
 \begin{equation}
     \nonumber
     \mymat{W} \sim \left(\prod_{r=1}^\ntasks \normal{\myvec{0}_d, \sigma_r^2 I_d}  \right) \multinormal{\mymat{0}_{d \times m}, \mymat{i}_d \otimes \mymat{\Omega}}
@@ -2095,7 +2148,7 @@ After the computation of the optimal parameters $\fv{\omega}_r^*$, the empirical
 \end{equation}
 where the number of clusters $\nclusters$ with minimum $J(\nclusters)$ is selected. That is, the clusters are selected using the results of independently trained tasks but using distances whose parameters are optimal for other tasks, then the transfer is done through the parameters $\fv{\omega}_r$.
 %
-% A different approach is the Bayesian proposal of~\cite{BakkerH03} where a Multi-Task Neural Network~\cite{Caruana97} with one shared hidden layer is used. The task-dependent parameters can be modeled together using a prior that is a mixture of $\nclusters$ Gaussians $\myvec{a}_r \sim \sum_{\kappa = 1}^\nclusters \alpha_\kappa \normal{\myvec{\mu}_\kappa, \mymat{\Sigma}_\kappa}$; and by learning the variables $\alpha_i$ using Bayesian inference, the tasks can be clustered. In this model, unlike in~\cite{ThrunO96} the clusters and task parameters are jointly learned.
+% A different approach is the Bayesian proposal of~\cite{BakkerH03} where a \acrshort{mt} Neural Network~\cite{Caruana97} with one shared hidden layer is used. The task-dependent parameters can be modeled together using a prior that is a mixture of $\nclusters$ Gaussians $\myvec{a}_r \sim \sum_{\kappa = 1}^\nclusters \alpha_\kappa \normal{\myvec{\mu}_\kappa, \mymat{\Sigma}_\kappa}$; and by learning the variables $\alpha_i$ using Bayesian inference, the tasks can be clustered. In this model, unlike in~\cite{ThrunO96} the clusters and task parameters are jointly learned.
 %
 
 Some proposals have also been made using regularization approaches. In~\cite{JacobBV08}, a problem based on~\cite{EvgeniouP04} is proposed. Considering the $\ntasks \times \ntasks$ constant matrix $\mymat{U} = \frac{1}{\ntasks} \fv{1} \fv{1}^\intercal$, $\mymat{E}$ the $\ntasks \times \nclusters$ cluster assignment binary matrix, and defining the adjacency matrix $M = E (E^\intercal E)^{-1} E^\intercal$, the problem is
@@ -2118,7 +2171,7 @@ A similar approach is presented in~\cite{KangGS11} where, using the results from
     \end{aligned}
 \end{equation}
 Here, the trace norm acts on each cluster, so it enforces that the matrices of vectors $w_r$ in the same cluster have low-rank.
-This can be seen as a clusterized version of Multi-Task Feature Learning~\citep{ArgyriouEP06, ArgyriouEP08}, shown in Equation~\eqref{eq:mtl_feat_learning}, but instead of assuming that all tasks share the same subspace, only the tasks in the same cluster do; however, the explicit learned features cannot be recovered.
+This can be seen as a clusterized version of \acrshort{mt} Feature Learning~\citep{ArgyriouEP06, ArgyriouEP08}, shown in Equation~\eqref{eq:mtl_feat_learning}, but instead of assuming that all tasks share the same subspace, only the tasks in the same cluster do; however, the explicit learned features cannot be recovered.
 The optimization of matrices $\mymat{Q}_\kappa$ on problem~\eqref{eq:mtl_clustered_featlearn} is done by relaxing the binary nature of matrices $\fm{Q}_\kappa$ such that $0 \leq \mymat{Q}_{\kappa t} \leq 1$, and reparametrizing them as
 \begin{equation}
     \nonumber
@@ -2221,7 +2274,7 @@ In~\cite{HanZ15} the regularizer is $r(\mymat{W}_l) = \sum_{r,s=1}^T \norm{(W_l)
 % This formulation converts this model in a task-clustering approach, where the clusters are learned jointly with the task parameters $\myvec{\theta}$.
 % Following this approach of hierarchical Bayes,~\cite{Daume09} uses a prior for the task parameters $\myvec{\theta}^r$ that learns backwards a genealogy tree. That is, beginning at the leafs, which are the task parameters $\myvec{\theta}^r$, the branches merge until a common root to all the tasks. Thus, by selecting different thresholds or levels of this tree, we can obtain different clusters.
 
-\subsection{Combination-based}
+\subsection{Combination-based Multi-Task Learning}
 % Joint Learning
 % Sometimes in task clustering approaches, sometimes in task relations learning
 The combination-based methods 
@@ -2284,7 +2337,7 @@ In this subsection we explore some of these strategies and their connection with
 
 %The \acrshort{mtl} adaptations for neural networks can also be categorized 
 % An Overview of \acrshort{mtl} in Deep Neural Networks 2017 (incluye los de 2017?)
-As proposed in~\cite{Ruder17a} we can divide the Multi-Task approaches with neural networks in hard sharing and soft sharing.
+As proposed in~\cite{Ruder17a} we can divide the \acrshort{mt} approaches with neural networks in hard sharing and soft sharing.
 % Hard parameter sharing
 The hard sharing approach is the most common one, and it consists in sharing between all tasks the hidden layers of the network while keeping some task-specific layers at the end of the network. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. Although this approach has some theoretical properties to improve learning~\citep{baxter2000model}, it is very rigid since it assumes that the learned features and the feature learning process must be the same for all tasks.
 
@@ -2334,7 +2387,7 @@ In~\cite{MisraSGH16} they propose a strategy named ``Cross-stitch'' networks whi
 where the $2 \times 2$ matrix $A^l$ is a ``cross-stitch'' unit and defines the linear combination to compute $\tilde{h}^l_1, \tilde{h}^l_2$ which will be the input values for the $(l+1)$-th layer. The network parameters and the ``cross-stitch'' values $\alpha^l_{rs}$ can both be learned using backpropagation.
 If $\fm{A}^l = \fm{I}_{2 \times 2}$ in all layers this is equivalent to two independent networks, one for each task, and using constant matrices as ``cross-stitch'' units results in two identical common networks.
 % sluice-networks 2017
-% Latent Multi-Task Architecture Learning 2019
+% Latent \acrshort{mt} Architecture Learning 2019
 This strategy is extended in~\cite{RuderBAS17}, where the authors include two modifications: network parameters of each network are divided in two spaces, each expecting to capture different properties of the data, and there are learnable skip-connections for each task.
 The first modification consists on using two spaces for each task, which implies that the number of parameters is doubled, that is, independently from the number of tasks, in each task-specific network and in each layer $l$ there are two outputs for each task: $h_{r, a}^l, h_{r, b}^l$, each obtained with a different parameter matrix $\fm{W}^l_{r, a}, \fm{W}^l_{r, b}$, both with the same dimensions.
 Then, in the illustrative case of two tasks, as the combination shown in~\eqref{eq:cross-stich_comb}, $\fm{A}$ is a $4 \times 4$ matrix, because each $\alpha_{i, j}^l$ is a $2 \times 2$ matrix for $i, j \in \set{1, 2}$. The matrix $\fm{A}$ not only determines how the tasks are related but how each space of each task is related with the rest.
@@ -2512,87 +2565,8 @@ where $\Theta$ is the inter-task relationship matrix and they propose different 
 
 
 
-\section{Multi-Task Problems}
-\comm{TODO: Motivar sección}
-% Explanation of an \acrshort{mtl} problem, with its characteristics
-The concept of a Multi-Task problem is not clear because different definitions have been considered in the literature. 
-In this thesis, only supervised problems will be considered, so we will refer to them just as problems, and we will omit the discussion about unsupervised ones. In this section, we try to shed some light on this topic and give some definitions for \acrshort{mtl} problems.
+%\section{Multi-Task Problems}
 
-Multiple kind of problems can be faced with a \acrshort{mtl} approach. 
-%
-The most common definition of Multi-Task problem is a homogeneous setting, where all tasks are sampled from the same space. That is, we have a space $\Xspace \times \Yspace$ where $\Xspace$ is the feature space and $\Yspace$ is the target space, which can be $\reals$ in the regression case or $\set{0, 1}$ in the binary classification one, and each task has a possibly different distribution $P_r(x, y)$ over this shared space.
-In this type of problems, all the tasks have the same number of features and the same target space, that is, every task is either a regression or classification problem, there cannot be a mix of regression and classification tasks.
-%
-There are other heterogeneous definitions where each task can be sampled from a different space $\Xspace_r \times \Yspace_r$, and, therefore, a mix of regression or classification tasks can be considered. However, in this work we are only interested in the homogeneous case.
-%
-
-Within the homogeneous \acrshort{mtl} problems we can consider the following cases, depending on the nature of each task and the task definition procedure:
-\begin{itemize}
-    \item Pure Multi-Task Problems. These are problems where each task has been sampled from a possibly different distribution, so we have possibly different samples $(X_r, Y_r)$.
-    \begin{itemize}
-        \item MT single-reg: This is the case where each task is a regression problem with a single target, e.g. $\Yspace = \reals$. 
-        \item MT bin-clas: This is the case where each task is a binary classification problem, e.g. $\Yspace = \set{0, 1}$. 
-        \item MT multi-reg: This is the case where each task is a regression problem with multiple targets, e.g. $\Yspace = \reals^m$, where $m$ is the number of targets. 
-        \item MT multi-clas: This is the case where each task is a multi-class classification problem, e.g. $\Yspace = \set{1, \ldots, C}$, where $C$ is the number of classes.
-    \end{itemize}
-    \item Artificial Multi-Task Problems: These are problems that can be seen as Multi-Task and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$.
-    \begin{itemize}
-        \item multi-reg: This is the case where an $m$-target regression problem is converted into a multi-task problem by replicating $m$ times the features $X$ and using one of the targets on each repetition, so we have $m$ single target regression problems, each considered a different task.
-        \item multi-clas: This is the case where a multi-class classification problem with $C$ classes is converted into a multi-task problem by replicating $C$ times the features $X$ and considering a one-vs-all scheme for each repetition with a different positive class in each one, so we have $C$ binary classification problems, each considered a different task.
-    \end{itemize}
-\end{itemize}
-
-\comm{TODO: tabla a apéndice\\}
-In Table~\ref{tab:mtl_problems} we show some of the most used \acrshort{mtl} problems, exposing its characteristics and the papers that use them.
-
-% Explanation of datasets
-\newpage
-%\begin{center}
-    \begin{longtable}{
-        %@{}
-        l % Name
-        l % n
-        l % d
-        l % T
-        l % Nature
-        l % References
-        @{}
-        }
-        \caption{\acrshort{mtl} Problems. The columns show the number of samples $n$, the dimension $d$, the number of tasks $T$ and the nature of the problem.
-        \comm{TODO: cambiar formato de tabla para usar siutnix}} \label{tab:mtl_problems} \\
-    \toprule 
-    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
-    \endfirsthead
-    \multicolumn{6}{c}%
-    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
-    \midrule \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
-    \endhead
-    
-    \midrule \multicolumn{6}{|r|}{{Continued on next page}} \\ \midrule
-    \endfoot
-    
-    \midrule \bottomrule
-    \endlastfoot    
-    \multirow{13}{*}{\fdata{school}} & \multirow{13}{*}{15362} & \multirow{13}{*}{27} & \multirow{13}{*}{139} & \multirow{13}{*}{MT single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ &&&&&~\cite{HanZ16} \\ &&&&&~\cite{JeongJ18}  \\ [3.0ex]
-    \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{18000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{800000} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
-    \multirow{6}{*}{\fdata{computer}} & \multirow{6}{*}{3600} & \multirow{6}{*}{13} & \multirow{6}{*}{180} & \multirow{6}{*}{MT single-reg}  & \multirow{6}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{14820} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{MT bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
-    \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{32302} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{MT bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{366} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
-    \multirow{5}{*}{\fdata{sentiment}} & \multirow{5}{*}{2000} & \multirow{5}{*}{473856} & \multirow{5}{*}{4} & \multirow{5}{*}{MT bin-clas}  & \multirow{5}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{BarzilaiC15} \\ [3.0ex]
-    \\ \\ 
-    \multirow{6}{*}{\fdata{sarcos}} & \multirow{6}{*}{44484} & \multirow{6}{*}{21} & \multirow{6}{*}{7} & \multirow{6}{*}{multi-reg}  & \multirow{6}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{CilibertoMPR15} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{isolet}} & \multirow{2}{*}{7797} & \multirow{2}{*}{617} & \multirow{2}{*}{5} & \multirow{2}{*}{MT multi-clas}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ [3.0ex]
-%    \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{340} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
-    \multirow{4}{*}{\fdata{mnist}} & \multirow{4}{*}{70000} & \multirow{4}{*}{400} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{4}{*}{\fdata{usps}} & \multirow{4}{*}{9298} & \multirow{4}{*}{256} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{675} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{131} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{cifar10}} & \multirow{2}{*}{50000} & \multirow{2}{*}{1024} & \multirow{2}{*}{10} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{ZweigW13} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{parkinson}} & \multirow{2}{*}{5875} & \multirow{2}{*}{19} & \multirow{2}{*}{42} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{JawanpuriaN12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \end{longtable}
-    %\end{center}
 
 
 
@@ -2607,4 +2581,7 @@ In Table~\ref{tab:mtl_problems} we show some of the most used \acrshort{mtl} pro
 
 \section{Conclusions}\label{sec-conclusions-2}
 
-In this chapter, we covered\dots
+In this chapter, we covered some of the most relevant works in \acrshort{mtl}. The work of~\citep{baxter2000model} sets the foundation for \acrshort{mtl} and \acrshort{ltl} theory, setting bounds for the excess risk, that is, the difference between the best empirical and best expected errors. These bounds are later extended in several works, from which we highlight the work of~\citet{Ben-DavidS03}, that defines a definition for related tasks and use it to derive new bounds. Other important theoretical motivation for \acrfull{mtl} that we have presented is its connection with the \acrshort{lupi} paradigm, presented in~\citet{VapnikI15a}.
+Moreover, we have also reviewed the works in \acrshort{mtl} and categorize them in three main groups: feature-based, parameter-based and combination-based methods.
+The feature-based methods are more common in linear models or \acrshort{nns}, the parameter-based ones typically use linear models as well, and the combination-based, which is the less common one, can be used also with kernel methods, and is the one that has a connection with the \acrshort{lupi} paradigm.
+Also, as we have seen, the \acrshort{mtl} methods based on \acrshort{nns} focus mainly on finding a shared representation beneficial to all tasks. 

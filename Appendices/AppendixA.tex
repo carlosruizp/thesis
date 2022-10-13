@@ -1,238 +1,55 @@
 % Appendix A
 
-\chapter{Probability Distributions}
+\chapter{Multi-Task Datasets}
 \label{AppendixA}
-\lhead{Appendix \ref{AppendixA}. \emph{Fundamental Concepts of Probability Theory}}
+\lhead{Appendix \ref{AppendixA}. \emph{Multi-Task Datasets}}
 
-In this appendix, we define some probability theory concepts that are used in the chapters of the thesis. We specifically describe the fundamentals of probability theory and some ideas of the Gaussian distribution. 
+In this appendix, we present a table with some of the most commonly used \acrfull{mtl} datasets. In Table~\ref{tab:mtl_problems} we give the number of samples, dimension and number of tasks of each dataset.
 
-\section{Probability Theory}
-Let $\mathbf{x} \in \mathbb{R}^N$. Let $X_1,...,X_N$ be $N$ random variables. The $d$-dimensional probability density function $p(X_1=x_1, \cdot \cdot \cdot, X_N=x_n)$ of the random variables $X_1,...,X_N$ with support in all $\mathbb{R}^N$ satisfies
-\begin{equation}
-\int_{\mathbb{R}^N} p(\mathbf{x}) d\mathbf{x} = 1\,.
-\end{equation}
-For clarity, we abbreviate the notation of probability density functions from $p(X_1=x_1, \cdot \cdot \cdot, X_N=x_n)$ to $p(\mathbf{x})$. If $p(\mathbf{x})$ is a probability density function of a $N$-dimensional real-valued space, then, its cumulative distribution function $F(x_l^{1} \leq X_1 \leq x_u^{1}, \cdot \cdot \cdot, x_l^{N} \leq X_N \leq x_u^{N})$ is given by:
-\begin{equation}
-F(x_l^{1} \leq X_1 \leq x_u^{1}, \cdot \cdot \cdot, x_l^{N} \leq X_N \leq x_u^{N})  = \int_{x_l^{1}}^{x_u^{1}} \cdot \cdot \cdot \int_{x_l^{N}}^{x_u^{N}} p(\mathbf{x}) d\mathbf{x}\,.
-\end{equation}
-For clarity, we abbreviate the notation of cumulative distribution functions from $F(x_l^{1} \leq X_1 \leq x_u^{1}, \cdot \cdot \cdot, x_l^{N} \leq X_N \leq x_u^{N})$ to $F(\mathbf{x})$. Let $X = (Y,Z) \in \mathbb{R}^2$ denote two random variables $Y \in \mathbb{R}, Z \in \mathbb{R}$ with a bivariate probability density function $p(\mathbf{x})$ on $\mathbb{R}^2$. Then, the marginal densities of $Y$ and $Z$ are given by the sum rule of probability:
-\begin{align}
-p(y) = \int_{\mathbb{R}} p(y, z) dz, \quad \quad p(z) = \int_{\mathbb{R}} p(y, z) dy.
-\end{align}
-This operation is also known as marginalization. It is usually performed to accumulate the uncertainty of the random variables that are not used for future computations. The conditional density $p(y|z)$, for $p(z) > 0$, is given by the product rule of probability:
-\begin{align}
-p(y|z) = \frac{p(y,z)}{p(z)}, \quad \quad p(y,z) = p(y|z) p(z) = p(z|y) p(y).
-\label{eq:condit_prob}
-\end{align}
-Using Eq. (\ref{eq:condit_prob}), we can analytically obtain Bayes theorem:
-\begin{align}
-p(y|z) = \frac{P(z|y)P(y)}{P(z)}.
-\end{align}
-In Bayes theorem, we define $P(Z)$ as the model evidence, $P(y)$ is the prior distribution, $P(Z|Y)$ is the likelihood function and $P(Y|Z)$ is the posterior distribution. According to the total probability theorem, we have that the model evidence can be computed by the integral of the likelihood times the prior:
-\begin{align}
-P(z) = \int P(z|y)P(y) dy\,.
-\end{align}
-Let $z$ be substituted by observed data $\mathcal{D} = \{(\mathbf{x}_i, y_i)| i = 1,...,N\}$ where $N$ is the number of tuples $\mathbf{x}_i, y_i)$ and $y$ be the hyper-parameters $\boldsymbol{\theta}$ of a model $\mathcal{M}$. Bayes theorem can compute the posterior distribution of the hyper-parameters given the data $p(\boldsymbol{\theta}|\mathcal{D})$:
-\begin{align}
-p(\boldsymbol{\theta}|\mathcal{D}) = \frac{p(\mathcal{D}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p(\mathcal{D})}\,,
-\end{align}
-where the likelihood function $p(\mathcal{D}|\boldsymbol{\theta})$ is computed as the product of the likelihood function $p(y_i|\mathbf{x}_i, \boldsymbol{\theta})$ of each of the tuples $(\mathbf{x}_i, y_i)$ as:
-\begin{align}
-p(\mathcal{D}|\boldsymbol{\theta}) = \prod_{i=1}^{N} p(y_i|\mathbf{x}_i, \boldsymbol{\theta})\,.
-\end{align}
-$p(\boldsymbol{\theta})$ is the prior over the model hyper-parameters, that can be set as an uninformative prior or to some probability distribution given previous knowledge. Subjective bias is, from our opinion, always going to be present as, although we can set an uninformative prior for the weights, we are conditioning the posterior distribution given our subjective beliefs. We are setting an uninformative prior because we have the subjective belief that it is the best decision for the prior distribution. Hence, we are including a subjective bias in the computation. Finally, $p(\mathcal{D})$ is the model evidence. We can also rewrite Bayes theorem using the theorem of total probability as the following expression:
-\begin{align}
-p(\boldsymbol{\theta}|\mathcal{D}) = \frac{p(\mathcal{D}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{\int p(\mathcal{D}|\boldsymbol{\theta})p(\boldsymbol{\theta}) d\boldsymbol{\theta}}\,.
-\end{align}
-Let $\boldsymbol{\Theta}$ be the space of hyper-parameter values. Let every possible value of the hyper-parameters $\boldsymbol{\theta} \in \boldsymbol{\Theta}$ be defined as a hypothesis that the model $\mathcal{M}$ can formulate about the data $\mathcal{D}$. The model evidence $p(\mathcal{D})$ represents the probability of the data given the model $\mathcal{M}$. In other words, how well does the model $\mathcal{M}$ fit the data $\mathcal{D}$ under every possible hypothesis $\boldsymbol{\theta}$ that can generate. It is used for Bayesian model selection. Models with higher marginal likelihood $p(\mathcal{D})$ explain the data better than those with lower marginal likelihood $p(\mathcal{D})$. The marginal likelihood $p(\mathcal{D})$ acts as normalization constant of the posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$. The posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$ of the hyper-parameters $\boldsymbol{\theta}$ given the data $\mathcal{D}$ represents all the possible hypotheses $\boldsymbol{\theta}$ of a model $\mathcal{M}$ weighted by their probability conditioned on data $\mathcal{D}$. We can update the posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$ of the hyper-parameters $\boldsymbol{\theta}$ given the data $\mathcal{D}$ every time that new data $\mathbf{x}_i, y_i)$ is available. New data incorporates a new likelihood function $p(y_i|\mathbf{x}_i, \boldsymbol{\theta})$ that affects the posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$. In a new iteration, we can state that the posterior $p(\boldsymbol{\theta}|\mathcal{D})$ becomes the new prior and the process is repeated. Hence, we can say that \textit{iudicium posterium discipulus est prioris} than translated means, the posterior is the student of the prior.
-
-Finally, we can use the posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$ to make predictions with the model. Let $\mathbf{x}$ be a new data instance. We want to predict the value $y$ associated with the data instance $\mathbf{x}$. Let $y = f(\mathbf{x})$ be the unknown ground truth. A model $\mathcal{M}$ performs a prediction of the value $y$ associated with the data instance $\mathbf{x}$ given the observed data $\mathcal{D}$. As we can consider every possible hypothesis $\boldsymbol{\theta}$ that model $\mathcal{M}$ can compute of the data, we can compute a predictive distribtion $p(f(\mathbf{x})|\mathbf{x}, \mathcal{D})$ of the value $y$ associated with the data instance $\mathbf{x}$. The predictive distribution $p(f(\mathbf{x})|\mathbf{x}, \mathcal{D})$ can be seen as the pondered average of all the possible model predictions $p(f(\mathbf{x})|\mathbf{x}, \boldsymbol{\theta})$ times the probability of the model being configurated with the hyper-parameter values $\boldsymbol{\theta}$ given the data $\mathcal{D}$. This probability is computed with the posterior distribution $p(\boldsymbol{\theta}|\mathcal{D})$. Hence, the predictive distribution $p(f(\mathbf{x})|\mathbf{x}, \mathcal{D})$ can be computed as the product of $p(f(\mathbf{x})|\mathbf{x}, \boldsymbol{\theta})$ and $p(\boldsymbol{\theta}|\mathcal{D})$ marginalizing the model hyper-parameters $\boldsymbol{\theta}$:
-\begin{equation}
-p(f(\mathbf{x})|\mathbf{x}, \mathcal{D}) = \int p(f(\mathbf{x})|\mathbf{x}, \boldsymbol{\theta}) p(\boldsymbol{\theta}|\mathcal{D}) d\boldsymbol{\theta}\,.
-\end{equation}
-\section{Gaussian Distribution} \label{sec-appendix-Gaussian}
-Let us first consider the case of univariate Gaussian distributions. Let $X$ be a random variable that is normally distributed. The associated probability density function $\mathcal{N}(x|\mu, \sigma)$ of the normally distributed random variable $X$ is parametrized by a mean $\mu$ and its standard deviation $\sigma$. The analytical expression of the probability density function associated to $X=x$ is:
-\begin{align}
-\mathcal{N}(x|\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}(\frac{x-\mu}{\sigma})^2}\,.
-\end{align}
-The multivariate Gaussian distribution is the generalization of the univariate Gaussian distribution in the multi-dimensional scenario. Let $\mathbf{X} = [X_1,...,X_d]$ be a random variable vector. The multivariate Gaussian distribution corresponds to the joint probability density function of the vector of random variables. It is parametrized by a $d$-dimensional mean vector $\boldsymbol{\mu}$ and a positive semi-definite square covariance matrix $\boldsymbol{\Sigma}^{d \times d}$. The analytical expression of the probability density function associated to $\mathbf{X}=\mathbf{x}$ is:
-\begin{align}
-\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma}) = \frac{1}{\sqrt{(2\pi)^d |\bm{\Sigma}|}} 
-\exp \left\{ - \frac{1}{2} \left( \mathbf{x} - \bm{\mu} \right)^T \bm{\Sigma}^{-1} 
-\left( \mathbf{x} - \bm{\mu} \right) \right\}\,, \label{eq:Appendix_Gaussian}
-\end{align}
-where the superscript $T$ means transpose. The analytical expression entropy $H[\mathcal{N}(x|\mu, \sigma)]$ of the univariate Gaussian distribution is:
-\begin{align}
-H[\mathcal{N}(x|\mu, \sigma)] = \frac{1}{2}\log(2\pi \text{e} \sigma^2)\,.
-\end{align}
-The entropy $H[\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})]$ of the multivariate Gaussian distribution is:
-\begin{align}
-H[\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})] = \frac{1}{2}\log[(2\pi \text{e})^d\bm{\Sigma}]\,.
-\end{align}
-The Gaussian distribution is an exponential family member. Exponential family is closed under product and division. Hence, both the multiplication and division operations are closed for multivariate Gaussian distributions. That is, the multiplication of two Gaussian distributions $\mathcal{N}(\mathbf{x}|\bm{\mu}_1,\bm{\Sigma}_1)$ and $\mathcal{N}(\mathbf{x}|\bm{\mu}_2,\bm{\Sigma}_2)$ is another Gaussian distribution $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$. It is defined by the following expression, 
-\begin{equation}
-\mathcal{N}(\mathbf{x}|\bm{\mu}_1,\bm{\Sigma}_1) \mathcal{N}(\mathbf{x}|\bm{\mu}_2,\bm{\Sigma}_2) \propto \mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})\,,
-\label{eq:Appendix_A_product_of_gaussians}
-\end{equation}
-where $\bm{\Sigma} = \left( \bm{\Sigma}_1^{-1} + \bm{\Sigma}_2^{-1} \right)^{-1}$ and $\bm{\mu} = \bm{\Sigma} \left(  \bm{\Sigma}_1^{-1} \bm{\mu}_1 + \bm{\Sigma}_2^{-1}\bm{\mu}_2 \right)$. The previous expression represents an unnormalized distribution. The normalization constant of $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$ is given by the following expression:
-\begin{equation}
-Z = \sqrt{\frac{|\bm{\Sigma}|}{(2\pi)^d|\bm{\Sigma}_1||\bm{\Sigma}_2|}} 
-\exp \left\{ -\frac{1}{2} \left( \bm{\mu}_1^T \bm{\Sigma}_1^{-1} \bm{\mu}_1 + 
-\bm{\mu}_2^T \bm{\Sigma}_2^{-1} \bm{\mu}_2 - \bm{\mu}^T \bm{\Sigma}^{-1} \bm{\mu}  \right) \right\} \,,
-\end{equation}
-where $d$ is the dimensionality of the the Gaussian distribution. Regarding the division of two multivariate Gaussian distributions, we also have equivalent analytical expressions. In particular, the division of Gaussian distributions $\mathcal{N}(\mathbf{x}|\bm{\mu}_1,\bm{\Sigma}_1)$ and $\mathcal{N}(\mathbf{x}|\bm{\mu}_2,\bm{\Sigma}_2)$ is also another Gaussian distribution $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$ which is given by the following analytical expression:
-\begin{equation}
-\mathcal{N}(\mathbf{x}|\bm{\mu}_1,\bm{\Sigma}_1) / \mathcal{N}(\mathbf{x}|\bm{\mu}_2,\bm{\Sigma}_2) \propto \mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})\,,
-\label{eq:Appendix_A_quotient_of_gaussians}
-\end{equation}
-where $\bm{\Sigma} = \left( \bm{\Sigma}_1^{-1} - \bm{\Sigma}_2^{-1} \right)^{-1}$ and $\bm{\mu} = \bm{\Sigma} \left(\bm{\Sigma}_1^{-1} \bm{\mu}_1 - \bm{\Sigma}_2^{-1}\bm{\mu}_2 \right)$. As in the case of the product of two Gaussian distributions $\mathcal{N}(\mathbf{x}|\bm{\mu}_1,\bm{\Sigma}_1)$ and $\mathcal{N}(\mathbf{x}|\bm{\mu}_2,\bm{\Sigma}_2)$, we can also compute the normalization constant $Z$ of the unnormalized distribution $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$. The normalization constant $Z$ can be computed via the following expression:
-\begin{equation}
-Z = \sqrt{\frac{(2\pi)^d|\bm{\Sigma}||\bm{\Sigma}_2|}{|\bm{\Sigma}_1|}} 
-\exp \left\{ -\frac{1}{2} \left( \bm{\mu}_1^T \bm{\Sigma}_1^{-1} \bm{\mu}_1 - 
-\bm{\mu}_2^T \bm{\Sigma}_2^{-1} \bm{\mu}_2 - \bm{\mu}^T \bm{\Sigma}^{-1} \bm{\mu}  \right) \right\} \,.
-\end{equation}
-The Gaussian distribution is an exponential family member. Therefore, the Gaussian distribution $\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})$ can be rewritten as an exponential family representation via the following expression:
-\begin{equation}
-\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma}) = \exp (\bm{\eta}^T \mathbf{u}(\mathbf{x}) - g(\bm{\eta}))\,,
-\end{equation}
-where $\bm{\eta}$ is a vector of natural parameters, $\mathbf{u}(\mathbf{x})$ is a vector function of $\mathbf{x}$ known as the sufficient statistics and $g(\bm{\eta})$ is the cumulant generating function or log partition function. The log partition function $g(\bm{\eta})$ guarantees that $\exp (\bm{\eta}^T \mathbf{u}(\mathbf{x}) - g(\bm{\eta}))$ integrates to $1$. We can compute the sufficient statistics $\mathbf{u}(\mathbf{x})$ and the log partition function $g(\bm{\eta})$ via the following expressions for the particular case of the Gaussian distribution $\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})$:
-\begin{align}
-\mathbf{u}(\mathbf{x}) & = \left( x_1,\ldots,x_d, \right.  & \bm{\eta} & =  - \frac{1}{2} \left( -2 \bm{\mu}^T \bm{\Sigma}^{-1} \right.,  \nonumber \\
-& \quad x_1^2, x_1 x_2, \ldots, x_1 x_d, && \quad \Sigma^{-1}_{11}, \Sigma^{-1}_{12}, \ldots, \Sigma^{-1}_{1d}, \nonumber \\ 
-& \quad x_1 x_2, x_2^2, \ldots, x_2 x_d, && \quad \Sigma^{-1}_{21}, \Sigma^{-1}_{22}, \ldots, \Sigma^{-1}_{1d},\nonumber \\
-& \quad \quad \vdots && \quad \quad \vdots \nonumber \\
-& \quad \left. x_d x_1, x_d x_2, \ldots, x_d^2 \right)^T\,, && \quad \left. 
-\Sigma^{-1}_{d1}, \Sigma^{-1}_{d2},\ldots, \Sigma^{-1}_{dd} \right)^T
-\end{align}
-and $g(\bm{\eta}) = \frac{1}{2} \bm{\mu}^T \bm{\Sigma}^{-1} \bm{\mu} + \frac{d}{2}\log(2\pi) + \frac{1}{2} \log(|\bm{\Sigma}|)$. Let us consider an univariate Gaussian distribution $\mathcal{N}(x|\mu_g, \sigma_g)$. We can transform the parameters $\mu_g$ and $\sigma_g$ of a Gaussian distribution $\mathcal{N}(x|\mu_g, \sigma_g)$ into its natural parameters $\mu_n$ and $\sigma_n$ using the following expressions:
-\begin{align}
-\mu_n = \frac{\mu_g}{\sigma_g} \,, \\
-\sigma_n = \frac{1}{\sigma_g} \,.
-\end{align}
-We can also deconvert the natural parameters, $\mu_n$ and $\sigma_n$, into the Gaussian ones, $\mu_g$ and $\sigma_g$, using the following expressions:
-\begin{align}
-\sigma_g = \frac{1}{\sigma_n} \,, \\
-\mu_g = \mu_n \sigma_g \,.
-\end{align}
-Let us now consider a joint Gaussian distribution $\mathcal{N}(\boldsymbol{\mu}_n, \boldsymbol{\sigma}_n \text{I})$ where $\text{I}$ is the identity matrix. This distribution factorizes as a product of univariate independent Gaussian distributions $\mathcal{N}(\boldsymbol{\mu}_n, \boldsymbol{\sigma}_n \text{I}) = \prod_{i=1}^{N} \mathcal{N}(\mu_n, \sigma_n)$.  We can convert the parameters of this joint distribution $\mathcal{N}(\boldsymbol{\mu}_n, \boldsymbol{\sigma}_n \text{I})$ using the following analytical expression:
-\begin{align}
-\boldsymbol{\mu}_n = \frac{\boldsymbol{\mu}_g}{diag(\boldsymbol{\sigma}_g)} \,, \\
-\boldsymbol{\sigma}_n = \frac{1}{diag(\boldsymbol{\sigma}_g)}\,.
-\end{align}
-We can also deconvert the natural parameters, $\boldsymbol{\mu}_n$ and $\boldsymbol{\sigma}_n$, into the Gaussian ones, $\boldsymbol{\mu}_g$ and $\boldsymbol{\sigma}_g$, using the following expressions:
-\begin{align}
-\boldsymbol{\sigma}_g = \frac{1}{\boldsymbol{\sigma}_n} \,, \\
-\boldsymbol{\mu}_g = \boldsymbol{\mu}_n \boldsymbol{\sigma}_g \,.
-\end{align}
-Transforming the Gaussian parameters, $\boldsymbol{\mu}_g$ and $\boldsymbol{\sigma}_g$, into the natural ones, $\boldsymbol{\mu}_n$ and $\boldsymbol{\sigma}_n$, is interesting as the expressions for the product and division of Gaussian distributions become simpler. Let us return to the case of the univariate Gaussian distribution. The product of two Gaussian distributions $\mathcal{N}(\mu_{n1}, \sigma_{n1})$ and $\mathcal{N}(\mu_{n2}, \sigma_{n2})$ with natural parameters $\mu_{n1}, \sigma_{n1}$ and $\mu_{n2}, \sigma_{n2}$ is a Gaussian distribution $\mathcal{N}(\mu_{n3}, \sigma_{n3})$ with parameters $\mu_{n3}, \sigma_{n3}$. The parameters $\mu_{n3}, \sigma_{n3}$ are given by the addition of the parameters of the two distributions $\mathcal{N}(\mu_{n1}, \sigma_{n1})$ and $\mathcal{N}(\mu_{n2}, \sigma_{n2})$ that are being multiplied:
-\begin{align}
-\mu_{n3} = \mu_{n1} + \mu_{n2} \,, \\
-\sigma_{n3} = \sigma_{n1} + \sigma_{n2} \,.
-\end{align}
-Similarly, the division of two Gaussian distributions $\mathcal{N}(\mu_{n1}, \sigma_{n1})$ and $\mathcal{N}(\mu_{n2}, \sigma_{n2})$ with natural parameters, $\mu_{n1}, \sigma_{n1}$ and $\mu_{n2}, \sigma_{n2}$, is a Gaussian distribution $\mathcal{N}(\mu_{n3}, \sigma_{n3})$ where its natural parameters $\mu_{n3}, \sigma_{n3}$ are given by the substraction of the two distributions $\mathcal{N}(\mu_{n1}, \sigma_{n1})$ and $\mathcal{N}(\mu_{n2}, \sigma_{n2})$ that are being divided:
-\begin{align}
-\mu_{g3} = \mu_{g1} - \mu_{g2} \,, \\
-\sigma_{g3} = \sigma_{g1} - \sigma_{g2} \,.
-\end{align}
-Let us consider now a multivariate Gaussian distribution $\mathcal{N}(\boldsymbol{\mu}_g, \boldsymbol{\Sigma}_g)$ with parameters $\boldsymbol{\mu}_g, \boldsymbol{\Sigma}_g$. We can compute its natural parameters $\boldsymbol{\mu}_n, \boldsymbol{\Sigma}_n$ using the following expressions:
-\begin{align}
-\boldsymbol{\mu}_n = \boldsymbol{\Sigma}_g^{-1} \boldsymbol{\mu}_g \,, \\
-\boldsymbol{\Sigma}_n = \boldsymbol{\Sigma}_g^{-1} \,.
-\end{align}
-As in the case of univariate distributions, we can reconvert the natural parameters into the Gaussian ones using the following expression:
-\begin{align}
-\boldsymbol{\Sigma}_g = (\boldsymbol{\Sigma}_n)^{-1} \,, \\
-\boldsymbol{\mu}_g = \boldsymbol{\Sigma}_g \boldsymbol{\mu}_n \,. 
-\end{align}
-Consider two multivariate Gaussian distributions $\mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ and $\mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$ with natural parameters $\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1$ and $\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2$. The product of two Gaussian distributions $\mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ and $\mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$ is another Gaussian distribution $\mathcal{N}(\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3)$ with natural parameters $\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3$ such that $\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3$ are given by:
-\begin{align}
-\boldsymbol{\mu}_3 = \boldsymbol{\mu}_1 + \boldsymbol{\mu}_2\,, \\
-\boldsymbol{\Sigma}_3 = \boldsymbol{\Sigma}_1 + \boldsymbol{\Sigma}_2 \,.
-\end{align}
-Consider two multivariate Gaussian distributions $\mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ and $\mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$ with natural parameters $\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1$ and $\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2$. The division of two Gaussian distributions $\mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ and $\mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$ is another Gaussian distribution $\mathcal{N}(\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3)$ with natural parameters $\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3$ such that $\boldsymbol{\mu}_3, \boldsymbol{\Sigma}_3$ are given by:
-\begin{align}
-\boldsymbol{\mu}_3 = \boldsymbol{\mu}_1 - \boldsymbol{\mu}_2\,, \\
-\boldsymbol{\Sigma}_3 = \boldsymbol{\Sigma}_1 - \boldsymbol{\Sigma}_2 \,.
-\end{align}
-Let $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$
-and $\mathcal{N}(\mathbf{y}|\bm{\mu}',\bm{\Sigma}')$ be two multivariate Gaussian distributions. The Kullback-Leibler (KL) divergence between $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$ and $\mathcal{N}(\mathbf{y}|\bm{\mu}',\bm{\Sigma}')$ is
-\begin{equation}
-\text{KL}\left(\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma}),\mathcal{N}(\mathbf{y}|\bm{\mu}',\bm{\Sigma}')\right)  = \frac{1}{2} \left( \frac{|\bm{\Sigma}'|}{|\bm{\Sigma}|} \right) + 
-\text{trace} \left( \bm{\Sigma}'^{-1} \bm{\Sigma} - \mathbf{I} \right) + 
-(\bm{\mu}'-\bm{\mu})^T \bm{\Sigma}'^{-1} (\bm{\mu}'-\bm{\mu})\,. \label{eq:Appendix_KL_Gaussian}
-\end{equation}
-The moments of two Gaussian distributions $\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})$ and $\mathcal{N}(\mathbf{y}|\bm{\mu}',\bm{\Sigma}')$ are matched if $\text{KL}\left(\mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma}),\mathcal{N}(\mathbf{y}|\bm{\mu}',\bm{\Sigma}')\right) = 0$. Let $p(\mathbf{x})$ be an unnormalized probability distribution, the normalization constant $Z$ of $p(\mathbf{x})$ is given by: 
-\begin{align}
-Z = \int p(\mathbf{x}) d\mathbf{x}
-\end{align}
-Let $t(\mathbf{x})$ be an arbitrary function of $\mathbf{x}$ and let
-\begin{align}
-Z & = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma}) d \mathbf{x}\,, &
-p(\mathbf{x}) & = \frac{1}{Z} t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\bm{\mu},\bm{\Sigma})\,.
-\label{eq:Z_exp}
-\end{align}
-In this case, $p(\mathbf{x})$ is a probability distribution, as it has been normalized by the constant $Z$. The first and second moments of a multivariate Gaussian distribution $\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})$ are given by the following expressions:
-\begin{align}
-\mathbb{E}[\mathbf{x}] & = \boldsymbol{\mu}\,,\\
-\mathbb{E}[\mathbf{x}\mathbf{x}^T] & = \boldsymbol{\Sigma} + \boldsymbol{\mu}\boldsymbol{\mu}^T\,.
-\end{align}
-The first and second moments of two distributions can be matched via the following expressions: 
-\begin{align}
-\mathds{E}_{p}[\mathbf{x}]  & = \bm{\mu} + \bm{\Sigma} \frac{\partial  \log(Z)}{\partial \bm{\mu}} \,, 
-\label{eq:AppendixA_new_mean}\\
-\mathds{E}_{p}[\mathbf{x}\mathbf{x}^T] - 
-\mathds{E}_{p}[\mathbf{x}] \mathds{E}_{p}[\mathbf{x}]^T
-&  = \bm{\Sigma} - \bm{\Sigma}\left(\frac{\partial  \log(Z)}{\partial \bm{\mu}} 
-\left(\frac{\partial  \log(Z)}{\partial \bm{\mu}}\right)^T  - 2 \frac{\partial \log(Z)}{\partial \bm{\Sigma}} \right) \bm{\Sigma} \,.
-\label{eq:AppendixA_new_var}
-\end{align}
-In some practical situations, $\partial \log(Z) / \partial \boldsymbol{\Sigma}$ is not robust. In that cases, we can use the second derivative of the mean, $\partial^2 \log (Z) / \partial (\boldsymbol{\mu})^2$, rather than $\partial \log(Z) / \partial \boldsymbol{\Sigma}$. By doing it so, Eq. (\ref{eq:AppendixA_new_var1}) is now given by the following expression:
-\begin{equation}
-\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T
- = \boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial (\boldsymbol{\mu})^2} \boldsymbol{\Sigma} + \boldsymbol{\Sigma}\,.
-\label{eq:z2ok}
-\end{equation}
-Let the normalization constant of a distribution, $Z$, be defined by Eq. (\ref{eq:Z_exp}). Let $\boldsymbol{\mu}$ and $\boldsymbol{\Sigma}$ be the mean and covariance of the multivariate Gaussian distribution that appears in Eq. (\ref{eq:Z_exp}) multiplying the factor $t(\mathbf{x})$. Let $\partial \log (Z)/\partial \boldsymbol{\mu}$ be the derivative of $Z$ with respect to $\boldsymbol{\mu}$. Finally, let $\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma})$ be:
-\begin{align}
-\mathcal{N}(\mathbf{x}|\bm{\mu}, \bm{\Sigma}) = \frac{1}{\sqrt{(2\pi)^d |\bm{\Sigma}|}} 
-\exp \left\{ - \frac{1}{2} \left( \mathbf{x} - \bm{\mu} \right)^T \bm{\Sigma}^{-1} 
-\left( \mathbf{x} - \bm{\mu} \right) \right\}\,. \label{eq:Appendix_Gaussian}
-\end{align}
-Then, we can infer Eq. (\ref{eq:z2ok}) from the following expressions. First, we compute the first derivative, $\partial \log (Z)/\partial \boldsymbol{\mu}$:
-\begin{align}
-&  \frac{\partial \log (Z)}{\partial (\boldsymbol{\mu})} = \frac{1}{Z} \frac{\partial Z}{\partial \boldsymbol{\mu}} \nonumber \,, \\
-& \frac{\partial Z}{\partial \boldsymbol{\mu}} = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu}, \boldsymbol{\Sigma}) (-0.5) 2 (\mathbf{x} - \boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1} (-1) d \mathbf{x} \nonumber \,, \\
-& \frac{\partial Z}{\partial \boldsymbol{\mu}} = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu}, \boldsymbol{\Sigma}) (\mathbf{x} - \boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1} d \mathbf{x} \nonumber \,, \\
-& \frac{\partial \log (Z)}{\partial (\boldsymbol{\mu})} = \frac{1}{Z} \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu}, \boldsymbol{\Sigma}) (\mathbf{x} - \boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1} d \mathbf{x} \,. 
-\end{align}
-Then, we can compute the second derivative, $\partial^2 \log (Z)/\partial (\boldsymbol{\mu})^2$. We need to know that $\mathds{E}_{p(\mathbf{x})}[\mathbf{x}] = \int t(\mathbf{x}) N(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma}) \mathbf{x} d \mathbf{x}$:
-\begin{align}
-& \frac{\partial^2 \log (Z)}{\partial (\boldsymbol{\mu})^2} = \frac{\partial 1/Z}{\partial \boldsymbol{\mu}} \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})(\mathbf{x} - \boldsymbol{\mu}) \boldsymbol{\Sigma}^{-1} d \mathbf{x} + \nonumber \\ & \frac{1}{Z} \frac{\partial \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma}) (\mathbf{x} - \boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1} d \mathbf{x}}{\partial{\boldsymbol{\mu}}} \nonumber \,, \\
-& \frac{\partial 1/Z}{\partial \boldsymbol{\mu}} = - \frac{1}{Z^2} \frac{\partial Z}{\partial \boldsymbol{\mu}}  = - \frac{1}{Z^2}  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} \nonumber \,, \\
-& \frac{\partial \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x}}{ \partial \boldsymbol{\mu}} = \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}) (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x} - \nonumber \\ 
-& \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d\mathbf{x} \nonumber \,, \\
-& \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z^2}  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x}  \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})  \boldsymbol{\Sigma}^{-1}  d\mathbf{x} + \nonumber \\ 
-& \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu}) (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d\mathbf{x} ] \nonumber \,, \\
-& \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z^2}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})  d\mathbf{x}]   [\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x}] + \nonumber \\
-& \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] \nonumber \,, \\
-& \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})  d\mathbf{x}]  \frac{1}{Z}  [\int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  (\mathbf{x} - \boldsymbol{\mu})^T  \boldsymbol{\Sigma}^{-1}  d\mathbf{x}] + \nonumber \\
-& \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d\mathbf{x} ] \nonumber \,, \\
-& \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] \boldsymbol{\Sigma}^{-1} + \nonumber \\ 
-& \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x} - \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} d \mathbf{x} ] \nonumber \,, \\
-& \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ] \boldsymbol{\Sigma}^{-1} + \nonumber \\
-& \frac{1}{Z}  [ \int t(\mathbf{x}) \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})  \boldsymbol{\Sigma}^{-1} [ \mathbf{x} \mathbf{x}^T - 2 \boldsymbol{\mu} \mathbf{x}^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  d \mathbf{x}]  - \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-\end{align}
-where the derivation continues as follows,
-\begin{align}
-\frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} & = - \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T \boldsymbol{\Sigma}^{-1} + \nonumber \\ & \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ]  \boldsymbol{\Sigma}^{-1}  - \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-& = \boldsymbol{\Sigma}^{-1} [- [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T + \nonumber \\ & [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] ] \boldsymbol{\Sigma}^{-1} - \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-& = \boldsymbol{\Sigma}^{-1} [- [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]  [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] - \boldsymbol{\mu}  ]^T + \nonumber \\ & [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-&  = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + 2  \boldsymbol{\mu}  \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T - \nonumber \\ & \boldsymbol{\mu}\boldsymbol{\mu}^T + [\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - 2 \boldsymbol{\mu} \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T  + \boldsymbol{\mu} \boldsymbol{\mu}^T ] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-& = \boldsymbol{\Sigma}^{-1} [ - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T + \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-& = \boldsymbol{\Sigma}^{-1} [ \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T - \boldsymbol{\Sigma} ] \boldsymbol{\Sigma}^{-1} \nonumber \,, \\
-\end{align}
-where we see that we can finally substitute $\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T$ by:
-\begin{align}
-\boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} =  \mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T - \boldsymbol{\Sigma}  \nonumber \,, \\
-\mathds{E}_{p(\mathbf{x})}[\mathbf{x}\mathbf{x}^T] - \mathds{E}_{p(\mathbf{x})}[\mathbf{x}] \mathds{E}_{p(\mathbf{x})}[\mathbf{x}]^T =  \boldsymbol{\Sigma} \frac{\partial^2 \log (Z)}{\partial \boldsymbol{\mu}^2} \boldsymbol{\Sigma} + \boldsymbol{\Sigma} \,. 
-\end{align}
+% Explanation of datasets
+\newpage
+%\begin{center}
+    \begin{longtable}{
+        %@{}
+        l % Name
+        l % n
+        l % d
+        l % T
+        l % Nature
+        l % References
+        @{}
+        }
+        \caption{\acrshort{mtl} Problems. The columns show the number of samples $n$, the dimension $d$, the number of tasks $T$ and the nature of the problem.} \label{tab:mtl_problems} \\
+    \toprule 
+    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
+    \endfirsthead
+    \multicolumn{6}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \midrule \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
+    \endhead
+    
+    \midrule \multicolumn{6}{|r|}{{Continued on next page}} \\ \midrule
+    \endfoot
+    
+    \midrule \bottomrule
+    \endlastfoot    
+    \multirow{13}{*}{\fdata{school}} & \multirow{13}{*}{\num{15362}} & \multirow{13}{*}{27} & \multirow{13}{*}{139} & \multirow{13}{*}{MT single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ &&&&&~\cite{HanZ16} \\ &&&&&~\cite{JeongJ18}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{\num{18000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{\num{800000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
+    \multirow{6}{*}{\fdata{computer}} & \multirow{6}{*}{\num{3600}} & \multirow{6}{*}{13} & \multirow{6}{*}{180} & \multirow{6}{*}{MT single-reg}  & \multirow{6}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{\num{14820}} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{MT bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{\num{32302}} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{MT bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{\num{366}} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
+    \multirow{5}{*}{\fdata{sentiment}} & \multirow{5}{*}{\num{2000}} & \multirow{5}{*}{473856} & \multirow{5}{*}{4} & \multirow{5}{*}{MT bin-clas}  & \multirow{5}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{BarzilaiC15} \\ [3.0ex]
+    \\ \\ 
+    \multirow{6}{*}{\fdata{sarcos}} & \multirow{6}{*}{\num{44484}} & \multirow{6}{*}{21} & \multirow{6}{*}{7} & \multirow{6}{*}{multi-reg}  & \multirow{6}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{CilibertoMPR15} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{isolet}} & \multirow{2}{*}{\num{7797}} & \multirow{2}{*}{617} & \multirow{2}{*}{5} & \multirow{2}{*}{MT multi-clas}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ [3.0ex]
+%    \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{\num{340}} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
+    \multirow{4}{*}{\fdata{mnist}} & \multirow{4}{*}{\num{70000}} & \multirow{4}{*}{400} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{usps}} & \multirow{4}{*}{\num{9298}} & \multirow{4}{*}{256} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{\num{675}} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{\num{131}} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{cifar10}} & \multirow{2}{*}{\num{50000}} & \multirow{2}{*}{1024} & \multirow{2}{*}{10} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{ZweigW13} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{parkinson}} & \multirow{2}{*}{\num{5875}} & \multirow{2}{*}{19} & \multirow{2}{*}{42} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{JawanpuriaN12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \end{longtable}
+    %\end{center}
