@@ -10,27 +10,27 @@
 }}
 
 \section{Introduction}
-In Chapter~\ref{Chapter3}, the MTL strategies are divided into feature-based, parameter-based and joint learning approaches.
+In Chapter~\ref{Chapter3}, we divide the \acrfull{mtl} strategies into feature-based, parameter-based and combination-based ones.
 The feature-based approaches, which try to find a representation shared by all tasks to obtain leverage in the learning process, rely on the assumption that all tasks can indeed share a common latent representation.
-In the case of joint learning, which combines a common part and task-specific parts in the models, a similar belief is held: although this approach has many good properties, it relies on the assumption that all tasks can share the same common information, which is captured by the common part of the model.
-However, this might not be the case in some MTL scenarios, where there can exist groups of tasks that share some information, but are unrelated to the rest.
-The parameter-based approaches are usually reliant on enforcing low-rank matrices, thus, assuming that all tasks parameters belong to the same subspace; however, the graph Laplacian based approaches offer a different perspective.
+In the case of combination-based, which combines a common part and task-specific parts in the models, a similar belief is held, but although this approach has many good properties, it relies on the assumption that all tasks can share the same common information, which is captured by the common part of the model.
+However, this might not be the case in some \acrshort{mtl} scenarios, where there can exist groups of tasks that share some information, but are unrelated to the rest.
+The parameter-based approaches are usually reliant on enforcing low-rank matrices, assuming, thus, that all tasks parameters belong to the same subspace; however, the \acrfull{gl} based approaches offer a different perspective.
 
-In the graph Laplacian strategies, the idea is based on penalizing the distance between the parameters of different tasks. It is more natural for linear or kernel approaches, where the models for each task $r=1, \ldots, \ntasks$ are defined as
+In the \acrshort{gl} strategies, the idea is based on penalizing the distance between the parameters of different tasks. It is more natural for linear or kernel approaches, where the models for each task $r=1, \ldots, \ntasks$ are defined as
 \begin{equation}
     \nonumber
     f_r(x) = w_r \cdot \phi({x}) + b_r
 \end{equation}
 and $\phi(x)$ is a transformation, which can be the identity $\phi(x)=x$ in linear models, or an implicit transformation to an \acrshort{rkhs} in kernel models.
 Here, the models are determined by the parameter $w_r$, so pushing together these parameters enforces the models to be similar. 
-The idea is to assume that the relationship between tasks can be modelled using a graph, then the adjacency matrix $\fm{A}$ of such graph is used to define the regularization
+The idea is to assume that the relationship between tasks can be modelled using a graph; then, the adjacency matrix $\fm{A}$ of such graph is used to define the regularization
 \begin{equation}
     \label{eq:gl_regularization}
     \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{w_r - w_s}^2 ,
 \end{equation}
 where $A_{rs}$ are positive scalars that weight the pairwise distances.
-Although~\eqref{eq:gl_regularization} is easy to compute for the linear case, it is not that direct in the case of kernel models where, as shown in the Representer Theorem, the optimal parameters $w_r^*$ are elements of an \acrshort{rkhs}.
-In this Chapter, a framework to use the graph Laplacian regularization with kernel models is presented. This is implemented with L1, L2 and LS-SVMs. Moreover, the graph Laplacian strategy is combined with the convex joint learning one presented in Chapter~\ref{Chapter4}.
+Although~\eqref{eq:gl_regularization} is easy to compute for the linear case, it is not that direct in the case of kernel models where, as shown by the Representer Theorem, the optimal parameters $w_r^*$ are elements of an \acrshort{rkhs}.
+In this Chapter, a framework to use the \acrshort{gl} regularization with kernel models is presented. This is implemented for L1, L2 and LS-SVMs. Moreover, the \acrshort{gl} strategy is combined with the convex joint learning one presented in Chapter~\ref{Chapter4}.
 %
 
 Besides, the definition of the weights $A_{rs}$ is not trivial, and it is crucial for the good performance of this strategy. 
@@ -41,16 +41,15 @@ In this chapter, a data-driven procedure to select the weights for a Laplacian r
 
 
 \section{Graph Laplacian Multi-Task Learning with Kernel Methods}
-\subsection{Linear Case and Kernel Extension}
-\paragraph*{Linear Case.\\}
-Observe that we can express the Laplacian regularization as
+\subsection{Linear Case}
+We start from the simplest scenario: using linear models. First, observe that we can express the Laplacian regularization as
 \begin{equation}
     \nonumber
     \Omega(w_1, \ldots, w_\ntasks) = \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 =  \sum_{r=1}^T \sum_{s=1}^T A_{rs} \left\{ \norm{w_r}^2 + \norm{w_s}^2 - 2 \langle w_r, w_s \rangle \right\}.
 \end{equation}
 Here, only the distance between model parameters is penalized, and in the extreme case where all the tasks can use the same model, i.e. $w_r = w$, there would be no regularization for the complexity of such model $w$.
 This problem can be solved by adding the individual model regularization aside from the Laplacian one.
-To illustrate this, we first use a linear L1-SVM, whose primal problem is
+To illustrate this, we first consider a linear L1-SVM, whose primal problem is
 \begin{equation}\label{eq:linear_gl_primal}
 \begin{aligned}
 & \argmin_{\substack{w_1, \ldots, w_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}; }}
@@ -64,16 +63,16 @@ The corresponding Lagrangian is
 \begin{equation}\label{eq:svmmtl_lagr_GL_addreg}
 \begin{aligned}
         \mathcal{L}&(w_1, \ldots, w_\ntasks, b_r, \fv{\alpha}, \fv{\beta}) = C \sum_{r=1}^T \sum_{i=1}^{m_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 \\
-        & - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \alpha_i^r [y_{i}^r (w_r \cdot x_{i}^r + b_r) - p_{i}^r + \xi_{i}^r]   } - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \beta_i^r \xi_i^r } \; .
+        & - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \alpha_i^r [y_{i}^r (w_r \cdot x_{i}^r + b_r) - p_{i}^r + \xi_{i}^r]   } - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \beta_i^r \xi_i^r } \; ,
 \end{aligned}
 \end{equation}
-And the derivatives of the Lagrangian with respect the primal variables are
+and the derivatives of the Lagrangian with respect the primal variables are
 \begin{align}
 & \frac{\partial \mathcal{L}}{\partial w_r} = 0 \implies  w_r^* + \frac{\nu}{2} \sum_{s=1}^T (A_{rs} + A_{sr}) (w_r^* - w_s^*)= \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r} \label{eq:partial_w_r_addreg} \; , \\
 & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0 \label{eq:partial_b_r_addreg} \; ,\\
 & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C_r - \alpha_i^r - \beta_i^r = 0 \; \label{eq:partial_xi_addreg}\; .
 \end{align}
-Consider the following definitions of vectors
+Consider the following vectors definitions
 \begin{equation}
     \nonumber
     \underset{1 \times Td}{\fv{w}^\intercal} = (w_1^\intercal \ldots w_T^\intercal)
@@ -82,7 +81,7 @@ Consider the following definitions of vectors
     , \; 
     \underset{1 \times m_r}{\fv{\alpha}_r^\intercal} =  (\alpha_1^r \ldots \alpha_{m_r}^r) ;
 \end{equation}
-and consider also the matrices
+and consider also the matrices and corresponding dimensions
 \begin{equation*}
     \underset{\ntasks \dimx \times \ntasks \dimx}{E_\otimes} = \left\lbrace I_T + \nu L \right\rbrace \otimes I_d, \;
     \underset{\ntasks \times \ntasks}{L} =
@@ -92,6 +91,7 @@ and consider also the matrices
         A_{\ntasks 1} & A_{\ntasks 2} & \ldots & \sum_{s \neq \ntasks} A_{\ntasks s}
     \end{bmatrix}
 \end{equation*}
+where $\otimes$ here is the Kronecker product of matrices,
 and
 \begin{equation*}
     \underset{(\sum_r m_r) \times Td}{\Phi} =
@@ -131,7 +131,7 @@ That is, $\Phi E^{-1} \Phi^\intercal = \widetilde{Q}$, where $ \widetilde{Q}$ is
     \label{eq:kernelfun_gl}
     \widetilde{k}(x_i^r, y_j^s) =  \left((I_T + \nu L)^{-1}\right)_{rs} \dotp{x_i^r}{x_j^s}.
 \end{equation}
-Here, the individual regularization of the primal problem leads to the diagonal term added, which ensures the invertibility of the matrix $(I_T + \nu L)$.
+It can be noted that the individual regularization of the primal problem leads to the diagonal term added, which ensures the invertibility of the matrix $(I_T + \nu L)$.
 Thus, this additional regularization ultimately makes the solution of the problem more numerically stable.
 Using this result, the corresponding dual problem is
 \begin{equation}\label{eq:linear_gl_dual}
@@ -144,8 +144,8 @@ Using this result, the corresponding dual problem is
         \end{aligned}
 \end{equation}
 
-
-\paragraph*{Non-Linear Case.\\}
+\subsection{Kernel Extension}
+After the definition of the linear \acrshort{gl} \acrshort{mtl} \acrshort{svm}, we present the extension to the kernel case.
 When we use an implicit kernel transformation, the result~\eqref{eq:laplacian_block_linear} is not direct. However, we can use the result from Lemma~\ref{lemma:regproblems_kernel}.
 Observe that
 \begin{align*}
@@ -202,11 +202,11 @@ The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:lin
 
 
 
-\subsection{Convex Graph Laplacian MTL}
+\section{Convex Graph Laplacian Multi-Task Learning}
 
 
 
-In~\cite{RuizAD21_hais} we proposed a convex formulation of the Graph Laplacian MTL SVM which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
+In~\cite{RuizAD21_hais} we proposed a convex formulation for the Graph Laplacian \acrshort{mtl} \acrshort{svm} which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
 That is, the models for each task are
 \begin{equation}
     \nonumber
@@ -214,10 +214,11 @@ That is, the models for each task are
 \end{equation}
 where $\phi(\cdot)$ and $\psi(\cdot)$ are the implicit transformations for the common part and task-specific parts, and can be possibly distinct, trying to capture different properties of the data.
 That is, $\phi: \Xspace \to \hilbertspace_\phi$ and $\psi: \Xspace \to \hilbertspace_\psi$, where $\hilbertspace_\phi$ and $\hilbertspace_\psi$ are RKHS's with reproducing kernels $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$, respectively.
-Unlike the model definition for Convex MTL in~\eqref{eq:convexmtl_modeldef}, where each task-specific part can use a different Hilbert space, here all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
-Again, as with the Convex MTL approach, parameters $\lambda_r \in [0, 1]$ define how relevant the common part for each task. When $\lambda_r=1$, only the common part is present, while $\lambda_r=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
+Unlike the model definition for Convex \acrshort{mtl} in~\eqref{eq:convexmtl_modeldef}, where each task-specific part can use a different Hilbert space, here all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
+Again, as with the Convex \acrshort{mtl} approach, parameters $\lambda_r \in [0, 1]$ define how relevant the common part for each task. When $\lambda_r=1$, only the common part is present, while $\lambda_r=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
 
-\paragraph*{A general result for Convex Graph Laplacian MTL.\\}
+\subsection{General Result for Kernel Methods}
+%\paragraph*{A general result for Convex Graph Laplacian \acrshort{mtl}.\\}
 In general, we can use the Representer Theorem with the tensor kernels defined in Chapter~\ref{Chapter3} to find the result of kernel problems using this approach.
 Using the same approach used in Section~\ref{sec:ch3_mtl_kernelmethods}, with ${e_1, \ldots, e_\ntasks}$ being an orthonormal basis of $\reals^\ntasks$, we define
 \begin{equation}
@@ -228,14 +229,14 @@ such that
 $\dotp{\fv{v}}{e_r \otimes \psi(x_i^r)} = \dotp{v_r}{\psi(x_i^r)}$.
 If we consider then the product space $\hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)$, where the norm of $(w, \fv{v})$ is 
 $$\dotp{(w, \fv{v})}{(w, \fv{v})} =  \dotp{w}{w} + \dotp{\fv{v}}{\fv{v}} = \norm{w}^2 + \norm{\fv{v}^2},$$
-then the general kernelized problem for convex graph Laplacian MTL can be expressed as
+then the general kernelized problem for convex \acrshort{gl} \acrshort{mtl} can be expressed as
 \begin{equation}\label{eq:cvxgl_general_problem_tensor}
     \begin{aligned}
     \argmin_{(w, \fv{v}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)} R((w, \fv{v})) &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \ell(y_i^r, (\dotp{(w, \fv{v})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))}))\\
     &\quad + \dotp{(w, \fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, \fv{v})}  ,
     \end{aligned}
 \end{equation}
-where $\ell$ is a loss function, $\rkhs_\phi$, in our case it is the identity operator in $\rkhs_\phi$, and $E$ is a symmetric, positive definite operator in $\reals^\ntasks$ in our case, $E = ((\nu \fm{L} + I))$, with $L$ being a graph Laplacian matrix.
+where $\ell$ is a loss function, $\rkhs_\phi$, in our case it is the identity operator in $\rkhs_\phi$, and $E$ is a symmetric, positive definite operator in $\reals^\ntasks$ in our case, $E = ((\nu \fm{L} + I))$, with $L$ being a \acrshort{gl} matrix.
 % With both $A$ and $E$ are positive definite, the function $ \dotp{(w, \fv{v})}{(A \times E) (w, \fv{v})}$ is strictly increasing in $\norm{(w, \fv{v})}$; then, we can apply the Representer Theorem to problem~\eqref{eq:cvxgl_general_problem_tensor}, that is, the solutions of this problem can be expressed as
 % \begin{equation}
 %     \nonumber
@@ -306,10 +307,10 @@ where $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$ are the reproducing kern
 %
 
 
-
-\paragraph*{Convex Graph Laplacian L1-SVM.\\}
+\subsection{Convex Graph Laplacian L1-SVM}
+Anyway, this result is general for any kernel method, but it is also interesting to see how this procedure can be applied in the specific cases of L1, L2 and LS-\acrshort{svms}.
 %
-The primal problem for the linear L1-SVM using this approach, as shown in~\citep*{RuizAD21_hais}, is the following one
+The primal problem for the linear L1-\acrshort{svm} using this approach, that we have presented in~\citep*{RuizAD21_hais}, is the following one
 %
 \begin{equation}\label{eq:primal_cvxgl_l1_linear}
   \begin{aligned}
@@ -321,7 +322,7 @@ The primal problem for the linear L1-SVM using this approach, as shown in~\citep
   \end{aligned}
 \end{equation}
 %
-Note that with $\mu=0$, this problem is equivalent to the one shown in~\eqref{eq:svmmtl_primal_convex}.
+Note that with $\nu=0$, this problem is equivalent to the one shown in~\eqref{eq:svmmtl_primal_convex}.
 %
 The extension to the kernel case requires using a different formulation, that is
 \begin{equation}\label{eq:primal_cvxgl_l1_kernel}
@@ -403,16 +404,16 @@ Here, we use the matrix
 \end{equation} 
 $\fm{I}_{\nsamples}$ is the $\nsamples \times \nsamples$ identity matrix, with $\nsamples = \sum_{r=1}^\ntasks \npertask_r,$
 %
-$Q$ is the common, standard, kernel matrix, and $\widetilde{Q}$ is the kernel matrix with the graph Laplacian information. We can define the kernel matrix
+$Q$ is the common, standard, kernel matrix, and $\widetilde{Q}$ is the kernel matrix with the \acrshort{gl} information. We can define the kernel matrix
 \begin{equation}
     \label{eq:dual_cvxgl_kernel_matrix}
     \widehat{\widetilde{\fm{Q}}} = \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{\fm{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right),
 \end{equation}
 as the matrix that is generated using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
 
-
-\paragraph*{Convex Graph Laplacian L2-SVM.\\}
-The primal problem for convex graph Laplacian MTL based on the L2-SVM is 
+\subsection{Convex Graph Laplacian L2-SVM}
+%\paragraph*{Convex Graph Laplacian L2-SVM.\\}
+The primal problem for convex \acrshort{gl} \acrshort{mtl} based on the L2-SVM is 
 \begin{equation}\label{eq:primal_cvxgl_l2_kernel}
     \begin{aligned}
     & \argmin_{\substack{\fv{v} ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
@@ -472,10 +473,10 @@ Now, there are no box constraints, but an additional diagonal term that can be i
 
 
 
-
-\paragraph*{Convex Graph Laplacian LS-SVM.\\}
+\subsection{Convex Graph Laplacian LS-SVM}
+%\paragraph*{Convex Graph Laplacian LS-SVM.\\}
 Recall that in the LS-SVM~\citep{SuykensV99} the inequalities in the constraints are substituted for equalities, which lead to a simpler dual solution.
-The primal problem for the convex graph Laplacian formulation based on the LS-SVM is
+The primal problem for the convex \acrshort{gl} formulation based on the LS-SVM is
 \begin{equation}\label{eq:primal_cvxgl_ls_kernel}
     \begin{aligned}
     & \argmin_{\substack{\fv{v} ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
@@ -538,7 +539,7 @@ and we have the kernel matrix that is defined using the kernel function~\eqref{e
 %\subsection{Experiments}
 
 \section{Adaptive Graph Laplacian Algorithm}
-Until now, in this chapter we have seen graph Laplacian formulations for kernel methods, where we assume that there exists a graph whose nodes represent the tasks, and the weights of the edges determine the pairwise relations between tasks. 
+Until now, in this chapter we have seen \acrshort{gl} formulations for kernel methods, where we assume that there exists a graph whose nodes represent the tasks, and the weights of the edges determine the pairwise relations between tasks. 
 %
 If $A$ is the graph adjacency matrix containing these weights, we use the Laplacian regularizer 
 presented in~\eqref{eq:gl_regularization} to enforce a coupling between tasks according to the adjacency information.
@@ -547,7 +548,8 @@ However, these weights of $A$ are not known in real-world problems. Even if we h
 It is more sensible to use a data-driven approach and automatically learn the matrix $A$.
 In this section, we propose one method to learn $A$ from data, discuss the procedure and computational cost, and also show how the distances can be computed in kernel spaces.
 
-\paragraph*{Entropy-based Interpretation.\\}
+\subsection{Motivation and Interpretation}
+%\paragraph*{Entropy-based Interpretation.\\}
 To explain our data-driven procedure for selecting the adjacency weights, first we would like the matrix $A$ to meet the following requirements:
 \begin{itemize}
     \item $A$ is symmetric.
@@ -568,7 +570,7 @@ If the weight at $a^r_r = A_{rr}$ is $1$ and the rest is $0$, then the $r$-th ta
 
 With these considerations, there are two trivial options when choosing the adjacency matrix: using a diagonal matrix $A$, i.e. $A = \fm{I}_\ntasks$, where there are no connections between different tasks and the entropy of the rows is minimal, and using an agnostic view, with the constant matrix $A = \frac{1}{\ntasks} \fv{1}_\ntasks \fv{1}_\ntasks^\intercal$ where the degree of relation is the same among all tasks and the entropy of the rows is maximal.
 
-For a better understanding of these situation we look at the following simplified formulation for the convex graph Laplacian \acrshort{mtl} problem, 
+For a better understanding of these situation we look at the following simplified formulation for the convex \acrshort{gl} \acrshort{mtl} problem, 
 \begin{equation}\nonumber
     \begin{aligned}
     & \argmin_{\substack{v_1, \ldots, v_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\  w; }}
@@ -597,8 +599,8 @@ In the case that we use the constant matrix $A = \frac{1}{\ntasks} \fv{1}_\ntask
 Between these two extremes of minimal and maximal entropy, there exists a whole range of matrices with intermediate entropy rows. Our goal is then to find an adjacency matrix $\fm{A}$ that reflects the underlying tasks relations and, therefore, helps to improve the learning process.
 
 
-
-\paragraph*{Optimization Procedure.\\}
+\subsection{Algorithm and Analysis}
+%\paragraph*{Optimization Procedure.\\}
 To find such adjacency matrix, we rely on the distances computed between the task parameters, if two task parameters are close, those tasks should be strongly related. Consider the Laplacian term
 $$  \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 ;$$
 then, the matrix that minimizes this quantity is the diagonal matrix $\fm{A}= \fm{I}_\ntasks$ with minimal entropy rows. The interpretation of this solution is that each task is isolated and the greater degree of connection is with itself; however, this is a trivial choice of matrix $A$, because it does not give any information about the underlying task relations. To avoid falling in the minimal entropy solution, the entropy of the rows is penalized.
@@ -654,7 +656,7 @@ This procedure can be then repeated with the new adjacency matrix, until converg
 
 
 
-\paragraph*{Distance Computation.\\}
+%\paragraph*{Distance Computation.\\}
 In our proposed algorithm, the steps for optimizing the task parameters $(w, \fv{v})$ and, given the distances $\norm{v_r - v_s}^2$, the adjacency matrix are detailed; however, it is still necessary to show how these distances can be computed when $\fv{v}_r$ are elements of the \acrshort{rkhs} $\hilbertspace_\psi$.
 
 %
@@ -704,7 +706,7 @@ That is, the distances are computed as
 \end{equation}
 
 
-\paragraph*{Analysis and Computational Cost.\\}
+%\paragraph*{Analysis and Computational Cost.\\}
 
 \begin{algorithm}[!t]
     \DontPrintSemicolon
@@ -730,10 +732,10 @@ That is, the distances are computed as
         $A$ $\gets$ updateAdjMatrix($D$, params) \tcp*{Step 3}
     }     
     \Return{$\alpha_\text{opt}, A$}
-    \caption{Adaptive graph Laplacian algorithm.}
+    \caption{Adaptive \acrshort{gl} algorithm.}
     \label{alg:adapgl}
 \end{algorithm}
-In first place, a comment about the convergence of the proposed algorithm, shown in Algorithm~\ref{alg:adapgl}, is necessary.
+A comment about the convergence and computational cost of the proposed algorithm, depicted in Algorithm~\ref{alg:adapgl}, is necessary.
 Given a convex loss function $\lossf$, the optimization problem of~\eqref{eq:adapcvxgl_general_problem_tensor} is convex in the parameters $(w, \fv{v})$ and in $A$, but not jointly convex in $(w, \fv{v}, \fm{A})$.
 Then, an iterated procedure where a coordinated optimization is done, as our proposal, ensures that a local minimum is found, albeit, not a global one.
 
@@ -743,7 +745,7 @@ The first step, where the dual problem is solved, has the standard cost correspo
 The second step, the distances computation one, involves the product of $\ntasks \times \ntasks$ inner products $\dotp{v_r}{v_s}$ shown in~\eqref{eq:dot_computation_matrix}, each with a cost $\nsamples_{\text{sv}}^2$ with $N_{\text{sv}}$ being the number of support vectors; then, the cost of the second step is $C_2 = O(\ntasks^2 N_\text{sv}^2)$. Finally, the third step, involving the update of the adjacency matrix $A$, needs the computation of the $\ntasks \times \ntasks$ elements of $A$ using equation~\eqref{eq:update_A}, which has then a total cost of $C_3 = \ntasks^2$.
 The total computational cost of each iteration is then
 $$ C_0 + C_1 + C_2 + C_3 = O(\ntasks^3 + \nsamples^{2+\epsilon} + \ntasks^2 \nsamples_\text{sv}^2 + \ntasks^2)$$
-Assuming a standard situation, where $\nsamples$ is much larger than $\ntasks$, the two first steps have clearly the greater cost; however, it is difficult to determine which one has greater cost, since it depends on the specific problem being solved. Anyway, the second step, unlike the first one, can be easily parallelized, computing each distance at the same time, which would result in a cost of $O(\nsamples_\text{sv}^2)$. 
+Assuming a standard situation, where $\nsamples$ is much larger than $\ntasks$, the two first steps have clearly the greater cost; however, it is difficult to determine what steps are more computationally challenging, since it depends on the specific problem being solved. Anyway, the second step, unlike the first one, can be easily parallelized, computing each distance at the same time, which would result in a cost of $O(\nsamples_\text{sv}^2)$. 
 
 %\subsection{Experiments}
 
