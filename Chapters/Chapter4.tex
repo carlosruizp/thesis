@@ -11,7 +11,7 @@
 
 \section{Introduction}
 % Multi-Task Learning paradigms can be divided in: Feature-Based, Parameter-Based, Joint-Learning
-As we have seen in Chapter~\ref{Chapter3}, the \acrshort{mtl} proposals can be categorized as feature-based, parameter-based and combination-based approaches. Feature-based proposals have the strategy of finding a shared representation of the original features that is benefitial for all tasks. Parameter-based strategies typically use multi-task regularization schemes that, using specific regularizers, push together the parameters of the task-specialized models.
+As we have seen in Chapter~\ref{Chapter3}, the \acrfull{mtl} proposals can be categorized as feature-based, parameter-based and combination-based approaches. Feature-based proposals have the strategy of finding a shared representation of the original features that is benefitial for all tasks. Parameter-based strategies typically use multi-task regularization schemes that, using specific regularizers, push together the parameters of the task-specialized models.
 Finally, the combination-based strategies combine a common model and a task-specific one. 
 %
 In this chapter we will present a convex formulation for combination-based \acrshort{mtl}. With this formulation, a general task-specialized model is defined as
@@ -22,7 +22,7 @@ In this chapter we will present a convex formulation for combination-based \acrs
        = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) .
     \end{aligned}    
 \end{equation}
-Here, we use the hyperparameters $\lambda_r \in [0, 1]$ to combine in a convex way the common part $g(\cdot)$ and specific parts $g_r(\cdot)$. This general formulation is very flexible, because we can use any family of functions to model $g(\cdot)$ or $g_r(\cdot)$. It is also easily interpretable, since $\lambda_r=1$ for all $r=1, \ldots, \ntasks$ results in a common model and $\lambda_r=0$ in independent models for each task. All the values $\lambda_r \in (0, 1)$ correspond to pure \acrshort{mtl} models, being closer to common model when $\lambda_r$ is close to $1$ and more specific when $\lambda_r$ is close to $0$.
+Here, we use the hyperparameters $\lambda_r \in [0, 1]$ to combine in a convex way the common part $g(\cdot)$ and specific parts $g_r(\cdot)$. This general formulation is very flexible, because we can use any family of functions to model $g(\cdot)$ or $g_r(\cdot)$. It is also easily interpretable, since $\lambda_r=1$ for all $r=1, \ldots, \ntasks$ results in a \acrfull{ctl} approach, while $\lambda_r=0$ leads to an \acrfull{itl} one. All the values $\lambda_r \in (0, 1)$ correspond to pure \acrshort{mtl} models, being closer to common model when $\lambda_r$ is close to $1$ and more specific when $\lambda_r$ is close to $0$.
 %
 Given an \acrshort{mtl} sample 
 $$\bsample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\},$$
@@ -32,10 +32,10 @@ the \acrshort{mtl} regularized risk functional that corresponds to this convex f
     \risk_{\bsample} ({g, g_1, \ldots, g_\ntasks}) = C\sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) + \Omega(g) + \sum_{r=1}^\ntasks \Omega_r(g_r) ,
 \end{equation}
 where $\Omega(g)$ and $\Omega_r(g_r)$ are the regularizers for the common and $r$-th task parts, respectively. Observe that, since the regularization is made independently for each part, no multi-task specific regularization scheme is needed. The task coupling is made directly in the definition of the model, which combines common and specific parts, and the risk $\risk_{\bsample}$ is optimized jointly in all parts.
-This has some advantages, for example, no additional regularizations for coupling are needed, which usually are not convex, and there is no need to develop a new optimization procedure. In this chapter these characteristics will be presented in specific models using this convex \acrshort{mtl} formulation.
+This has some advantages, for example, no additional regularizations for coupling are needed, which usually are not convex, and there is no need to develop a new optimization procedure. In this chapter these characteristics will be presented in specific models using this convex \acrshort{mtl} formulation. We will propose convex \acrshort{mtl} formulations for kernel methods, such as the L1, L2 or LS-\acrfull{svm}, and also for \acrfull{nns}.
 %
 
-A natural alternative is to combine independently trained models. That is, given a common model $g^*(\cdot)$ trained with data from all tasks, and task-specific models $g_r(\cdot)$ trained with only the data corresponding to their task, we can minimize 
+Moreover, we also present a natural alternative to convex \acrshort{mtl}, which is to combine independently trained models. That is, given a common model $g^*(\cdot)$ trained with data from all tasks, and task-specific models $g_r(\cdot)$ trained with only the data corresponding to their task, we can minimize 
 \begin{equation}
     \label{eq:convexmtl_combination}
     \risk_{\bsample} (\lambda) = C\sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g^*(x_i^r) + (1 - \lambda_r) g^*_r(x_i^r), y_i^r)  .
@@ -43,18 +43,22 @@ A natural alternative is to combine independently trained models. That is, given
 Here, the models $g^*$ and $g^*_1, \ldots, g^*_\ntasks$ are fixed, and the goal is to select the optimal parameters $\lambda^*_r$ that minimize the training risk.
 
 %
-More specifically, it is shown how this formulation can be applied to two of the most popular model families: kernel methods, in Section~\ref{sec:convexmlt_kernel}, and neural networks, in Section~\ref{sec:convexmlt_network}.
-Then, in Section~\ref{sec:convexmlt_renewable} a real-world application of the convex \acrshort{mtl} to the prediction of renewable energy is presented.
+More specifically, in Section~\ref{sec:convexmlt_kernel} we present the convex \acrshort{mtl} formulation for kernel methods, and in Section~\ref{sec:convexmlt_network} we do it for \acrshort{nns}.
+Finally, in Section~\ref{sec:optimal_comb} we present the alternative method of combining pre-trained models in a convex manner, proposing methods to select the optimal combination parameter for different loss functions.
 %
 
 
 
 
-\section{Convex Multi-Task Learning with Kernel Methods}\label{sec:convexmlt_kernel}
-% Kernel Models are powerful: Kernel trick, high dimensionality representation
-As explained in the previous chapters, kernel models offer many good properties such as an implicit transformation to a possibly infinite-dimensional space and the convexity of the problems that have to be solved for the training process. With these models, a regularized risk problem is solved.
+%\section{Convex Multi-Task Learning with Kernel Methods}
+\section{Convex Multi-Task Learning with Kernel Methods}
+\label{sec:convexmlt_kernel}
+
+
+% Kernel Methods are powerful: Kernel trick, high dimensionality representation
+As explained in the previous chapters, kernel methods offer many good properties such as an implicit transformation to a possibly infinite-dimensional space and the convexity of the problems that have to be solved for the training process. With these models, such as the L1, L2 or LS-\acrshort{svm}, a regularized risk problem like the following one is solved,
 % General formulation for a kernel model
-A general formulation of a training problem for kernel models is 
+%A general formulation of a training problem for kernel methods is 
 \begin{equation}
     \label{eq:regrisk_kernel}
     \emprisk({w}) = \sum_{i=1}^{\nsamples} \lossf(\dotp{w}{\phi({x}_i)} + b, y_i) + \mu \Omega({w}) ,
@@ -74,70 +78,71 @@ The Representer Theorem~\citep*{ScholkopfHS01} states that the optimal solution 
 where $\alpha_i \in \reals$ are some coefficients. This means that our optimal solution $w^*$ is also an element of the same \acrshort{rkhs}.
 These models embrace the Structural Risk Minimization paradigm by limiting the capacity of the space of hypothesis, which is done by penalizing the $L_2$ norm of $w$. This is equivalent to limiting our space of candidates to vectors inside a ball of some fixed radius.
 
-% One of the first multi-task learning approach with kernel models is Regularized \acrshort{mtl}
-Multi-Task Learning with kernel models require imposing some kind of coupling between the models for each task in the learning process. The feature learning or feature sharing approach, which is usually adopted with neural networks, is not feasible when using kernel models, since the (implicit) transformation functions $\phi$ used are not learned but fixed, and determined by the choice of the kernel function. Therefore, other strategies have to be developed. 
-One approach to \acrshort{mtl} with kernel models was developed in~\cite{EvgeniouP04}, and later extended in~\citet{CaiC09, CaiC12}, where the models for each task are defined as:
+% One of the first multi-task learning approach with kernel methods is Regularized \acrshort{mtl}
+Multi-Task Learning with kernel methods require imposing some kind of coupling between the models for each task in the learning process. The feature learning or feature sharing approach, which is usually adopted with neural networks, is not feasible when using kernel methods, since the (implicit) transformation functions $\phi$ used are not learned but fixed, and determined by the choice of the kernel function. Therefore, other strategies have to be developed. 
+One of the first approaches to \acrshort{mtl} with kernel methods was developed in~\cite{EvgeniouP04}, and later extended in~\citet{CaiC09, CaiC12}, where they use an L1-SVM formulation and the model for each task are defined as
 \begin{equation}
     \nonumber
     {w}_r = {w} + {v}_r,
 \end{equation} 
 where $w$ is a common part, shared by all models, and $v_r$ is a task-specific part. With this approximation, the transfer of information is performed by the common part ${w}$.
-The regularized risk that is minimized is 
+The regularized risk that is minimized is then
 \begin{equation}
     \label{eq:additive_regrisk}
-    \risk_{\bsample} ({w, v_1, \ldots, v_\ntasks}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(
-        \dotp{w}{\phi({x}_i^r)} + \dotp{{v}_r^\intercal}{\phi_r({x}_i^r)} + b_r, y_i^r) + \mu_c \norm{{w}}^2 + \mu_s \sum_{r=1}^\ntasks \norm{{v}_r}^2,
+    \risk_{\bsample} ({w, v_1, \ldots, v_\ntasks}) = C \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(
+        \dotp{w}{\phi({x}_i^r)} + \dotp{{v}_r^\intercal}{\phi_r({x}_i^r)} + b_r, y_i^r) + \mu \norm{{w}}^2 + \sum_{r=1}^\ntasks \norm{{v}_r}^2,
 \end{equation}
-where $\mu_c$ and $\mu_s$ are the hyperparameters to control the regularization of the common and specific parts, respectively. Here $\bsample$ is an \acrshort{mtl} sample $$\bsample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\}.$$
+where $\mu_c$ and $\mu_s$ are the hyperparameters to control the regularization of the common and specific parts, respectively. 
+%Here $\bsample$ is an \acrshort{mtl} sample defined as $$\bsample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\}.$$
 Observe also that in~\eqref{eq:additive_regrisk} different transformations are used: the transformation $\phi$ corresponds to the common part of the model, while $\phi_r$ is task-specific.
 %
-This is a joint learning approach that is developed for the L1-\acrshort{svm}, to which Evgeniou et al. give the name of \emph{Regularized \acrshort{mtl}}, but we will refer to it as the {additive} \acrshort{mtl} approach.
-%
-Observe that as $\frac{\mu_c}{\mu_s} \tendsto{}{\infty} $, we would have a common part ${w}$ that tends to zero, which would result in independent models for each task, i.e. ${w}_r \approx {v}_r$. On the contrary, when $\frac{\mu_c}{\mu_s} \tendsto{}{0} $, the task-specific parts tend to zero and every model is the common part, i.e. ${w}_r \approx {w}$.
-There are two asymptotical behaviours: the first one tends to an \acrfull{itl} approach, while the second one tends to a \acrfull{ctl} one. The \acrshort{mtl} formulation is a strategy that lies between those two approaches, \acrshort{ctl} and \acrshort{itl}, combining them to achieve a more flexible model.
+This is a joint learning approach that is developed for the L1-\acrshort{svm}, to which the authors give the name of \emph{Regularized \acrshort{mtl}}, but we will refer to it as the {additive} \acrshort{mtl} approach.
+The influence of the hyperparameters $C$ and $\mu$ is not straightforward, and the behaviour of the solutions is asymptotical. For example, when $\mu \to \infty$, the common part $w$ disappears, and we end up with independent models for each task. Also, with $C$ and $\mu$ large enough, the result is the contrary, getting a common model for all tasks.
+% %
+% Observe that as $\frac{\mu_c}{\mu_s} \tendsto{}{\infty} $, we would have a common part ${w}$ that tends to zero, which would result in independent models for each task, i.e. ${w}_r \approx {v}_r$. On the contrary, when $\frac{\mu_c}{\mu_s} \tendsto{}{0} $, the task-specific parts tend to zero and every model is the common part, i.e. ${w}_r \approx {w}$.
+% There are two asymptotical behaviours: the first one tends to an \acrfull{itl} approach, while the second one tends to a \acrfull{ctl} one. The \acrshort{mtl} formulation is a strategy that lies between those two approaches, \acrshort{ctl} and \acrshort{itl}, combining them to achieve a more flexible model.
 
-% General formulation for a convex \acrshort{mtl} Kernel 
-The asymptotical properties of this approach offer an interpretation to understand the influence of each hyperparameter, but they are not easily applicable in practice.
+% % General formulation for a convex \acrshort{mtl} Kernel 
+% The asymptotical properties of this approach offer an interpretation to understand the influence of each hyperparameter, but they are not easily applicable in practice.
 % We propose an alternative formulation for this joint learning approach in~\cite{RuizAD19}. The models for each task are defined as a convex combination of the common and task specific parts:
 % \begin{equation}
 %     \nonumber
 %     {w}_r = \lambda {w} + (1 - \lambda) {v}_r,
 % \end{equation}
 % where $\lambda \in \left[0, 1\right]$ is a hyperparameter.
-Using the formulation of~\eqref{eq:convexmtl_general}, we define the common part as $g(x) =  {w}^\intercal {\phi(x)} + b$ and the task-specific parts as $g_r(x) = {v_r}^\intercal {\phi_r(x)} + b_r$, so the \acrshort{mtl} models are
+To obtain a more interpretable formulation, here we propose to use our convex \acrshort{mtl} framework of~\eqref{eq:convexmtl_general} and define the common part as $g(\cdot) =  {w}^\intercal {\phi(\cdot)} + b$ and the task-specific parts as $g_r(\cdot) = {v_r}^\intercal {\phi_r(\cdot)} + b_r$, so the \acrshort{mtl} models are
 \begin{equation}
     \label{eq:convexmtl_modeldef}
-    h_r(x_i^r) = \lambda \left\lbrace {w}^\intercal {\phi(x_i^r)} + b \right\rbrace + (1 - \lambda) \left\lbrace {v}_r^\intercal {\phi_r(x_i^r)} + d_r \right\rbrace ,
+    h_r(\cdot) = \lambda_r \left\lbrace {w}^\intercal {\phi(\cdot)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r^\intercal {\phi_r(\cdot)} + d_r \right\rbrace ,
 \end{equation}
-where $\lambda \in \left[0, 1\right]$ is a hyperparameter and the corresponding regularized risk is 
+where $\lambda_r \in \left[0, 1\right]$ is a hyperparameter and the corresponding regularized risk is 
 \begin{equation}
     \nonumber
     \begin{aligned}
-        \risk_{\bsample} ({w, v_1, \ldots, v_\ntasks}) = &\sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda \left\lbrace {w}^\intercal {\phi(x_i^r)} + b \right\rbrace + (1 - \lambda) \left\lbrace {v}_r^\intercal {\phi_r(x_i^r)} + d_r \right\rbrace, y_i^r) \\ 
-        &\qquad + \mu_c \norm{{w}}^2 + \mu_s \sum_{r=1}^\ntasks \norm{{v}_r}^2 .
+        \risk_{\bsample} ({w, v_1, \ldots, v_\ntasks}) = &\sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r \left\lbrace {w}^\intercal {\phi(x_i^r)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r^\intercal {\phi_r(x_i^r)} + d_r \right\rbrace, y_i^r) \\ 
+        &\qquad + \norm{{w}}^2 + \sum_{r=1}^\ntasks \norm{{v}_r}^2 .
     \end{aligned}
 \end{equation}
 We will name this approach {convex}, in contrast to the {additive} approach of the original formulation.
 % Discussion?
-Here, the interpretation of $\lambda$ is straightforward. The model with $\lambda = 1$ is equivalent to learning a single common model for all tasks, that is ${w}_r = {w}$. When $\lambda=0$, the models for each task are completely independent: ${w}_r = {v}_r$.
-The convex formulation also defines an \acrshort{mtl} model that is between a \acrshort{ctl} approach and an \acrshort{itl} one, but it presents an advantage over the additive one: the values of $\lambda$ that recover the \acrshort{ctl} and \acrshort{itl} approaches are known, and these values are attainable, that is, it is not an asymptotical behaviour as in the additive formulation. 
+Here, the interpretation of simpler. The model with $\lambda_r = 1$ for $r=1, \ldots, \ntasks$ is equivalent to learning a single common model for all tasks, that is ${w}_r = {w}$, while with $\lambda_r=0$, the models for each task are completely independent, i.e. ${w}_r = {v}_r$.
+% The convex formulation also defines an \acrshort{mtl} model that is between a \acrshort{ctl} approach and an \acrshort{itl} one, but it presents an advantage over the additive one: the values of $\lambda$ that recover the \acrshort{ctl} and \acrshort{itl} approaches are known, and these values are attainable, that is, it is not an asymptotical behaviour as in the additive formulation. 
 %
-Moreover, the two formulations, the {additive} and {convex}, are equivalent within an L1-\acrshort{svm} setting, as shown next.
+
+Moreover, we show that the two formulations, the {additive} and {convex}, are equivalent within an L1-\acrshort{svm} setting.
 %
-% The proposal of~\cite{RuizAD19} is made for L1-\acrshort{svm}, but it is extended to L2 and LS-\acrshort{svm}s in~\cite{RuizAD21}. In this section we present the convex formulation for L1, L2 and LS-\acrshort{svm}, as well as the equivalence results between the {additive} and {convex} formulations.
+Finally, we also present extensions for L2 and LS-\acrshort{svm} setting in~\cite{RuizAD21}, where we apply the convex \acrshort{mtl} formulation.
 
+%\subsection{L1-SVM and Equivalence Results}\label{subsec:cvx_l1-svm}
+% The \acrfull{svm}, or L1-\acrshort{svm},~\citep{Vapnik00} is one of the most successful methods in \acrfull{ml}, since it provides a robust framework that offer good generalization properties. It is also the basis of the \acrshort{mtl} formulation in~\cite{EvgeniouP04}, where they present what we call the additive \acrshort{mtl} \acrshort{svm}, or, simply, the additive approach.
+% We will present the development for the {additive} approach and for the {convex} one using an L1-\acrshort{svm} setting. Then, we will show the equivalence between the two approaches and discuss their differences.
 
-
-
-\subsection{L1-SVM and Equivalence Results}\label{subsec:cvx_l1-svm}
-The L1-\acrshort{svm}~\citep{Vapnik00} is the original and most popular variant of the \acrshort{svm}s and is also the basis of the \acrshort{mtl} formulation in~\cite{EvgeniouP04}.
-We will present the development for the {additive} approach and for the {convex} one using an L1-\acrshort{svm} setting. Then, we will show the equivalence between the two approaches and discuss their differences.
-
-\paragraph*{{Additive} \acrshort{mtl} L1-\acrshort{svm}\\}
+\subsection{Additive Multi-Task Learning SVM}
+%\paragraph*{{Additive} \acrshort{mtl} L1-\acrshort{svm}\\}
 % Additive Approach
 %   Primal
 The {additive} \acrshort{mtl} primal problem formulation, presented in~\cite{EvgeniouP04} 
-and extended for task-specific biases in~\cite{CaiC12}, is
+and extended for multiple kernel functions and task-specific biases in~\cite{CaiC12}, is the following one,
 \begin{equation}\label{eq:svmmtl_primal_add}
     \begin{aligned}
     & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
@@ -339,9 +344,10 @@ Analyzing the hyperparameters influence in the dual problem, note that $C$ is an
 \end{itemize}
 
 
+\subsection{Convex Multi-Task Learning SVM}
 
 % Convex Approach
-\paragraph*{{Convex} \acrshort{mtl} L1-\acrshort{svm}.\\}
+%\paragraph*{{Convex} \acrshort{mtl} L1-\acrshort{svm}.\\}
 % Additive Approach
 %   Primal
 We propose a convex formulation for the \acrshort{mtl} L1-\acrshort{svm}, which we have presented in~\cite{RuizAD19}. This formulation offers a better interpretability because the influence of the common and task-specific parts is more clear. 
@@ -474,17 +480,17 @@ whose corresponding multi-task kernel function can be expressed as
     \widehat{k}({x}_i^r, {x}_j^s) = \lambda_r \lambda_s k({x}_i^r, {x}_j^s) +  \delta_{rs} (1-\lambda_r) (1 - \lambda_s) k_r({x}_i^r, {x}_j^s) ,
 \end{equation}
 where again we are using the common kernel $k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and the task-specific kernels $k_r(x, \tilde{x}) = \dotp{\phi_r(x)}{\phi_r(\tilde{x})}$ for $r=1, \ldots, \ntasks$.
-Then, we can define the kernel matrix as 
-\begin{equation}
-    \nonumber
-    \widehat{\fm{Q}} = 
-    \begin{pmatrix}
-        y_1^1 y_1^1 \widehat{k}(x_1^1, x_1^1) & y_1^1 y_2^1 \widehat{k}(x_1^1, x_2^1)  & \ldots & y_1^1 y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_1^1, x_{\npertask_\ntasks}^\ntasks) \\
-        y_2^1 y_1^1 \widehat{k}(x_2^1, x_1^1) & y_2^1 y_2^1 \widehat{k}(x_2^1, x_2^1) & \ldots & y_2^1 y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_2^1, x_{\npertask_\ntasks}^\ntasks) \\
-        \vdots & \vdots & \ddots & \vdots \\
-        y_{\npertask_\ntasks}^\ntasks y_1^1 \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{1}^1) & y_{\npertask_\ntasks}^\ntasks y_{2}^1 \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{2}^1) & \ldots & y_{\npertask_\ntasks}^\ntasks y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{\npertask_\ntasks}^\ntasks) \\
-    \end{pmatrix} .
-\end{equation}
+% Then, we can define the kernel matrix as 
+% \begin{equation}
+%     \nonumber
+%     \widehat{\fm{Q}} = 
+%     \begin{pmatrix}
+%         y_1^1 y_1^1 \widehat{k}(x_1^1, x_1^1) & y_1^1 y_2^1 \widehat{k}(x_1^1, x_2^1)  & \ldots & y_1^1 y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_1^1, x_{\npertask_\ntasks}^\ntasks) \\
+%         y_2^1 y_1^1 \widehat{k}(x_2^1, x_1^1) & y_2^1 y_2^1 \widehat{k}(x_2^1, x_2^1) & \ldots & y_2^1 y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_2^1, x_{\npertask_\ntasks}^\ntasks) \\
+%         \vdots & \vdots & \ddots & \vdots \\
+%         y_{\npertask_\ntasks}^\ntasks y_1^1 \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{1}^1) & y_{\npertask_\ntasks}^\ntasks y_{2}^1 \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{2}^1) & \ldots & y_{\npertask_\ntasks}^\ntasks y_{\npertask_\ntasks}^\ntasks \widehat{k}(x_{\npertask_\ntasks}^\ntasks, x_{\npertask_\ntasks}^\ntasks) \\
+%     \end{pmatrix} .
+% \end{equation}
 
 %   Discussion: Primal vs Dual
 This dual problem is very similar to the one shown in~\eqref{eq:svmmtl_dualvec_add} where there are also $\ntasks$ equality constraints, but the multi-task kernel matrix $\widehat{\fm{Q}}$ is defined differently, dropping the $\mu$ hyperparameter and incorporating the $\lambda_r$ ones.
@@ -502,8 +508,11 @@ Studying the influence of $\lambda_r$ hyperparameters in the dual problem we can
 \end{itemize}
 The properties that are found in the primal formulation are also present in the dual one. All the values of $\lambda_r$ in the open interval $(0, 1)$ correspond to pure \acrshort{mtl} approaches while the extreme values $\lambda_r=1$ and $\lambda_r=0$ correspond to \acrshort{ctl} and \acrshort{itl} approaches, respectively.
 
-\paragraph*{Equivalence Results.\\}
-\comm{Se hace subsección?\\}
+
+
+\subsection{Equivalence between Convex and Additive MTL SVM}\label{subsec:equiv}
+
+% \paragraph*{Equivalence Results.\\}
 % Equivalence results
 Both the {additive} and {convex} \acrshort{mtl} \acrshort{svm} approaches solve a similar problem, but there is a change in the formulation to get rid of a regularization hyperparameter $\mu$ in favor of those defining convex combination of models, hyperparameters $\lambda_r$.
 Both approaches offer similar properties: allowing the value of their hyperparameters to go from completely common to completely independent models, and passing through pure multi-task models.
@@ -517,7 +526,7 @@ In~\cite{RuizAD19} we provide two propositions to show the equivalence between {
         & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
         & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = C_\text{add} \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{\mu}{2} {\norm{{w}}}^2} \\
         & \text{s.t.}
-        & & y_{i}^r (\dotp{w}{\phi(x_{i}^r)} + b  + \dotp{{v}_r}{\phi_r(x_{i}^r)} + b_r) \geq p_{i}^r - \xi_{i}^r ,  \\
+        & & y_{i}^r (\dotp{w}{\phi(x_{i}^r)}  + \dotp{{v}_r}{\phi_r(x_{i}^r)} + b_r) \geq p_{i}^r - \xi_{i}^r ,  \\
         & & & \xi_{i}^r \geq 0; \;  i=1 , \dotsc , m_r, \;  r= 1,\dotsc, T  , \\
         \end{aligned}
     \end{equation}
@@ -535,7 +544,7 @@ In~\cite{RuizAD19} we provide two propositions to show the equivalence between {
     \label{thm_equiv}
 \end{prop}
 \begin{proof}
-    Making the change of variables $w = \lambda u$, $v_r = (1 - \lambda)u_r$ and $b_r = \lambda \hat{b} + (1 - \lambda) \hat{b_r}$ in the convex primal problem~\eqref{eq:svmmtl_primal_convex_equiv}, we can write it as 
+    Making the change of variables $w = \lambda u$, $v_r = (1 - \lambda)u_r$ and $b_r = \lambda \hat{b} + (1 - \lambda) \hat{d_r}$ in the convex primal problem~\eqref{eq:svmmtl_primal_convex_equiv}, we can write it as 
         \begin{equation*}
             \begin{aligned}
             & \argmin_{w, v_r, \xi}
@@ -570,7 +579,7 @@ $ \fv{\beta} = (1 - \lambda)^2 \fv{\alpha}$; then we obtain the problem
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
-If we consider again $\mu =(1 - \lambda)^2 / \lambda^2$ and $C_\text{add} = (1-\lambda)^2 C_\text{conv}$ and multiply the objective function by $(1 - \lambda)^4$ we get the equivalent problem
+If we consider again $\mu =(1 - \lambda)^2 / \lambda^2$ and $C_\text{add} = (1-\lambda)^2 C_\text{conv}$ and multiply the objective function by $(1 - \lambda)^4$, we get the equivalent problem
 % Experiments
 \begin{equation}\nonumber
     \begin{aligned}
@@ -589,15 +598,15 @@ When $\lambda=0$, we obtain an \acrshort{itl} approach, where an independent mod
 
 % TODO: Equivalence results for \lambda=0,1
 
-\subsection{Extensions to L2 and LS-SVM}\label{subsec:cvx_l2ls-svm}
+%\section{Convex Multi-Task Learning with Kernel Methods}
+
+
+
+\subsection{Convex Multi-Task Learning L2-SVM}
 The L2-\acrshort{svm}~\citep{Burges98} is a variant of the standard \acrshort{svm} where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the epsilon-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are not penalized is kept, but the errors which are larger than such margin are penalized using its squared value.
 
-The LS-\acrshort{svm}~\citep{SuykensV99} is another variant of the standard \acrshort{svm} where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive classes.
-
-In this subsection, an extension of the convex \acrshort{mtl} formulation for both L2 and LS-\acrshort{svm} is presented.
-
 % Convex Approach
-\paragraph*{{Convex} \acrshort{mtl} L2-\acrshort{svm}.\\}
+%\paragraph*{{Convex} \acrshort{mtl} L2-\acrshort{svm}.\\}
 % Additive Approach
 %   Primal
 The primal problem for the convex \acrshort{mtl} L2-\acrshort{svm}, presented in~\cite{RuizAD21}, is
@@ -709,15 +718,17 @@ As in the convex \acrshort{mtl} L1-\acrshort{svm}, we are using the matrix
 \end{equation} 
 and the $\nsamples \times \nsamples$ identity matrix $\fm{I}_{\nsamples}$.
 %
-Note that instead of having the box constraints for the dual coefficients $\alpha_i^r$ we add a diagonal term to the \acrshort{mtl} kernel matrix $\widehat{\fm{Q}}$, as defined in~\eqref{eq:conv_mtl_kernel_matrix}, so the matrix that is used is $\widehat{Q} + \frac{1}{C} \fm{I}_{\nsamples}$.
+Note that instead of having the box constraints for the dual coefficients $\alpha_i^r$ we add a diagonal term to the \acrshort{mtl} kernel matrix $\widehat{\fm{Q}}$, as defined in~\eqref{eq:conv_mtl_kernel_matrix}, so we use the matrix $\widehat{Q} + \frac{1}{C} \fm{I}_{\nsamples}$.
 
 %   Discussion: Primal vs Dual
 The difference between the convex \acrshort{mtl} based on the L1-\acrshort{svm} and this one, based on the L2-\acrshort{svm}, can be seen in the primal formulation, where the square of the errors is penalized, and, therefore, the variables $\xi_i^r$ do not need to be non-negative. This is reflected in the dual problem, where there is no longer an upper bound for the dual coefficients, but a diagonal term is added to the kernel matrix, which acts as a soft constraint for the size of these dual coefficients.
 
 
+\subsection{Convex Multi-Task Learning LS-SVM}
+The LS-\acrshort{svm}~\citep{SuykensV99} is another variant of the standard \acrshort{svm} where the epsilon-insensitive loss is replaced by the squared loss in the case of regression problems, and for classification a regression is made for the  negative and positive classes.
 
 % Convex Approach
-\paragraph*{{Convex} \acrshort{mtl} LS-\acrshort{svm}.\\}
+%\paragraph*{{Convex} \acrshort{mtl} LS-\acrshort{svm}.\\}
 % Additive Approach
 %   Primal
 The primal problem for the convex \acrshort{mtl} LS-\acrshort{svm}, presented in~\cite{RuizAD21}, is
@@ -848,7 +859,206 @@ Again, $\widehat{\fm{Q}}$ is the convex \acrshort{mtl} kernel matrix defined in~
 In contrast to the L1 and L2-\acrshort{svm}, here, in the primal problem the inequalities are replaced by equalities, which removes the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
 
 
-\section{Optimal Convex Combination of Pre-trained Models}\label{subsec:optimal_comb}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Convex Multi-Task Learning with Neural Networks}\label{sec:convexmlt_network}
+The convex \acrshort{mtl} formulation is easily applicable and interpretable, so it has good properties not only for kernel methods, but also for a broader class of learning models.
+However, although kernel methods have some very useful properties, they present some important limitations. The main one is the computation effort necessary to solve the optimization problems related with these methods, which grows in a superquadratic way with the number of patterns. This make it unfeasible to use these models for very large datasets. Moreover, it is difficult to develop specific kernel methods for data where there is a spatial or temporal dependency, such as images.
+%
+Neural networks, however, are models that are well suited for this kind of challenges
+Deep \acrshort{nn}s have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for \acrshort{mtl} with neural networks.
+
+%
+In Chapter~\ref{Chapter3} we have reviewed the taxonomy for \acrshort{mtl} methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
+We also give in Section~\ref{sec:deep_mtl} some of the most relevant approaches to \acrshort{mtl} with neural networks. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks, as shown in Figure~\ref{fig:hardsharing_nn}; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense, see~\cite{Long015a, YangH17a}.
+However, to the best of our knowledge, we presented the first purely combination-based approach to \acrshort{mtl} with neural networks in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks.
+
+\input{Diagrams/hardharing_nn_image.tex}
+
+\subsection{Model Definition}
+Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to model the common part 
+$$ g(\cdot; w, \Theta) = w^\intercal f(\cdot; \Theta) + b,$$
+and task-specific parts
+$$ g_r(\cdot; w_r, \Theta_r) =  w_r^\intercal f_r(\cdot; \Theta_r) + d_r.$$
+Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$, $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $b_r$ the output biases.
+Observe that the feature transformations $ f(\cdot; \Theta)$ and $f_r(\cdot; \Theta_r)$ are not fixed like the transformations $\phi(\cdot)$ and $\phi_r(\cdot)$ in the kernel methods; instead, here, they are automatically learned in the training process.
+The full \acrshort{mtl} models are then
+\begin{equation}
+    \label{eq:convexmtl_nn}
+    \begin{aligned}
+        h_r(\cdot) &= \lambda g(\cdot; w, \Theta) + (1 - \lambda) g_r(\cdot; w_r, \Theta_r)
+       \\&= \lambda \lbrace w^\intercal f(\cdot; \Theta) + b \rbrace + (1 - \lambda) \lbrace w_r^\intercal f_r(\cdot; \Theta_r) + d_r \rbrace.
+    \end{aligned}    
+\end{equation}
+
+This formulation offers multiple combinations since we can model each common or independent function using different architectures for $f(\cdot; \Theta)$ or $f_r(\cdot; \Theta_r)$.
+%
+For example, we can use a network with a larger number of parameters for the common part, since it will be fed with more data, and simpler networks for the task-specific parts.
+%
+Even different types of neural networks, such as fully connected and convolutional, can be combined depending on the characteristics of each task.
+% Connection with LUPI
+This combination of neural networks can also be interpreted as an implementation of the \acrfull{lupi} paradigm~\citep{VapnikI15a} presented in Section~\ref{sec:ch3_lupi}, i.e., the common network captures the privileged information for each of the tasks, since it can learn from more sources.
+%
+
+%
+\subsection{Training Procedure}
+The regularized risk corresponding to the convex \acrshort{mtl} neural networks is
+\begin{equation}
+    \label{eq:regrisk_convex_nn}
+    \begin{aligned}
+        \risk_{\bsample} = \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \lossf(h_r(x_i^r), y_i^r) + \frac{\mu}{2} \left( \norm{w}^2 + \sum_{r=1}^\ntasks \norm{w_r}^2 + \Omega(\Theta) + \Omega(\Theta_r)\right) .
+    \end{aligned}
+\end{equation}
+Here, $h_r$ is defined as in equation~\eqref{eq:convexmtl_nn}, and $\Omega(\Theta)$ and $\Omega(\Theta_r)$ represents the $L_2$ regularization of the set of hidden weights of the common and specific networks, respectively.
+Given a loss function $\lossf(\hat{y}, y)$ and a pair $(x_i^t, y_i^t)$ from task $t$, we use the chain rule to compute the gradient of the loss function with respect to some parameters $\mathcal{P}$:
+\begin{equation}\label{eq:gradient_p}
+    \nabla_\mathcal{P} \lossf(h_t(x_i^t), y_i^t) = 
+    \frac{\partial}{\partial \hat{y}_i^t} \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \nabla_\mathcal{P} h_t(x_i^t) .
+\end{equation}
+Recall that we are using the formulation presented in~\eqref{eq:convexmtl_nn},
+where we make a distinction between output weights $w, w_t$ and hidden parameters $\Theta, \Theta_t$.
+Then, the corresponding gradients of $h_t$ needed to compute the loss gradients are
+\begin{equation}\label{eq:gradients_losses} 
+    \begin{aligned}       
+        &\nabla_{w} h_t(x_i^t)  
+        = \lambda \lbrace f(x_i^t, \Theta) \rbrace ,
+        &&\nabla_{\Theta} h_t(x_i^t)  
+        = \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace ; \\
+        &\nabla_{w_t} h_t(x_i^t)  
+        = (1 - \lambda) \lbrace f_t(x_i^t, \Theta) \rbrace ,
+        &&\nabla_{\Theta_t} h_t(x_i^t)  
+        = (1 - \lambda) \lbrace  w^\intercal \nabla_{\Theta_t} f_t(x_i^t, \Theta_t)\rbrace ; \\
+        &\nabla_{w_r} h_t(x_i^t)  
+        =  0 , 
+        &&\nabla_{\Theta_r} h_t(x_i^t)  
+        =  0 , \text{ for } r \neq t .\\
+    \end{aligned}    
+\end{equation}
+Putting all together, the gradient of the loss with respect to $w$, for example, is 
+$$  \nabla_w \lossf(h_t(x_i^t), y_i^t)  =\lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace $$
+and the same for the rest of parameters.
+%
+Observe that the convex combination information is transferred in the back-propagation as the loss gradients with respect to the common parameters are scaled by $\lambda$, while those of the task-specific parameters are scaled by $(1 - \lambda)$.
+%
+Moreover, the regularization of each set of parameters, i.e., $\set{w}, \Theta$ and $\set{w_r}, \Theta_r$, is done independently, so their gradients can be computed in the standard way.
+%
+During the back propagation procedure, we only update the parameters that have been used in the forward pass, with possibly different learning rates for each network. 
+That is, given an example $(x_i^t, y_i^t)$, when using vanilla \acrfull{sgd} the update rules for the common network parameters would be
+\begin{equation}\label{eq:convexmtl_nn_commonupdate}
+    \begin{aligned}
+        w^{\tau + 1} &\gets w^\tau + \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace + \mu w^\tau \right], \\
+        \Theta^{\tau + 1} &\gets \Theta^\tau + \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace + \mu \lbrace \nabla_\Theta \Omega( \Theta)  \rbrace \right],
+    \end{aligned}
+\end{equation}
+while the update rules for $t$-th task network parameters would be
+\begin{equation}\label{eq:convexmtl_nn_specificupdate}
+    \begin{aligned}
+        w_t^{\tau + 1} &\gets w_t^\tau + \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda) \lbrace f(x_i^t, \Theta) \rbrace + \mu w_t^\tau \right], \\
+        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau + \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda) \lbrace w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t)\rbrace + \mu \lbrace \nabla_{\Theta_t} \Omega( \Theta_t) \rbrace \right],
+    \end{aligned}
+\end{equation}
+and the parameters from the rest of task-specific networks are not updated.
+%
+That is, no specific algorithm has to be developed for training the convex \acrshort{mtl} \acrshort{nn}. In~\eqref{eq:convexmtl_nn_commonupdate} and~\eqref{eq:convexmtl_nn_specificupdate} we have shown the update rules for vanilla SGD, but any other algorithm, e.g., Adam, can be used scaling properly the loss gradients.
+
+\input{Diagrams/convexmtl_nn_image.tex}
+
+
+% In Figure~\ref{fig:convexmtl_nn}, a Convex \acrshort{mtl} NN is shown. % in the gradient update step.
+%     In particular, the updated shared weights are represented in red, and in blue the updated specific weights. 
+%     Specific networks are framed in black boxes and the common one in a blue box.
+%     The input neurons are shown in yellow, the hidden ones in cyan (except those in grey), and the output ones in magenta. 
+%     We use the grey color for hidden neurons containing the intermediate functions that will be combined for the final output: $g_1({x})$, $g_2({x})$ and $g({x})$.
+%     The thick lines are the hyperparameters $\lambda$ and $1-\lambda$ of the convex combination.
+
+\subsection{Implementation Details}
+\begin{algorithm}[!t]
+    \caption{Forward pass for Convex \acrshort{mtl} neural network.}
+    \label{alg:forward}
+    \DontPrintSemicolon
+      
+      \KwInput{$X_\text{mb}, t_\text{mb}$ \tcp*{Minibatch data and task labels}}
+      \KwOutput{$f$ \tcp*{Forward pass for the minibatch}}
+      \KwData{$\lambda$ \tcp*{Parameter of convex combination}}
+      \KwData{$g; g_1, \ldots, g_\ntasks$ \tcp*{Modules of the common and specific networks}}      
+      \For{$x_i, t_i \in(X_\text{mb}, t_\text{mb}) $}    
+            { 
+                $f_i \gets \lambda g(x_i) + (1 - \lambda) g_{t_i}(x_i)$   \tcp*{Convex combination}
+
+            }
+\end{algorithm}
+% Task-batches of minibatches
+% Automatic differentiation
+
+Our implementation of the convex \acrshort{mtl} neural network is based on \texttt{PyTorch}~\citep{PyTorch}.
+Although we include the gradients expressions in equation~\eqref{eq:gradients_losses}, the \texttt{PyTorch} package implements automatic differentiation, so the gradients are not explicitly implemented.
+Instead, we implement each network, common or specific, using (possibly different) \texttt{PyTorch} modules.
+In the forward pass of the network, the output for an example $x_i^r$ from task $r$ is computed using a pass of the common module and the corresponding specific module, and combining both passes with the convex formulation to obtain the final output $h_r(x_i^r)$.
+In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
+By doing this, when using examples from the $r$-th task only the parameters corresponding to the common module and its corresponding specific one are updated.
+Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
+Our implementation is a general framework to combine in a convex manner any   \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
+\comm{TODO: ponerlo en github}
+
+{In Algorithm~\ref{alg:forward} we show the pseudocode of the forward pass of the convex \acrshort{mtl} neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on PyTorch automatic differentiation.}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Optimal Convex Combination of Pre-trained Models}\label{sec:optimal_comb}
 % A natural alternative to convexMTL is to direclty combine models
 A natural alternative to the convex \acrshort{mtl} formulation that we have developed is to directly combine pre-trained models in a convex manner. That is, given a model $g(\cdot)$ trained with the data from all tasks, and task-specific models $g_r(\cdot)$ that have been trained with only the data from the corresponding task, for each task $r=1,\ldots,\ntasks$ we can define the combination
 \begin{equation}
@@ -1002,16 +1212,16 @@ Using the Fermat rule~\citep{BauschkeC11}, we have
 To compute $\partial \mathcal{J}(\lambda)$ we use that all functions $u(\lambda c_i + d_i)$ share the domain, that is, $\lambda \in [0, 1]$, and therefore the subdifferential of the sum is the sum of the subdifferentials.
 %
 
-Moreover, a result that is common for the linear loss functions is presented in~\citet[Proposition 1]{RuizAD21}.
-\begin{prop}\label{prop:elbows_neurocom2020}
-    For the absolute value and hinge losses, $\partial J(\lambda)$ is single valued and constant between the elbows $\lambda_j$.
-    Moreover, if $\partial J(\lambda) = J'(\lambda) = \gamma$ for some $\lambda$ between two consecutive distinct elbows, i.e., $\lambda_{(j)} < \lambda < \lambda_{(j+1)}$, then $\gamma \in \partial J(\lambda_{(j)})$ and $\gamma \in \partial J(\lambda_{(j+1)})$. 
-\end{prop}
-This proposition states that in the case when the linear losses are considered, absolute and hinge losses, we find the optimal value $\lambda^*$ in the elbows.
-In the following subsections, we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, for each of the losses considered.
+% Moreover, we present in~\citet[Proposition 1]{RuizAD21} the following result that is common for the linear loss functions: hinge and absolute losses.
+% \begin{prop}\label{prop:elbows_neurocom2020}
+%     For the absolute value and hinge losses, $\partial J(\lambda)$ is single valued and constant between the elbows $\lambda_j$.
+%     Moreover, if $\partial J(\lambda) = J'(\lambda) = \gamma$ for some $\lambda$ between two consecutive distinct elbows, i.e., $\lambda_{(j)} < \lambda < \lambda_{(j+1)}$, then $\gamma \in \partial J(\lambda_{(j)})$ and $\gamma \in \partial J(\lambda_{(j+1)})$. 
+% \end{prop}
+% This proposition states that in the case when the linear losses are considered, absolute and hinge losses, we find the optimal value $\lambda^*$ in the elbows.
+% In the following subsections, we show how to select the optimal parameters $\lambda_r^*$, i.e. those minimizing the training error, for each of the losses considered.
 
-\subsection{Optimal Convex Parameter Selection}
-\paragraph*{Squared loss\\}
+%\subsection{Optimal Convex Parameter Selection}
+\subsection{Squared Loss}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mse.pdf}
@@ -1047,7 +1257,7 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
 
 In Figure~\ref{fig:sq_error} the error function using $10$ random pairs $(c_i, d_i)$ and its corresponding differential is shown.
 
-\paragraph*{Absolute loss.\\}
+\subsection{Absolute Loss}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mae.pdf}
@@ -1080,38 +1290,107 @@ Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corres
     \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \abs{\lambda c_i + d_i}.
 \end{equation}
 Observe that in each term of the sum the subdifferential is 
-\begin{align*}
-    \partial \abs{\lambda c_i + d_i} = 
+\begin{equation}
+    \label{eq:subdiff_abs}
+    \begin{aligned}
+        \partial \abs{\lambda c_i + d_i} = 
     \begin{cases}
         -\abs{c_i} ,& \lambda c_i + d_i  < 0, \\
         [-\abs{c_i}, \abs{c_i}] ,& \lambda c_i + d_i  = 0, \\
         \abs{c_i} ,& \lambda c_i + d_i  > 0 .\\
-    \end{cases} 
-\end{align*}
+    \end{cases}
+    \end{aligned}
+\end{equation}
 The elbows are obtained using the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to get ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we present the following result to get the optimal $\lambda^*$.
 \begin{prop}[Optimal $\lambda^*$ with absolute value loss]\label{prop:abs_neurocom2020}
     In problem~\eqref{eq:opt_abs} $\lambda^*=0$ is optimal \emph{iff}
     \begin{equation}\nonumber
-        - \sum_{j: \lambda_{(j)} < 0} \abs{c_{j}} + \sum_{j: \lambda_{(j)} > 0} \abs{c_{j}} < 0.
+        - \sum_{i: \; 0 > \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i: \; 0 < \lambda_{(i)}} \abs{c_{(i)}} \leq 0.
         \end{equation}
     If this condition does not hold, $\lambda^* \in (0,1)$ is optimal \emph{iff} $\lambda^*$ is a feasible elbow, that is, $0 < \lambda^* = \lambda_{(k)} < 1$ for some $k=1, \dotsc, \npertask$, and
     \begin{equation}\label{sol_abs_e}
-    - \sum_{j: \lambda_{(j)} < \lambda_{(k)}} \abs{c_{j}} + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \abs{c_{j}} \in \left[ -  \abs{c_{k}},  \abs{c_{k}}  \right] .
+    - \sum_{i:\; \lambda_{(k)} > \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i:\; \lambda_{(k)} < \lambda_{(i)}} \abs{c_{(i)}} \in \left[ -  \abs{c_{(k)}},  \abs{c_{(k)}}  \right] .
     \end{equation}
     If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
 \end{prop}
+\begin{proof}
+    Observe in~\eqref{eq:subdiff_abs} that, for each term $\partial \abs{\lambda c_i + d_i}$, the change occurs at the elbow $\lambda_{i} = - d_ i / c_i$. We can consider two cases:
+    \begin{itemize}
+        \item $0 > c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \abs{\lambda c_i + d_i} = 
+            \begin{cases}
+                -{c_i} ,& \lambda > \lambda_i, \\
+                [-\abs{c_i}, \abs{c_i}] ,& \lambda = \lambda_i, \\
+                {c_i} ,& \lambda < \lambda_i .\\
+            \end{cases}
+            \end{aligned}
+        \end{equation}
+        \item $0 < c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \abs{\lambda c_i + d_i} = 
+            \begin{cases}
+                -{c_i} ,& \lambda < \lambda_i, \\
+                [-\abs{c_i}, \abs{c_i}] ,& \lambda = \lambda_i, \\
+                {c_i} ,& \lambda > \lambda_i .\\
+            \end{cases}
+            \end{aligned}
+        \end{equation}
+    \end{itemize}
+    Consider the sorted elbow values $\lambda_{(1)}, \ldots, \lambda_{(m)}$.
+    Recall that, since all functions share the same domain, the gradient of the sum is the gradient sum of the gradients, then, for $\lambda \neq \lambda_{(i)}$ for all $i=1,\ldots,\npertask$,
+    \begin{equation}\nonumber
+        \begin{aligned}
+            \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {c_{(i)}} - \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {c_{(i)}}  - \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {c_{(i)}} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {c_{(i)}}   \\
+            &= - \sum_{i: \; \lambda < \lambda_{(i)}} \sign(c_{(i)}) {c_{(i)}} + \sum_{i: \; \lambda > \lambda_{(i)}} \sign(c_{(i)}) {c_{(i)}} \\
+            &= - \sum_{i: \; \lambda < \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i: \; \lambda > \lambda_{(i)}} \abs{c_{(i)}} .
+        \end{aligned}        
+    \end{equation}
+    We can highlight two factors here: the value of $\partial \mathcal{J}(\lambda)$ is constant between elbows, and $\partial \mathcal{J}(\lambda)$ is a non-decreasing function.
+    Then, when $\lambda = \lambda_{(k)}$ for some $k=1, \ldots, \npertask$, we have that
+    \begin{equation}
+        \nonumber
+        \partial \mathcal{J}(\lambda_{(k)}) = \left[ s_{(k)} - \abs{c_{(k)}}, s_{(k)} + \abs{c_{(k)}}   \right] ,
+    \end{equation}
+    where $s_{(k)} = - \sum_{i: \; \lambda_{(k)} < \lambda_{(i)}} c_{(i)} + \sum_{i: \; \lambda_{(k)} > \lambda_{(i)}} c_{(i)}.$
+    Moreover, in $(\lambda_{(k-1)}, \lambda_{(k+1)})$, the value of the subdifferential is
+    \begin{equation}
+        \nonumber
+        \partial \mathcal{J}(\lambda) = \begin{cases}
+            s_{(k)} - \abs{c_{(k)}},& \lambda < \lambda_{(k)}\\
+            \left[ s_{(k)} - \abs{c_{(k)}}, s_{(k)} + \abs{c_{(k)}}   \right],& \lambda = \lambda_{(k)} \\
+            s_{(k)} + \abs{c_{(k)}},& \lambda > \lambda_{(k)}
+        \end{cases} .
+    \end{equation}
+    That is, $\partial \mathcal{J}(\lambda)$ is continuous, non-decreasing, and the values of the subdifferential between elbows are contained in the elbows subdifferential, thus, it is sufficient to look for the optimal value at the elbows.
+    Then, using the Fermat rule, we want to find $\lambda^*$ such that $\partial \mathcal{J}(\lambda^*) = 0$. We have three possible scenarios:
+    \begin{itemize}
+        \item $\partial \mathcal{J}(0) \geq 0.$ 
+        \\Since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 0$.
+        \item $0 \in \left[ s_{(k)} - \abs{c_{(k)}}, s_{(k)} + \abs{c_{(k)}}   \right] = \partial \mathcal{J}(\lambda_{(k)}), \; 0 < \lambda_{(k)} < 1$ for some $k=1, \ldots, \npertask$. 
+        \\Then, the optimal value is $\lambda^*=\lambda_{(k)}$.
+        \item $\partial \mathcal{J}(1) \leq 0$. 
+        \\None of the previous conditions hold, and since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 1$.
+    \end{itemize}
+\end{proof}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mae.pdf}
     \caption{Error using the absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:abs_error}
 \end{figure}
-The meaning of this proposition is depicted in Figure~\ref{fig:abs_error}, where the error and its corresponding subgradient is computed for $10$ random pairs $(c_i, d_i)$. It can be seen that the subdifferential is constant between elbows, and the subgradient at elbow $\lambda_{(k)}$ is $[s_k + c_k, s_k - c_k]$ with
-$$ s_k = - \sum_{j: \lambda_{(j)} < \lambda_{(k)}} \abs{c_{j}} + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \abs{c_{j}} $$. Then, the parameter $\lambda^*$ is optimal when $0 \in \partial J(\lambda^*)$, that is, $0 \in [s_k + c_k, s_k - c_k]$.
+The meaning of this proposition is depicted in Figure~\ref{fig:abs_error}, where the error and its corresponding subgradient is computed for $10$ random pairs $(c_i, d_i)$. It can be seen that the subdifferential is constant between elbows, and takes a step at the elbows. Then, the parameter $\lambda^*$ is optimal when $0 \in \partial J(\lambda^*)$.
+
+Observe that, once the elbows are sorted, the cost of computing the optimal value $\lambda^*$ is linear, since we just have to compute the quantities $s_{(k)}$ for $k=1, \ldots, \npertask$, and $s_{(k+1)} = s_{(k)} + 2 \abs{c_{(k)}}$  for each $k$. At each step, we check the optimality condition $0 \in [s_{(k)} - \abs{c_{(k)}}, s_{(k)} + \abs{c_{(k)}}]$.
+Thus, the bottleneck of the procedure is sorting the elbows, which supposes an average cost of $O(\npertask \log(\npertask))$.
 
 
-\paragraph*{Hinge loss.\\}
+\subsection{Hinge Loss}
 The positive part function 
 \begin{equation}
     \nonumber
@@ -1144,27 +1423,92 @@ Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corres
     \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \pospart{\lambda c_i + d_i}.
 \end{equation}
 Observe that in each term of the sum the subdifferential is 
-\begin{align*}
-    \partial \left[\lambda c_i + d_i \right]_+ = 
+\begin{equation}
+    \label{eq:subdiff_hinge_l1}
+    \begin{aligned}
+        \partial \left[\lambda c_i + d_i \right]_+ = 
     \begin{cases}
         0 ,& \lambda c_i + d_i  < 0, \\
         [\min(0, c_i), \max(0, c_i)] ,& \lambda c_i + d_i  = 0, \\
         c_i ,& \lambda c_i + d_i  > 0. \\
     \end{cases}
-\end{align*}
+    \end{aligned}
+\end{equation}
 That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we present the following result to get the optimal $\lambda^*$.
 \begin{prop}[Optimal $\lambda^*$ with hinge loss]\label{prop:hinge_neurocom2020}
     In~\eqref{eq:opt_hinge_l1}, $\lambda^*=0$ is optimal iff
     \begin{equation}\label{eq:sol_hinge_0}
-        -\sum_{j: \lambda_{(j)}<0} \max(0, c_{(j)}) - \sum_{\lambda_{(j)}>0} \min(0, c_{(j)}) \leq 0 .
+        -\sum_{i:\; 0 > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{0 < \lambda_{(i)}} \mymin{0, c_{(i)}} \leq 0 .
         \end{equation}
         If this condition does not hold, a value $\lambda^* \in (0, 1)$ is optimal for problem~\eqref{eq:opt_hinge_l1} \emph{iff} $\lambda^*$ is a feasible elbow, that is, $0 < \lambda^* = \lambda_{(k)} < 1$ for some $k=1, \dotsc, \npertask$, and
     \begin{equation}\label{eq:sol_hinge}
-        -\sum_{j: \lambda_{(j)}< \lambda_{(k)}} \max(0, c_{(j)}) - \sum_{j: \lambda_{(j)}>  \lambda_{(k)}} \min(0, c_{(j)}) \in \left[\min(0, c_{(k)}), \max(0, c_{(k)}) \right] .
+        -\sum_{i:\; \lambda_{(k)} > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{i:\; \lambda_{(k)} <\lambda_{(i)}} \mymin{0, c_{(i)}} \in \left[\mymin{0, c_{(k)}}, \mymax{0, c_{(k)}} \right] .
     \end{equation}
     If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
 \end{prop}
+\begin{proof}
+    Observe in~\eqref{eq:subdiff_hinge_l1} that, for each term $\partial \abs{\lambda c_i + d_i}$, the change occurs at the elbow $\lambda_{i} = - d_ i / c_i$. We can consider two cases:
+    \begin{itemize}
+        \item $0 > c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \pospart{\lambda c_i + d_i} = 
+            \begin{cases}
+                0 ,& \lambda > \lambda_i, \\
+                [\min(0, c_i), \max(0, c_i)] ,& \lambda = \lambda_i, \\
+                {c_i} ,& \lambda < \lambda_i .\\
+            \end{cases}
+            \end{aligned}
+        \end{equation}
+        \item $0 < c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \pospart{\lambda c_i + d_i} = 
+            \begin{cases}
+                0 ,& \lambda < \lambda_i, \\
+                [\min(0, c_i), \max(0, c_i)] ,& \lambda = \lambda_i, \\
+                {c_i} ,& \lambda > \lambda_i .\\
+            \end{cases}
+            \end{aligned}
+        \end{equation}
+    \end{itemize}
+    Consider the sorted elbow values $\lambda_{(1)}, \ldots, \lambda_{(m)}$.
+    Recall that, since all functions share the same domain, the gradient of the sum is the gradient sum of the gradients, then, for $\lambda \neq \lambda_{(i)}$ for all $i=1,\ldots,\npertask$,
+    \begin{equation}\nonumber
+        \begin{aligned}
+            \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {c_{(i)}} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {c_{(i)}}  = \sum_{i: \; \lambda < \lambda_{(i)}} \mymin{0, c_{(i)}} + \sum_{i: \; \lambda > \lambda_{(i)}} \mymax{0, c_{(i)}}
+        \end{aligned}        
+    \end{equation}
+    We can highlight two factors here: the value of $\partial \mathcal{J}(\lambda)$ is constant between elbows, and $\partial \mathcal{J}(\lambda)$ is a non-decreasing function.
+    Then, when $\lambda = \lambda_{(k)}$ for some $k=1, \ldots, \npertask$, we have that
+    \begin{equation}
+        \nonumber
+        \partial \mathcal{J}(\lambda_{(k)}) = \left[ s_{(k)} + \mymin{0, c_{(k)}}, s_{(k)} + \mymax{0, c_{(k)}}  \right] ,
+    \end{equation}
+    where $s_{(k)} = \sum_{i: \; \lambda_{(k)} < \lambda_{(i)}} \mymin{0, c_{(i)}} + \sum_{i: \; \lambda_{(k)} > \lambda_{(i)}} \mymax{0, c_{(i)}}.$
+    Moreover, in $(\lambda_{(k-1)}, \lambda_{(k+1)})$, the value of the subdifferential is
+    \begin{equation}
+        \nonumber
+        \partial \mathcal{J}(\lambda) = \begin{cases}
+            s_{(k)} + \mymin{0, c_{(k)}},& \lambda < \lambda_{(k)}\\
+            \left[ s_{(k)} + \mymin{0, c_{(k)}}, s_{(k)} + \mymax{0, c_{(k)}}   \right],& \lambda = \lambda_{(k)} \\
+            s_{(k)} + \mymax{0, c_{(k)}},& \lambda > \lambda_{(k)}
+        \end{cases} .
+    \end{equation}
+    That is, $\partial \mathcal{J}(\lambda)$ is continuous, non-decreasing, and the values between elbows are contained in the elbows subdifferential, thus, it is sufficient to look for the optimal value at the elbows.
+    Then, using the Fermat rule, we want to find $\lambda^*$ such that $\partial \mathcal{J}(\lambda^*) = 0$. We have three possible scenarios:
+    \begin{itemize}
+        \item $\partial \mathcal{J}(0) \geq 0.$ 
+        \\Since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 0$.
+        \item $0 \in \left[ s_{(k)} + \mymin{0, c_{(k)}}, s_{(k)} + \mymax{0, c_{(k)}}   \right] = \partial \mathcal{J}(\lambda_{(k)}), \; 0 < \lambda_{(k)} < 1$ for some $k=1, \ldots, \npertask$. 
+        \\Then, the optimal value is $\lambda^*=\lambda_{(k)}$.
+        \item $\partial \mathcal{J}(1) \leq 0$. 
+        \\None of the previous conditions hold, and since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 1$.
+    \end{itemize}
+\end{proof}
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_hinge.pdf}
@@ -1172,11 +1516,12 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
     \label{fig:hinge_error}
 \end{figure}
 
-Again, the results of the proposition are illustrated in Figure~\ref{fig:hinge_error}, where $10$ pairs $(c_i, d_i)$ are randomly sampled, and the corresponding error function $\mathcal{J}(\lambda)$ and its subgradient are shown. Here, similarly to the absolute loss case, the subgradient is constant between elbows and at each elbow $\lambda_{(k)}$, the subgradient is the interval $[s - \min(0, c_{(k)}), s + \max(0, c_{(k)})]$ with 
-$$ s = -\sum_{j: \lambda_{(j)}< \lambda_{(k)}} \max(0, c_{(j)}) - \sum_{j: \lambda_{(j)}>  \lambda_{(k)}} \min(0, c_{(j)}) ;$$
-then, an elbow $\lambda_{(k)}$ is optimal if and only if $0 \in [s - \min(0, c_{(k)}), s + \max(0, c_{(k)})]$.
+Again, the results of the proposition are illustrated in Figure~\ref{fig:hinge_error}, where $10$ pairs $(c_i, d_i)$ are randomly sampled, and the corresponding error function $\mathcal{J}(\lambda)$ and its subgradient are shown. Here, similarly to the absolute loss case, the subgradient is constant between elbows, and at each elbow $\lambda_{(k)}$ the subgradient is an interval.
 
-\paragraph*{Squared hinge loss.\\}
+As with the absolute loss, once the elbows are sorted, the cost of computing the optimal value $\lambda^*$ is linear, since we just have to compute the quantities $s_{(k)}$ for $k=1, \ldots, \npertask$, and now $s_{(k+1)} = s_{(k)} + \abs{c_{(k)}}$  for each $k$. At each step, we check the optimality condition $0 \in [s_{(k)} - \mymin{0, c_{(k)}}, s_{(k)} + \mymax{0, c_{(k)}}]$.
+As before, the largest cost of the procedure is sorting the elbows, and it has an average cost of $O(\npertask \log(\npertask))$.
+
+\subsection{Squared Hinge Loss}
 The squared positive part function is
 \begin{equation}
     \nonumber
@@ -1209,31 +1554,101 @@ Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corres
     \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \pospart{\lambda c_i + d_i}^2.
 \end{equation}
 In each term of the sum the subdifferential is 
-\begin{align*}
-    \partial \left[\lambda c_i + d_i \right]_+^2 = 
+\begin{equation}
+    \label{eq:subdiff_hinge_l2}
+    \begin{aligned}
+        \partial \left[\lambda c_i + d_i \right]_+^2 = 
     \begin{cases}
         0 &, \lambda c_i + d_i  \leq 0 \\
         2 c_i (\lambda c_i + d_i) &, \lambda c_i + d_i  > 0 \\
     \end{cases} \; .
-\end{align*}
-The elbows are again related to the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+    \end{aligned}
+\end{equation}
+The elbows are again related to the values $\frac{-d_i}{c_i}$, that can be sorted to obtain the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we give the following result to get the optimal $\lambda^*$ when using the squared hinge loss.
 \begin{prop}[Optimal $\lambda^*$ with squared hinge loss]\label{prop:sqhinge_neurocom2020}
     In~\eqref{eq:opt_hinge_l2},
     $\lambda^*=0$ is optimal iff 
     \begin{equation}\nonumber
-         - \frac{\sum_{j: \lambda_{j} < 0} \max(0, c_{j}) d_{j} + \sum_{j: \lambda_{j} > 0} \min(0, c_{j}) d_{j}}{\sum_{j: \lambda_{j} < 0} \max(0, c_{j})^2 + \sum_{j: \lambda_{j} > 0} \min(0, c_{j})^2} < 0.
+        -\sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; 0 < \lambda_{(i)}}} {2 c_i d_i} - \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; 0 > \lambda_{(i)}}} {2 c_i d_i}  \leq 0
        \end{equation}
     If this condition does not hold, 
-    consider the extended sorted list of feasible elbows $\lambda_{(p-1)} = 0 \leq \lambda_{(p)} \leq \ldots, \lambda_{(q)} \leq \lambda_{(q+1)}=1$, with $1 \leq p, q \leq m$, and
-    define $\widehat{\lambda}_k$ for $k=p-1, \ldots,  q$ as %
-\begin{equation}\label{sol_hinge_2}
- \widehat{\lambda}_k = - \frac{\sum_{j: \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j}) d_{j} + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j}) d_{j}}{\sum_{j: \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j})^2 + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j})^2} .
+    consider the extended sorted list of elbows $\lambda_{(1)}, \ldots, \lambda_{(\npertask)}$, then we define $\widehat{\lambda}_k$ for $k=1, \ldots,  \npertask-1$ as %
+\begin{equation}\label{eq:sol_hinge_2}
+    \widehat{\lambda}_{(k)} = - \frac{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}}{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}}^2 + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}}^2} .
 \end{equation}
 %
-Then, if $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$ for some $k=0, \ldots, q$, then $\lambda^* = \widehat{\lambda}_k$ is optimal.
+If $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$ and $0 \leq \widehat{\lambda}_{(k)} \leq 1$ for some $k=1, \ldots, \npertask$, then $\lambda^* = \widehat{\lambda}_k$ is optimal.
 Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 1$.
 \end{prop}
+\begin{proof}
+    Observe in~\eqref{eq:subdiff_hinge_l2} that, for each term $\partial \abs{\lambda c_i + d_i}$, the change occurs at the elbow $\lambda_{i} = - d_ i / c_i$. We can consider two cases:
+    \begin{itemize}
+        \item $0 > c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \pospart{\lambda c_i + d_i}^2 = 
+                \begin{cases}
+                    0 &, \lambda \geq \lambda_i \\
+                    2 c_i (\lambda c_i + d_i) &, \lambda < \lambda_i \\
+                \end{cases}
+            \end{aligned}
+        \end{equation}
+        \item $0 < c_i$, then
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \partial \pospart{\lambda c_i + d_i}^2 = 
+                \begin{cases}
+                    0 &, \lambda \leq \lambda_i \\
+                    2 c_i (\lambda c_i + d_i) &, \lambda > \lambda_i \\
+                \end{cases}
+            \end{aligned}
+        \end{equation}
+    \end{itemize}
+    Consider the sorted elbow values $\lambda_{(1)}, \ldots, \lambda_{(m)}$.
+    Recall that, since all functions share the same domain, the gradient of the sum is the gradient sum of the gradients, then, for all $\lambda \in \reals$,
+    \begin{equation}\nonumber
+        \begin{aligned}
+            \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)}  .
+        \end{aligned}        
+    \end{equation}
+    Observe that in both terms of the sum, $(\lambda c_i + d_i) > 0$, so the first term is negative and the second one positive; then, $\partial \mathcal{J}(\lambda)$ is a non-decreasing function.
+    Also, we can check that $\partial \mathcal{J}(\lambda)$ is continuous. It is trivially continuous between elbows, and, at any elbow $\lambda_{(k)}$, 
+    $$
+    \partial \mathcal{J}(\lambda_{(k)}) =  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda_{(k)} < \lambda_{(i)}}} {2 c_i (\lambda_{(k)} c_i + d_i)} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda_{(k)} > \lambda_{(i)}}} {2 c_i (\lambda_{(k)} c_i + d_i)}  ,
+    $$
+    and also, the left limit is 
+    \begin{align*}
+        \lim_{\lambda \to \lambda_{(k)}^{-}} \partial \mathcal{J}(\lambda_{(k)}) &= 
+        2c_{(k)} (\lambda c_{(k)} + d_{(k)})  + 
+        \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda_{(k)} < \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)} + \sum_{\substack{i:\; 0 < c_{(i)} ,\\ \;\; \lambda_{(k)} > \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)},
+    \end{align*}
+    and the first term goes to zero, so the limit is $\partial \mathcal{J}(\lambda_{(k)})$. Analogously, we can find that the right limit is also $\partial \mathcal{J}(\lambda_{(k)})$.    
+    That is, $\partial \mathcal{J}(\lambda)$ is piece-wise defined, but it is continuous and non-decreasing; thus, using the Fermat rule, we want to find $\lambda^*$ such that $\partial \mathcal{J}(\lambda^*) = 0$. We have three possible scenarios:
+    \begin{itemize}
+        \item $\partial \mathcal{J}(0) \geq 0.$ 
+        \\Since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 0$.
+        \item $0 = \partial \mathcal{J}(\lambda), \; 0 < \lambda < 1$. 
+        \\ Between each pair of elbows $(\lambda_{(k)}, \lambda_{(k+1)})$, for $k=1,  \dots, \npertask-1$, 
+        \begin{equation}\nonumber
+            \begin{aligned}
+                \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda_{(k)} \leq \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda_{(k+1)} \geq \lambda_{(i)}}} {2 c_i (\lambda c_i + d_i)}  ;
+            \end{aligned}        
+        \end{equation}
+        then, $\partial \mathcal{J}(\lambda) = 0$ has the solution
+        \begin{equation}
+            \nonumber
+            \widehat{\lambda}_{(k)} = - \frac{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}}{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}}^2 + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}}^2} .
+        \end{equation}
+        If $\lambda_{(k)} \leq \widehat{\lambda}_{(k)} \leq \lambda_{(k+1)}$ and $0 \leq \widehat{\lambda}_{(k)} \leq 1$, the optimal value is $\lambda^* = \widehat{\lambda}_{(k)}$.
+        \item $\partial \mathcal{J}(1) \leq 0$. 
+        \\None of the previous conditions hold, and since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 1$.
+    \end{itemize}
+\end{proof}
+
+
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_sqhinge.pdf}
@@ -1242,157 +1657,18 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
 \end{figure}
 
 As with the other losses, the error function and respective gradient for $10$ random pairs $(c_i, d_i)$ are represented in Figure~\ref{fig:sqhinge_error}.
-Now, the derivative is not constant between elbows, but a linear function. Between elbows $\lambda_{(k)}$ and $\lambda_{(k+1)}$ the derivative is
-$$ \lambda \left(\sum_{j: \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j})^2 + \sum_{j: \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j})^2 \right) + \sum_{j: \lambda_{j} < 0} \max(0, c_{j}) d_{j} + \sum_{j: \lambda_{j} > 0} \min(0, c_{j}) d_{j}, $$
-and it is $0$ for the value $\widehat{\lambda}_k$ shown in~\eqref{eq:opt_hinge_l2}; however, that value is optimal only if $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$.
+Now, the derivative is not constant between elbows, but a linear function, and we can observe that the derivative is continuous. 
 
+As with the two previous losses, once the elbows are sorted, the numerator and denominator that appear in~\eqref{eq:sol_hinge_2} can be computed with a linear cost. For example, consider the sequence of numerators $N_{(k)} = \sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}$; then, 
+$$N_{(k+1)} = N_{(k)} - \mymax{0, c_{(k+1)}} d_{(k+1)} + \mymin{0, c_{(k+1)}} d_{(k+1)}.$$
+Analogously, for the sequence of denominators $D_{(k)} = \sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}$, we have that 
+$$D_{(k+1)} = D_{(k)} - \mymax{0, c_{(k+1)}}^2 + \mymin{0, c_{(k+1)}}^2.$$
+Then, at each step $k=1, \ldots, \npertask-1$ we compute $\widehat{\lambda}_{(k)}$ and check if $\lambda_{(k)} \leq \widehat{\lambda}_{(k)} \leq \lambda_{(k+1)}$ and $0 \leq \widehat{\lambda}_{(k)} \leq 1$.
+Therefore, again we have that the largest cost is the one corresponding to sorting the elbows, which is in average $O(\npertask \log(\npertask))$.
 
-
-
-\section{Convex Multi-Task Learning with Neural Networks}\label{sec:convexmlt_network}
-The convex \acrshort{mtl} formulation is easily applicable and interpretable, so it has good properties not only for kernel methods, but also for a broader class of learning models.
-However, although kernel methods have some very useful properties, they present some important limitations. The main one is the computation effort necessary to solve the optimization problems related with these methods, which grows in a superquadratic way with the number of patterns. This make it unfeasible to use these models for very large datasets. Moreover, it is difficult to develop specific kernel methods for data where there is a spatial or temporal dependency, such as images.
-%
-Neural networks, however, are models that are well suited for this kind of challenges
-Deep \acrshort{nn}s have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for \acrshort{mtl} with neural networks.
-
-%
-In Chapter~\ref{Chapter3} we have reviewed the taxonomy for \acrshort{mtl} methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
-We also give in Section~\ref{sec:deep_mtl} some of the most relevant approaches to \acrshort{mtl} with neural networks. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks, as shown in Figure~\ref{fig:hardsharing_nn}; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense, see~\cite{Long015a, YangH17a}.
-However, to the best of our knowledge, we presented the first purely combination-based approach to \acrshort{mtl} with neural networks in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks.
-
-\input{Diagrams/hardharing_nn_image.tex}
-
-\subsection{Model Definition}
-Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to model the common part 
-$$ g(x_i^r; w, \Theta) = w^\intercal f(x_i^r; \Theta) + b,$$
-and task-specific parts
-$$ g_r(x_i^r; w_r, \Theta_r) =  w_r^\intercal f_r(x_i^r; \Theta_r) + d_r.$$
-Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$, $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $b_r$ the output biases.
-Observe that the feature transformations $ f(x_i^r; \Theta)$ and $f_r(x_i^r; \Theta_r)$ are not fixed like the transformations $\phi(x_i^r)$ and $\phi_r(x_i^r)$ in the kernel methods; instead, here, they are automatically learned in the training process.
-The full \acrshort{mtl} models are then
-\begin{equation}
-    \label{eq:convexmtl_nn}
-    \begin{aligned}
-        h_r(x_i^r) &= \lambda g(x_i^r; w, \Theta) + (1 - \lambda) g_r(x_i^r; w_r, \Theta_r)
-       \\&= \lambda \lbrace w^\intercal f(x_i^r; \Theta) + b \rbrace + (1 - \lambda) \lbrace w_r^\intercal f_r(x_i^r; \Theta_r) + d_r \rbrace.
-    \end{aligned}    
-\end{equation}
-
-This formulation offers multiple combinations since we can model each common or independent function using different architectures for $f(\cdot; \Theta)$ or $f_r(\cdot; \Theta_r)$.
-%
-For example, we can use a network with a larger number of parameters for the common part, since it will be fed with more data, and simpler networks for the task-specific parts.
-%
-Even different types of neural networks, such as fully connected and convolutional, can be combined depending on the characteristics of each task.
-% Connection with LUPI
-This combination of neural networks can also be interpreted as an implementation of the \acrfull{lupi} paradigm~\citep{VapnikI15a} presented in Section~\ref{sec:ch3_lupi}, i.e., the common network captures the privileged information for each of the tasks, since it can learn from more sources.
-%
-
-%
-\subsection{Training Procedure}
-The regularized risk corresponding to the convex \acrshort{mtl} neural networks is
-\begin{equation}
-    \label{eq:regrisk_convex_nn}
-    \begin{aligned}
-        \risk_{\bsample} = \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \lossf(h_r(x_i^r), y_i^r) + \frac{\mu}{2} \left( \norm{w}^2 + \sum_{r=1}^\ntasks \norm{w_r}^2 + \Omega(\Theta) + \Omega(\Theta_r)\right) .
-    \end{aligned}
-\end{equation}
-Here, $h_r$ is defined as in equation~\eqref{eq:convexmtl_nn}, and $\Omega(\Theta)$ and $\Omega(\Theta_r)$ represents the $L_2$ regularization of the set of hidden weights of the common and specific networks, respectively.
-Given a loss function $\lossf(\hat{y}, y)$ and a pair $(x_i^t, y_i^t)$ from task $t$, we use the chain rule to compute the gradient of the loss function with respect to some parameters $\mathcal{P}$:
-\begin{equation}\label{eq:gradient_p}
-    \nabla_\mathcal{P} \lossf(h_t(x_i^t), y_i^t) = 
-    \frac{\partial}{\partial \hat{y}_i^t} \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \nabla_\mathcal{P} h_t(x_i^t) .
-\end{equation}
-Recall that we are using the formulation presented in~\eqref{eq:convexmtl_nn},
-where we make a distinction between output weights $w, w_t$ and hidden parameters $\Theta, \Theta_t$.
-Then, the corresponding gradients of $h_t$ needed to compute the loss gradients are
-\begin{equation}\label{eq:gradients_losses} 
-    \begin{aligned}       
-        &\nabla_{w} h_t(x_i^t)  
-        = \lambda \lbrace f(x_i^t, \Theta) \rbrace ,
-        &&\nabla_{\Theta} h_t(x_i^t)  
-        = \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace ; \\
-        &\nabla_{w_t} h_t(x_i^t)  
-        = (1 - \lambda) \lbrace f_t(x_i^t, \Theta) \rbrace ,
-        &&\nabla_{\Theta_t} h_t(x_i^t)  
-        = (1 - \lambda) \lbrace  w^\intercal \nabla_{\Theta_t} f_t(x_i^t, \Theta_t)\rbrace ; \\
-        &\nabla_{w_r} h_t(x_i^t)  
-        =  0 , 
-        &&\nabla_{\Theta_r} h_t(x_i^t)  
-        =  0 , \text{ for } r \neq t .\\
-    \end{aligned}    
-\end{equation}
-Putting all together, the gradient of the loss with respect to $w$, for example, is 
-$$  \nabla_w \lossf(h_t(x_i^t), y_i^t)  =\lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace $$
-and the same for the rest of parameters.
-%
-Observe that the convex combination information is transferred in the back-propagation as the loss gradients with respect to the common parameters are scaled by $\lambda$, while those of the task-specific parameters are scaled by $(1 - \lambda)$.
-%
-Moreover, the regularization of each set of parameters, i.e., $\set{w}, \Theta$ and $\set{w_r}, \Theta_r$, is done independently, so their gradients can be computed in the standard way.
-%
-During the back propagation procedure, we only update the parameters that have been used in the forward pass, with possibly different learning rates for each network. 
-That is, given an example $(x_i^t, y_i^t)$, when using vanilla \acrfull{sgd} the update rules for the common network parameters would be
-\begin{equation}\label{eq:convexmtl_nn_commonupdate}
-    \begin{aligned}
-        w^{\tau + 1} &\gets w^\tau + \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace + \mu w^\tau \right], \\
-        \Theta^{\tau + 1} &\gets \Theta^\tau + \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace + \mu \lbrace \nabla_\Theta \Omega( \Theta)  \rbrace \right],
-    \end{aligned}
-\end{equation}
-while the update rules for $t$-th task network parameters would be
-\begin{equation}\label{eq:convexmtl_nn_specificupdate}
-    \begin{aligned}
-        w_t^{\tau + 1} &\gets w_t^\tau + \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda) \lbrace f(x_i^t, \Theta) \rbrace + \mu w_t^\tau \right], \\
-        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau + \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda) \lbrace w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t)\rbrace + \mu \lbrace \nabla_{\Theta_t} \Omega( \Theta_t) \rbrace \right],
-    \end{aligned}
-\end{equation}
-and the parameters from the rest of task-specific networks are not updated.
-%
-That is, no specific algorithm has to be developed for training the convex \acrshort{mtl} \acrshort{nn}. In~\eqref{eq:convexmtl_nn_commonupdate} and~\eqref{eq:convexmtl_nn_specificupdate} we have shown the update rules for vanilla SGD, but any other algorithm, e.g., Adam, can be used scaling properly the loss gradients.
-
-\input{Diagrams/convexmtl_nn_image.tex}
-
-
-% In Figure~\ref{fig:convexmtl_nn}, a Convex \acrshort{mtl} NN is shown. % in the gradient update step.
-%     In particular, the updated shared weights are represented in red, and in blue the updated specific weights. 
-%     Specific networks are framed in black boxes and the common one in a blue box.
-%     The input neurons are shown in yellow, the hidden ones in cyan (except those in grey), and the output ones in magenta. 
-%     We use the grey color for hidden neurons containing the intermediate functions that will be combined for the final output: $g_1({x})$, $g_2({x})$ and $g({x})$.
-%     The thick lines are the hyperparameters $\lambda$ and $1-\lambda$ of the convex combination.
-
-\subsection{Implementation Details}
-\begin{algorithm}[!t]
-    \caption{Forward pass for Convex \acrshort{mtl} neural network.}
-    \label{alg:forward}
-    \DontPrintSemicolon
-      
-      \KwInput{$X_\text{mb}, t_\text{mb}$ \tcp*{Minibatch data and task labels}}
-      \KwOutput{$f$ \tcp*{Forward pass for the minibatch}}
-      \KwData{$\lambda$ \tcp*{Parameter of convex combination}}
-      \KwData{$g; g_1, \ldots, g_\ntasks$ \tcp*{Modules of the common and specific networks}}      
-      \For{$x_i, t_i \in(X_\text{mb}, t_\text{mb}) $}    
-            { 
-                $f_i \gets \lambda g(x_i) + (1 - \lambda) g_{t_i}(x_i)$   \tcp*{Convex combination}
-
-            }
-\end{algorithm}
-% Task-batches of minibatches
-% Automatic differentiation
-
-Our implementation of the convex \acrshort{mtl} neural network is based on \texttt{PyTorch}~\citep{PyTorch}.
-Although we include the gradients expressions in equation~\eqref{eq:gradients_losses}, the \texttt{PyTorch} package implements automatic differentiation, so the gradients are not explicitly implemented.
-Instead, we implement each network, common or specific, using (possibly different) \texttt{PyTorch} modules.
-In the forward pass of the network, the output for an example $x_i^r$ from task $r$ is computed using a pass of the common module and the corresponding specific module, and combining both passes with the convex formulation to obtain the final output $h_r(x_i^r)$.
-In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
-By doing this, when using examples from the $r$-th task only the parameters corresponding to the common module and its corresponding specific one are updated.
-Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
-Our implementation is a general framework to combine in a convex manner any   \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
-\comm{TODO: ponerlo en github}
-
-{In Algorithm~\ref{alg:forward} we show the pseudocode of the forward pass of the convex \acrshort{mtl} neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on PyTorch automatic differentiation.}
-
-
-
-
+%Between elbows $\lambda_{(k)}$ and $\lambda_{(k+1)}$ the derivative is
+%$$ \lambda \left(\sum_{j:\; \lambda_{(j)} < \lambda_{(k)}} \max(0, c_{j})^2 + \sum_{j:\; \lambda_{(j)} > \lambda_{(k)}} \min(0, c_{j})^2 \right) + \sum_{j:\; \lambda_{j} < 0} \max(0, c_{j}) d_{j} + \sum_{j:\; \lambda_{j} > 0} \min(0, c_{j}) d_{j}, $$
+%and it is $0$ for the value $\widehat{\lambda}_k$ shown in~\eqref{eq:opt_hinge_l2}; however, that value is optimal only if $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$.
 
 
 

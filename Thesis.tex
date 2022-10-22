@@ -123,6 +123,7 @@
 \newacronym{cv}{CV}{Cross Validation}
 
 \newacronym{rkhs}{RKHS}{Reproducing Kernel Hilbert Space}
+\newacronym{rkhss}{RKHS's}{Reproducing Kernel Hilbert Spaces}
 
 \newacronym{mae}{MAE}{Mean Absolute Error}
 \newacronym{mse}{MSE}{Mean Squared Error}
@@ -167,6 +168,8 @@
 
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\mymax}[1]{\max\left(#1\right)}
+\newcommand{\mymin}[1]{\min\left(#1\right)}
 \newcommand{\pospart}[1]{\left[#1\right]_{+}}
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\cardinal}[1]{\left|#1\right|}
@@ -199,7 +202,7 @@
 \newcommand{\vect}[1]{\bm{\text{vect}}\left(#1\right)}
 
 \newcommand{\trace}[1]{\Tr{\left(#1\right)}}
-\newcommand{\dotp}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\dotp}[2]{\bm{\left\langle} #1, #2 \bm{\right\rangle}}
 \newcommand{\ydotp}[2]{\left[ #1, #2 \right]_\mathcal{Y}}
 
 \newcommand{\ind}{\bm{1}}
@@ -259,6 +262,8 @@
 \newcommand{\Tspace}{\mathcal{T}}
 \newcommand{\Yspace}{\mathcal{Y}}
 \newcommand{\Fspace}{\mathcal{V}}
+\newcommand{\Vspace}{\mathcal{V}}
+
 
 \newcommand{\toprob}{\xrightarrow{P}}
 

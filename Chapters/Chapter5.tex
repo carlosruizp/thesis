@@ -12,17 +12,25 @@
 \section{Introduction}
 In Chapter~\ref{Chapter3}, we divide the \acrfull{mtl} strategies into feature-based, parameter-based and combination-based ones.
 The feature-based approaches, which try to find a representation shared by all tasks to obtain leverage in the learning process, rely on the assumption that all tasks can indeed share a common latent representation.
-In the case of combination-based, which combines a common part and task-specific parts in the models, a similar belief is held, but although this approach has many good properties, it relies on the assumption that all tasks can share the same common information, which is captured by the common part of the model.
+In the case of combination-based, which combines a common part and task-specific parts in the models, a similar belief is held and, although this approach has many good properties, it relies on the assumption that all tasks can share the same common information, which is captured by the common part of the model.
 However, this might not be the case in some \acrshort{mtl} scenarios, where there can exist groups of tasks that share some information, but are unrelated to the rest.
-The parameter-based approaches are usually reliant on enforcing low-rank matrices, assuming, thus, that all tasks parameters belong to the same subspace; however, the \acrfull{gl} based approaches offer a different perspective.
 
-In the \acrshort{gl} strategies, the idea is based on penalizing the distance between the parameters of different tasks. It is more natural for linear or kernel approaches, where the models for each task $r=1, \ldots, \ntasks$ are defined as
+%
+%Previous work
+%
+Some parameter-based approaches rely on enforcing low-rank matrices~\citep{AndoZ05,ChenTLY09,PongTJY10}, assuming, thus, that all tasks parameters belong to the same subspace. 
+Others try to find the underlying task structure, either by task-relation learning or by clustering the tasks. In the task-relation learning we find strategies using Gaussian Processes and a Bayesian approach such as~\citet{BonillaCW07,ZhangY10}. We also have the \acrfull{gl} approaches, such as the works of~\citet{EvgeniouMP05} or~\citet{argyriou2013learning}, where the tasks are assumed to be nodes of a graph, and the goal is to learn the weights on the edges, which determine the degree of relationship between tasks.
+ In these works, iterated algorithms are used to learn both the models parameters and the graph of task-relations.
+The clustering approaches are similar, they also use specific regularizers and alternating algorithms to find the clusters.
+However, these works using regularization as the mean to enforce the coupling between tasks are limited to linear models.
+
+In general, in the \acrshort{gl} strategies, the idea is based on penalizing the distance between the parameters of different tasks. It is more natural for linear or kernel approaches, where the models for each task $r=1, \ldots, \ntasks$ are defined as
 \begin{equation}
     \nonumber
     f_r(x) = w_r \cdot \phi({x}) + b_r
 \end{equation}
 and $\phi(x)$ is a transformation, which can be the identity $\phi(x)=x$ in linear models, or an implicit transformation to an \acrshort{rkhs} in kernel models.
-Here, the models are determined by the parameter $w_r$, so pushing together these parameters enforces the models to be similar. 
+Here, the models are determined by the parameters $w_r$, so pushing together these parameters enforces the models to be similar. 
 The idea is to assume that the relationship between tasks can be modelled using a graph; then, the adjacency matrix $\fm{A}$ of such graph is used to define the regularization
 \begin{equation}
     \label{eq:gl_regularization}
@@ -30,60 +38,73 @@ The idea is to assume that the relationship between tasks can be modelled using 
 \end{equation}
 where $A_{rs}$ are positive scalars that weight the pairwise distances.
 Although~\eqref{eq:gl_regularization} is easy to compute for the linear case, it is not that direct in the case of kernel models where, as shown by the Representer Theorem, the optimal parameters $w_r^*$ are elements of an \acrshort{rkhs}.
-In this Chapter, a framework to use the \acrshort{gl} regularization with kernel models is presented. This is implemented for L1, L2 and LS-SVMs. Moreover, the \acrshort{gl} strategy is combined with the convex joint learning one presented in Chapter~\ref{Chapter4}.
+In this chapter, a framework to use the \acrshort{gl} regularization with kernel models is presented. This is implemented for L1, L2 and LS-SVMs. Moreover, the \acrshort{gl} strategy is combined with the convex \acrshort{mtl} one presented in Chapter~\ref{Chapter4}.
 %
 
 Besides, the definition of the weights $A_{rs}$ is not trivial, and it is crucial for the good performance of this strategy. 
-First, the values $A_{rs}$ have to be bounded, otherwise its interpretability is lost and, moreover, one term can dominate the sum, so only two tasks models would be enforced to be similar.
+First, the values $A_{rs}$ have to be bounded, otherwise its interpretability is lost and, moreover, one term can dominate the sum, so only the models of two tasks would be enforced to be similar.
 %
-Even with bounded weights, in absence of expert knowledge to select them, it is necessary to find a procedure that finds a set of weights $A_{rs}$ that reflects the real relations between tasks.
-In this chapter, a data-driven procedure to select the weights for a Laplacian regularization is presented.
+Even with bounded weights, in absence of expert knowledge to select them, it is necessary to find a procedure that finds a set of weights $A_{rs}$ that reflects the real relations between tasks. Because of this, in this chapter, a data-driven procedure to select the weights for a Laplacian regularization is presented.
 
 
 \section{Graph Laplacian Multi-Task Learning with Kernel Methods}
+
+\comm{TODO: Motivar kernel extension, es dificil y usamos tensores}
+
 \subsection{Linear Case}
-We start from the simplest scenario: using linear models. First, observe that we can express the Laplacian regularization as
+We start from the simplest scenario: using linear models. That is, given a $\dimx$-dimensional input space $\Xspace$, e.g. $\reals^\dimx$, we consider models of the form
+$$ h_r(\cdot) = \dotp{w_r}{\cdot} + b_r,\;  w_r \in \reals^\dimx .$$
+First, observe that we can express the Laplacian regularization as
 \begin{equation}
     \nonumber
     \Omega(w_1, \ldots, w_\ntasks) = \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 =  \sum_{r=1}^T \sum_{s=1}^T A_{rs} \left\{ \norm{w_r}^2 + \norm{w_s}^2 - 2 \langle w_r, w_s \rangle \right\}.
 \end{equation}
-Here, only the distance between model parameters is penalized, and in the extreme case where all the tasks can use the same model, i.e. $w_r = w$, there would be no regularization for the complexity of such model $w$.
+Here, only the distance between model parameters is penalized, and in the extreme case where all the tasks can use the same model, i.e. $w_r = w$, and the regularization for such model $w$ would be $0$.
 This problem can be solved by adding the individual model regularization aside from the Laplacian one.
 To illustrate this, we first consider a linear L1-SVM, whose primal problem is
 \begin{equation}\label{eq:linear_gl_primal}
 \begin{aligned}
-& \argmin_{\substack{w_1, \ldots, w_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}; }}
+& \argmin_{\fv{w}, \fv{b}, \fv{\xi}}
 & & {C \sum_{r=1}^T \sum_{i=1}^m{\xi_{i}^r} + \frac{\nu}{4} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 }\\
 & \text{s.t.}
 & & y_{i}^r ( w_r \cdot x_{i}^r + b_r) \geq p_{i}^r - \xi_{i}^r , \;  i=1,\ldots,m_r; \;  r=1,\ldots,T,\\
-& & & \xi_{i}^r \geq 0, \;  i=1,\ldots,m_r; \;  r=1,\ldots,T \; .
+& & & \xi_{i}^r \geq 0, \;  i=1,\ldots,m_r; \;  r=1,\ldots,T \; ,
 \end{aligned}
+\end{equation}
+where we are using the vector 
+\begin{equation}
+    \nonumber
+    \fv{w}^\intercal = (w_1^\intercal, \ldots, w_\ntasks^\intercal), \; \fv{b} = (b_1, \ldots, b_\ntasks), \; \fv{\xi} = (\xi_{1}^1, \ldots, \xi_{\npertask_\ntasks}^\ntasks).
 \end{equation}
 The corresponding Lagrangian is
 \begin{equation}\label{eq:svmmtl_lagr_GL_addreg}
 \begin{aligned}
-        \mathcal{L}&(w_1, \ldots, w_\ntasks, b_r, \fv{\alpha}, \fv{\beta}) = C \sum_{r=1}^T \sum_{i=1}^{m_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 \\
+        \mathcal{L}&(\fv{w}, \fv{b}, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = C \sum_{r=1}^T \sum_{i=1}^{m_r}{\xi_{i}^r} + \frac{\nu}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{w_r - w_s}^2 + \frac{1}{2} \sum_r \norm{w_r}^2 \\
         & - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \alpha_i^r [y_{i}^r (w_r \cdot x_{i}^r + b_r) - p_{i}^r + \xi_{i}^r]   } - \sum_{r=1}^T \sum_{i=1}^{m_r}{ \beta_i^r \xi_i^r } \; ,
 \end{aligned}
 \end{equation}
-and the derivatives of the Lagrangian with respect the primal variables are
+with $\fv{\alpha} = (\alpha_{1}^1, \ldots, \alpha_{\npertask_\ntasks}^\ntasks)$ and $\fv{\beta} = (\beta_{1}^1, \ldots, \beta_{\npertask_\ntasks}^\ntasks)$;
+then, using the derivatives of the Lagrangian with respect the primal variables and equating to $0$, we get
 \begin{align}
 & \frac{\partial \mathcal{L}}{\partial w_r} = 0 \implies  w_r^* + \frac{\nu}{2} \sum_{s=1}^T (A_{rs} + A_{sr}) (w_r^* - w_s^*)= \sum_{i=1}^{m_r}{\alpha_i^r y_i^r x_i^r} \label{eq:partial_w_r_addreg} \; , \\
 & \frac{\partial \mathcal{L}}{\partial b_r} = 0 \implies  \sum_{i=1}^{m_r}{\alpha_i^r y_i^r } = 0 \label{eq:partial_b_r_addreg} \; ,\\
 & \frac{\partial \mathcal{L}}{\partial \xi_i^r} = 0 \implies C_r - \alpha_i^r - \beta_i^r = 0 \; \label{eq:partial_xi_addreg}\; .
 \end{align}
-Consider the following vectors definitions
-\begin{equation}
-    \nonumber
-    \underset{1 \times Td}{\fv{w}^\intercal} = (w_1^\intercal \ldots w_T^\intercal)
-    , \; 
-    \underset{1 \times (\sum_r m_r)}{\fv{\alpha}^T} = (\fv{\alpha}_1^\intercal \ldots \fv{\alpha}_T^\intercal)
-    , \; 
-    \underset{1 \times m_r}{\fv{\alpha}_r^\intercal} =  (\alpha_1^r \ldots \alpha_{m_r}^r) ;
-\end{equation}
-and consider also the matrices and corresponding dimensions
+Consider 
+% the following vectors definitions
+% \begin{equation}
+%     \nonumber
+%     \underset{1 \times Td}{\fv{w}^\intercal} = (w_1^\intercal \ldots w_T^\intercal)
+%     , \; 
+%     \underset{1 \times (\sum_r m_r)}{\fv{\alpha}^T} = (\fv{\alpha}_1^\intercal \ldots \fv{\alpha}_T^\intercal)
+%     , \; 
+%     \underset{1 \times m_r}{\fv{\alpha}_r^\intercal} =  (\alpha_1^r \ldots \alpha_{m_r}^r) ;
+% \end{equation}
+% and consider also
+the following matrices and corresponding dimensions
 \begin{equation*}
-    \underset{\ntasks \dimx \times \ntasks \dimx}{E_\otimes} = \left\lbrace I_T + \nu L \right\rbrace \otimes I_d, \;
+    \underset{\ntasks \otimes \ntasks}{E} = \left\lbrace I_T + \nu L \right\rbrace, \;
+    \underset{\ntasks \dimx \times \ntasks \dimx}{E_\otimes} = E \otimes I_d, \;
     \underset{\ntasks \times \ntasks}{L} =
     \begin{bmatrix}
         \sum_{s \neq 1} A_{1s} & - A_{12} & \ldots & - A_{1T} \\
@@ -106,16 +127,16 @@ where $\fm{X}_r$ is the matrix with examples from task $r$.
 Then, we can write~\eqref{eq:partial_w_r_addreg} with a matrix formulation as
 \begin{equation}
     \nonumber
-    E \fv{w} = \Phi^\intercal \fv{\alpha} \implies \fv{w} = E^{-1} \Phi^\intercal \fv{\alpha}
+    E \fv{w} = \Phi^\intercal \fv{\alpha} \implies \fv{w} = E^{-1} \Phi^\intercal \fv{\alpha} .
 \end{equation}
-With these definitions and using the derivatives to substitute in the Lagrangian, the result is
+With these definitions and using the optimal primal variables, i.e. the values where the corresponding derivative is $0$, to substitute in the Lagrangian, the result is
 \begin{align*}
     \mathcal{L}(\fv{w}, \fv{\alpha}) &= \frac{1}{2} \fv{w}^\intercal E \fv{w} - \fv{\alpha}^\intercal \Phi \fv{w} + p^\intercal \fv{\alpha} \\
     &= \frac{1}{2} (E^{-1} \Phi^\intercal \fv{\alpha})^\intercal E E^{-1} \Phi^\intercal \fv{\alpha} - \fv{\alpha}^\intercal \Phi E^{-1} \Phi^\intercal \fv{\alpha} + p^\intercal \fv{\alpha} \\
     &= \frac{1}{2} \fv{\alpha}^\intercal \Phi ({E^\intercal})^{-1} \Phi^\intercal \fv{\alpha}  - \fv{\alpha}^\intercal \Phi E^{-1} \Phi^\intercal \fv{\alpha} + p^\intercal \fv{\alpha} \\
     &= -\frac{1}{2}  \fv{\alpha}^\intercal \Phi E^{-1} \Phi^\intercal \fv{\alpha} + p^\intercal \fv{\alpha}.
 \end{align*}
-Here, the block structure of $\Phi$ and $E$ allow to write the following result 
+Here, the block structure of $\Phi$ and $E$ allows to write $\Phi E^{-1} \Phi^\intercal$ as 
 \begin{equation}
     \label{eq:laplacian_block_linear}
     \Phi E^{-1} \Phi^\intercal = 
@@ -131,7 +152,7 @@ That is, $\Phi E^{-1} \Phi^\intercal = \widetilde{Q}$, where $ \widetilde{Q}$ is
     \label{eq:kernelfun_gl}
     \widetilde{k}(x_i^r, y_j^s) =  \left((I_T + \nu L)^{-1}\right)_{rs} \dotp{x_i^r}{x_j^s}.
 \end{equation}
-It can be noted that the individual regularization of the primal problem leads to the diagonal term added, which ensures the invertibility of the matrix $(I_T + \nu L)$.
+It can be noted that the individual regularization of the primal problem leads to the diagonal term adding, which ensures the invertibility of the matrix $(I_T + \nu L)$.
 Thus, this additional regularization ultimately makes the solution of the problem more numerically stable.
 Using this result, the corresponding dual problem is
 \begin{equation}\label{eq:linear_gl_dual}
@@ -139,52 +160,52 @@ Using this result, the corresponding dual problem is
         & \argmin_{\fv{\alpha}} 
         & & \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^t \widetilde{Q} \fv{\alpha} - p \fv{\alpha} \\
         & \text{s.t.}
-        & & 0 \leq \alpha_i^r \leq C, \;  i=1,\ldots,m_r; r=1,\ldots,T\; \text{(box constraints)} \; , \\
-        & & & \sum_{i=1}^{n_r}{\alpha_i^r y_i^r} = 0, \; r=1,\ldots,T\; \text{(equality constraints)} \; .
+        & & 0 \leq \alpha_i^r \leq C, \;  i=1,\ldots,m_r; r=1,\ldots,T , \\
+        & & & \sum_{i=1}^{n_r}{\alpha_i^r y_i^r} = 0, \; r=1,\ldots,T .
         \end{aligned}
 \end{equation}
 
 \subsection{Kernel Extension}
 After the definition of the linear \acrshort{gl} \acrshort{mtl} \acrshort{svm}, we present the extension to the kernel case.
 When we use an implicit kernel transformation, the result~\eqref{eq:laplacian_block_linear} is not direct. However, we can use the result from Lemma~\ref{lemma:regproblems_kernel}.
-Observe that
+Consider the following definition for $\fv{v}$:
+$$ \myvec{v} = \sum_{t=1}^T e_r \otimes v_r ,$$
+where $\set{e_1, \ldots, e_\ntasks}$ is the canonical basis of $\reals^\ntasks$.
+Then, we can observe that
 \begin{align*}
     \myvec{v}^\intercal (I_T \otimes I_d) \myvec{v} &= \sum_{r=1}^T \norm{v_r}^2 , \\
     \myvec{v}^\intercal (L \otimes I_d) \myvec{v} &= \frac{1}{2} \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{v_r - v_s}^2 .
 \end{align*}
 To check the second equation, see
 \begin{align*}
-    \myvec{v} (\mymat{L} \otimes \mymat{I}_d) \myvec{v} &= \myvec{v} (\mymat{D} \otimes \mymat{I}_d) \myvec{v} - \myvec{v} (\mymat{A} \otimes \mymat{I}_d) \myvec{v} \\
+    \myvec{v}^\intercal (\mymat{L} \otimes \mymat{I}_d) \myvec{v} &= \myvec{v}^\intercal (\mymat{D} \otimes \mymat{I}_d) \myvec{v} - \myvec{v}^\intercal (\mymat{A} \otimes \mymat{I}_d) \myvec{v} \\
     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks D_{rs} v_r^\intercal v_s - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
     &= \sum_{r=1}^\ntasks D_{rr} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s)  \\
-    &= \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace A_{rs}  (v_r^\intercal v_r - v_r^\intercal v_s) + A_{sr} (v_s^\intercal v_s - v_s^\intercal v_r) \rbrace \\
+    &= \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace A_{rs}  (v_r^\intercal v_r - v_r^\intercal v_s) + A_{sr} (v_s^\intercal v_s - v_s^\intercal v_r) \rbrace \\
     &=
-    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  (v_r^\intercal v_r + v_s^\intercal v_s - 2v_r^\intercal v_s) \rbrace \\
+    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  (v_r^\intercal v_r + v_s^\intercal v_s - 2v_r^\intercal v_s) \rbrace \\
     &=
-    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
+    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
     &=
     \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
     &=
      \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace A_{rs}  \norm{v_r - v_s}^2 \rbrace .\\
 \end{align*}
-where
-$$ \myvec{v} = \sum_{t=1}^T e_r \otimes v_r ,$$
-and $e_1, \ldots, e_\ntasks$ are the canonical base of $\reals^\ntasks$.
 Then, we can write a general primal problem with Laplacian regularization using kernels as 
 \begin{equation}
     \begin{aligned}
-        &R(\myvec{v}) = C \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{v}}{e_r \otimes \phi(x_i^r)}) + \left(  \myvec{v}^\intercal ((\nu L + I_\ntasks ) \otimes I) \myvec{v} \right),\\
+        &R(\myvec{v}) = C \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{v}}{e_r \otimes \phi(x_i^r)}) + \left(  \myvec{v}^\intercal ((\nu L + I_\ntasks ) \otimes I) \myvec{v} \right).\\
     \end{aligned}
 \end{equation}
 As shown in Lemma~\ref{lemma:regproblems_kernel}, this is equivalent to solving a dual problem where the kernel function is
 \begin{equation}
     \nonumber
-    \widetilde{k}(x_i^r, x_j^s) = \left( \nu \fm{L} + \fm{I}_\ntasks \right)^{-1}_{rs} k(x_i^r, x_j^s)
+    \widetilde{k}(x_i^r, x_j^s) = \left( \nu \fm{L} + \fm{I}_\ntasks \right)^{-1}_{rs} k(x_i^r, x_j^s) ,
 \end{equation}
 where $k(\cdot, \cdot)$ is the reproducing kernel induced by the implicit transformation $\phi(\cdot)$.
-One example, using the L1-SVM would be the primal problem shown in~\eqref{eq:linear_gl_primal} where an implicit transformation $\phi(\cdot)$ is used.
+One example using the L1-SVM would be the primal problem shown in~\eqref{eq:linear_gl_primal} where an implicit transformation $\phi(\cdot)$ is used.
 The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:linear_gl_dual}, but where the kernel matrix $\widetilde{Q}$ is defined using the kernel function~\eqref{eq:kernelfun_gl}.
 % If $A$ is symmetric, that is $A_{rs} = A_{sr}$, then
 % \begin{align*}
@@ -210,24 +231,24 @@ In~\cite{RuizAD21_hais} we proposed a convex formulation for the Graph Laplacian
 That is, the models for each task are
 \begin{equation}
     \nonumber
-    h_r(x) = \lambda_r w \cdot \phi(x) + \lambda_r v_r \cdot \psi(x) ,
+    h_r({\cdot}) = \lambda_r \left\lbrace \dotp{w}{\phi(\cdot)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\psi(\cdot)} + d_r \right\rbrace
 \end{equation}
-where $\phi(\cdot)$ and $\psi(\cdot)$ are the implicit transformations for the common part and task-specific parts, and can be possibly distinct, trying to capture different properties of the data.
+where $\phi(\cdot)$ and $\psi(\cdot)$ are the implicit transformations for the common part and task-specific parts, and can be possibly distinct to try to capture different properties of the data.
 That is, $\phi: \Xspace \to \hilbertspace_\phi$ and $\psi: \Xspace \to \hilbertspace_\psi$, where $\hilbertspace_\phi$ and $\hilbertspace_\psi$ are RKHS's with reproducing kernels $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$, respectively.
-Unlike the model definition for Convex \acrshort{mtl} in~\eqref{eq:convexmtl_modeldef}, where each task-specific part can use a different Hilbert space, here all tasks must use the same two transformations. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same space.
-Again, as with the Convex \acrshort{mtl} approach, parameters $\lambda_r \in [0, 1]$ define how relevant the common part for each task. When $\lambda_r=1$, only the common part is present, while $\lambda_r=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
+Unlike the model definition for Convex \acrshort{mtl} in~\eqref{eq:convexmtl_modeldef}, where each task-specific part can use a different Hilbert space, here all tasks must use the same two transformations: $\phi$ and $\psi$. The common $\phi(\cdot)$ must be obviously equal for all tasks, but also the specific one $\psi(\cdot)$ must be the same for all tasks because to impose a Laplacian regularization, all the parameters $v_r$ have to be elements from the same \acrshort{rkhs}.
+Again, as with the convex \acrshort{mtl} approach, the parameters $\lambda_r \in [0, 1]$ define how relevant is the common part for each task. When $\lambda_r=1$, only the common part is present, while $\lambda_r=0$ results in task-specific models that, now, are coupled through the Laplacian regularization.
 
 \subsection{General Result for Kernel Methods}
 %\paragraph*{A general result for Convex Graph Laplacian \acrshort{mtl}.\\}
-In general, we can use the Representer Theorem with the tensor kernels defined in Chapter~\ref{Chapter3} to find the result of kernel problems using this approach.
-Using the same approach used in Section~\ref{sec:ch3_mtl_kernelmethods}, with ${e_1, \ldots, e_\ntasks}$ being an orthonormal basis of $\reals^\ntasks$, we define
+In general, we can apply the Representer Theorem with the tensor kernels defined in Chapter~\ref{Chapter3} to find the solution of regularized risk minimization problems using kernels.
+With the same approach as the one used in Section~\ref{sec:ch3_mtl_kernelmethods}, with ${e_1, \ldots, e_\ntasks}$ being the canonical basis of $\reals^\ntasks$, we define
 \begin{equation}
     \label{eq:vtensor_def}
     \fv{v} = \sum_{t=1}^T e_r \otimes v_r \in \reals^\ntasks \otimes \hilbertspace_\psi,
 \end{equation}
 such that
 $\dotp{\fv{v}}{e_r \otimes \psi(x_i^r)} = \dotp{v_r}{\psi(x_i^r)}$.
-If we consider then the product space $\hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)$, where the norm of $(w, \fv{v})$ is 
+Consider then the product space of the \acrshort{rkhs} $\hilbertspace_\phi$ and the tensor product of spaces $(\reals^\ntasks \otimes \hilbertspace_\psi)$: $\hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)$. In this space, the norm of $(w, \fv{v}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)$ is 
 $$\dotp{(w, \fv{v})}{(w, \fv{v})} =  \dotp{w}{w} + \dotp{\fv{v}}{\fv{v}} = \norm{w}^2 + \norm{\fv{v}^2},$$
 then the general kernelized problem for convex \acrshort{gl} \acrshort{mtl} can be expressed as
 \begin{equation}\label{eq:cvxgl_general_problem_tensor}
@@ -236,22 +257,28 @@ then the general kernelized problem for convex \acrshort{gl} \acrshort{mtl} can 
     &\quad + \dotp{(w, \fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, \fv{v})}  ,
     \end{aligned}
 \end{equation}
-where $\ell$ is a loss function, $\rkhs_\phi$, in our case it is the identity operator in $\rkhs_\phi$, and $E$ is a symmetric, positive definite operator in $\reals^\ntasks$ in our case, $E = ((\nu \fm{L} + I))$, with $L$ being a \acrshort{gl} matrix.
+where $\ell$ is a loss function, $I_{\rkhs_\phi}$, in our case it is the identity operator in $\rkhs_\phi$, and $E$ is a symmetric, positive definite operator in $\reals^\ntasks$, in our case $E = ((\nu \fm{L} + I))$, with $L$ being a \acrshort{gl} matrix.
 % With both $A$ and $E$ are positive definite, the function $ \dotp{(w, \fv{v})}{(A \times E) (w, \fv{v})}$ is strictly increasing in $\norm{(w, \fv{v})}$; then, we can apply the Representer Theorem to problem~\eqref{eq:cvxgl_general_problem_tensor}, that is, the solutions of this problem can be expressed as
 % \begin{equation}
 %     \nonumber
 %     (w^*, \fv{v}^*) = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r y_i^r (\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))
 % \end{equation}
-Using a modification of Lemma~\ref{lemma:regproblems_kernel}, we can state the following one 
+Using a modification of Lemma~\ref{lemma:regproblems_kernel}, we can state the following result 
 \begin{lemma}\label{lemma:regproblems_kernel_convex}
-    The predictions $\dotp{(w^*, \fv{v}^*)}{(\phi(x_i^r), e_r \otimes \psi(x_i^r))}$ of the solution $(w^*, \fv{v}^*)$ from the Multi-Task optimization problem~\eqref{eq:cvxgl_general_problem_tensor} can be obtained solving the problem
-    \begin{equation}
-        \label{eq:cvxgl_general_problem_tensor_alt}
+    The predictions $\dotp{(w^*, \fv{v}^*)}{(\phi(x_i^r), e_r \otimes \psi(x_i^r))}$ of the solution $(w^*, \fv{v}^*)$ from the Multi-Task optimization problem~\eqref{eq:cvxgl_general_problem_tensor} can be obtained solving the minimization problem
+    % \begin{equation}
+    %     \label{eq:cvxgl_general_problem_tensor_alt}
+    %     \begin{aligned}
+    %         &S((w, \fv{u})) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{(w, \fv{u})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (B_r \otimes \psi(x_i^r)))}) + \mu \left( \dotp{w}{w} + \dotp{\fv{u}}{\fv{u}}\right),\\
+    %     \end{aligned}
+    % \end{equation}
+    \begin{equation}\label{eq:cvxgl_general_problem_tensor_alt}
         \begin{aligned}
-            &S((w, \fv{u})) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{(w, \fv{u})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (B_r \otimes \psi(x_i^r)))}) + \mu \left( \dotp{w}{w} + \dotp{\fv{u}}{\fv{u}}\right),\\
+        \argmin_{(w, \fv{u}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi)} S((w, \fv{u})) &= \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{(w, \fv{u})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (B_r \otimes \psi(x_i^r)))}) \\
+        &\quad + \mu \left( \dotp{w}{w} + \dotp{\fv{u}}{\fv{u}}\right)  ,
         \end{aligned}
     \end{equation}
-    where $w \in \rkhs_\phi$ and $\fv{u} \in \reals^p \otimes \hilbertspace_\psi$ with $p \geq \ntasks$ and $B_r$ are the columns of a full rank matrix $B \in \reals^{p \times \ntasks}$ such that $\mymat{E}^{-1} = \mymat{B}^\intercal \mymat{B}$.
+    where $w \in \rkhs_\phi$ and $\fv{u} \in \reals^p \otimes \hilbertspace_\psi$ with $p \geq \ntasks$, and $B_r$ are the columns of a full rank matrix $B \in \reals^{p \times \ntasks}$ such that $\mymat{E}^{-1} = \mymat{B}^\intercal \mymat{B}$.
 \end{lemma}
 \begin{proof}
 Again, since ${E} \in \reals^{\ntasks \times \ntasks}$ is positive definite, we can find $B \in \reals^{p \times \ntasks}, p \geq \ntasks$ and $\rank{B} = \ntasks$ such that $E^{-1} = 
@@ -261,11 +288,12 @@ Again, since ${E} \in \reals^{\ntasks \times \ntasks}$ is positive definite, we 
 % For the rest of the analysis we will consider a positive definite matrix $\mymat{E}$ but the results are also valid for positive semidefinite matrices.
 % 
 then,  
-$$ E^{-1} \otimes I = (B^\intercal B) \otimes I = (B^\intercal \otimes I_{\rkhs_\psi}) (B \otimes I),$$
+$$ E^{-1} \otimes I_{\rkhs_\psi} = (B^\intercal B) \otimes I_{\rkhs_\psi} = (B^\intercal \otimes I_{\rkhs_\psi}) (B \otimes I_{\rkhs_\psi}).$$
 %
-Consider the change of variable $\fv{v} = (B^\intercal \otimes I_{\rkhs_\psi}) \fv{u}$, where $\fv{u} \in \reals^p \otimes \hilbertspace$, which can always be done because 
+Consider the change of variable $\fv{v} = (B^\intercal \otimes I_{\rkhs_\psi}) \fv{u}$, where $\fv{u} \in \reals^p \otimes \hilbertspace$. Then we can write
+%, which can always be done because
 %the columns of $B$ generates $\reals^T$, so we can always find $\hat{w}$ such that $e_r = B w$   .The condition of full rank for $B$ is necessary in this step.
-$B$ is full rank, then
+% $B$ is full rank; then
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -273,42 +301,51 @@ $B$ is full rank, then
         &\quad + \mu \dotp{(w, (B^\intercal \otimes I_{\rkhs_\psi})\fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, (B^\intercal \otimes I_{\rkhs_\psi}) \fv{v}) } \\
     \end{aligned}
 \end{equation}
-This is equivalent to problem~\eqref{eq:cvxgl_general_problem_tensor_alt}, where the regularizer is increasing in $\norm{(w, \fv{u})}^2$, so can apply the Representer theorem, which states that the minimizer of $S(w, \fv{u})$ has the form
+This is equivalent to problem~\eqref{eq:cvxgl_general_problem_tensor_alt}, where the regularizer is increasing in $\norm{(w, \fv{u})}^2$, so can apply the Representer theorem, which states that the minimizer of any empirical regularized risk 
+\begin{equation}
+    \nonumber
+    \sum_{i=1}^\nsamples \ell(f(x_i), y_i) + g(\norm{f}),
+\end{equation}
+where $g$ is a strictly increasing function, 
+admits a representation of the form $f(\cdot) = \sum_{i=1}^\nsamples \alpha_i k(\cdot, x_i)$.
+Thus, the minimizer of $S(w, \fv{u})$ in~\eqref{eq:cvxgl_general_problem_tensor_alt} has the form
 \begin{equation}
     \label{eq:repr_th_convexgl}
     %\label{eq:representer_tensor}
     (w^*, \fv{u}^*) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (\lambda_r \phi(x_i^r), (1-\lambda_r) (B_r \otimes \psi(x_i^r))) ,
 \end{equation}
-Using the correspondence between $\fv{u}^*$ and $\fv{v}^*$, 
+Applying the correspondence between $\fv{u}^*$ and $\fv{v}^*$, 
 \begin{equation}\nonumber
     \begin{aligned}
         (w^*, \fv{v}^*) 
          &= (w^*, (B^\intercal \otimes I_{\rkhs_\psi}) \fv{u}^*) \\
-         &=  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (\lambda_r \phi(x_i^r), (1 - \lambda_r)\vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \psi(x_i^r)).
+         &=  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (\lambda_r \phi(x_i^r), (1 - \lambda_r)\vect{\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r}} \otimes \psi(x_i^r)),
     \end{aligned}
 \end{equation}
-Then, we can recover the predictions corresponding to the solutions $(w^*, \fv{v}^*)$ as
+where $\vect{a_1, \ldots, a_l}$ is the vector whose elements are the scalars $a_1, \ldots, a_l$.  
+Now, we can recover the predictions corresponding to the solutions $(w^*, \fv{v}^*)$ as
 \begin{equation}
     \nonumber
     \begin{aligned}
         &\dotp{(w^*, \fv{v}^*)}{(\lambda_t \phi(\hat{x}^t), (1 - \lambda_t) e_t \otimes \psi(\hat{x}^t))} \\
-        &= \dotp{\sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (w, \vect{(\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r})} \otimes \phi(x_i^r))}{(\phi(\hat{x}^t), e_t \otimes \psi(\hat{x}^t))} \\
+        &= \dotp{\sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r (w, \vect{\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r}} \otimes \phi(x_i^r))}{(\phi(\hat{x}^t), e_t \otimes \psi(\hat{x}^t))} \\
         &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r  (\lambda_r \lambda_t \dotp{\phi(x_i^r)}{\phi(x_i^r)} + (1-\lambda_r) (1 - \lambda_t) \dotp{B_s}{B_r} \dotp{\psi(x_i^r)}{\psi(\hat{x}^t)}) \\
         &= \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r  (\lambda_r \lambda_t \dotp{\phi(x_i^r)}{\phi(x_i^r)} + (1-\lambda_r) (1 - \lambda_t) E_{rs}^{-1} \dotp{\psi(x_i^r)}{\psi(\hat{x}^t)}) .
     \end{aligned}
 \end{equation}
 \end{proof}
-As with Lemma~\ref{lemma:regproblems_kernel}, the Multi-Task problem~\ref{eq:cvxgl_general_problem_tensor} can be expressed as a Single-Task problem with the Multi-Task kernel function
+As with Lemma~\ref{lemma:regproblems_kernel}, this is a result that leads to a way of finding the solutions easier because it shows that the Multi-Task problem~\eqref{eq:cvxgl_general_problem_tensor} can be expressed as a \acrshort{ctl} problem with the Multi-Task kernel function
 \begin{equation}
     \label{eq:dual_cvxgl_kernel_function}
-    \widehat{\widetilde{k}}(x_i^r, x_j^s) = \lambda_r \lambda_s k_\phi(x_i^r, x_j^s) + (1 - \lambda_r) (1 - \lambda_s) (\nu \fm{L} + \fm{I}_\ntasks)^{-1}_{rs} k_\psi(x_i^r, x_j^s) ,
+    \bar{{k}}(x_i^r, x_j^s) = \lambda_r \lambda_s k_\phi(x_i^r, x_j^s) + (1 - \lambda_r) (1 - \lambda_s) (\nu \fm{L} + \fm{I}_\ntasks)^{-1}_{rs} k_\psi(x_i^r, x_j^s) ,
 \end{equation}
-where $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$ are the reproducing kernels corresponding to transformations $\phi$ and $\psi$, respectively.
+where $k_\phi(\cdot, \cdot)$ and $k_\psi(\cdot, \cdot)$ are the reproducing kernels corresponding to transformations $\phi$ and $\psi$, respectively. Thus, we can use standard \acrshort{ctl} kernel methods with a modified kernel to solve \acrshort{mtl} problems.
 %
+We derive next the convex \acrshort{gl} \acrshort{mtl} formulations for the L1, L2 and LS-\acrshort{svms}, illustrating with specific methods how, by applying this result, the \acrshort{mtl} problems can be solved using standard techniques.
 
 
 \subsection{Convex Graph Laplacian L1-SVM}
-Anyway, this result is general for any kernel method, but it is also interesting to see how this procedure can be applied in the specific cases of L1, L2 and LS-\acrshort{svms}.
+% Anyway, this result is general for any kernel method, but it is also interesting to see how this procedure can be applied in the specific cases of L1, L2 and LS-\acrshort{svms}.
 %
 The primal problem for the linear L1-\acrshort{svm} using this approach, that we have presented in~\citep*{RuizAD21_hais}, is the following one
 %
@@ -322,7 +359,7 @@ The primal problem for the linear L1-\acrshort{svm} using this approach, that we
   \end{aligned}
 \end{equation}
 %
-Note that with $\nu=0$, this problem is equivalent to the one shown in~\eqref{eq:svmmtl_primal_convex}.
+Note that with $\nu=0$, this problem is equivalent to our proposed convex \acrshort{mtl} formulation shown in~\eqref{eq:svmmtl_primal_convex}.
 %
 The extension to the kernel case requires using a different formulation, that is
 \begin{equation}\label{eq:primal_cvxgl_l1_kernel}
@@ -335,7 +372,7 @@ The extension to the kernel case requires using a different formulation, that is
     \end{aligned}
   \end{equation}
 %
-Although the result from Lemma~\ref{lemma:regproblems_kernel_convex} can be applied for this problem, for illustration purposes the whole procedure is shown for this particular case.
+Although the result from Lemma~\ref{lemma:regproblems_kernel_convex} can be applied for this problem, for illustration purposes we will develop the entire procedure for this L1-SVM case.
 %
 The Lagrangian corresponding to~\eqref{eq:primal_cvxgl_l1_kernel} is
 \begin{equation}\label{eq:lagr_cvxgl_l1_kernel}
@@ -347,7 +384,7 @@ The Lagrangian corresponding to~\eqref{eq:primal_cvxgl_l1_kernel} is
 \end{aligned}
 \end{equation}
 where $\alpha_i^r, \beta_i^r \geq 0$.
-Taking derivatives
+Taking derivatives and making them $0$, we get
 % \begin{align*}
 %     & \frac{\partial \mathcal{L}}{\partial {w}} = 0 \implies {w} = \sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}  \; , \\
 %     & \frac{\partial \mathcal{L}}{\partial {v}_r} = 0 \implies \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}  \; , \\
@@ -360,17 +397,12 @@ Taking derivatives
     \grad_{{b}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_cvxgl_l1} \\
     \grad_{\xi_i^r} \lagr = 0 &\implies C - \alpha_i^r - \beta_i^r = 0 . \label{eq:xi_feas_cvxgl_l1}
 \end{align}
-With 
+Here we have 
 \begin{equation}
     \label{eq:expression_E}
-    E =  (\fm{I}_\ntasks + \nu \fm{L}),
+    E =  (\fm{I}_\ntasks + \nu \fm{L}),\; E_\otimes =  \left(E \otimes I_\rkhs \right).
 \end{equation}
-and 
-\begin{equation}
-    \label{eq:expression_E_kron}
-    E_\otimes =  \left(E \otimes I_\rkhs \right),
-\end{equation}
-and using these results to substitute in the Lagrangian, the result is
+Substituting these results in the Lagrangian, we get
 \begin{equation}\nonumber
     \begin{aligned}
             \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
@@ -404,10 +436,10 @@ Here, we use the matrix
 \end{equation} 
 $\fm{I}_{\nsamples}$ is the $\nsamples \times \nsamples$ identity matrix, with $\nsamples = \sum_{r=1}^\ntasks \npertask_r,$
 %
-$Q$ is the common, standard, kernel matrix, and $\widetilde{Q}$ is the kernel matrix with the \acrshort{gl} information. We can define the kernel matrix
+$Q$ is the common, standard, kernel matrix, and $\widetilde{Q}$ is the kernel matrix with the \acrshort{gl} information. We can define now the kernel matrix
 \begin{equation}
     \label{eq:dual_cvxgl_kernel_matrix}
-    \widehat{\widetilde{\fm{Q}}} = \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{\fm{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right),
+    \bar{{\fm{Q}}} = \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{\fm{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right),
 \end{equation}
 as the matrix that is generated using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
 
@@ -431,14 +463,14 @@ and the corresponding Lagrangian is
     \end{aligned}
 \end{equation}
 where $\alpha_i^r \geq 0$.
-The gradients with respect to the primal variables are
+Computing the gradients with respect to the primal variables and making them $0$, we obtain
 \begin{align}
     \grad_{{w}} \lagr = 0  &\implies \optim{{w}} = \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace , \label{eq:common_repr_cvxgl_l2} \\
     \grad_{\fv{v}} \lagr = 0 &\implies  \left((\fm{I}_\ntasks + \nu \fm{L}) \otimes I_\rkhs \right) \fv{v} = \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}, \label{eq:specific_repr_cvxgl_l2} \\
     \grad_{{b}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_cvxgl_l2} \\
     \grad_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_cvxgl_l2}
 \end{align}
-Using $E_\otimes$ as defined in~\eqref{eq:expression_E_kron} and substituting in the Lagrangian, we get
+With $E_\otimes$ as defined in~\eqref{eq:expression_E} and using~\eqref{eq:common_repr_cvxgl_l2},~\eqref{eq:specific_repr_cvxgl_l2} to substitute $w$ and $\fv{v}$ in the Lagrangian, we get
 \begin{equation}\nonumber
     \begin{aligned}
             \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
@@ -458,7 +490,7 @@ Using $E_\otimes$ as defined in~\eqref{eq:expression_E_kron} and substituting in
             % &\quad -\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r .
     \end{aligned}
 \end{equation}
-The dual problem for the L2-SVM based formulation is then 
+Thus, applying~\eqref{eq:specific_eqconstr_cvxgl_l2} and~\eqref{eq:xi_feas_cvxgl_l2}, the dual problem for the L2-SVM based formulation is 
 \begin{equation}\label{eq:dual_cvxgl_l2_kernel}
     \begin{aligned}
         & \argmin_{\fv{\alpha}} 
@@ -469,7 +501,7 @@ The dual problem for the L2-SVM based formulation is then
         \end{aligned}
 \end{equation}
 Here, again we use the matrix $\Lambda$ defined in~\eqref{eq:lambdamatrix_def_chapgl}.
-Now, there are no box constraints, but an additional diagonal term that can be interpreted as a soft constraint for the dual coefficients $\alpha_i^r$.
+Now, there are no box constraints, but an additional diagonal term appears, which can be interpreted as a soft constraint for the dual coefficients $\alpha_i^r$.
 
 
 
@@ -502,7 +534,7 @@ The KKT conditions for this problem are then
     \grad_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 , \label{eq:xi_feas_cvxgl_ls} \\
     \grad_{\alpha_i^r} \lagr = 0 &\implies y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) + \xi_{i}^r = p_i^r . \label{eq:alpha_feas_cvxgl_ls}
 \end{align}
-Substituting in~\eqref{eq:alpha_feas_cvxgl_ls}, with $E_\otimes$ as defined in~\eqref{eq:expression_E_kron}, we get
+Applying~\eqref{eq:common_repr_cvxgl_ls},~\eqref{eq:specific_repr_cvxgl_ls} and~\eqref{eq:xi_feas_cvxgl_ls} to substitute $w, \fv{v}$ and ${\xi_i^r}$ in~\eqref{eq:alpha_feas_cvxgl_ls}, with $E_\otimes$ as defined in~\eqref{eq:expression_E}, we get
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -511,7 +543,7 @@ Substituting in~\eqref{eq:alpha_feas_cvxgl_ls}, with $E_\otimes$ as defined in~\
         &\quad + (1 - \lambda_r) \dotp{\fm{E_\otimes}^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_i^s y_i^s (e_s \otimes \psi({x}_i^s))}}{y_{i}^r (e_r \otimes \psi({x}_i^r))}   + b_r + \frac{\alpha_i^r}{C} = p_i^r .\\
     \end{aligned}
 \end{equation}
-For each coefficient $\alpha_i^r$ we get an equality like this one, which, all together, form a system of equations that can be expressed as\begin{equation}\label{eq:dual_cvxgl_ls_kernel}
+For each coefficient $\alpha_i^r$ we get an equality like this one, which, all together and alongside~\eqref{eq:specific_eqconstr_cvxgl_ls} form a system of equations that can be expressed as\begin{equation}\label{eq:dual_cvxgl_ls_kernel}
     \begin{aligned}
     \left[
     \begin{array}{c|c}
@@ -534,7 +566,9 @@ For each coefficient $\alpha_i^r$ we get an equality like this one, which, all t
     \end{aligned}
 \end{equation}
 Again, $\Lambda$ is the matrix defined in~\eqref{eq:lambdamatrix_def_chapgl},
-and we have the kernel matrix that is defined using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
+and we have the kernel matrix 
+$$ \bar{Q} = \left( \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{\widetilde{Q}} \left(\fm{I}_{\nsamples} - \Lambda \right) \right)$$
+that is defined using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
 
 %\subsection{Experiments}
 
@@ -557,9 +591,9 @@ To explain our data-driven procedure for selecting the adjacency weights, first 
     \item The rows of $A$ add up to 1. 
 \end{itemize} 
 The first one is a necessary condition to express the regularizer of~\eqref{eq:gl_regularization} using the Laplacian matrix $L$.
-The second and third requirements offer a better interpretability of the matrix $A$, since we can view each row as a probability distribution. 
+The second requirement is a natural one, and the third is meant to offer a better interpretability of the matrix $A$, since we can view each row as a probability distribution. 
 %
-Then, we can look at the entropy of the rows to study how connected each task is to the rest. That is, let $\frow{a}^r$ be the row for task $r$, its entropy can be computed as
+Then, we can interpret the entropy of the rows to study how sparse or concentrated are its connection with other tasks. That is, let $\frow{a}^r$ be the row for task $r$, its entropy can be computed as
 \begin{equation}
     \nonumber
     H(\frow{a}^r) = -\sum_{s=1}^\ntasks a^r_s \log(a^r_s).
@@ -570,11 +604,11 @@ If the weight at $a^r_r = A_{rr}$ is $1$ and the rest is $0$, then the $r$-th ta
 
 With these considerations, there are two trivial options when choosing the adjacency matrix: using a diagonal matrix $A$, i.e. $A = \fm{I}_\ntasks$, where there are no connections between different tasks and the entropy of the rows is minimal, and using an agnostic view, with the constant matrix $A = \frac{1}{\ntasks} \fv{1}_\ntasks \fv{1}_\ntasks^\intercal$ where the degree of relation is the same among all tasks and the entropy of the rows is maximal.
 
-For a better understanding of these situation we look at the following simplified formulation for the convex \acrshort{gl} \acrshort{mtl} problem, 
+For a better understanding of these situations we look at the following simplified formulation for the convex \acrshort{gl} \acrshort{mtl} problem, 
 \begin{equation}\nonumber
     \begin{aligned}
     & \argmin_{\substack{v_1, \ldots, v_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\  w; }}
-    & &  C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r ({w} \cdot \phi({x}_i^r)) + (1 - \lambda_r) ({v}_r \cdot \psi({x}_i^r)) + b_r, y_i^r)}  \\
+    & &  C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r \dotp{w}{\phi({x}_i^r)} + (1 - \lambda_r) \dotp{{v}_r}{\psi({x}_i^r)} + b_r, y_i^r)}  \\
     & & &\quad + \nu \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 +  \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \norm{{w}}^2  .   \\
     \end{aligned}
   \end{equation} 
@@ -583,7 +617,7 @@ When we use the minimal entropy matrix $A = \fm{I}_\ntasks$, it is equivalent to
 \begin{equation}\nonumber
     \begin{aligned}
     & \argmin_{\substack{v_1, \ldots, v_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\  w; }}
-    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r ({w} \cdot \phi({x}_i^r)) + (1 - \lambda_r) ({v}_r \cdot \psi({x}_i^r)) + b_r, y_i^r)}  +  \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \norm{{w}}^2    } ,\\
+    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r \dotp{w}{\phi({x}_i^r)} + (1 - \lambda_r) \dotp{{v}_r}{\psi({x}_i^r)} + b_r, y_i^r)}  +  \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \norm{{w}}^2    } ,\\
     \end{aligned}
   \end{equation}
 which is a convex \acrshort{mtl} approach, without Laplacian information. Here, the task-specific models are completely independent, with no coupling between them.
@@ -591,51 +625,62 @@ In the case that we use the constant matrix $A = \frac{1}{\ntasks} \fv{1}_\ntask
 \begin{equation}\nonumber
     \begin{aligned}
     & \argmin_{\substack{v ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ w; }}
-    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r ({w} \cdot \phi({x}_i^r)) + (1 - \lambda_r) ({v} \cdot \psi({x}_i^r)) + b_r, y_i^r)}  + {T} \norm{{v}}^2 +  \norm{{w}}^2} \\
+    & & { C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r \dotp{w}{\phi({x}_i^r)} + (1 - \lambda_r) \dotp{{v}}{\psi({x}_i^r)} + b_r, y_i^r)}  + {T} \norm{{v}}^2 +  \norm{{w}}^2} \\
     \end{aligned}
   \end{equation}
-  where a convex combination of two common models is use. In the linear case, or when $\phi = \psi$, it is equivalent to using a \acrshort{ctl} approach, where a single common model for all tasks.
+  where a convex combination of two common models is use. In the linear case, or when $\phi = \psi$, it is equivalent to using a \acrshort{ctl} approach, where a single common model is used for all tasks.
 
-Between these two extremes of minimal and maximal entropy, there exists a whole range of matrices with intermediate entropy rows. Our goal is then to find an adjacency matrix $\fm{A}$ that reflects the underlying tasks relations and, therefore, helps to improve the learning process.
-
-
-\subsection{Algorithm and Analysis}
+Between these two extremes of minimal and maximal entropy, there exists an infinite range of matrices whose rows have intermediate entropy. Our goal is then to find an adjacency matrix $\fm{A}$ that reflects the underlying tasks relations and, therefore, helps to improve the learning process.
 %\paragraph*{Optimization Procedure.\\}
-To find such adjacency matrix, we rely on the distances computed between the task parameters, if two task parameters are close, those tasks should be strongly related. Consider the Laplacian term
+To find such adjacency matrix, we rely on the distances computed between the task parameters; if two task parameters are close, those tasks should be strongly related. Consider the Laplacian term
 $$  \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 ;$$
-then, the matrix that minimizes this quantity is the diagonal matrix $\fm{A}= \fm{I}_\ntasks$ with minimal entropy rows. The interpretation of this solution is that each task is isolated and the greater degree of connection is with itself; however, this is a trivial choice of matrix $A$, because it does not give any information about the underlying task relations. To avoid falling in the minimal entropy solution, the entropy of the rows is penalized.
-%
-The optimization problem to be solved is 
+then, the matrix that minimizes this quantity is the diagonal matrix $\fm{A}= \fm{I}_\ntasks$ with minimal entropy rows. The interpretation of this solution is that each task is isolated and the greater degree of connection is with itself; however, this is a trivial choice of matrix $A$, because it does not give any information about the underlying task relations. To avoid falling in the minimal entropy solution, the entropy of the rows is penalized by adding to the objective function the negative entropies of the rows of $\fm{A}$. Thus, the optimization problem to be solved is 
 \begin{equation}\label{eq:adapcvxgl_general_problem}
     \begin{aligned}
     & \argmin_{\substack{v_1, \ldots, v_\ntasks ; \\ \substack{b_1, \ldots, b_\ntasks } ; \\ w; \\  A \in {(\reals_{\geq 0})}^\ntasks \times {(\reals_{\geq 0})}^\ntasks,  \\ \fm{A} \fv{1}_\ntasks = \fv{1}_\ntasks}}
-    & &  C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r ({w} \cdot \phi({x}_i^r)) + (1 - \lambda_r) ({v}_r \cdot \psi({x}_i^r)) + b_r, y_i^r)}  \\
+    & &  C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r \dotp{w}{\phi({x}_i^r)} + (1 - \lambda_r) \dotp{{v}_r}{\psi({x}_i^r)} + b_r, y_i^r)}  \\
     & & &\quad + \frac{\nu}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \frac{1}{2}\norm{{w}}^2    \\
     & & &\quad- \mu \sum_{r=1}^\ntasks H(\fv{a}^r) . 
     \end{aligned}
   \end{equation} 
 Here, $\reals_{\geq 0}$ are the non-negative real numbers, and $(\reals_{\geq 0})^\ntasks \times {(\reals_{\geq 0})}^\ntasks$ are the $\ntasks \times \ntasks$ real matrices with non-negative entries. The condition $\fm{A} \fv{1}_\ntasks = \fv{1}_\ntasks$ is to enforce that the rows add up to $1$.
 The parameter $\mu$ regulates how much the entropy is penalized, that is, how close the solution for $A$ should be to the constant matrix.
-Using the tensor product formulation of~\eqref{eq:cvxgl_general_problem_tensor}, this problem is expressed as
+%
+Using the tensor product formulation of~\eqref{eq:cvxgl_general_problem_tensor}, this problem can expressed as
 \begin{equation}\label{eq:adapcvxgl_general_problem_tensor}
     \begin{aligned}
-    \argmin_{\substack{(w, \fv{v}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi) ; \\ A \in {(\reals_{\geq 0})}^\ntasks \times {(\reals_{\geq 0})}^\ntasks,  \\ \fm{A} \fv{1}_\ntasks = \fv{1}_\ntasks}} & \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \ell(y_i^r, (\dotp{(w, \fv{v})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))}))\\
+    \argmin_{\substack{(w, \fv{v}) \in \hilbertspace_\phi \times (\reals^\ntasks \otimes \hilbertspace_\psi) ; \\ A \in {(\reals_{\geq 0})}^\ntasks \times {(\reals_{\geq 0})}^\ntasks,  \\ \fm{A} \fv{1}_\ntasks = \fv{1}_\ntasks}} & \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \ell(y_i^r, \dotp{(w, \fv{v})}{(\lambda_r \phi(x_i^r), (1 - \lambda_r) (e_r \otimes \psi({x}_i^r)))})\\
     &\quad + \dotp{(w, \fv{v})}{(I_{\rkhs_\phi} \times (E \otimes I_{\rkhs_\psi})) (w, \fv{v})}  - \mu \sum_{r=1}^\ntasks H(\fv{a}^r),
     \end{aligned}
 \end{equation}
 where $E = (\nu L + I_\ntasks)$, $L = \Diag(\fm{A} \fv{1}_\ntasks) - \fm{A}$, and $\fv{v}$ has been defined in~\eqref{eq:vtensor_def}.
+
+\subsection{Algorithm and Analysis}
+To find the solution of the optimization problem~\eqref{eq:adapcvxgl_general_problem}, we will use a coordinated descent minimization algorithm: we first fix $A$ and find optimal values for $w, \fv{v}, \fv{b}$, then we fix $w, \fv{v}, \fv{b}$ and find the optimal matrix $A$.
 %
-When the matrix $A$ is fixed and we optimize in the task parameters $w, \fv{v}$, the optimization problem is~\eqref{eq:cvxgl_general_problem_tensor}; however, the dual problem is the one that is solved, and optimal dual coefficients $\fv{\alpha}^*$ are obtained. In the case of the L1-SVM-based model, problem~\eqref{eq:dual_cvxgl_l1_kernel} is used, while for the L2, and LS-SVM variants, we have~\eqref{eq:dual_cvxgl_l2_kernel} and~\eqref{eq:dual_cvxgl_ls_kernel}, respectively.
+Given a convex loss function $\lossf$, the optimization problem of~\eqref{eq:adapcvxgl_general_problem} is convex in the parameters $(w, \fv{v}, \fv{b})$ and in $A$, but not jointly convex in $(w, \fv{v}, \fm{A})$.
+Then, an iterated procedure where a coordinated optimization is done, as our proposal, ensures that a local minimum is found, albeit, not a global one.
 %
 
-When $w, \fv{v}$ are fixed and we want to find the optimal matrix $A$, the problem is
+More concretely, in the first step, we fix the matrix $A$ and find the optimal task parameters $w, \fv{v}, \fv{b}$ that are the solutions to the problem 
+\begin{equation}\label{eq:cvxgl_general_problem}
+    \begin{aligned}
+    & \argmin_{w, \fv{v}, \fv{b}}
+    & &  C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} {\lossf(\lambda_r \dotp{w}{\phi({x}_i^r)} + (1 - \lambda_r) \dotp{{v}_r}{\psi({x}_i^r)} + b_r, y_i^r)}  \\
+    & & &\quad + \frac{\nu}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \frac{1}{2}\norm{{w}}^2  . 
+    \end{aligned}
+\end{equation} 
+To solve this problem, its corresponding dual problem is actually minimized, and optimal dual coefficients $\fv{\alpha}^*$ are obtained. In the case of the L1-SVM-based model, problem~\eqref{eq:dual_cvxgl_l1_kernel} is used, while for the L2, and LS-SVM variants, we have~\eqref{eq:dual_cvxgl_l2_kernel} and~\eqref{eq:dual_cvxgl_ls_kernel}, respectively.
+%
+
+In the second step, we fix $w, \fv{v}$ and find the optimal matrix $A$ that is the solution to the problem
 \begin{equation}\label{eq:adapgl_optimA}
     \begin{aligned}
         \argmin_{\substack{A \in {(\reals_{\geq 0})}^\ntasks \times {(\reals_{\geq 0})}^\ntasks,  \\ \fm{A} \fv{1}_\ntasks = \fv{1}_\ntasks}}
         \frac{\nu}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} \norm{{v}_r - v_{s}}^2 - \mu \sum_{r=1}^\ntasks H(\fv{a}^r) . 
         \end{aligned}
 \end{equation}
-Here the entropy term seems unavoidable since without it the trivial solution would be $A_{rs} = \delta_{rs}$, the Dirac delta, which corresponds to the minimum-entropy solution $\fm{A} = \fm{I}_\ntasks$; however, using the entropy term different solutions for $A$ can be obtained.
+Here we see the role of the entropy term since without it the trivial solution would be $A_{rs} = \delta_{rs}$, the Dirac delta, which corresponds to the minimum-entropy solution $\fm{A} = \fm{I}_\ntasks$; however, using the entropy term, different solutions for $A$ can be obtained.
 %
 This is a separable problem for each row of $\fv{A}$ and
 by taking derivatives of the objective function in~\eqref{eq:adapgl_optimA}, we have
@@ -645,20 +690,9 @@ and setting it to zero we get that $A_{rs} \propto \exp{-\frac{\nu}{\mu} \norm{{
     A_{rs} = \frac{\exp{-\frac{\nu}{\mu} \norm{{v}_r - {v}_s}^2 } }{\sum_t \exp{-\frac{\nu}{\mu}  \norm{{v}_r - {v}_t}^2} } .
 \end{equation}
 
-%
-Starting from an agnostic point of view, with a fixed constant, maximal entropy matrix $A^0$, where all tasks share the same of degree of relation, we solve the problem shown~\eqref{eq:cvxgl_general_problem_tensor}, and obtain the optimal parameters $\fv{v}$. Then, we can compute the distances between each pair of parameters $v_r, v_s$, $r, s=1, \ldots, \ntasks$, and use these distances to obtain an adjacency matrix $A^1$ using~\eqref{eq:update_A}. 
-This procedure can be then repeated with the new adjacency matrix, until convergence of the objective function value or a maximum number of iterations is reached. That is, the algorithm consists on an iterated procedure where the following steps are repeated until convergence:
-\begin{itemize}
-    \item Solve the convex GL \acrshort{mtl} problem, as shown in~\eqref{eq:cvxgl_general_problem_tensor}, with fixed matrix $A$
-    \item Compute the distances between task parameters $v_r$
-    \item Update the matrix $A$ according to these distances using~\eqref{eq:update_A}
-\end{itemize}
-
-
 
 %\paragraph*{Distance Computation.\\}
-In our proposed algorithm, the steps for optimizing the task parameters $(w, \fv{v})$ and, given the distances $\norm{v_r - v_s}^2$, the adjacency matrix are detailed; however, it is still necessary to show how these distances can be computed when $\fv{v}_r$ are elements of the \acrshort{rkhs} $\hilbertspace_\psi$.
-
+In the second step of our proposed algorithm we need the distances $\norm{v_r - v_s}^2$ to define the problem~\eqref{eq:adapgl_optimA} and find the optimal adjacency; however, computing such distances when $\fv{v}_r$ are elements of the \acrshort{rkhs} $\hilbertspace_\psi$ is not trivial; next, we show how we can use the dual solution to get them.
 %
 Recall that the first step requires solving a dual problem, where optimal dual coefficients $\alpha^*$ are obtained. Then, using the result from~\eqref{eq:repr_th_convexgl}, we have that
 \begin{equation}
@@ -667,7 +701,7 @@ Recall that the first step requires solving a dual problem, where optimal dual c
 \end{equation}
 Then, since the distances can be expressed as
 $$ \norm{v_r - v_s}^2 = \dotp{v_r}{v_r} + \dotp{v_s}{v_s} - 2 \dotp{v_r}{v_s}, $$
-we are interested in computing the dot products $\dotp{v_r}{v_s}$ for $r, s=1, \ldots, \ntasks$. This inner products, using our formulation for $\fv{v}$ are 
+we are interested in computing the dot products $\dotp{v_r}{v_s}$ for $r, s=1, \ldots, \ntasks$. This inner products, using our formulation for $\fv{v}$, are 
 \begin{equation}
     \nonumber
     \dotp{v_r}{v_s} = \dotp{(e_r^\intercal \otimes I_\rkhs)\fv{v}}{(e_s^\intercal \otimes I_\rkhs)\fv{v}} ,
@@ -691,18 +725,18 @@ Then, using $E$ as defined in~\eqref{eq:expression_E}, the inner product is
         &= \sum_{t=1}^\ntasks \sum_{\tau=1}^\ntasks (1 - \lambda_t) (1 - \lambda_\tau) \sum_{i=1}^{\npertask_t}   \sum_{i=1}^{\npertask_t} \alpha_i^t y_i^t \alpha_i^\tau y_i^\tau \dotp{  \left( (E^{-1}_{rt} ) \otimes \psi(x_i^t) \right)}{ \left( (E^{-1}_{st} ) \otimes \psi(x_i^\tau) \right)},
     \end{aligned}
 \end{equation}
-which, using a matrix formulation can be expressed as
+which, using a matrix formulation, can be expressed as
 \begin{equation}\label{eq:dot_computation_matrix}
-     \dotp{v_r}{v_s} = \fv{\alpha}^\intercal \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{\widetilde{\fm{Q}^{rs}}} \left(\fm{I}_{\nsamples} - \Lambda \right) \fv{\alpha} ,
+     \dotp{v_r}{v_s} = \fv{\alpha}^\intercal \left(\fm{I}_{\nsamples} - \Lambda \right) \widetilde{{\fm{Q}^{rs}}} \left(\fm{I}_{\nsamples} - \Lambda \right) \fv{\alpha} ,
 \end{equation}
-where $\widetilde{\widetilde{\fm{Q}^{rs}}}$ is the kernel matrix computed using the kernel function
+where $\widetilde{{\fm{Q}^{rs}}}$ is the kernel matrix computed using the kernel function
 \begin{equation}
     \label{eq:dot_computation_kernel}
-    \widetilde{\widetilde{k^{rs}}}(x_i^t, x_j^\tau) = (\fm{I}_\ntasks + \nu \fm{L})^{-1}_{rt} (\fm{I}_\ntasks + \nu \fm{L})^{-1}_{s\tau} k_\psi(x_i^t, x_j^\tau) .
+    \widetilde{{k^{rs}}}(x_i^t, x_j^\tau) = (\fm{I}_\ntasks + \nu \fm{L})^{-1}_{rt} (\fm{I}_\ntasks + \nu \fm{L})^{-1}_{s\tau} k_\psi(x_i^t, x_j^\tau) .
 \end{equation}
 That is, the distances are computed as
 \begin{equation}\label{eq:distance_computation_matrix}
-    \norm{v_r - v_s}^2 = \fv{\alpha}^\intercal \left(\fm{I}_{\nsamples} - \Lambda \right) (\widetilde{\widetilde{\fm{Q}^{rr}}} + \widetilde{\widetilde{\fm{Q}^{ss}}} - 2\widetilde{\widetilde{\fm{Q}^{rs}}}) \left(\fm{I}_{\nsamples} - \Lambda \right) \fv{\alpha}.
+    \norm{v_r - v_s}^2 = \fv{\alpha}^\intercal \left(\fm{I}_{\nsamples} - \Lambda \right) (\widetilde{{\fm{Q}^{rr}}} + \widetilde{{\fm{Q}^{ss}}} - 2\widetilde{{\fm{Q}^{rs}}}) \left(\fm{I}_{\nsamples} - \Lambda \right) \fv{\alpha}.
 \end{equation}
 
 
@@ -735,17 +769,44 @@ That is, the distances are computed as
     \caption{Adaptive \acrshort{gl} algorithm.}
     \label{alg:adapgl}
 \end{algorithm}
-A comment about the convergence and computational cost of the proposed algorithm, depicted in Algorithm~\ref{alg:adapgl}, is necessary.
-Given a convex loss function $\lossf$, the optimization problem of~\eqref{eq:adapcvxgl_general_problem_tensor} is convex in the parameters $(w, \fv{v})$ and in $A$, but not jointly convex in $(w, \fv{v}, \fm{A})$.
-Then, an iterated procedure where a coordinated optimization is done, as our proposal, ensures that a local minimum is found, albeit, not a global one.
+
+
+
+%
+Observe that, at each iteration, the inverse of $(I_\ntasks + \nu L)$ is needed for the definition of the dual problem, and also for the distance computations.
+Thus, we start from an agnostic point of view, with a fixed constant, maximal entropy constant matrix $A^0 = \frac{1}{T} \fv{1}_\ntasks \fv{1}_\ntasks^\intercal$, where all tasks share the same of degree of relation.
+First, we compute the inverse of the matrix $(I_\ntasks + \nu L^0)$, where $L^\tau$ is the Laplacian matrix corresponding to the adjacency matrix $A^\tau$.
+Then, we find the solutions the problem shown~\eqref{eq:cvxgl_general_problem} by getting the corresponding optimal dual variables $\fv{\alpha}^*$, corresponding to optimal primal variables $w, \fv{v}, \fv{b}$. 
+Finally, we can compute the distances between each pair of parameters $v_r, v_s$, $r, s=1, \ldots, \ntasks$, and use these distances to obtain an adjacency matrix $A^1$ using~\eqref{eq:update_A}. 
+
+This procedure can be then repeated with the new adjacency matrix, until convergence of the value of the objective function in~\eqref{eq:adapcvxgl_general_problem} or a maximum number of iterations is reached. That is, the algorithm, depicted in Algorithm~\ref{alg:adapgl}, consists on an iterated procedure where the following steps are repeated until convergence:
+\begin{itemize}
+    \item Step 0: invert the the matrix $(I_\ntasks + \nu L)$.
+    \item Step 1: minimize the dual problem to obtain $\alpha^*$.
+    \item Step 2: compute the distances $\norm{v_r - v_s}^2$ between task parameters.
+    \item Step 3: update the adjacency matrix $A$ using~\eqref{eq:update_A}.
+\end{itemize}
+% \begin{itemize}
+%     \item Solve the convex GL \acrshort{mtl} problem, as shown in~\eqref{eq:cvxgl_general_problem_tensor}, with fixed matrix $A$
+%     \item Compute the distances between task parameters $v_r$
+%     \item Update the matrix $A$ according to these distances using~\eqref{eq:update_A}
+% \end{itemize}
+
 
 To study the computational cost of our algorithm we consider the cost of each step, where, for a simpler formulation, we will use $\nsamples = \sum_{r=1}^\ntasks \npertask_r$.
-At each iteration we need to perform three steps: solving a dual problem, computing the distances, updating the adjacency matrix $A$; and also the inverse of the $\ntasks \times \ntasks$ Laplacian matrix, which is used in the first and second step, is needed. The inversion of the Laplacian matrix has a cost of $C_0 = \ntasks^3$.
-The first step, where the dual problem is solved, has the standard cost corresponding to these SVM variants, which all have a cost $C_1 = O(\nsamples^{2+\epsilon})$ such that $O(\nsamples^2) \leq C_1 \leq O(\nsamples^3)$.
-The second step, the distances computation one, involves the product of $\ntasks \times \ntasks$ inner products $\dotp{v_r}{v_s}$ shown in~\eqref{eq:dot_computation_matrix}, each with a cost $\nsamples_{\text{sv}}^2$ with $N_{\text{sv}}$ being the number of support vectors; then, the cost of the second step is $C_2 = O(\ntasks^2 N_\text{sv}^2)$. Finally, the third step, involving the update of the adjacency matrix $A$, needs the computation of the $\ntasks \times \ntasks$ elements of $A$ using equation~\eqref{eq:update_A}, which has then a total cost of $C_3 = \ntasks^2$.
+
+  In step 0, the inverse of the $\ntasks \times \ntasks$ Laplacian matrix, which is used in the first and second step has a cost of $C_0 = O(\ntasks^3)$.
+%
+In step 1, where the dual problem is solved, has the standard cost corresponding to these SVM variants, which all have a cost $C_1 = O(\nsamples^{2+\epsilon})$ such that $O(\nsamples^2) \leq C_1$.
+%
+The step 2, the distance computations, involves the inner products $\dotp{v_r}{v_s}$ shown in~\eqref{eq:dot_computation_matrix} for $r,s=1, \ldots, \ntasks$, each with a cost $\nsamples_{\text{sv}}^2$ with $\nsamples_{\text{sv}}$ being the number of support vectors; then, the cost of the second step is $C_2 = O(\ntasks^2 N_\text{sv}^2)$. 
+%
+Finally, in step 3, involving the update of the adjacency matrix $A$, needs the computation of the $\ntasks \times \ntasks$ elements of $A$ using equation~\eqref{eq:update_A}, which has then a total cost of $C_3 = O(\ntasks^2)$.
+%
 The total computational cost of each iteration is then
 $$ C_0 + C_1 + C_2 + C_3 = O(\ntasks^3 + \nsamples^{2+\epsilon} + \ntasks^2 \nsamples_\text{sv}^2 + \ntasks^2)$$
-Assuming a standard situation, where $\nsamples$ is much larger than $\ntasks$, the two first steps have clearly the greater cost; however, it is difficult to determine what steps are more computationally challenging, since it depends on the specific problem being solved. Anyway, the second step, unlike the first one, can be easily parallelized, computing each distance at the same time, which would result in a cost of $O(\nsamples_\text{sv}^2)$. 
+%
+Assuming a standard situation, where $\nsamples$ is much larger than $\ntasks$, steps 1 and 2 have clearly the greater cost; however, it is difficult to determine what steps are more computationally challenging, since it depends on the specific problem being solved. Anyway, step 2, unlike step 1, can be easily parallelized, computing each distance at the same time, which would result in a cost of $O(\nsamples_\text{sv}^2)$. 
 
 %\subsection{Experiments}
 

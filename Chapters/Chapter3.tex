@@ -2360,9 +2360,9 @@ Since ${E} \in \reals^{\ntasks \times \ntasks}$ is symmetric and positive defini
 % 
 Then, with the properties of the tensor product of linear maps,  $$ E^{-1} \otimes I = (B^\intercal B) \otimes I = (B^\intercal \otimes I) (B \otimes I),$$
 %
-Consider the change of variable $\myvec{u} = (B^\intercal \otimes I)\myvec{w}$, where $\myvec{w} \in \reals^p \otimes \hilbertspace$. Observe that this can always be done because 
-%the columns of $B$ generates $\reals^T$, so we can always find $\hat{w}$ such that $e_r = B w$   .The condition of full rank for $B$ is necessary in this step.
-$B$ is full rank. Rewriting \eqref{eq:mtl_kernel_altext_tensor} using $\myvec{w}$,
+Consider the change of variable $\myvec{u} = (B^\intercal \otimes I)\myvec{w}$, where $\myvec{w} \in \reals^p \otimes \hilbertspace$. % Observe that this can always be done because %the columns of $B$ generates $\reals^T$, so we can always find $\hat{w}$ such that $e_r = B w$   .The condition of full rank for $B$ is necessary in this step. $B$ is full rank. That is, $B$ has linearly independent columns, and, thus, we can write its right inverse as $B^+$
+
+Rewriting \eqref{eq:mtl_kernel_altext_tensor} using $\myvec{w}$,
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -2387,7 +2387,7 @@ We are thus considering a regularized functional $S(\myvec{w})$ where we seek th
     \end{aligned},
 \end{equation}
 where $k(\cdot, \cdot)$ is the reproducing kernel of the space of functions $\phi(\cdot)$.
-However we are only interested in those cases where $z = B e_r = B_r$ for some $r=1, \ldots, T$, then $\dotp{B_r}{B_s} = E^{-1}_{rs}.$
+However, in the minimization problem we only have values $z = B e_r = B_r$ for some $r=1, \ldots, T$, then $\dotp{B_r}{B_s} = E^{-1}_{rs}.$
 Since the regularizer is clearly increasing in $\norm{w}^2$, we can apply the Representer theorem, which states that the minimizer of $S(\myvec{w})$ has the form
 \begin{equation}
     \nonumber
