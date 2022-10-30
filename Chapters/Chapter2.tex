@@ -297,7 +297,7 @@ where $l_2$ is the space of all sequences $(x_n)_{n \in \naturals}$ such that $$
 In this space, the inner product between $\phi(x)$ and $\phi(\tilde{x})$ is defined as
 $$ \dotp{\phi(x)}{\phi(\tilde{x})} = \sum_{i=1}^\infty \lambda_i \psi_i(x) \psi_i(\tilde{x}),$$ which, by the Mercer theorem, is equivalent to saying that $\dotp{\phi(x)}{\phi(\tilde{x})} = k(x, \tilde{x})$.
 
-Then, we have seen that there is a one-to-one correspondence between positive definite kernels and \acrshort{rkhss}. Given an \acrshort{rkhs} there is a single kernel function that has the reproducing property in that space. Also, given a positive definite kernel $k$, there exists an associated \acrshort{rkhs} such that $k$ is its reproducing kernel. 
+Therefore, we have seen that there is a one-to-one correspondence between positive definite kernels and \acrshort{rkhss}. Given an \acrshort{rkhs} there is a single kernel function that has the reproducing property in that space. Also, given a positive definite kernel $k$, there exists an associated \acrshort{rkhs} such that $k$ is its reproducing kernel. 
 
 % mercer theorem?
 
@@ -344,10 +344,10 @@ Here, we give the definition of loss function and present the losses that we wil
 Observe that $\lossf(\cdot, \cdot)$ is a non-negative function and the perfect prediction always achieves its minimum value.
 
 % Classification
-In the binary classification problems, if we want to minimize the number of misclassified patterns, we use the \emph{accuracy} loss, which is defined as
+In the binary classification problems, if we want to minimize the number of misclassified patterns, we use the \emph{accuracy} loss, which, with the labels $\set{0, 1}$ for the classes, is defined as
 \begin{equation}
     \nonumber
-    \lossf(y, f(x)) = 
+    \lossf(y, f(x)) = (y - f(x))^2
     \begin{cases}
         0, & y = f(x) ,\\
         1, & y \neq f(x) .
@@ -356,7 +356,7 @@ In the binary classification problems, if we want to minimize the number of misc
 However, this function only takes into account if the example is correctly classified or not, but we might also want to take into account the confidence that we have in this decision. If we use the labels $\set{-1, 1}$ to denote the two classes, then we can look at the number $y f(x)$ to check if the decision is correct, only if $y f(x) > 0$ the pattern is correctly classified. That is, we are looking at a single value to determine the success of our decision, and we can also use it to define a confidence. For example, we can consider that in those patterns where $0 < y f(x) < 1$, although correctly classified, the confidence that we have to make such decision is not enough, and only when $y f(x) \geq 1$ we consider that it is a correct classification. We can interpret this as a confidence margin, and the loss function that implements this is called \emph{soft margin}, or also \emph{hinge} loss, which is defined as
 \begin{equation}
     \label{eq:hinge_def}
-    \lossf(y, f(x)) = 
+    \lossf(y, f(x)) = \pospart{1 - yf(x)} = 
     \begin{cases}
         0, & y f(x) \geq 1 ,\\
         1 - y f(x), & y f(x) < 1 .
@@ -367,7 +367,7 @@ This is a continuous function where we can observe two charactistics. One is con
 A modification of the hinge loss considers the same margin, but the penalization for the misclassified patterns grows as a quadratic function. This is the \emph{squared hinge} loss, whose expression is
 \begin{equation}
     \label{eq:sqhinge_def}
-    \lossf(y, f(x)) = 
+    \lossf(y, f(x)) = \pospart{1 - yf(x)}^2 = 
     \begin{cases}
         0, & y f(x) \geq 1 ,\\
         (1 - y f(x))^2, & y f(x) < 1 .
@@ -402,7 +402,7 @@ In the regression problems, given a pair $(x, y) \in \Xspace \times \Yspace$, th
 Here, any mistake is penalized, but there might be some cases when the targets are noisy, so we would like to have some room for small errors. Concretely, if $f(\cdot)$ is the perfect regression function, the target values might be $y = f(x) + z$ with $z \sim \normal{0, \sigma}$; then, it might be not sensible to not penalize those errors that can be explained by this noise. This is done in the \emph{$\epsilon$-insensitive} loss function, which is expressed as 
 \begin{equation}
     \label{eq:epsins_def}
-    \lossf(y, f(x)) = 
+    \lossf(y, f(x)) = \abs{y - f(x)}_\epsilon =
     \begin{cases}
         0, & \abs{y - f(x)} \leq \epsilon ,\\
         \abs{y - f(x)} - \epsilon, & \abs{y - f(x)} > \epsilon .\\
@@ -432,21 +432,196 @@ The \emph{squared} loss is also easily adaptable to the multi-target regression 
 
 
 \subsection{Empirical and Expected Risk} 
-In \acrshort{ml}, we have a feature space $\Xspace$ and a target (or label) space $\Yspace$, and we believe that there is a function $f: \Xspace \to \Yspace$, and if we have a good estimate of such function, we will be able to predict new target values $y$ given a pattern $x$. Take for example the popular problem \fdata{MNIST} of handwritten digits, where the feature space $\Xspace$ is the space of $28 \times 28$ matrices with values in $[0, 1]$, corresponding to the pixels of $28 \times 28$ grayscale images.
-Once we have selected the most adequate loss functions for our goal, we have to minimize the loss function 
-%
+In \acrshort{ml}, we have a feature space $\Xspace$ and a target (or label) space $\Yspace$, and we believe that there is a function $f: \Xspace \to \Yspace$, and if we have a good estimate of such function, we will be able to predict new target values $y$ given a pattern $x$. 
 
-\subsection{Regularized Risk Functional}
-% conexión con el repr. theorem
+%
+We begin with the classification setting. Take for example the popular problem \fdata{MNIST} of handwritten digits, where the feature space $\Xspace$ is the space of $28 \times 28$ matrices with values in $[0, 1]$, corresponding to the pixels of $28 \times 28$ grayscale images, i.e. $[0, 1]^{28 \times 28}$. We believe that there exists a function $f: \Xspace \to \reals$ that captures the properties of the handwritten digit $0$ such that $f(x)=1$ only when $x$ is an image of digit $0$ and $f(x)=0$ otherwise. Then, we would like to learn such function, so when a new image $\tilde{x}$ comes in, we can automatically decide if it represents the digit $0$ by looking at the value $f(x)$.
+%
+We suppose that there exists a distribution for images of digits and its labels, such that $\distf(x, y=1) = \distf(x \vert y = 0) \distf(y = 1)$ captures the properties of the images of digit $0$. Then, our function $f$ then minimizes the expected accuracy
+$$ \int_{\Xspace \times \Yspace} (y - f(x))^2 d\distf(x, y) ,$$
+where we are using the \emph{accuracy} loss function $\ell(y, f(x)) = (y - f(x))^2$. 
+%
+If we want to consider other losses, such as the \emph{hinge} loss, we can consider that $\mathcal{Y} = \reals$, where the labels are encoded as $\set{-1, 1}$, the goal is to minimize 
+$$ \int_{\Xspace \times \Yspace} \pospart{1 - y f(x)} d\distf(x, y) .$$
+
+%
+In the regression setting we find a similar situation. Consider the housing examples, where we want to predict the economic value of houses using descriptive features of each property: location, number of rooms, floor number, etc. These characteristics are our feature space $\Xspace$, and the output space is $\Yspace = \reals^+$, i.e. the positive real numbers, since we want to predict prices. Again, we suppose that the prices are dependent on the characteristics of each house, such that there exists a joint distribution $\distf(x, y)$.
+Now, we want to find the function $f: \Xspace \to \Yspace$ that minimizes the expected \emph{squared} loss
+$$ \int_{\Xspace \times \Yspace} (y - f(x))^2 d\distf(x, y) .$$
+Observe that although the formula is the same as the one used for the accuracy loss in classification, here the output space $\Yspace$ is the positive reals, so it has a different meaning. Now, the function $f$ minimizing such quantity a good estimate to predict the value of a new property given its characteristics.
+
+%
+In both classification and regression cases, we arrive at an integral of a loss function.
+This is called the expected risk, because we take the expectation of the loss function with respect to the real distribution of data. 
+%
+In general, in \acrshort{ml} we consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ where $\param$ are the parameters that define each hypothesis and $\paramspace$ is the space of such parameters. Then, the desired goal is to select the candidate hypothesis that minimizes the expected risk, which is defined as follows.
+%
+\begin{definition}[Expected Risk Minimization]
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$. Consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$, then the expected risk minimization problem is 
+    \begin{equation}
+        \label{eq:exprisk_def}
+        \argmin_{\param \in \paramspace} \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y) .
+    \end{equation}
+\end{definition}
+%
+The distribution $\distf$ that appears in the expected risk is unknown, so it is not possible to find a solution to the minimization problem~\eqref{eq:exprisk_def}.
+% 
+Instead, what we have is a sample 
+\begin{equation}
+    \nonumber
+    \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+\end{equation}
+where each pair $(x_i, y_i)$ have been independently sampled from $\distf(x, y)$. 
+%
+Then, we use this sample $\sample$ to define the empirical risk minimization problem.
+%
+\begin{definition}[Empirical Risk Minimization]
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$. Consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
+    \begin{equation}
+        \nonumber
+        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+    \end{equation}
+    of pairs $(x_i, y_i)$ independently sampled from $\distf(x, y)$;    
+    then, the empirical risk minimization problem is 
+    \begin{equation}
+        \label{eq:emprisk_def}
+        \argmin_{\param \in \paramspace} \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) .
+    \end{equation}
+\end{definition}
+%
+The paradigm of minimizing the expected risk to find a good estimate, as an alternative to minimizing the real expected risk, is called \acrfull{erm}.
+%
+It is easy to observe that the empirical risk $\emprisk$ is an unbiased estimator of $\exprisk$. The samples $(x_i, y_i), \; i=1, \ldots, \nsamples$ are \acrfull{iid} random variables, so we have 
+\begin{equation}
+    \nonumber
+     \expect_\sample \emprisk(\alpha) = \expect_{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)} \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \expect_{(x_i, y_i)} \ell(y_i, \hyp{x_i}{\param}),
+\end{equation}
+where we have used that the samples are independent.
+Then, since all the pairs $(x_i, y_i)$ are sampled from the same distribution $\distf$, the conclusion is 
+\begin{equation}
+    \nonumber
+    \frac{1}{\nsamples} \sum_{i=1}^\nsamples \expect_{(x_i, y_i)} \ell(y_i, \hyp{x_i}{\param}) = \expect_{P} \ell(y_i, \hyp{x_i}{\param}) = \exprisk(\alpha) .
+\end{equation}
+This is a desirable property of the expected risk; however, as we will see, it is not sufficient to assure that the learning process is selecting a good estimate.
+
+\subsection{Regularization}
+% Regularization Motivation by Tikhonov
+% Ill posed problem
+% operator inversion lemma
+The empirical risk presented in~\eqref{eq:emprisk_def} can be interpreted as a map from the space of hypothesis $\hypspace$, which we can consider here to be $L_2(\Xspace)$, that is, the measurable functions $h: \Xspace \to \reals$, to the positive real numbers, namely
+$$ \emprisk: \hypspace \to \reals_{\geq 0} .$$
+%
+Let $f^* \in L_2(\Xspace)$ be the function that minimizes $\emprisk$, such that $\emprisk(f^*) = \rho$. If we find a solution $g \in L_2(\Xspace)$ such that $\emprisk(g) = \rho + \delta$, for $\delta > 0$, we would like then that $g$ is close to the optimal solution $f^*$.
+%
+In other words, we want the inverse of the map $\emprisk$ to be continuous, that is, given $\rho_1, \rho_2 \in \reals$ such that $\abs{\rho_1 - \rho_2} < \delta$, then two functions $f_1, f_2 \in L_2(\Xspace)$ such that $\emprisk(f_1) = \rho_1, \; \emprisk(f_2) = \rho_2$, must satisfy $\norm{f_1 - f_2}_{L_2(\Xspace)} < \epsilon$.
+%
+Even if the map $\emprisk$ is continuous, its inverse $\emprisk$ might not be continuous. In that cases we have, according to Tikhonov nomenclature, an ill-posed problem.
+%
+Here is where the Operator Inversion Lemma~\citep{riesz2012functional} is useful.
+\begin{lemma}[Operator Inversion Lemma]
+    Let $\mathcal{M}$ be a compact set and let $A$ be a continuous map $A: \mathcal{M} \to \reals_{\geq 0}$. Then, there exists an inverse map $A^{-1}: A(\mathcal{M}) \to \mathcal{M}$ that is continuous.
+\end{lemma}
+%
+To apply this lemma to our situation, and get a well-posed problem, we need two conditions: we need $\emprisk$ to be a continous map, and we need $\hypspace$ to be compact.
+%
+We can assume that the empirical risk $\emprisk$ is continuous, although this is a strong assumption, it is true for the loss functions considered, except for the \emph{accuracy} loss.
+%
+The other condition, which involves the compactness of $\hypspace$ is more difficult to satisfy. Instead of considering a compact space of hypothesis, which would lead to a constrained optimization problem, we introduce the concept of regularization.
+
+%
+Given a map (or functional) $A: \mathcal{M} \to \reals_{\geq 0}$, with $\mathcal{M}$ being a metric space,
+Tikhonov considers a ``stabilization'' (regularization) term $\Omega: \mathcal{M} \to \reals_{\geq 0}$, that is added to the map of interest as 
+\begin{equation}
+    \nonumber
+    A_\lambda = A + \lambda \Omega: \mathcal{M} \to \reals_{\geq 0} ,
+\end{equation}
+such that the sets $\set{m \in \mathcal{M}: \Omega(m) \leq c}$, with $c > 0$ are compact.
+
+Now, the problem of minimizing $A_\lambda = A + \lambda \Omega$ is stable. That is, let $\rho^\lambda \in \reals_{\geq 0}$ be the minimal value of $A_\lambda$, and let $\rho^\lambda_\delta \in \reals_{\geq 0}$ be defined as $\rho^\lambda_\delta = \rho^\lambda + \delta$ for $\delta > 0$. Consider then for $\lambda \in \reals_{> 0}$, $m^\lambda, m^\lambda_\delta \in \mathcal{M}$ such that $A_\lambda(m^\lambda) = \rho^\lambda, \; A_\lambda(m^\lambda_\delta) = \rho^\lambda_\delta$, then these two elements are close, i.e. $\norm{m^\lambda - m^\lambda_\delta}_{\mathcal{M}} < \epsilon$.
+%
+We can say then that the problem $\argmin_{\mathcal{M}} A + \lambda \Omega$ is a well-posed problem. 
+%
+Moreover, with this result, it can be shown that the sequence of solutions $m^\lambda_\delta$ converges to the solution $m^* = \argmin_{\mathcal{M}} A$ as $\lambda \to 0$.
+
+
+
+
 
 
 \subsection{Representer Theorem} % 
-% aunque sea una transformación implicita, tenemos el Rep. Th. para ayudarnos
+%
+In our case, where our functional of interest is the empirical risk $\emprisk$, and we typically select a regularization term, or regularizer, that is convex; then, if $\emprisk$ is also convex, the corresponding regularized functional also is. Therefore, a usual choice is $\Omega(f) = \norm{f}^2_\hypspace$, but we can use $\Omega(f) = \Theta(\norm{f}^2)$, where $\Theta(\cdot)$ is a monotonic increasing function.
+We consider then problem of minimizing the regularized functional defined as follows.
+\begin{definition}[Regularized Risk Functional]
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$. Consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
+    \begin{equation}
+        \nonumber
+        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+    \end{equation}
+    of pairs $(x_i, y_i)$ independently sampled from $\distf(x, y)$;    
+    then, the regularized risk functional is defined as
+    \begin{equation}
+        \label{eq:regrisk_def}
+        \regrisk(\param) = \emprisk(\param) + \lambda \Theta\left(\norm{\hyp{\cdot}{\param}}^2_\hypspace \right) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) + \lambda \Theta\left(\norm{\hyp{\cdot}{\param}}^2_\hypspace \right) .
+    \end{equation}
+\end{definition}
+%
+Here $\lambda$ is the regularization hyperparameter that regulates the trade-off between the errors and the complexity of the model.
 
+
+Minimizing the regularized functional $\regrisk(\param)$ in a general setting, for example, when $\hypspace = L_2(\Xspace)$, is a challenging problem, because computing the norm of the hypotheses in such space is not trivial.
+%
+However, when our hypothesis space $\hypspace$ is an \acrshort{rkhs}, there is an explicit solution for the minimizer, as stated in the following theorem, the representer theorem~\citep{ScholkopfHS01}.
+\begin{theorem}[Representer Theorem]
+    Let $\Theta: \reals \to \reals$ be a strictly monotonic increasing function, let $\Xspace$ be a non-empty set, and let $\ell$ by an arbitrary loss. Consider that $\hypspace$ is the \acrshort{rkhs} associated to the kernel $k(\cdot, \cdot)$.
+    Then every minimizer $f \in \hypspace$ of the regularized risk 
+    \begin{equation}
+        \nonumber
+        \regrisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, f(x_i)) + \lambda \Theta\left(\norm{f}^2_\hypspace \right) ,
+    \end{equation}
+    with $\lambda > 0$, admits a representation of the form
+    \begin{equation}
+        \label{eq:reprth_def}
+        f(\cdot) = \sum_{i=1}^\nsamples \alpha_i k(x_i, \cdot) .
+    \end{equation}
+\end{theorem}
+\begin{proof}
+    Consider a decomposition of any function $f \in \hypspace$ in two parts: one, $f_{\Span}$, in the span of the functions $\set{k(x_1, \cdot), \ldots, k(x_\nsamples, cdot)}$, and other part, $f_{\perp}$, in the corresponding orthogonal space. That is,
+    \begin{equation}
+        \nonumber
+        f_{\Span}(\cdot) = \sum_{i=1}^\nsamples k(x_i, \cdot)
+    \end{equation}
+    and $\dotp{k(x_j, \cdot)}{f_{\perp}} = 0$ for $j=1, \ldots, \nsamples$.
+%
+    Since $k(\cdot, \cdot)$ is a reproducing kernel, we have that for all $x \in \Xspace$, 
+    $f(x) = \dotp{k(x, \cdot)}{f(\cdot)}$, and in particular, for $x_j$, $j=1, \ldots, \nsamples$,
+    \begin{equation}
+        \nonumber
+        f(x_j) = \dotp{k(x_j, \cdot)}{f(\cdot)} = \dotp{k(x_j, \cdot)}{f_{\Span}(\cdot)} + \dotp{k(x_j, \cdot)}{f_{\perp}(\cdot)} = \dotp{k(x_j, \cdot)}{f_{\Span}(\cdot)}.
+    \end{equation}
+    Thus, we have that $f(x_j) = f_{\Span}(x_j)$ for $j=1, \ldots, \nsamples$.
+    %
+    Moreover, we observe that for all $f_{\perp} \in \hypspace$,
+    \begin{equation}
+        \nonumber
+        \Theta(\norm{f}_{\hypspace}^2) = \Theta(\norm{f_{\Span}}_{\hypspace}^2 + \norm{f_{\perp}}_{\hypspace}^2) \leq \Theta(\norm{f_{\Span}}_{\hypspace}^2) .
+    \end{equation}
+    Since the orthogonal part $f_{\perp}$ does not play a role in the loss term, then the minimizer of the empirical risk must have $f_{\perp} = 0$, so 
+    $$ f(\cdot) = \sum_{i=1}^\nsamples k(x_i, \cdot).$$
+\end{proof}
 % este resultado está relacionado con la dualidad de los problemas lineales, que veremos más adelante
+This is a relevant result because it gives an explicit form of the minimizer of the expected risk when working with \acrshort{rkhss}, which we will often do in this work. It is also related to the concept of duality, that, when considering linear models in some \acrshort{rkhs}, offers the possibility of formulating the solution of optimization problems in terms of the feature space, primal formulation, or the space of inputs, dual formulation. We will present later the duality concept in detail. 
+
+% \subsection{Regularization Operators in RKHS's}
 
 
+% % regularizaion operators in RKHS
 
+% % regularization operator def
+
+% % theorem
+
+% % meaning
 
 
 
@@ -474,24 +649,387 @@ Once we have selected the most adequate loss functions for our goal, we have to 
 
 
 \subsection{Uniform Convergence and Consistency}
-\subsection{VC dimension and Structural Learning}
+
+% What is learning? Emp Risk vs Exp Risk. 
+% What is consistency
+
+% One-sided convergence implies consistency (sufficient), also necessary
 
 
-\subsection{Maximum Margin Hyperplane}
-% otra forma de limitar la capacidad es considerar solo las hipótesis que maximizan la distancia entre las clases
+\subsection{VC dimension}
 
-% teorema de Vapnik
+% union bound
 
+% symmetrization
+
+% Shattering coefficient
+
+% confidence interval
+
+% growth function and vc entropy
+
+\subsection{Structural Learning}
+% Structural learning (SRM)
+
+% Regularized functional connection with SRM
+
+% teorema de Vapnik: Maximum Margin Hyperplane
 % esta idea constituye la base de las SVM
+% otra forma de limitar la capacidad es considerar solo las hipótesis que maximizan la distancia entre las clases
 
 
 
 
 
 \section{Optimization}
-\subsection{Convex Optimization}
-\subsection{Unconstrained Problems}
+%
+Most \acrshort{ml} problems, which define the training stage of some learning model, involve finding a solution of some minimization problem, e.g. \acrshort{svms} or \acrshort{nns}.
+%
+In general, we are interested in minimizing the empirical risk, and we expect that the solution also minimizes the real empirical risk. The results concerning the \acrshort{vc} dimension help us to understand to what extent and in what situations this is true. Nevertheless, the key resides in the choice of the family of hypothesis.
+%
+In practice, we can limit the capacity of our set of hypothesis by different means, more direct, like considering a maximum margin hyperplane, or more indirect, like including regularization. Anyway, the result is also a regularized risk functional that have to be minimized, which eventually translates to a minimization problem.
+
+%
+Optimization is the branch of mathematics that study the solution of minimization problems, that is, finding the minimum of some objective function $f(x)$ in some domain $\domain$, that can be possibly constrained. Note that we can focus on minimization problem, since maximizing $f(x)$ is equivalent to minimizing $-f(x)$.
+%
+By studying the characteristics of the objective function and the constraints, we can give some necessary and sufficient conditions for the existence of solutions of the minimization problem. Sufficient conditions indicate that the problem satisfying them have a solution, not necessarily a unique one. Necessary conditions, on the other hand, act in a reverse way; if the problem does not satisfy them, there is no solution for such problem.
+% 
+Finding a solution is not always enough, sometimes we want to be sure that it is the only one. This is important for reproducibility, if we minimize the same problem several times, we would like to always obtain the same solution.
+%
+Having an unique solution is a very desirable property, but it is not a general one. However, there are some kind of problems that have this characteristic, these are the convex problems. Convexity is a property, that can be defined in terms of sets of functions, that lead to this uniqueness of solutions.
+%
+Therefore, convex problems are interesting to study, and they have some specific properties like the duality concept, which we will develop.
+
+%
+
+In this section, we give some definitions regarding convexity, such as convex set or convex function, and detail their properties.
+%
+We also present some optimization concepts and give results about the necessary and sufficient conditions that a problem needs in order to have a solution, and also when this solution is unique.
+%
+Finally, we study the convex problems and the concept of duality.
+
+
+
+
+
+
+\subsection{Convexity}
+Convexity is at the center of many optimization problems related with \acrshort{ml}.
+Minimizing the empirical risk can lead to minimization problems that may exhibit many local minima; however, convex problems, those minimizing a convex function in a convex set, have unique solutions.
+In order to properly define a convex problem, we first need to present some concepts.  
+We first define convex set and convex function.
+% Convex Set
+\begin{definition}[Convex Set]
+    A set $\cvxset$ in a vector space $\vecspace$ is called a convex set if for any $\lambda \in [0, 1]$,
+    \begin{equation}
+        \nonumber
+        \lambda x_1 + (1 - \lambda) x_2 , \; \forall x_1, x_2 \in \cvxset .
+    \end{equation}
+\end{definition}
+
+% Convex Function
+\begin{definition}[Convex Function]
+    A function $f: \cvxset \to \reals$ is called convex if for any $\lambda \in [0, 1]$,
+    \begin{equation}
+        \nonumber
+        f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) , \; \forall x_1, x_2 \in \cvxset ,
+    \end{equation}
+    and it is called strictly convex if for any $x_1, x_2 \in \cvxset, \; x_1 \neq x_2$, and $\lambda \in (0, 1)$,
+    \begin{equation}
+        \nonumber
+        f\left(\lambda x_1 + (1 - \lambda) x_2 \right) < \lambda f(x_1) + (1 - \lambda) f(x_2) .
+    \end{equation}
+\end{definition}
+
+% Convex sets as below functions?
+Observing that the below sets of convex functions are convex will be helpful when we have inequality constraints in optimization problem.
+The two previous definitions are connected, as shown in the following lemma.
+\begin{lemma}
+    Let $f: \vecspace \to \reals$ be a convex function, then the sets
+    $$\cvxset_c = \set{x \in \cvxset, f(x) \leq c}, \; \forall c \in \reals$$
+    are convex.
+\end{lemma}
+\begin{proof}
+    Consider any $c \in \reals$ and any $\lambda \in [0, 1]$
+    We want to check that $f(\lambda x_1 + (1 - \lambda) x_2) \leq c$.
+    Since $f$ is convex we have that 
+    $$f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) ,$$
+    and if $x_1, x_2 \in \cvxset_c$ they satisfy
+    $f(x_1) \leq c$ and $f(x_2) \leq c$; thus, we can write 
+    $$f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) \leq \lambda c + (1 - \lambda) c = c$$.
+\end{proof}
+
+% Intersection of convex sets
+With the definitions that we have given we have the tools to prove the following theorem, which has an immediate application in optimization problems.
+
+% Theorem: Minima in Convex Sets
+\begin{theorem}[Minima in Convex Sets]
+    Let $f: \vecspace \to \reals$ be a convex function, if $f$ achieves its minimum value $m$ in a convex set $\cvxset \subset \vecspace$, i.e. if the set 
+    $$ \cvxset_{\min} = \set{x \in \cvxset \text{ such that }  \forall \tilde{x} \in \cvxset, \;  f(x) = m \leq f(\tilde{x})}$$
+    is not empty, then $\cvxset_{\min}$ is also a convex set. 
+    Moreover, if $f$ is strictly convex, then $\cvxset_{\min}$ has a single element.
+\end{theorem}
+\begin{proof}
+    Consider $x_1, x_2 \in \cvxset_{\min}$, we want to check $x_\lambda = \lambda x_1 + (1 - \lambda x_2) \in \cvxset_{\min}$ for any $\lambda \in [0, 1]$.
+    Since $f$ is convex, we have that
+    \begin{equation}
+        \nonumber
+        f(x_\lambda) = f(\lambda x_1 + (1 - \lambda) x_2) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) .
+    \end{equation}
+    Now, for any $\tilde{x} \in \cvxset_{\min}$ we have $\lambda f(x_1) \leq \lambda f(\tilde{x})$ and $(1 - \lambda) f(x_2) \leq (1 - \lambda) f(\tilde{x})$, so 
+    $$f(x_\lambda) \leq  \lambda f(\tilde{x}) + (1 - \lambda) f(\tilde{x}) = f(\tilde{x}),$$ hence $x_\lambda \in \cvxset_{\min}$.
+
+    When $f$ is strictly convex, we want to check that $\cvxset_{\min}$ has a single element. Suppose that $\cvxset_{\min}$ has two distinct elements $x_1, x_2, \; x_1 \neq x_2$; then, for any $\lambda \in (0, 1)$ we have that 
+    $$ f(x_\lambda) = f(\lambda x_1 + (1 - \lambda) x_2) < \lambda f(x_1) + (1 - \lambda) f(x_2) = \lambda c + (1- \lambda)c = c.$$
+    Thus, we have an element $x_\lambda \in \cvxset_{\min}$, where $x_\lambda \neq x_1, x_2$ such that $f(x_\lambda) < c$, but $c$ was the minimum value of $f$ in $\cvxset$, so we find a contradiction. Therefore, there is a single element in $\cvxset_{\min}$.
+\end{proof}
+% Constrained Convex optimization
+This theorem can be applied to a particular class of problems, the constrained convex optimization problems, as we show in the following corollary.
+\begin{corollary}[Constrained Convex Optimization]
+    Consider the convex functions $f, c_1, \ldots, c_p$ with domain in the vector space $\vecspace$, then the set of solutions of the problem
+    \begin{equation}\nonumber
+        \begin{aligned}
+            &\min_{x \in \vecspace} & & f(x) \\
+            & \text{s.t.} & & c_i(x) \leq 0,\; i=1, \ldots, p 
+        \end{aligned}
+    \end{equation}
+    is a convex set. And if $f$ is strictly convex, there is a single element that is a solution.
+\end{corollary}
+\begin{proof}
+    Observe that
+    $$\cvxset_f = \set{x \in \vecspace, c_i(x) \leq 0 \text{ for } i=1, \ldots, p} = \bigcap_{i=1}^p \set{x \in \vecspace, c_i(x) \leq 0}$$ 
+    is the intersection of the sets $\set{x \in \vecspace, c_i(x) \leq 0}$, which are the below sets of convex function, and thus convex. Therefore, the solutions of the optimization problem are the minima of the convex function $f$ on the convex set $\cvxset_f$, which are also a convex set.
+    Also, if $f$ is strictly convex, there is a single minimizer.
+\end{proof}
+Although this is a nice result, it needs some strong assumptions: the objective function and all the constraint functions must be convex. Moreover, it does not give any clue on how to obtain those solutions, it states only some properties about them.
+%
+
+
+% \subsection{Unconstrained Problems}
+
+% % Gradient descent
+
+% % Adam
+
+
 \subsection{Constrained Problems}
+To study the properties of the solutions of a broader class of problems, as well as to learn under what circumstances and how we can obtain them, we will present some concepts related to the optimization of constrained problems.
+%
+
+Typically, when we want to find the minimum a differentiable function $f: \Xspace \to \reals$, we look in its stationary points, i.e. those points where the gradient of $f$ is zero. This idea is generalized in the following theorem.
+% Fermats Theorem
+\begin{theorem}[Fermat's Theorem]
+    If $f(x)$ is a real-valued differentiable function with domain in $\vecspace$, a necessary condition for $x^* \in \vecspace$ to minimize $f(\cdot)$ is $\nabla_x f(x^*) = 0$. Moreover, if $f(x)$ is a convex function, then $\nabla_x f(x^*) = 0$ is also sufficient.
+\end{theorem}
+% Equality constraints
+This is a well-known result, but it is not always applicable. Consider for example a minimization the problem with equality constraints
+$$ \min_{x \in \vecspace} f(x) \text{ subject to } e_i(x)=0 \text{ for } i=1, \ldots, q .$$
+Then, it is possible that the stationary points $\tilde{x}$, where $\nabla_x f(\tilde{x}) = 0$, do not satisfy the constraints, i.e. $e_i(\tilde{x}) \neq 0$ for some $i=1, \ldots, q$. In this situation, the Fermat's theorem is not useful, and, instead, to get some intuition on the concepts that are going to be presented, we can reason as follows. 
+%
+First, observe that $e_i(x)=0$ are level curves of function $e_i(\cdot)$, so each one is orthogonal to their respective gradient $\nabla x e_i(\cdot)$.  Let $\hat{x} \in \vecspace$ be a feasible point, that is $e_i(\hat{x})=0$ for $i=1, \ldots, q$.
+At any point $x \in \vecspace$, the vector $-\nabla_x f(x)$ points do the direction of maximum descent of $f(\cdot)$.
+If $\hat{x}$ is a solution of the minimization problem such that $\nabla_x f(\hat{x}) \neq 0$, then if $\nabla_x f(\hat{x}) \notin \Span\left(\nabla_x e_1(\hat{x}), \ldots, \nabla_x e_q(\hat{x}) \right)$, we can move in a direction that is parallel to some level curve $e_j(\cdot)=0$ and is also a descent direction, which is not possible because we assumed that $\hat{x}$ was a solution.
+Therefore,
+\begin{equation}
+    \label{eq:intuition_lagr}
+    \nabla_x f(\opt{x}) = \sum_{i=1}^q \beta_i \nabla_x e_i(\hat{x})
+\end{equation}
+is a necessary condition for $\opt{x}$ to be a solution, replacing the necessary condition from Fermat's theorem $\nabla_x f(\opt{x}) = 0$.
+%
+Now, if we consider the function $$\lagr(x, \fv{\beta}) = f(x) + \sum_{i=1}^q e_i(x),$$ where $\fv{\beta} = (\beta_1, \ldots, \beta_q)^\intercal$, we can see that we can sum up the necessary conditions as 
+\begin{equation}\nonumber
+    \begin{aligned}
+        \nabla_x {\lagr}= 0, \; \nabla_{\fv{\beta}} {\lagr}= 0,
+    \end{aligned}
+\end{equation}
+where the first one is~\eqref{eq:intuition_lagr} and the second one are the equality constraints.
+This is the idea behind the more general Lagrangian function that we will present next. 
+However, before that, we need to define constrained optimization problems, with both equality and inequality constraints.
+% Primal Problem
+\begin{definition}[Constrained Optimization Problem]
+    Given real-valued functions $f$, $c_1, \ldots, c_p$ $e_1, \ldots, e_2$ with domain in the vector space $\vecspace$,
+    we say that the problem
+    \begin{equation}\label{eq:optproblem_def}
+        \begin{aligned}
+            &\min_{x \in \vecspace} & & f(x) \\
+            & \text{s.t.} & & c_i(x) \leq 0,\; i=1, \ldots, q , \\
+            & & & e_i(x) = 0,\; i=1, \ldots, p              
+        \end{aligned}
+    \end{equation}
+    is a constrained optimization problem, where $f$ is the objective function, $e_1, \ldots, e_p$ are the equality constraints and $c_1, \ldots, c_q$ the inequality constraints.
+    % Feasible region
+    Moreover, the set where the constraints are satisfied, namely
+    \begin{equation}
+        \nonumber
+        \set{x \in \Xspace \text{ where } e_i(x)=0, i=1, \ldots, p; \; c_j(x)\leq 0, j=1, \ldots, q}
+    \end{equation}
+    is called the feasible region, and its elements are feasible points.
+\end{definition}
+For a shorter notation, we may also use the vector-valued functions 
+$$\fv{c}(x) = (c_1(x), \ldots, c_q(x))^\intercal, \; \fv{e}(x) = (e_1(x), \ldots, e_p(x))^\intercal .   $$
+% Lagrangian
+Now, as we have done in the previous example with only equality constraints, we define a function that, somehow, contains the information about conditions of the optimization problem, this is the Lagrangian function.
+\begin{definition}[Lagrangian]
+    Given a constrained optimization problem like the one in~\eqref{eq:optproblem_def}, the corresponding Lagrangian is the function 
+    \begin{equation}
+        \label{eq:lagr_def}
+        \lagr(x, \fv{\alpha}, \fv{\beta}) = f(x) + \sum_{i=1}^q \alpha_i c_i(x) + \sum_{j=1}^p \beta_j e_i(x) ,
+    \end{equation}
+    where $\fv{\alpha} = (\alpha_1, \ldots, \alpha_q)^\intercal \in \reals^q$ and $\fv{\beta} = (\beta_1, \ldots, \beta_p)^\intercal \in \reals^p$ such that $\beta_j \geq 0$ for $j=1, \ldots, p$ are the Lagrange multipliers, and using the vector formulation we can write the Lagrangian as 
+    \begin{equation}
+        \label{eq:lagr_defvec}
+        \lagr(x, \fv{\alpha}, \fv{\beta}) = f(x) + \fv{\alpha}^\intercal \fv{c}(x) + \fv{\beta}^\intercal \fv{e}(x) ,
+    \end{equation}
+\end{definition}
+With the definition of the Lagrangian function, we can present two theorems that characterize the sufficient and necessary conditions for $x \in \Xspace$ to be a solution of the optimization problem. These are the \acrfull{kkt} conditions.
+%
+First, however, note that we can replace the equality constraints by inequality constraints. Concretely, given $q$ equality constraints $e_i(x)=0$ for $i=1, \ldots, q$ we can replace them by the $2q$ inequality constraints 
+$c_i^-(x) \leq 0, -c_i^+(x) \leq 0$.
+%
+Thus, given an optimization problem like the one presented in~\eqref{eq:optproblem_def}, with $p$ inequality constraints and $q$ equality constraints, we can consider an equivalent problem with $m = p + 2q$ inequality constraints, namely,
+\begin{equation}
+    \nonumber
+    \min_{x \in \vecspace} f(x) \text{ subject to } c_i(x) \leq 0 \text{ for } i=1, \ldots, m .
+\end{equation}
+%
+Now we can give the first \acrshort{kkt} theorem.
+% KKT saddle point (sufficient condition)
+\begin{theorem}[\acrshort{kkt} Saddle Point Theorem]\label{th:kkt_saddlepoint}
+    Consider a constrained optimization problem like the one given in~\eqref{eq:optproblem_def}, with its corresponding Lagrangian $\lagr(x, \fv{\alpha}, \fv{\beta})$. If there exists $\opt{x} \in \vecspace$, $\opt{\fv{\alpha}} \in \reals_{\geq 0}^q$ and $\opt{\fv{\beta}} \in \reals^p$ such that 
+    \begin{equation}
+        \label{eq:saddle_point}
+        \forall x \in \vecspace,\;  \forall \fv{\alpha} \in \reals_{\geq 0}^q,\; \forall \fv{\beta} \in \reals^p,\; \lagr(\opt{x}, \fv{\alpha}, \fv{\beta}) \leq \lagr(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \leq \lagr(x, \opt{\fv{\alpha}}, \opt{\fv{\beta}}),
+    \end{equation}
+    then $\opt{x}$ is a solution of the optimization problem.
+\end{theorem}
+% \begin{proof}
+%     First, consider the equivalent optimization problem
+%     \begin{equation}
+%         \nonumber
+%         \min_{x \in \vecspace} f(x) \text{ subject to } c_i(x) \leq 0 \text{ for } i=1, \ldots, m .
+%     \end{equation}
+% \end{proof}
+
+Following the idea of the proof~\citep{ScholkopfS02}, consider the equivalent problem
+    \begin{equation}
+        \nonumber
+        \min_{x \in \vecspace} f(x) \text{ subject to } c_i(x) \leq 0 \text{ for } i=1, \ldots, m ,
+    \end{equation}
+and its corresponding Lagrangian
+\begin{equation}
+    \nonumber
+    \lagr(x, \fv{\alpha}) = f(x) + \sum_{i=1}^m \alpha_i c_i(x) .
+\end{equation}
+From the first inequality in~\eqref{eq:saddle_point}, it follows that 
+$$ \sum_{i=1}^m (\alpha_i- \opt{\alpha}_i) c_i(\opt{x}) \leq 0 .$$
+If we select $\alpha_i = \opt{\alpha_i}$ for all $i=1, \ldots, m,\; i \neq j$ and $\alpha_{j} = \opt{\alpha}_{j} + 1$, then
+$c_j(\opt{x}) \leq 0$ for all $j=1, \ldots, m$, so $\opt{x}$ is feasible.
+%
+Moreover, choosing $\alpha_{j} = 0$, we have that $\opt{\alpha}_j c_j(\opt{x}) \geq 0$, which is only possible if 
+\begin{equation}\label{eq:kkt_condition}
+    \opt{\alpha}_i c_i(\opt{x}) = 0 , \; i=1, \ldots, m .
+\end{equation}
+Equation~\eqref{eq:kkt_condition} is the \acrshort{kkt} condition. Now, from the second inequality, we have that
+\begin{equation}
+    \nonumber
+    f(\opt{x}) + \sum_{i=1}^m \opt{\alpha}_i c_i(\opt{x}) \leq f(x) + \sum_{i=1}^m \opt{\alpha}_i c_i(x) ,
+\end{equation}
+and using~\eqref{eq:kkt_condition} and $\opt{\alpha}_i c_i(x) \leq 0$, for all $x \in \vecspace$,
+\begin{equation}
+    \nonumber
+    f(\opt{x}) \leq f(x) + \sum_{i=1}^m \opt{\alpha}_i c_i(x) \leq f(x) ,
+\end{equation}
+so $\opt{x}$ is a solution of the optimization problem.
+
+This theorem proves that the \acrshort{kkt} saddle-point condition is a sufficient one for $x$ to be a solution of the optimization problem.
+Nevertheless, if the objective function and constraints of the optimization problem~\eqref{eq:optproblem_def} are convex, and the constraints satisfy some requirements, it is possible to prove also that the saddle-point condition is a necessary one.
+There are different equivalent such requirements, but here we will use the Slater's condition, which we define next.
+\begin{definition}[Slater's Condition]
+    Let $\vecspace$ be a convex set, a vector space for example, and consider the convex functions $c_1, \ldots, c_q$ that define the feasible region
+    \begin{equation}
+        \cvxset = \set{x \in \vecspace, \; c_i(x) \leq 0, \; i=1, \ldots, q} .
+    \end{equation}  
+    Then, if there exists an $x \in \vecspace$ such that $c_i(x) < 0$ for $i=1, \ldots, p$, we say that the feasible region $\cvxset$ satisfies Slater's condition.       
+\end{definition}
+Now we can give the \acrshort{kkt} theorem, whose proof can be found in~\citet{ScholkopfS02}, that describes the sufficient and necessary conditions.
+% KKT (Necessary condition Th. 6.25 in Schokolpf) (only with Slater Condition)
+\begin{theorem}[Necessary \acrshort{kkt} conditions]
+    Given a constrained optimization problem~\eqref{eq:optproblem_def} with convex objective function $f$ and convex constraint functions $c_1, \ldots, c_q$ and $h_1, \ldots, h_p$, 
+    under the assumptions of Theorem~\ref{th:kkt_saddlepoint}, if the feasible region defined by the constraints satisfy the Slater's condition, then, the saddle point condition of~\eqref{eq:saddle_point} is also a necessary condition.
+\end{theorem}
+This theorem characterizes the solutions of convex constrained optimization problems, however, it does not provide an algorithm or method to find such solutions.
+
+\subsection{Convex Problems and Duality}
+% Case of convex problems
+When the convex objective function and constraints are also differentiable, it is possible to define specific \acrshort{kkt} conditions to characterize the solutions of the optimization problem. To do that we will introduce the concept of dual problem and duality. 
+%
+First, observe that in the saddle point condition presented in~\eqref{eq:saddle_point}, we want to find a point $(\opt{x}, \opt{\alpha}, \opt{\beta})$ that is minimal in $\vecspace$ and maximal in $\reals_{\geq 0}^q \times \reals^p$. 
+%
+To do this, we will use a different approach, introducing the concept of duality and the duality theorems. 
+We need then to find $\sup_{\alpha, \beta} \inf_{x} \lagr(x, \alpha, \beta)$, which leads to the concept of dual problem.
+\begin{definition}[Dual Problem]
+    Given a constrained optimization problem as in~\eqref{eq:optproblem_def}, named the primal problem, and the corresponding Lagrangian, as defined in~\eqref{eq:lagr_def}, its dual problem is:
+    \begin{equation}\label{eq:dualproblem_def}
+        \begin{aligned}
+            &\max_{\fv{\alpha}, \fv{\beta}} & & \Theta(\fv{\alpha}, \fv{\beta}) \\
+            & \text{s.t.} & & \fv{\alpha} \geq 0 ,          
+        \end{aligned}  
+    \end{equation}
+    where $\Theta(\fv{\alpha}, \fv{\beta}) = \inf_{x \in \vecspace}\lagr(x, \fv{\alpha}, \fv{\beta})$ is the dual objective function.
+\end{definition}
+%
+Now, we can prove a result that is known as the weak duality theorem, which illustrates the fundamental relation between the primal and dual problems.
+%
+\begin{theorem}[Weak Duality]
+    Let $\opt{x}$ be a feasible solution of the primal problem~\eqref{eq:optproblem_def}, and let $(\opt{\fv{\alpha}}, \opt{\fv{\beta}})$ be a feasible solution of the dual problem~\eqref{eq:dualproblem_def}, then 
+    $$ f(\opt{x}) \leq \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) .$$
+\end{theorem}
+\begin{proof}
+    By definition of the dual objective function, we have that 
+    \begin{align*}
+        \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) &= \inf_{x \in \vecspace} \lagr(x, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+        &\leq \lagr(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+        &= f(\opt{x}) + (\opt{\fv{\alpha}})^\intercal \fv{c}(\opt{x}) + (\opt{\fv{\beta}})^\intercal \fv{e}(\opt{x}) \leq f(\opt{x}) ,
+    \end{align*}
+    where in the last inequality we have used the feasibility of $\opt{\fv{\alpha}}$ and $\opt{x}$.
+\end{proof}
+With this theorem, we see that we can upper bound the value of the optimal values of the dual problem by the optimal values of the primal one, that is 
+\begin{equation}
+    \nonumber
+    \sup \set{\Theta(\fv{\alpha}, \fv{\beta}),\;  \fv{\alpha} \geq 0} \leq \inf \set{f(x), \; \fv{c}(x) \leq 0,\; \fv{e}(x)=0 } .
+\end{equation}
+The dual gap, also known is the difference between the primal value and the dual one, defined as 
+\begin{equation}
+    \nonumber
+    \inf \set{f(x), \; \fv{c}(x) \leq 0,\; \fv{e}(x)=0 } - \sup \set{\Theta(\fv{\alpha}, \fv{\beta}),\;  \fv{\alpha} \geq 0}
+\end{equation}
+Moreover, if we find feasible $\tilde{x}$ and $\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}$ such that $\Theta(\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}) = f(\tilde{x})$, then, the dual gap is zero, and $\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}$ is a dual solution and $\tilde{x}$ is a primal one.
+%
+We can observe also the connection with Theorem~\ref{th:kkt_saddlepoint}, which we present in the following lemma.
+\begin{lemma}
+    A triplet $(\tilde{x}, \tilde{\fv{\alpha}}, \tilde{\fv{\beta}})$ is a saddle-point satisfying~\eqref{eq:saddle_point} if and only if the dual gap is zero, that is 
+    $ \Theta(\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}) = f(\tilde{x}) .$
+\end{lemma}
+% \begin{proof}
+%     Consider that $(\tilde{x}, \tilde{\fv{\alpha}}, \tilde{\fv{\beta}})$ satisfies~\eqref{eq:saddle_point}, then, since 
+%     \begin{equation}
+%         \nonumber
+%         f(\tilde{x}) + (\tilde{\fv{\alpha}})^\intercal \fv{c}(\tilde{x}) + (\tilde{\fv{\beta}})^\intercal \fv{e}(\tilde{x}) \leq f(x) + (\tilde{\fv{\alpha}})^\intercal \fv{c}(x) + (\tilde{\fv{\beta}})^\intercal \fv{e}(x) 
+%     \end{equation}
+%     \begin{equation}
+%         \nonumber
+%         \lagr(\tilde{x}, \fv{\alpha}, \fv{\beta}) = f(\tilde{x}) + \fv{\alpha}^\intercal \fv{c}(\tilde{x}) + \fv{\beta}^\intercal \fv{e}(\tilde{x}) \leq f(\tilde{x}) + (\tilde{\fv{\alpha}})^\intercal \fv{c}(\tilde{x}) + (\tilde{\fv{\beta}})^\intercal \fv{e}(\tilde{x}) 
+%     \end{equation}
+% \end{proof}
+
+%The next Theorem~\citep{Wolfe}, gives conditions 
+
+Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we can give a stronger result, which will be the one that we will use.
+% Strong duality Thm
+\begin{theorem}[Strong Duality Theorem]
+    Given an optimization problem 
+\end{theorem}
+
 
 
 \section{Support Vector Machines}

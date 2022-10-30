@@ -224,7 +224,7 @@ The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:lin
 
 
 \section{Convex Graph Laplacian Multi-Task Learning}
-
+\label{sec:convexgl}
 
 
 In~\cite{RuizAD21_hais} we proposed a convex formulation for the Graph Laplacian \acrshort{mtl} \acrshort{svm} which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
@@ -573,6 +573,8 @@ that is defined using the kernel function~\eqref{eq:dual_cvxgl_kernel_function}.
 %\subsection{Experiments}
 
 \section{Adaptive Graph Laplacian Algorithm}
+\label{sec:adapconvexgl}
+
 Until now, in this chapter we have seen \acrshort{gl} formulations for kernel methods, where we assume that there exists a graph whose nodes represent the tasks, and the weights of the edges determine the pairwise relations between tasks. 
 %
 If $A$ is the graph adjacency matrix containing these weights, we use the Laplacian regularizer 
