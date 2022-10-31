@@ -1699,28 +1699,16 @@ One possible reason can be found in the nature of the LS-\acrshort{svm} for clas
 
 Apart from the synthetic problems, we also use real data to test our proposal. We consider two regression datasets, \fdata{computer} and \fdata{parkinson}, and a classification dataset, \fdata{landmine}.
 %
-The \fdata{computer} dataset~\cite{Lenk96}, which has been used in several works~\citep{ArgyriouEP08,AgarwalDG10,KumarD12,JeongJ18}, represents the likelihood of purchasing different computer models, as 
+The \fdata{computer} dataset~\cite{Lenk96}, which has been used in several works~\citep{ArgyriouEP08,AgarwalDG10,KumarD12,JeongJ18}, represents the likelihood of purchasing different computer models, as gathered from a survey of $190$ people, who consider $13$ binary attributes of each computer model. There are $20$ different models that the users have to value, then, we have $20$ tasks with $190$ examples each.
+%
+The \fdata{parkinson} dataset\footnote{Available at \url{https://archive.ics.uci.edu/ml/datasets/Parkinsons+Telemonitoring}.} has data of the voice of 42 people with early stage of Parkinson's disease. They represent each recording with 26 attributes and the target is the UPDRS score (a measurement of the movement) of the patient corresponding to each example. 
+In total, there are \num{5875} examples, from $42$ different tasks.
+%
+The \fdata{landmine} dataset contains $9$-dimensional vectors, whose features are extracted from radar images, from $29$ types of landmines. The goal is to decide if there is a landmine present in the image (positive class) or not. In total there are \num{14820} from $29$ different tasks, with an imbalanced ratio of $15.4$ (negative class per positive class example).
+%
+In Table~\ref{table:size_dim_tasks} we give the characteristics of these problems.
+We point out that the size of these problems make them computationally challenging, specially for kernel methods.
 
-
-
-%
-% Explicar qué problemas tengo y qué características tienen
-The \fdata{computer} dataset~\cite{Lenk96}, used in~\cite{ArgyriouEP08,AgarwalDG10,KumarD12,JeongJ18}, contains the likelihood of purchasing one among 20 computer models as obtained from a survey of 190 people, who value 13 binary attributes of each model.
-Here, each computer model corresponds to a task, the 13-dimensional computer attributes are the features, and the users' likelihood is the target.
-That is, we have 20 different tasks, with 190 examples each.
-%
-The \fdata{parkinson} dataset\footnote{Available at \url{https://archive.ics.uci.edu/ml/datasets/Parkinsons+Telemonitoring}.} has the voice data of 42 people with early stage of Parkinson's disease.
-There are a total of \num{5875} 26-dimensional examples.
-The goal is to predict the UPDRS score (a measurement of movement) of each example, and each patient represents a different task.
-%
-The \fdata{landmine} dataset contains examples collected from various areas with landmines.
-Each example is a 9-dimensional real valued feature vector.
-This is a binary classification problem, where the goal is to discriminate between landmines (positive class) and clutter (negative class).
-There are 28 types of landmines, each corresponding to a different task.
-There is a global imbalance ratio of $15.4$ (negative class per positive class example) , which is why the F1 score is a more sensible metric for this problem.
-%
-As it can be appreciated, these are quite demanding problems.
-In Table~\ref{table:size_dim_tasks} we show the characteristics of the problems considered.
 
 \begin{table*}[t!]
     \caption{Sample sizes, dimensions and number of tasks of the datasets used.}
@@ -1741,20 +1729,19 @@ In Table~\ref{table:size_dim_tasks} we show the characteristics of the problems 
 
 
 \subsubsection*{Experimental Procedure.}
-Due to computational and time limitations, for the experimental procedure we have used here an approach  different from the previous one.
-To obtain the numerical results we have carried out the experiments as follows: we use an external 5-fold structure, in which four folds will be used cyclically for cross validation-based hyperparameter selection and one fold for test. 
-With this setting, we obtain 5 different test scores for each model and problem, which we average to have a better estimation of the performance of each model.
-More precisely, the cross validation is performed %using a random search of $50$ points 
-with an internal 5-fold division, with 4 folds for training and one for validation.
-The hyperparameter search is done randomly, defining first a discrete range for each hyperparameter and selecting then a maximum of $50$ random points over the entire combined grid that are evaluated on the inner train-validation folds.
-%That is, for each of the $5$ possible training sets, with four internal folds, and validation sets, with one internal fold, we try $50$ random combinations of hyperparameters and compute their validation scores.
-The hyperparameter combination with the best average validation score is selected and the corresponding model is refitted on the four train-validation folds and applied to the test folds, after which we compute the test scores' average, which we show in Table~\ref{tab:results_real}.
-Since the number of hyperparameters for the \fmod{GLMTL} and \fmod{AdapGLMTL} models that include Laplacian regularization is too large, and the size of the hyperparameter space scales exponentially, we first pre-select the $C, \epsilon, \gamma, \gamma_s$ hyperparameters as the optimal ones for the \fmod{MTL} model.
-We use two different kernel widths $\gamma$ and $\gamma_s$, for the common and specific kernels respectively, see~\eqref{eq:kernel_convexglmtl}.
-With this procedure, we only randomly select for these models the hyperparameters $\nu$ and $\mu$ that control the Laplacian regularization.
-In Table~\ref{table:hyperpars_grid_real} we give the grids used in the cross-validation and which parameters are selected for every model.
-Notice that the inclusion of the $\mu = 0$ and $\nu = 0$ values on the hyperparameter ranges ensures that \fmod{GLMTL} contains \fmod{MTL} (when $\nu = 0$) and that \fmod{AdapGLMTL} contains \fmod{GLMTL} (when $\mu = 0$).
-
+Due to the computational limitations, here we consider a different approach for the experimental procedure to the one used for synthetic problems.
+To compute different test scores for more stable results, we use $5$ external folds, where four folds are used for train and validation and the remaining one as test set.
+That is, we get $5$ different test scores and average them for a better estimation of the performance of the models. 
+%
+For searching the optimal hyperparameters, with each outer train-validation set we perform a randomized search with an internal $5$-fold \acrshort{cv}. That is, we define a discrete range, or grid, for each hyperparameter and then a maximum of $50$ points over the entire combined grid are evaluated on the inner train-validation folds.
+%
+We select the hyperparameter combination with the best average validation score, and the corresponding model is refitted on the entire outer train-validation set, and then applied to the outer test fold to compute the test score. In~\ref{tab:results_real} we give the averages of the $5$ test scores that we obtain with this procedure.
+%
+We remark that the number of hyperparameters in the \fmod{GLMTL} and \fmod{AdapGLMTL} models, which include the \acrshort{gl} regularization, is $5$ and $6$, which define spaces too large to cover with only $50$ points. To alleviate this, we first pre-select the hyperparameters $C, \epsilon, \gamma, \gamma_s$ with those values that are optimal for the \fmod{MTL} model. Recall that we are using two different kernel widths, see the \acrshort{gl} \acrshort{mtl} in Chapter~\ref{Chapter5}.
+%
+In Table~\ref{table:hyperpars_grid_real} we present the grids considered for the \acrshort{cv} search, and we also indicate which parameters are included in this random search for each model.
+Here, observe that we include the values $\mu=0$ and $\nu=0$, which ensures that the the \fmod{GLMTL} model contains the \fmod{MTL} one, with $\nu=0$, and also \fmod{AdapGLMTL} contains \fmod{GLMTL} when $\mu=0$.
+%
 
 \begin{table}[t!]
     \caption{Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model in the real problems.
@@ -1781,23 +1768,25 @@ Notice that the inclusion of the $\mu = 0$ and $\nu = 0$ values on the hyperpara
 
 
 \subsubsection*{Results.}
-The results are shown in Table~\ref{tab:results_real} where we report the MAE for the regression problems and the F1 score for the classification one.
-In \fdata{computer} our \fmod{AdapGLMTL} proposal gives different results for each LX variant. With the L2 variant, the adaptive approach obtains the best result. However, in the L1 and LS variants, while getting the best validation scores, \fmod{AdapGLMTL} does not seem to generalize well in the test set, where the non-adaptive \fmod{GLMTL} model obtains better results.
-Summing this up, in \fdata{computer} \fmod{AdapGLMTL} is best overall for the L2 setting, essentially ties for second place with \fmod{MTL} for LS, and is third for L1.
-In \fdata{parkinson} \fmod{AdapGLMTL} is very close to the best models for L1 and L2, and is the second best for LS.
-%the results are also close to those of \fmod{MTL}.
-% Our proposal is worse for the L1 variant, ties for the L2 one and is better for the LS variant.
-% \comm{CA: No entiendo las dos frase anteriores, nuestra propuesta es \fmod{AdapGLMTL}, ¿no? Hay algo que no cuadra...}
-%In the \fdata{landmine} problem, which is a classification one, the results are similar. 
-In the \fdata{landmine}, a classification problem, \fmod{AdapGLMTL} is best for L1, essentially ties with \fmod{GLMTL} for the first place for LS, but is fourth for L2.
-%\comm{That is, the rankings are not consistent between variants: our proposal obtains clearly the best result for the L1 variant, but it is clearly worse than the independent approach for the L2 variant and ties for the LS one with the non-adaptive \fmod{GLMTL}.}
-%The similarity between the GL models and the \fmod{MTL} can be found in the experimental procedure used, since most hyperparameters used in the GL models are taken from the \fmod{MTL} approach.
-In any case, we point out that the multi-task models obtain the best results in all cases except for the L2 variant in \fdata{landmine}. Also, the GL approaches either tie or surpass the convex \fmod{MTL} approach in every problem and our proposal, \fmod{AdapGLMTL}, obtains the best score in two occasions and is quite competitive in almost all others.
 
-We also observe that the difference in the performance of \fmod{AdapGLMTL} between synthetic and real problems is remarkable.
-However, there is an explanation for this behavior. Our \fmod{AdapGLMTL} approach relies on pushing together those tasks whose models are already close. In the synthetic problems, there are well-defined clusters of tasks and this strategy leads to a smart grouping and better results. In real problems, the situation might be different. The relation among tasks is not clear and the information inferred from the training set might not be that relevant. 
-In fact, when drawing the graph adjacency matrices (not shown for space considerations), they are essentially diagonal for the three real problems; in particular, no clustering between them appears and, therefore, \fmod{AdapGLMTL} cannot draw any advantage on these problems to improve the performance of either \fmod{MTL} or \fmod{GLMTL}.
-%\comm{negativo? quitar? Moreover, the training of the \fmod{AdapGLMTL} algorithm includes more overhead than that of the \fmod{GLMTL}, since there are multiple iterations and matrix updating steps. This complexity might make it more challenging to efficiently exploit all its properties in real world problems.}
+
+In Table~\ref{tab:results_real} we show the test results for the real problems, where we report the \acrshort{mae} for the regression problems and the F1 score for \fdata{landmine}, the classification one.
+%
+In \fdata{computer}, our proposal, \fmod{AdapGLMTL} obtains different results depending on the \acrshort{svm} variant. In the L2-\acrshort{svm}, it gets the best result; however, in the L1 and LS variants, although it has the best validation scores, this does not generalize well to the test set, where the non-adaptive \fmod{GLMTL} approach has the best results.
+%
+In summary, in \fdata{computer}, the proposed \fmod{AdapGLMTL} is best overall for the L2 variant, essentially ties with \fmod{MTL} for second place in the LS variant, and is third for the L1-\acrshort{svm}.
+%
+In the \fdata{parkinson} problem, our proposal is very close to the best models for the L1 and L2 variants, and gets the second best result in the L2-\acrshort{svm}.
+%
+Finally, in the \fdata{landmine}, the classification problem, \fmod{AdapGLMTL} is the best approach for L1, essentially ties with the non-adaptive version for the first place for LS, but it is fourth for the L2-\acrshort{svm}.
+%
+In any case, we can highlight some general patterns: the \acrshort{mt} models get the best results in all cases except in \fdata{landmine} for the L2 variant, the \acrshort{gl} approaches either tie or surpass the \fmod{MTL} approach in all problems, and \fmod{AdapGLMTL} have the best score in two occasions, while being competitive in almost all others.
+
+Now, we also observe that the difference in performance of the \fmod{AdapGLMTL} between the real and synthetic problems has to be pointed out.
+We can try to find an explanation for these different behaviors. Note that our adaptive proposal relies on pushing together tasks whose model parameters are close. In the synthetic problems, the clusters of tasks are well-defined and, thus, smart-grouping lead to better results. However, in the real problems this is not the case. The task structure is not clear, and even more, the information that is inferred from the training set might not reflect the real underlying structure.
+%
+% In fact, when drawing the graph adjacency matrices (not shown for space considerations), they are essentially diagonal for the three real problems; in particular, no clustering between them appears and, therefore, \fmod{AdapGLMTL} cannot draw any advantage on these problems to improve the performance of either \fmod{MTL} or \fmod{GLMTL}.
+
 
 % Real Problems
 \begin{table*}[t!]
