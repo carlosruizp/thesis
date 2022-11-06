@@ -47,7 +47,7 @@ First, the values $A_{rs}$ have to be bounded, otherwise its interpretability is
 Even with bounded weights, in absence of expert knowledge to select them, it is necessary to find a procedure that finds a set of weights $A_{rs}$ that reflects the real relations between tasks. Because of this, in this chapter, a data-driven procedure to select the weights for a Laplacian regularization is presented.
 
 
-\section{Graph Laplacian Multi-Task Learning with Kernel Methods}
+\section{Graph Laplacian Multi-Task Learning with Kernel Methods}\label{sec:graphlap}
 
 \comm{TODO: Motivar kernel extension, es dificil y usamos tensores}
 
@@ -227,7 +227,7 @@ The corresponding dual problem is, therefore, the problem shown in~\eqref{eq:lin
 \label{sec:convexgl}
 
 
-In~\cite{RuizAD21_hais} we proposed a convex formulation for the Graph Laplacian \acrshort{mtl} \acrshort{svm} which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
+In~\cite{RuizAD20} we proposed a convex formulation for the Graph Laplacian \acrshort{mtl} \acrshort{svm} which includes a convex combination of a common part and task-specific parts that are coupled through a Laplacian regularization.
 That is, the models for each task are
 \begin{equation}
     \nonumber
@@ -347,7 +347,7 @@ We derive next the convex \acrshort{gl} \acrshort{mtl} formulations for the L1, 
 \subsection{Convex Graph Laplacian L1-SVM}
 % Anyway, this result is general for any kernel method, but it is also interesting to see how this procedure can be applied in the specific cases of L1, L2 and LS-\acrshort{svms}.
 %
-The primal problem for the linear L1-\acrshort{svm} using this approach, that we have presented in~\citep*{RuizAD21_hais}, is the following one
+The primal problem for the linear L1-\acrshort{svm} using this approach, that we have presented in~\citep*{RuizAD20}, is the following one
 %
 \begin{equation}\label{eq:primal_cvxgl_l1_linear}
   \begin{aligned}
@@ -582,7 +582,7 @@ presented in~\eqref{eq:gl_regularization} to enforce a coupling between tasks ac
 To do this, an adjacency matrix $A$ must be chosen a priori, and it defines the optimization problem.
 However, these weights of $A$ are not known in real-world problems. Even if we have an expert knowledge of the problem at hand, manually selecting the weight between each pair of tasks seems unfeasible, even for a few tasks.
 It is more sensible to use a data-driven approach and automatically learn the matrix $A$.
-In this section, we propose one method to learn $A$ from data, discuss the procedure and computational cost, and also show how the distances can be computed in kernel spaces.
+In this section, we propose one method to learn $A$ from data, which we presented in~\citep{RuizAD21_hais}, discuss the procedure and computational cost, and also show how the distances can be computed in kernel spaces.
 
 \subsection{Motivation and Interpretation}
 %\paragraph*{Entropy-based Interpretation.\\}

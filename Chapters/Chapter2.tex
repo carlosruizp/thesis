@@ -347,7 +347,7 @@ Observe that $\lossf(\cdot, \cdot)$ is a non-negative function and the perfect p
 In the binary classification problems, if we want to minimize the number of misclassified patterns, we use the \emph{accuracy} loss, which, with the labels $\set{0, 1}$ for the classes, is defined as
 \begin{equation}
     \nonumber
-    \lossf(y, f(x)) = (y - f(x))^2
+    \lossf(y, f(x)) = (y - f(x))^2 =
     \begin{cases}
         0, & y = f(x) ,\\
         1, & y \neq f(x) .
@@ -892,9 +892,9 @@ Thus, given an optimization problem like the one presented in~\eqref{eq:optprobl
     \min_{x \in \vecspace} f(x) \text{ subject to } c_i(x) \leq 0 \text{ for } i=1, \ldots, m .
 \end{equation}
 %
-Now we can give the first \acrshort{kkt} theorem.
+Now we can give the first theorem to characterize solutions of the optimization problem by looking for saddle points of its corresponding Lagrangian.
 % KKT saddle point (sufficient condition)
-\begin{theorem}[\acrshort{kkt} Saddle Point Theorem]\label{th:kkt_saddlepoint}
+\begin{theorem}[Saddle Point Theorem (Sufficient Condition)]\label{th:kkt_saddlepoint}
     Consider a constrained optimization problem like the one given in~\eqref{eq:optproblem_def}, with its corresponding Lagrangian $\lagr(x, \fv{\alpha}, \fv{\beta})$. If there exists $\opt{x} \in \vecspace$, $\opt{\fv{\alpha}} \in \reals_{\geq 0}^q$ and $\opt{\fv{\beta}} \in \reals^p$ such that 
     \begin{equation}
         \label{eq:saddle_point}
@@ -926,22 +926,22 @@ If we select $\alpha_i = \opt{\alpha_i}$ for all $i=1, \ldots, m,\; i \neq j$ an
 $c_j(\opt{x}) \leq 0$ for all $j=1, \ldots, m$, so $\opt{x}$ is feasible.
 %
 Moreover, choosing $\alpha_{j} = 0$, we have that $\opt{\alpha}_j c_j(\opt{x}) \geq 0$, which is only possible if 
-\begin{equation}\label{eq:kkt_condition}
+\begin{equation}\label{eq:complementary_condition}
     \opt{\alpha}_i c_i(\opt{x}) = 0 , \; i=1, \ldots, m .
 \end{equation}
-Equation~\eqref{eq:kkt_condition} is the \acrshort{kkt} condition. Now, from the second inequality, we have that
+Equation~\eqref{eq:complementary_condition} is the condition. Now, from the second inequality, we have that
 \begin{equation}
     \nonumber
     f(\opt{x}) + \sum_{i=1}^m \opt{\alpha}_i c_i(\opt{x}) \leq f(x) + \sum_{i=1}^m \opt{\alpha}_i c_i(x) ,
 \end{equation}
-and using~\eqref{eq:kkt_condition} and $\opt{\alpha}_i c_i(x) \leq 0$, for all $x \in \vecspace$,
+and using~\eqref{eq:complementary_condition} and $\opt{\alpha}_i c_i(x) \leq 0$, for all $x \in \vecspace$,
 \begin{equation}
     \nonumber
     f(\opt{x}) \leq f(x) + \sum_{i=1}^m \opt{\alpha}_i c_i(x) \leq f(x) ,
 \end{equation}
 so $\opt{x}$ is a solution of the optimization problem.
 
-This theorem proves that the \acrshort{kkt} saddle-point condition is a sufficient one for $x$ to be a solution of the optimization problem.
+This theorem proves that the saddle-point condition is a sufficient one for $x$ to be a solution of the optimization problem.
 Nevertheless, if the objective function and constraints of the optimization problem~\eqref{eq:optproblem_def} are convex, and the constraints satisfy some requirements, it is possible to prove also that the saddle-point condition is a necessary one.
 There are different equivalent such requirements, but here we will use the Slater's condition, which we define next.
 \begin{definition}[Slater's Condition]
@@ -953,7 +953,7 @@ There are different equivalent such requirements, but here we will use the Slate
 \end{definition}
 Now we can give the \acrshort{kkt} theorem, whose proof can be found in~\citet{ScholkopfS02}, that describes the sufficient and necessary conditions.
 % KKT (Necessary condition Th. 6.25 in Schokolpf) (only with Slater Condition)
-\begin{theorem}[Necessary \acrshort{kkt} conditions]
+\begin{theorem}[Saddle Point Theorem (Neccesary condition)]
     Given a constrained optimization problem~\eqref{eq:optproblem_def} with convex objective function $f$ and convex constraint functions $c_1, \ldots, c_q$ and $h_1, \ldots, h_p$, 
     under the assumptions of Theorem~\ref{th:kkt_saddlepoint}, if the feasible region defined by the constraints satisfy the Slater's condition, then, the saddle point condition of~\eqref{eq:saddle_point} is also a necessary condition.
 \end{theorem}
@@ -961,12 +961,27 @@ This theorem characterizes the solutions of convex constrained optimization prob
 
 \subsection{Convex Problems and Duality}
 % Case of convex problems
-When the convex objective function and constraints are also differentiable, it is possible to define specific \acrshort{kkt} conditions to characterize the solutions of the optimization problem. To do that we will introduce the concept of dual problem and duality. 
+When the convex objective function and constraints are also differentiable, it is possible to define specific necessary conditions to characterize the solutions of the optimization problem, these are the \acrshort{kkt} conditions. Moreover, using affine constraints (or Slaters' condition) they are also necessary ones.
+
 %
-First, observe that in the saddle point condition presented in~\eqref{eq:saddle_point}, we want to find a point $(\opt{x}, \opt{\alpha}, \opt{\beta})$ that is minimal in $\vecspace$ and maximal in $\reals_{\geq 0}^q \times \reals^p$. 
+Before that, observe that in the saddle point condition presented in~\eqref{eq:saddle_point}, which is a sufficient condition and with Slaters' condition also a necessary one, we want to find a saddle point $(\opt{x}, \opt{\alpha}, \opt{\beta})$, 
 %
-To do this, we will use a different approach, introducing the concept of duality and the duality theorems. 
-We need then to find $\sup_{\alpha, \beta} \inf_{x} \lagr(x, \alpha, \beta)$, which leads to the concept of dual problem.
+that is, $\sup_{\alpha, \beta} \inf_{x} \lagr(x, \alpha, \beta)$ or $\inf_{x} \sup_{\alpha, \beta} \lagr(x, \alpha, \beta)$. 
+%
+These two approaches for looking for the saddle point inspire the concept of duality.
+%
+For this explanation we only consider inequality constraints, and if we have equality constraints we can transform them in two inequality constraints, so we get a total of $m = p + 2q$ constraints, as shown above. Then, for any $\fv{\alpha} \in \reals^m_{\geq 0}$ we have that
+\begin{equation}
+    \nonumber
+    \inf_{x} \lagr(x, \fv{\alpha}) \leq \inf_{x} \sup_{\fv{\alpha} \geq 0} \lagr(x, \fv{\alpha}),
+\end{equation}
+thus, in particular we can write
+\begin{equation}
+    \label{eq:lagr_weakth}
+    \sup_{\fv{\alpha} \geq 0} \inf_{x} \lagr(x, \fv{\alpha}) \leq \inf_{x} \sup_{\fv{\alpha} \geq 0} \lagr(x, \fv{\alpha}).
+\end{equation}
+The left-hand side of this inequality and the inequality itself give the motivation of the dual problem and the weak duality theorem, concepts that we define next.
+%
 \begin{definition}[Dual Problem]
     Given a constrained optimization problem as in~\eqref{eq:optproblem_def}, named the primal problem, and the corresponding Lagrangian, as defined in~\eqref{eq:lagr_def}, its dual problem is:
     \begin{equation}\label{eq:dualproblem_def}
@@ -982,7 +997,7 @@ Now, we can prove a result that is known as the weak duality theorem, which illu
 %
 \begin{theorem}[Weak Duality]
     Let $\opt{x}$ be a feasible solution of the primal problem~\eqref{eq:optproblem_def}, and let $(\opt{\fv{\alpha}}, \opt{\fv{\beta}})$ be a feasible solution of the dual problem~\eqref{eq:dualproblem_def}, then 
-    $$ f(\opt{x}) \leq \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) .$$
+    $$ \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) \leq f(\opt{x}) .$$
 \end{theorem}
 \begin{proof}
     By definition of the dual objective function, we have that 
@@ -993,19 +1008,44 @@ Now, we can prove a result that is known as the weak duality theorem, which illu
     \end{align*}
     where in the last inequality we have used the feasibility of $\opt{\fv{\alpha}}$ and $\opt{x}$.
 \end{proof}
+%From this proof we can see also that the difference between 
 With this theorem, we see that we can upper bound the value of the optimal values of the dual problem by the optimal values of the primal one, that is 
 \begin{equation}
     \nonumber
-    \sup \set{\Theta(\fv{\alpha}, \fv{\beta}),\;  \fv{\alpha} \geq 0} \leq \inf \set{f(x), \; \fv{c}(x) \leq 0,\; \fv{e}(x)=0 } .
+    \sup \set{\Theta(\fv{\alpha}, \fv{\beta}),\;  \fv{\alpha} \geq 0} \leq \inf \set{f(x), \; \fv{c}(x) \leq 0,\; \fv{e}(x)=0 } ,
 \end{equation}
-The dual gap, also known is the difference between the primal value and the dual one, defined as 
+which is an equivalent formulation to express~\eqref{eq:lagr_weakth}.
+The dual gap is the difference between the primal value and the dual one, defined as 
 \begin{equation}
     \nonumber
     \inf \set{f(x), \; \fv{c}(x) \leq 0,\; \fv{e}(x)=0 } - \sup \set{\Theta(\fv{\alpha}, \fv{\beta}),\;  \fv{\alpha} \geq 0}
 \end{equation}
 Moreover, if we find feasible $\tilde{x}$ and $\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}$ such that $\Theta(\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}) = f(\tilde{x})$, then, the dual gap is zero, and $\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}$ is a dual solution and $\tilde{x}$ is a primal one.
 %
-We can observe also the connection with Theorem~\ref{th:kkt_saddlepoint}, which we present in the following lemma.
+
+Looking back again at the formulation of~\eqref{eq:lagr_weakth}, assume that there exists a $\opt{x}$ and $\opt{\fv{\alpha}} \in \reals^{m}_{\geq 0}$ such that 
+\begin{equation}
+    \nonumber
+    \lagr(\opt{x}, \fv{\alpha}) \leq \lagr(\opt{x}, \opt{\fv{\alpha}}) \leq \lagr(x, \opt{\fv{\alpha}})
+\end{equation}
+for any feasible $x \in \vecspace$ and $\fv{\alpha} \in \reals^m$; then, we have that 
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \inf_{x} \sup_{\fv{\alpha} \geq 0} \lagr(x, \fv{\alpha}) &\leq \sup_{\fv{\alpha} \geq 0} \lagr(\opt{x}, \fv{\alpha}) \\
+        & = \lagr(\opt{x}, \opt{\fv{\alpha}}) \\
+        & = \inf_{x} \lagr(x, \opt{\fv{\alpha}}) \\
+        & \leq \sup_{\fv{\alpha}} \inf_{x} \lagr(x, \fv{\alpha}), 
+    \end{aligned}
+\end{equation}
+which, alongside~\eqref{eq:lagr_weakth}, yields 
+\begin{equation}
+    \label{eq:lagr_strongth}
+    \sup_{\fv{\alpha} \geq 0} \inf_{x} \lagr(x, \fv{\alpha}) = \inf_{x} \sup_{\fv{\alpha} \geq 0} \lagr(x, \fv{\alpha}).
+\end{equation}
+Therefore, finding a saddle point $(\opt{x}, \opt{\fv{\alpha}})$ of $\lagr(x, \fv{\alpha})$ implies that the dual gap is zero, and, thus $\opt{x}$ and $\opt{\fv{\alpha}}$ are primal and dual solutions.
+%
+We can observe now the connection of duality with Theorem~\ref{th:kkt_saddlepoint}, which we present in the following lemma, and whose proof is similar to the reasoning we have given above.
 \begin{lemma}
     A triplet $(\tilde{x}, \tilde{\fv{\alpha}}, \tilde{\fv{\beta}})$ is a saddle-point satisfying~\eqref{eq:saddle_point} if and only if the dual gap is zero, that is 
     $ \Theta(\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}) = f(\tilde{x}) .$
@@ -1023,16 +1063,96 @@ We can observe also the connection with Theorem~\ref{th:kkt_saddlepoint}, which 
 % \end{proof}
 
 %The next Theorem~\citep{Wolfe}, gives conditions 
+%
+We know now that finding a saddle point of the Lagrangian is equivalent to finding primal and dual solutions, and, moreover, that the dual gap is zero.
+However, with these results, to know if the dual gap is zero, we need to find the primal and dual solutions, so it is not very useful
+Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we can give conditions ``a priori'' that are sufficient and necessary for the dual gap to be zero, these are the \acrshort{kkt} conditions that we present next.
+% KKT conditions
+\begin{theorem}[\acrshort{kkt} conditions]\label{th:kkt_conditions}
+    Consider an optimization problem~\eqref{eq:optproblem_def} where $f, c_i$ are continuously differentiable functions over $\vecspace$ and $e_i$ are affine functions. Suppose that there exists $\opt{x} \in \vecspace$ such that there exist $\alpha \in \reals^q$ and $\opt{\fv{\beta}} \in \reals^p$ that satisfy
+    \begin{align}
+        &\nabla_x f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i \nabla_x c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i \nabla_x e_i(\opt{x}) = 0 \; \text{(stationarity)}, \label{eq:kkt_station} \\
+        &\opt{\alpha}_i c_i(\opt{x}) = 0, \; \text{(complementary slackness)}, \label{eq:kkt_comp}\\
+        &c_i(\opt{x}) \leq 0 , \; h_j(x) = 0, \; \text{(primal feasibility)}, \label{eq:kkt_pfeas}\\
+        &\alpha_i \geq 0,\;  \text{(dual feasibility)} , \label{eq:kkt_dfeas}
+    \end{align}  
+    where $i=1, \ldots, q$ and $j=1, \ldots, p$; then $\opt{x}$ is a solution of the optimization problem.
+    Also, if there exists $\hat{x} \in \vecspace$ such that for $i=1, \ldots, q$, 
+    \begin{equation}
+        \nonumber
+        c_i(\hat{x}) < 0 \; \text{(Slaters' condition)};
+    \end{equation}
+    then the conditions~\eqref{eq:kkt_station}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas} are necessary.
+\end{theorem}
+\begin{proof}
+    % Sufficient
+    We will first prove the sufficient condition. For any feasible $x \in \vecspace$ we have that
+    \begin{equation}
+        \begin{aligned}
+            f(\opt{x}) &= f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
+            &\leq f(x) + \sum_{i=1}^q \opt{\alpha}_i c_i(x) + \sum_{j=1}^p \opt{\beta}_i e_i(x) \\
+            &\leq f(x) ,
+        \end{aligned}
+    \end{equation}
+    where in the first equality we have used the feasibility of $\opt{x}$ and the complementary slackness, in the first inequality we have used the stationarity condition, and in the second one the feasibility of $\opt{\fv{\alpha}}$ and $x$.
+    %
+    Observe that we can write the first inequality because $f$ and $c_i$ are convex, differentiable functions, and $e_i$ are affine.
+    
+    % Necessary
+    % https://www.stat.cmu.edu/~ryantibs/convexopt-S15/scribes/12-kkt-scribed.pdf
+    To prove that the conditions are necessary, assume that we have $\opt{x}$ that is the solution of the optimization problem~\eqref{eq:optproblem_def}, then we have that
+    \comm{TODO}
+\end{proof}
 
-Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we can give a stronger result, which will be the one that we will use.
+The \acrshort{kkt} conditions for problems with convex, differentiable functions are closely related with
+
 % Strong duality Thm
 \begin{theorem}[Strong Duality Theorem]
-    Given an optimization problem 
+    Consider an optimization problem~\eqref{eq:optproblem_def} where $f, c_i$ are continuously differentiable functions over $\vecspace$ and $e_i$ are affine functions. Then there exists $\opt{x}$ and $(\opt{\fv{\alpha}}, \opt{\fv{\beta}})$ that are primal and dual solutions, respectively, and
+    $$ f(\opt{x}) = \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}), $$
+    that is, the dual gap is zero.
 \end{theorem}
+\begin{proof}
+    We just need to see that 
+    \begin{align*}
+        \nonumber
+        \theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) &= \inf_{x} \lagr(x, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+        & = \lagr(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+        & = f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
+        &= f(\opt{x}) ,
+    \end{align*}
+    where in the second inequality we use~\eqref{eq:kkt_station} and in the last one we use~\eqref{eq:kkt_comp}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas}.
+\end{proof}
+These two results will be helpful to find solution for the problems of interest in this work. The strategy that we will follow is to find $\opt{x}$ as the point where $\nabla_x \lagr(x, \fv{\alpha}, \fv{\beta}) $ vanishes, and define the dual problem as
+\begin{equation}
+    \nonumber
+    \Theta(\fv{\alpha}, \fv{\beta}) = \inf_{x} \lagr(x, \fv{\alpha}, \fv{\beta}) =  \lagr(\opt{x}, \fv{\alpha}, \fv{\beta}) 
+\end{equation}
+and then, by finding its maximum, since $\Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) = f(\opt{x})$, we know that $\opt{x}$ is a primal solution and $(\opt{\fv{\alpha}}, \opt{\fv{\beta}})$ is a dual one. Moreover, since the KKT conditions are also necessary, we use~\eqref{eq:kkt_comp} to study the properties of such solutions.
 
 
 
 \section{Support Vector Machines}
+Vapnik presented the \acrshort{svm} as a model that consider only a particular kind of hypotheses, those that, in a binary classification context, leave a maximum margin between the classes. The motivation behind this is to limit the capacity of the hypothesis space. To minimize the empirical risk with such set of hypothesis, we formulate an optimization problem, which can be solved using the tools that we have given in the previous section. The \acrshort{svm} has many interesting and useful properties, for example, the optimization problem is a convex one, so the solution is unique. Also, one of the most relevant characteristic is the possibility of transforming the data into a possibly infinite-dimensional Hilbert space using the kernel trick.
+In this section we will present the \acrshort{svm}, we will motivate it, present the linear formulation and its kernel extension. We will also present \acrshort{svm} variants such as the L2, and LS-\acrshort{svm}.
+
+\subsection{Motivation}
+%
+Before illustrating the idea that leads to the \acrshort{svm} case, we have to define some concepts. Consider the sample of a binary classification problem:
+\begin{equation}
+    \nonumber
+    \sample = \set{(x_i, y_i) \in \Xspace \times \Yspace, \; i=1, \ldots, \nsamples}
+\end{equation}
+where we typically use the class labels $\Yspace = \set{0, 1}$ or $\Yspace={-1, 1}$, and $\Xspace$ is usually $\reals^\dimx$. As we have seen, the goal in this problem is to find a rule $f: \Xspace \to \Yspace$ that minimizes the number of errors, namely $\emprisk(f) = \abs{\set{i: f(x_i) \neq y_i}}$, which using the labels $\Yspace = \set{0, 1}$ can be expressed as
+\begin{equation}
+    \nonumber
+    \emprisk(f) = \sum_{i=1}^\nsamples (y_i - f(x_i))^2 .
+\end{equation}
+If, for a classification problem with sample $\sample$, there exists a rule $f(\cdot)$ such that all the instances are correctly classified, that is, its corresponding $\emprisk(f) = 0$, we say that the problem is separable; if this rule is linear, $f(x) = \dotp{w}{x} + b$, we say that the problem is linearly separable.
+If for any linear rule $f$, its associated $\emprisk(f) > 0$, we say that the problem is not linearly separable. 
+%
+Now, consider a 
+
 \subsection{Linearly Separable Case}
 \subsection{Non-Linearly Separable Case}
 \subsection{Kernel Extension}
