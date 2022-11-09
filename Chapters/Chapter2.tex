@@ -982,7 +982,7 @@ thus, in particular we can write
 \end{equation}
 The left-hand side of this inequality and the inequality itself give the motivation of the dual problem and the weak duality theorem, concepts that we define next.
 %
-\begin{definition}[Dual Problem]
+\begin{definition}[Dual Problem]\label{def:dual_problem}
     Given a constrained optimization problem as in~\eqref{eq:optproblem_def}, named the primal problem, and the corresponding Lagrangian, as defined in~\eqref{eq:lagr_def}, its dual problem is:
     \begin{equation}\label{eq:dualproblem_def}
         \begin{aligned}
@@ -1077,7 +1077,7 @@ Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we c
         &\alpha_i \geq 0,\;  \text{(dual feasibility)} , \label{eq:kkt_dfeas}
     \end{align}  
     where $i=1, \ldots, q$ and $j=1, \ldots, p$; then $\opt{x}$ is a solution of the optimization problem.
-    Also, if there exists $\hat{x} \in \vecspace$ such that for $i=1, \ldots, q$, 
+    Also, if $c_i$ are affine functions as well, or if there exists $\hat{x} \in \vecspace$ such that for $i=1, \ldots, q$, 
     \begin{equation}
         \nonumber
         c_i(\hat{x}) < 0 \; \text{(Slaters' condition)};
@@ -1104,25 +1104,25 @@ Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we c
     \comm{TODO}
 \end{proof}
 
-The \acrshort{kkt} conditions for problems with convex, differentiable functions are closely related with
+The \acrshort{kkt} conditions for problems with convex, differentiable functions are closely related with the strong duality theorem, that we give next.
 
 % Strong duality Thm
-\begin{theorem}[Strong Duality Theorem]
+\begin{theorem}[Strong Duality Theorem]\label{th:strong_duality}
     Consider an optimization problem~\eqref{eq:optproblem_def} where $f, c_i$ are continuously differentiable functions over $\vecspace$ and $e_i$ are affine functions. Then there exists $\opt{x}$ and $(\opt{\fv{\alpha}}, \opt{\fv{\beta}})$ that are primal and dual solutions, respectively, and
     $$ f(\opt{x}) = \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}), $$
     that is, the dual gap is zero.
 \end{theorem}
-\begin{proof}
-    We just need to see that 
-    \begin{align*}
-        \nonumber
-        \theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) &= \inf_{x} \lagr(x, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
-        & = \lagr(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
-        & = f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
-        &= f(\opt{x}) ,
-    \end{align*}
-    where in the second inequality we use~\eqref{eq:kkt_station} and in the last one we use~\eqref{eq:kkt_comp}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas}.
-\end{proof}
+% \begin{proof}
+%     We just need to see that 
+%     \begin{align*}
+%         \nonumber
+%         \theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) &= \inf_{x} \lagr(x, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+%         & = \lagr(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}}) \\
+%         & = f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
+%         &= f(\opt{x}) ,
+%     \end{align*}
+%     where in the second inequality we use~\eqref{eq:kkt_station} and in the last one we use~\eqref{eq:kkt_comp}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas}.
+% \end{proof}
 These two results will be helpful to find solution for the problems of interest in this work. The strategy that we will follow is to find $\opt{x}$ as the point where $\nabla_x \lagr(x, \fv{\alpha}, \fv{\beta}) $ vanishes, and define the dual problem as
 \begin{equation}
     \nonumber
@@ -1138,6 +1138,12 @@ In this section we will present the \acrshort{svm}, we will motivate it, present
 
 \subsection{Motivation}
 %
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Chapter2/SeparableProblem/separable_problem.pdf}
+    \caption{Example of a binary classification problem, where classes are represented with colors blue and red, that is linearly separable.}
+    \label{fig:separable_problem}
+\end{figure}
 Before illustrating the idea that leads to the \acrshort{svm} case, we have to define some concepts. Consider the sample of a binary classification problem:
 \begin{equation}
     \nonumber
@@ -1148,13 +1154,241 @@ where we typically use the class labels $\Yspace = \set{0, 1}$ or $\Yspace={-1, 
     \nonumber
     \emprisk(f) = \sum_{i=1}^\nsamples (y_i - f(x_i))^2 .
 \end{equation}
-If, for a classification problem with sample $\sample$, there exists a rule $f(\cdot)$ such that all the instances are correctly classified, that is, its corresponding $\emprisk(f) = 0$, we say that the problem is separable; if this rule is linear, $f(x) = \dotp{w}{x} + b$, we say that the problem is linearly separable.
-If for any linear rule $f$, its associated $\emprisk(f) > 0$, we say that the problem is not linearly separable. 
+If, for a classification problem with sample $\sample$, there exists a rule $f(\cdot)$ such that all the instances are correctly classified, that is, its corresponding $\emprisk(f) = 0$, we say that the problem is separable; if this rule is linear, $f(x) = \dotp{w}{x} + b$, we say that the problem is linearly separable. That is, we can find a hyperplane that divides the space in two halves, and the two classes are completely contained in one of the halves, each in a different one. See Figure~\ref{fig:separable_problem} to see an example of such problems.
+On the other hand, if for any linear rule $f$, its associated $\emprisk(f) > 0$, we say that the problem is not linearly separable. 
 %
-Now, consider a 
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\textwidth]{Chapter2/SeparableProblem/stochastic_boundaries.pdf}
+    \caption{Separable problem with three different perfect classification rules.}
+    \label{fig:stochastic_boundaries}
+\end{figure}
 
-\subsection{Linearly Separable Case}
-\subsection{Non-Linearly Separable Case}
+Given a linearly separable problem, there might exist infinitely many linear functions that separate the two classes perfectly. See for example the previous example with three different boundaries that achieve perfect classification in Figure~\ref{fig:stochastic_boundaries}.
+We may wonder then which is the best boundary among all those whose error is zero. Vapnik proposes to use maximum margin hyperplanes, that is, consider only those hyperplanes whose distance to the closest point is maximal.
+Vapnik also shows that this kind of functions have better generalization properties, which have to do with the capacity of the hypothesis space.
+%
+The capacity of a set of functions is not easily interpretable, however, we can illustrate the properties of the maximum margin hyperplanes with the following reasoning. Given an empirical, training sample, we can learn a function that perfectly separate the two classes, but the corresponding boundary is very close to the points of one of the classes, say the red one in our example. If we sampled new points, we do not know if the boundary still achieve perfect classification, but it seems probable that some red points fall in the wrong side. See the middle example in Figure~\ref{fig:stochastic_boundaries} to illustrate this explanation.
+%
+However, if we select the boundary that is the furthest away from its closest points, we expect that such maximum margin boundary will be valid for new samples.
+%
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Chapter2/SeparableProblem/maxmargin_boundary.pdf}
+    \caption{Linearly separable problem separated by a maximum margin boundary. The classification boundary is shown with a solid line. The lines parallel to the boundary that contain the closest points to such boundary are depicted with dashed lines.}
+    \label{fig:maxmargin_boundary}
+\end{figure}
+%
+See in Fig our separable problem divided by a maximum margin hyperplane, which is a line in the two-dimensional case. We can see that in this case, the points from the sample are the furthest away possible from the boundary, which accounts for a better generalization to new data.
+
+To find the maximum margin hyperplane, recall first the signed distance from a point $\tilde{x}$ to plane defined by $\dotp{w}{\cdot} + \hat{b} = 0$ is given by 
+\begin{equation}
+    \nonumber
+    d(\tilde{x}) = \frac{1}{\norm{w}} (\dotp{w}{\tilde{x}} + b) ,
+\end{equation}
+where we replace $\frac{1}{\norm{w}} \hat{b}$ by the bias $b$.
+Also, if we label the two classes using $\Yspace = \set{-1, 1}$, we can say that an instance $(x_i, y_i)$ is correctly classified when $$y_i \frac{1}{\norm{w}} \left(\dotp{w}{x_i} + b \right) > 0 .$$
+Then, if we want to find that hyperplane that maximizes the margin while classifying all problems correctly, we can express it as
+\begin{equation}\nonumber
+    \begin{aligned}
+        &\max_{w, b} & & m \\
+        & \text{s.t.} & & y_i \frac{1}{\norm{w}} (\dotp{w}{\tilde{x}} + b) \geq m .         
+    \end{aligned}  
+\end{equation}
+This is equivalent to the following problem 
+\begin{equation}\nonumber
+    \begin{aligned}
+        &\max_{w, b} & & m \\
+        & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq m \norm{w} ,       
+    \end{aligned}  
+\end{equation}
+and, since the norm of the vector $w$ is not relevant, we can choose it such that $\norm{w} = 1 / m$; thus, the problem is given by
+\begin{equation}\nonumber
+    \begin{aligned}
+        &\max_{w, b} & & \frac{1}{\norm{w}} \\
+        & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq 1 ,       
+    \end{aligned}  
+\end{equation}
+which has the same solutions as the following problem with easier derivatives:
+\begin{equation}
+    \label{eq:separable_primal}
+    \begin{aligned}
+        &\min_{w, b} & & \frac{1}{2} \norm{w}^2 \\
+        & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq 1 .       
+    \end{aligned}  
+\end{equation}
+%
+Observe that in order to satisfy the constraints, it is not enough for the instances $(x_i, y_i)$ to be well classified, namely 
+$$ y_i (\dotp{w}{\tilde{x}} + b) > 0 ,$$
+but we are imposing a margin between the decision boundary and the data points, so the constraints are actually 
+$$ y_i (\dotp{w}{\tilde{x}} + b) \geq 1 .$$
+Therefore, we have expressed the problem of finding the maximum margin hyperplane as an optimization problem, like those that we have studied before in this chapter. However, this is an approach that is only valid for separable problems, however when using real-world data it is uncommon to find this kind of problems. To solve this issue, we have to introduce variables in the optimization problem that allow for misclassified points.
+
+\subsection{Linear Support Vector Machines}
+%
+When we face a problem that is not linearly separable, it means that, for any rule $f(\cdot) = \dotp{w}{\cdot} + b$ there exist instances such that 
+$$ y_j (\dotp{w}{x_j} + b) \leq 0 .$$
+Moreover, when considering the constraints of the \acrshort{svm}, which wants to keep a margin, any instance $(x_j, y_j)$ such that 
+$$ y_j (\dotp{w}{x_j} + b) < 1 $$
+is not satisfying the constraints.
+%
+We can fix this by adding some slack variables $\xi_j \geq 0$ which we use to compensate in these contraints as
+$$ y_i (\dotp{w}{x_i} + b) \geq 1 - \xi_i. $$
+Now, for instances $(x_i, y_i)$ such that $y_i (\dotp{w}{x_i} + b) \geq 1$, its corresponding slack variable is $\xi_i = 0$. However, for instances such that $y_i (\dotp{w}{x_i} + b) < 1$, its corresponding slack variable is $\xi_i = 1 - y_i (\dotp{w}{x_i} + b)$, thus, $y_i (\dotp{w}{x_i} + b) = 1 - \xi_i .$
+Summing it up, we can express then the slack variables as 
+\begin{equation}
+    \nonumber
+    \xi_i = \pospart{1 - y_i (\dotp{w}{x_i} + b)} = \max(0, 1 - y_i (\dotp{w}{x_i} + b)),
+\end{equation} 
+which is the hinge loss function defined~\eqref{eq:hinge_def}, so the slack variables are also named hinge variables. 
+Now we can give the definition of the optimization problem that corresponds to finding a maximum margin hyperplane with slack variables.
+\begin{definition}[Primal Problem of \acrshort{svm} for Classification]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    the primal problem of the \acrshort{svm} for binary classification is:
+    \begin{equation}
+        \label{eq:linear_primal_clas}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^m \xi_i + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & l_i (\dotp{w}{\tilde{x}} + b) \geq 1 - \xi_i , \\
+            & & & \xi_i \geq 0 ,      
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+Observe that this primal problem can be interpreted then as a regularized risk functional, where we have the risk term, where we use the hinge loss, and the regularization, penalizing $\norm{w}$; and where $C$ is a hyperparameter that regulates the trade-off between the margin and errors that the model commits.
+
+% Regression
+In the regression setting we need to define the primal problem differently. We again want to define a regularized risk functional, but we need to use a loss suited for regression. In the \acrshort{svm} for regression, the goal is to find a regression function such that the points are at a distance smaller than a given $\epsilon$. 
+%
+That is, given a training sample 
+$$ \sample = \set{(x_i, t_i), i=1, \ldots, m}, $$
+with $t_i \in \reals$ being the target values, the hard constraints to express this would be 
+\begin{equation}
+    \nonumber
+    \abs{t_i - (\dotp{w}{x_i} + b) } \leq \epsilon,
+\end{equation}
+However, it is possible that there does not exist such function, so we introduce slack variables $\xi_i \geq 0$ again as
+\begin{equation}
+    \nonumber
+    \abs{t_i - (\dotp{w}{x_i} + b) } \leq \epsilon + \xi_i,
+\end{equation}
+That is, the slack variables are defined as 
+\begin{equation}
+    \xi_i = \abs{t_i - (\dotp{w}{x_i} + b)}_\epsilon .
+\end{equation}
+That is, it is equivalent to using the $\epsilon$-insenstitive loss presented in~\eqref{eq:epsins_def}.
+Getting rid of the absolute value, these constraints can be decomposed as
+\begin{equation}
+    \nonumber
+   \dotp{w}{x_i} + b \geq t_i - \epsilon - \xi_i , \; \dotp{w}{x_i} + b \leq t_i + \epsilon + \hat{\xi}_i.
+\end{equation}
+Now, we can write the regression \acrshort{svm} primal problem
+\begin{definition}[Primal Problem of \acrshort{svm} for Regression]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the class labels, 
+    the primal problem of the \acrshort{svm} for regression is:
+    \begin{equation}
+        \label{eq:linear_primal_reg}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^m \left(\xi_i + \hat{\xi}_i\right) + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & \dotp{w}{x_i} + b \geq t_i - \epsilon - \xi_i  , \\
+            & & & \dotp{w}{x_i} + b \leq t_i + \epsilon + \hat{\xi}_i , \\
+            & & & \xi_i \geq 0 , \hat{\xi}_i \geq 0 ,      
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+We have again defined then a regularized risk functional, where now the selected loss is the $\epsilon$-insensitive one. Again $C$ is the trade-off hyperparameter, but in this case we also have $\epsilon$ as the hyperparameter that defines the width of the tube insensitive to errors.
+
+% Unifying formulation
+In both cases, classification and regression we have defined corresponding optimization problems, which can be also interpreted as regularized risk functionals, that present some similarities. In fact, it is possible to express both problems using a unifying formulation, as we show next.
+\begin{lemma}[Unifying Formulation for \acrshort{svm}]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    the primal problem defined as
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq p_i - \xi_i , \\
+            & & & \xi_i \geq 0 ,      
+        \end{aligned}  
+    \end{equation}
+    can be interpreted as the classification primal \acrshort{svm} problem~\eqref{eq:linear_primal_clas} when $\nsamples=m$ and
+    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
+    and can be interpreted as the regression primal \acrshort{svm} problem~\eqref{eq:linear_primal_reg} when $\nsamples = 2 m$ and
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            & p_i = t_i - \epsilon ,\; &y_i &= 1 &\text{ for } i=1, \ldots, m ; \\
+            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
+        \end{aligned}
+    \end{equation}
+\end{lemma}
+%
+\begin{definition}[Primal Problem - Unifying Formulation]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    we define the unified primal problem of \acrshort{svm} as
+    \begin{equation}
+        \label{eq:linear_primal}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq p_i - \xi_i , \\
+            & & & \xi_i \geq 0 ,      
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
+\end{definition}
+%
+For the rest of this work we will use this formulation whenever it is not necessary to make a specific comment regarding the specific classification or regression characteristics.
+%
+The problem defined in~\eqref{eq:linear_primal} is an optimization primal problem with a convex and differentiable objective function, and with affine constraint functions; then, we know from the strong duality theorem, presented in~\ref{th:strong_duality}, that we can use its corresponding dual problem to find the solution. Recall that to obtain the dual problem, defined in~\ref{def:dual_problem}, we need the Lagrangian function. In this case, the Lagrangian corresponding to~\ref{eq:linear_primal} is 
+\begin{equation}
+    \label{eq:linear_lagr}
+    \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\tilde{x}} + b) - p_i + \xi_i \right] - \sum_{i=1}^\nsamples \beta_i \xi_i ,
+\end{equation}
+%
+where $\fv{\alpha}, \fv{\beta} \geq 0$ are the Lagrange multipliers. Although in the general optimization problem explanations we used $\fv{\beta}$ for equality constraints, here we use it to discriminate between the two kinds of constraints in~\eqref{eq:linear_primal}. 
+%
+Now, the dual problem is defined as 
+$$ \Theta(\fv{\alpha}, \fv{\beta}) = \inf_{w, b, \fv{\xi}} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) . $$
+Observe that $\lagr(w, b, \fv{\alpha}, \fv{\beta})$ is convex in all the primal variables, $w, b$ and $\fv{\xi}$, because the objective function is convex and the constraints are affine. Moreover, it is also differentiable in the primal variables, so to find the minimum of the Lagrangian in the primal variables is sufficient to take derivatives and select those points where these derivatives are zero:
+\begin{align}
+    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i x_i , \label{eq:lagr_diff_w} \\
+    \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b} \\
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies C - \alpha - \beta_i = 0 , \label{eq:lagr_diff_xi}
+\end{align}
+If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, substiuting $w$ according to~\eqref{eq:lagr_diff_w}, we get 
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \inf_{w, b, \fv{\xi}} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) &= \frac{1}{2} \dotp{\sum_{i=1}^\nsamples y_i \alpha_i x_i}{\sum_{i=1}^\nsamples y_i \alpha_i x_i} \\
+        &\quad- \sum_{i=1}^\nsamples \alpha_i \left[y_i \dotp{\sum_{j=1}^\nsamples y_j \alpha_j x_j}{x_i}  \right] + \sum_{i=1}^\nsamples \alpha_i p_i \\
+        &= -\frac{1}{2} \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples y_i y_j \alpha_i \alpha_j \dotp{x_i}{x_j} + \sum_{i=1}^\nsamples \alpha_i p_i .
+    \end{aligned}
+\end{equation}
+We observe here that $\fv{\beta}$ disappear from the dual objective function $\Theta$. However, we still have to take into account that we have used~\eqref{eq:lagr_diff_b} and~\eqref{eq:lagr_diff_xi}. From~\eqref{eq:lagr_diff_xi}, since $\beta_i \geq 0$, we get that $\alpha_i \leq C$. Then, the dual problem can be defined as follows.
+\begin{definition}[Dual Problem - Unifying Formulation]
+    The dual problem corresponding to problem~\eqref{eq:linear_primal} is
+    \begin{equation}
+        \label{eq:linear_dual}
+        \begin{aligned}
+            &\min_{\fv{\alpha}} & & \frac{1}{2} \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples y_i y_j \alpha_i \alpha_j \dotp{x_i}{x_j} - \sum_{i=1}^\nsamples \alpha_i p_i \\
+            & \text{s.t.} & & \sum_{i=1}^\nsamples y_i \alpha_i = 0 , \\
+            & & & 0 \leq \alpha_i \leq C ,      
+        \end{aligned}  
+    \end{equation}
+    where the first constraint is named equality constraint and the rest are the box constraints.
+\end{definition}
+The result is a constrained quadratic problem where the first term is quadratic and the second is linear. Algorithms like SMO
+
+
 \subsection{Kernel Extension}
 \subsection{SVM properties}
 %\subsection{Connection with Structural Learning}
