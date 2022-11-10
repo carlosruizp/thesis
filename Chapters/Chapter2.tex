@@ -429,7 +429,16 @@ The \emph{squared} loss is also easily adaptable to the multi-target regression 
     \label{eq:sqmulti_def}
     \lossf(y, f(x)) =  \norm{\fv{y} - \fv{f}(x)}^2.
 \end{equation}
-
+%
+The $\epsilon$-insensitive loss can also be extended to use the squared value of the distance. The squared $\epsilon$-insensitive loss is defined as
+\begin{equation}
+    \label{eq:sqepsins_def}
+    \lossf(y, f(x)) = \abs{y - f(x)}^2_\epsilon =
+    \begin{cases}
+        0, & (y - f(x))^2 \leq \epsilon ,\\
+        (y - f(x))^2 - \epsilon, & (y - f(x))^2 > \epsilon .\\
+    \end{cases}
+\end{equation} 
 
 \subsection{Empirical and Expected Risk} 
 In \acrshort{ml}, we have a feature space $\Xspace$ and a target (or label) space $\Yspace$, and we believe that there is a function $f: \Xspace \to \Yspace$, and if we have a good estimate of such function, we will be able to predict new target values $y$ given a pattern $x$. 
@@ -572,7 +581,7 @@ Here $\lambda$ is the regularization hyperparameter that regulates the trade-off
 Minimizing the regularized functional $\regrisk(\param)$ in a general setting, for example, when $\hypspace = L_2(\Xspace)$, is a challenging problem, because computing the norm of the hypotheses in such space is not trivial.
 %
 However, when our hypothesis space $\hypspace$ is an \acrshort{rkhs}, there is an explicit solution for the minimizer, as stated in the following theorem, the representer theorem~\citep{ScholkopfHS01}.
-\begin{theorem}[Representer Theorem]
+\begin{theorem}[Representer Theorem]\label{th:repr_theorem}
     Let $\Theta: \reals \to \reals$ be a strictly monotonic increasing function, let $\Xspace$ be a non-empty set, and let $\ell$ by an arbitrary loss. Consider that $\hypspace$ is the \acrshort{rkhs} associated to the kernel $k(\cdot, \cdot)$.
     Then every minimizer $f \in \hypspace$ of the regularized risk 
     \begin{equation}
@@ -1084,25 +1093,25 @@ Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we c
     \end{equation}
     then the conditions~\eqref{eq:kkt_station}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas} are necessary.
 \end{theorem}
-\begin{proof}
-    % Sufficient
-    We will first prove the sufficient condition. For any feasible $x \in \vecspace$ we have that
-    \begin{equation}
-        \begin{aligned}
-            f(\opt{x}) &= f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
-            &\leq f(x) + \sum_{i=1}^q \opt{\alpha}_i c_i(x) + \sum_{j=1}^p \opt{\beta}_i e_i(x) \\
-            &\leq f(x) ,
-        \end{aligned}
-    \end{equation}
-    where in the first equality we have used the feasibility of $\opt{x}$ and the complementary slackness, in the first inequality we have used the stationarity condition, and in the second one the feasibility of $\opt{\fv{\alpha}}$ and $x$.
-    %
-    Observe that we can write the first inequality because $f$ and $c_i$ are convex, differentiable functions, and $e_i$ are affine.
+% \begin{proof}
+%     % Sufficient
+%     We will first prove the sufficient condition. For any feasible $x \in \vecspace$ we have that
+%     \begin{equation}
+%         \begin{aligned}
+%             f(\opt{x}) &= f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i e_i(\opt{x}) \\
+%             &\leq f(x) + \sum_{i=1}^q \opt{\alpha}_i c_i(x) + \sum_{j=1}^p \opt{\beta}_i e_i(x) \\
+%             &\leq f(x) ,
+%         \end{aligned}
+%     \end{equation}
+%     where in the first equality we have used the feasibility of $\opt{x}$ and the complementary slackness, in the first inequality we have used the stationarity condition, and in the second one the feasibility of $\opt{\fv{\alpha}}$ and $x$.
+%     %
+%     Observe that we can write the first inequality because $f$ and $c_i$ are convex, differentiable functions, and $e_i$ are affine.
     
-    % Necessary
-    % https://www.stat.cmu.edu/~ryantibs/convexopt-S15/scribes/12-kkt-scribed.pdf
-    To prove that the conditions are necessary, assume that we have $\opt{x}$ that is the solution of the optimization problem~\eqref{eq:optproblem_def}, then we have that
-    \comm{TODO}
-\end{proof}
+%     % Necessary
+%     % https://www.stat.cmu.edu/~ryantibs/convexopt-S15/scribes/12-kkt-scribed.pdf
+%     To prove that the conditions are necessary, assume that we have $\opt{x}$ that is the solution of the optimization problem~\eqref{eq:optproblem_def}, then we have that
+%     \comm{TODO}
+% \end{proof}
 
 The \acrshort{kkt} conditions for problems with convex, differentiable functions are closely related with the strong duality theorem, that we give next.
 
@@ -1251,7 +1260,7 @@ Now we can give the definition of the optimization problem that corresponds to f
         \label{eq:linear_primal_clas}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^m \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & l_i (\dotp{w}{\tilde{x}} + b) \geq 1 - \xi_i , \\
+            & \text{s.t.} & & l_i (\dotp{w}{x_i} + b) \geq 1 - \xi_i , \\
             & & & \xi_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
@@ -1284,6 +1293,16 @@ Getting rid of the absolute value, these constraints can be decomposed as
     \nonumber
    \dotp{w}{x_i} + b \geq t_i - \epsilon - \xi_i , \; \dotp{w}{x_i} + b \leq t_i + \epsilon + \hat{\xi}_i.
 \end{equation}
+Observe here that $$ \xi_i + \hat{\xi}_i = \abs{\dotp{\opt{w}}{x_i} + \opt{b} - t_i}_\epsilon ,$$
+such that
+\begin{itemize}
+    \item $\xi_i = 0, \hat{\xi}_i = 0$: these are points inside the tube.
+    \item $\xi_i = 0, \hat{\xi}_i > 0$: these are points above the tube.
+    \item $\xi_i > 0, \hat{\xi}_i = 0$: these are points below the tube.
+    \item $\xi_i > 0, \hat{\xi}_i > 0$: this is an impossible situation, since at any time a point satisfies one of the two constraints.
+\end{itemize}
+Therefore, we can also assert that $\xi_i \hat{\xi}_i = 0$.
+
 Now, we can write the regression \acrshort{svm} primal problem
 \begin{definition}[Primal Problem of \acrshort{svm} for Regression]
     Given a binary classification sample
@@ -1314,7 +1333,7 @@ In both cases, classification and regression we have defined corresponding optim
         \nonumber
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq p_i - \xi_i , \\
+            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
             & & & \xi_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
@@ -1339,7 +1358,7 @@ In both cases, classification and regression we have defined corresponding optim
         \label{eq:linear_primal}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & y_i (\dotp{w}{\tilde{x}} + b) \geq p_i - \xi_i , \\
+            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
             & & & \xi_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
@@ -1347,11 +1366,13 @@ In both cases, classification and regression we have defined corresponding optim
 \end{definition}
 %
 For the rest of this work we will use this formulation whenever it is not necessary to make a specific comment regarding the specific classification or regression characteristics.
+
+\subsection{Solution and Analysis}
 %
 The problem defined in~\eqref{eq:linear_primal} is an optimization primal problem with a convex and differentiable objective function, and with affine constraint functions; then, we know from the strong duality theorem, presented in~\ref{th:strong_duality}, that we can use its corresponding dual problem to find the solution. Recall that to obtain the dual problem, defined in~\ref{def:dual_problem}, we need the Lagrangian function. In this case, the Lagrangian corresponding to~\ref{eq:linear_primal} is 
 \begin{equation}
     \label{eq:linear_lagr}
-    \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\tilde{x}} + b) - p_i + \xi_i \right] - \sum_{i=1}^\nsamples \beta_i \xi_i ,
+    \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{x_i} + b) - p_i + \xi_i \right] - \sum_{i=1}^\nsamples \beta_i \xi_i ,
 \end{equation}
 %
 where $\fv{\alpha}, \fv{\beta} \geq 0$ are the Lagrange multipliers. Although in the general optimization problem explanations we used $\fv{\beta}$ for equality constraints, here we use it to discriminate between the two kinds of constraints in~\eqref{eq:linear_primal}. 
@@ -1362,7 +1383,7 @@ Observe that $\lagr(w, b, \fv{\alpha}, \fv{\beta})$ is convex in all the primal 
 \begin{align}
     \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i x_i , \label{eq:lagr_diff_w} \\
     \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b} \\
-    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies C - \alpha - \beta_i = 0 , \label{eq:lagr_diff_xi}
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies C - \alpha_i - \beta_i = 0 , \label{eq:lagr_diff_xi}
 \end{align}
 If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, substiuting $w$ according to~\eqref{eq:lagr_diff_w}, we get 
 \begin{equation}
@@ -1386,13 +1407,371 @@ We observe here that $\fv{\beta}$ disappear from the dual objective function $\T
     \end{equation}
     where the first constraint is named equality constraint and the rest are the box constraints.
 \end{definition}
-The result is a constrained quadratic problem where the first term is quadratic and the second is linear. Algorithms like SMO
+The result is a constrained quadratic problem where the first term is quadratic and the second is linear. Algorithms, like the \acrfull{smo}~\citep{KeerthiSBM01}, have been developed to solve this dual problem efficiently. Moreover, optimized implementations of \acrshort{smo} are available, like the one in \texttt{LIBSVM}~\citep{ChangL11}.
+
+%
+Observe that~\eqref{eq:linear_dual} is a convex problem, so it has a single value $\opt{\fv{\alpha}}$ that is a solution. Therefore, by solving the dual problem, using algorithms like \acrshort{smo}, we obtain this optimal $\opt{\fv{\alpha}}$; then, using~\eqref{eq:lagr_diff_w} we can recover the optimal primal variable $\opt{w}$ as 
+\begin{equation}
+    \nonumber
+    \opt{w} = \sum_{i=1}^\nsamples y_i \opt{\alpha}_i x_i .
+\end{equation}
+%
+Observe that the primal problem~\eqref{eq:linear_primal} has convex, differentiable objective function and affine constraints, which satisfy the conditions from Theorem~\ref{th:kkt_conditions}; thus, the \acrshort{kkt} conditions are necessary.
+%
+Concretely, the complementary slackness condition~\eqref{eq:kkt_comp} in our case can be expressed as
+\begin{align}
+    \opt{\alpha}_i \left[ y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i \right] = 0 , \label{eq:comp_alpha} \\
+    \opt{\beta}_i \opt{\xi}_i = 0 , \label{eq:comp_beta}
+\end{align}
+for all $i=1, \ldots, \nsamples$. 
+Now we realize from~\eqref{eq:comp_alpha} that when $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i > 0$, the corresponding dual variable must be $\alpha_i = 0$. Therefore, the primal solution $\opt{w}$ is 
+\begin{equation}
+    \nonumber
+    \opt{w} = \sum_{i \in \svset} y_i \opt{\alpha}_i x_i ,
+\end{equation}
+where the elements of the set $\set{i: \alpha_i = 0}$ or $\svset = \set{i: y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i = 0}$ receive the name of support vectors.
+%
+
+We still have to see how we can recover the other primal variables $\opt{\fv{\xi}}$ and $\opt{b}$. For this goal, the \acrshort{kkt} conditions will be useful.
+Recall that $\alpha_i$ and $\beta_i$ are connected through~\eqref{eq:lagr_diff_xi}, such that 
+$$ \opt{\alpha}_i + \opt{\beta}_i = C .$$
+Therefore, when $0 < \alpha_i < C$, and, thus, $\beta_i \neq 0$, we have from~\eqref{eq:comp_beta} that $\opt{\xi}_i = 0$ and, in consequence from~\eqref{eq:comp_alpha},
+\begin{equation}
+    \nonumber
+    y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i = 0 .
+\end{equation}
+That is, we can recover $\opt{b}$ from the set of indices $\set{i: 0 < \alpha_i < C}$.
+%
+After obtaining $\opt{b}$, we focus on the indices $i$ such that $\opt{\alpha}_i = C$, so $\opt{\beta}_i = 0$ and, since~\eqref{eq:comp_beta} is satisfied, $\opt{\xi}_i$ is not necessarily $0$. Then, we can apply~\eqref{eq:comp_alpha} to get the solutions $\opt{\xi}_i$ from 
+\begin{equation}
+    \nonumber
+    y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i - \opt{\xi}_i = 0 .
+\end{equation}
+
+%
+Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, equations~\eqref{eq:comp_alpha} and~\eqref{eq:comp_beta}, to establish a classification of the support vectors according to its corresponding $\opt{\alpha}_i$, which we give in Table~\ref{tab:sv_clas}.
+%
+\begin{table}[t!]
+    \caption{Classification of the support vectors in terms of the value of $\opt{\alpha}_i$.}
+    \label{tab:sv_clas}
+    \centering
+    \scalebox{1}{
+     \begin{tabular}{*{4}{c}}
+     \toprule
+     \fhead{$\opt{\alpha}_i$} & \fhead{$\opt{\beta}_i$} & \fhead{$\opt{\xi}_i$} & \fhead{$y_i (\dotp{\opt{w}}{x_i} + \opt{b})$}   \\
+     \midrule
+     $0 < \opt{\alpha}_i < C$ & $\opt{\beta} > 0$ & $\opt{\xi}_i = 0$ & $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) = p_i$ \\
+     $\opt{\alpha}_i = C$ & $\opt{\beta} = 0$ & $0 < \opt{\xi}_i < p_i$ & $0 < y_i (\dotp{\opt{w}}{x_i} + \opt{b}) < p_i$ \\
+     $\opt{\alpha}_i = C$ & $\opt{\beta} = 0$ & $p_i \leq \opt{\xi}_i $ & $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) \leq 0$ \\
+      \bottomrule
+     \end{tabular}
+     }
+\end{table}
+%
+To study the meaning of this table, we will consider first the binary classification setting, where $y_i = l_i$ and $p_i=1$ for all $i=1, \ldots, \nsamples$. The first row correspond to points where $l_i (\dotp{\opt{w}}{x_i} + \opt{b}) = 1$, that is, points that are correctly classified and are just on the margin. The points from the second row are also points that are correctly classified, but they lie inside the margin. Finally, the points in the third row are misclassified.
+Therefore, the predictions of the \acrshort{svm} in the classification settings depend only on those points that lie over the margin, inside the margin, or are misclassified. The points that are correctly classified but outside the margin do not play any role in the final model.
+%
+
+In the case of regression, we need to observe again that 
+$$ \xi_i + \hat{\xi}_i = \xi_i + {\xi}_{\nsamples + i} = \abs{\dotp{\opt{w}}{x_i} + \opt{b} - t_i}_\epsilon ,$$
+and $\xi_i {\xi}_{\nsamples + i} = 0$ 
+% Consider first the case where $y_i = 1$ and $p_i = t_i - \epsilon$.
+Consider the first row, if $\xi_i = 0$, as in the first row, then $\dotp{\opt{w}}{x_i} + \opt{b} = t_i - \epsilon$ is  a point in the lower border of the $\epsilon$-tube. If $\xi_{i + \nsamples} = 0$, as in the first row, then $\dotp{\opt{w}}{x_i} + \opt{b} = t_i + \epsilon$ is  a point in the upper border of the $\epsilon$-tube.
+%
+In the second and third rows, if $\xi_i > 0$, then ${\xi}_{i + \nsamples} = 0$, and we have points such that $\dotp{\opt{w}}{x_i} + \opt{b} < t_i - \epsilon$, that is, below the tube. 
+Analogously, if ${\xi}_{i + \nsamples} > 0$, we have points above the tube.
+%
+% In summary, the solutions of the \acrshort{svm} are composed only from ``extreme points'', those that are difficult to classify or are far from the regressor function.
 
 
 \subsection{Kernel Extension}
-\subsection{SVM properties}
+Observe that the dual problem~\eqref{eq:linear_dual} depends only on the inner product between the feature vectors $x_i$. Also, observe that, using the result from~\eqref{eq:lagr_diff_w} we can write the prediction for a new instance $\tilde{x}$ as 
+\begin{equation}
+    \nonumber
+    \dotp{\opt{w}}{\tilde{x}} + \opt{b} = \sum_{i = 1}^\nsamples y_i \opt{\alpha}_i \dotp{x_i}{\tilde{x}} + \opt{b} .
+\end{equation} 
+This result is similar to that of the representer theorem, presented in Theorem~\ref{th:repr_theorem}.
+In fact, consider the following model 
+$f(\cdot) = \dotp{w}{\phi(\cdot)} + b$
+where we are using the transformation $\phi: \reals^\dimx \to \rkhs$ and $\rkhs$ is some \acrshort{rkhs} with reproducing kernel $k$, such that for all $x, \tilde{x} \in \reals^\dimx$, 
+$$ \dotp{\phi(x)}{\phi(\tilde{x})} = k(x, \tilde{x}) .$$ 
+Now, we are not looking for a maximum margin hyperplane in the original feature space $\reals^\dimx$, but in a possibly infinite-dimensional space $\rkhs$.
+The primal problem for the kernel extension using the unified formulation is
+\begin{equation}
+    \label{eq:kernel_primal}
+    \begin{aligned}
+        &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+        & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i , \\
+        & & & \xi_i \geq 0 ,      
+    \end{aligned}  
+\end{equation}
+Its corresponding Lagrangian is then 
+\begin{equation}
+    \nonumber
+    %\label{eq:kernel_lagr}
+    \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i \right] - \sum_{i=1}^\nsamples \beta_i \xi_i ,
+\end{equation}
+and the optimal value for the variable $w$, which in the linear case was given in~\ref{eq:lagr_diff_w}, is now
+\begin{equation}\label{eq:lagr_diff_w_kernel}
+    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 \implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) .
+\end{equation}
+Recall that in the case of infinite-dimensional case, we have that $\phi(x_i)$ are real-valued functions with domain in $\reals^\dimx$, and so is $\opt{w}$ then, that is 
+$\opt{w}: \reals^\dimx \to \reals$. 
+Since $k$ is a reproducing kernel, we can also express this as 
+\begin{equation}
+    \nonumber
+    \opt{w}(\cdot) = \dotp{\opt{w}}{\phi(\cdot)} = \sum_{i=1}^\nsamples y_i \opt{\alpha}_i k(x_i, \cdot),
+\end{equation}
+as the Representer Theorem indicates for a regularized risk functional like~\eqref{eq:kernel_primal}.
+%
+Repeating the procedure that we have shown for the linear case, we can obtain the corresponding dual problem, which is the following.
+\begin{equation}
+    \label{eq:kernel_dual}
+    \begin{aligned}
+        &\min_{\fv{\alpha}} & & \frac{1}{2} \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) - \sum_{i=1}^\nsamples \alpha_i p_i \\
+        & \text{s.t.} & & \sum_{i=1}^\nsamples y_i \alpha_i = 0 , \\
+        & & & 0 \leq \alpha_i \leq C ,      
+    \end{aligned}  
+\end{equation}
+where we use that $k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}$.
+%
+We can express both the dual problem using a matrix formulation as 
+\begin{equation}
+    \label{eq:kernel_dual_matrix}
+    \begin{aligned}
+        &\min_{\fv{\alpha}} & & \frac{1}{2} \fv{\alpha}^\intercal \fm{Q} \fv{\alpha} - \fv{\alpha}^\intercal \fv{p} \\
+        & \text{s.t.} & & \sum_{i=1}^\nsamples y_i \alpha_i = 0 , \\
+        & & & 0 \leq \alpha_i \leq C ,      
+    \end{aligned}  
+\end{equation}
+with $\fv{p} = (p_1, \ldots, p_\nsamples)^\intercal$. Here, $Q$ is called the kernel matrix and is defined as 
+$$ Q_{ij} = y_i y_j k(x_i, x_j) $$
+in the case of the kernelized case, or as 
+$$ Q_{ij} = y_i y_j \dotp{x_i}{x_j} $$
+in the linear one.
+
 %\subsection{Connection with Structural Learning}
 \subsection{SVM Variants}
+The \acrshort{svm} has experienced a great popularity for many years, and several modifications and extensions have been proposed. In this work we will consider two relevant variants: the L2 and LS-\acrshort{svm}, and we can also refer to the standard \acrshort{svm} as L1-\acrshort{svm} to differentiate it from these variants.
+%
+For compactness, we will consider the non-linear models to present these variants, namely 
+$$ f(\cdot) = \dotp{w}{\phi(\cdot)} + b ,$$
+which can be reduced to the linear case just by selecting $\phi$ as the identity function.
+
+\subsubsection*{L2-\acrshort{svm}}
+The idea motivating the L2-\acrshort{svm}~\citep{Burges98} variant is replacing the loss functions used in the L1-\acrshort{svm} for their squared counterparts. 
+The hinge loss, used for classification and defined in~\eqref{eq:hinge_def}, is replaced by the squared hinge loss, as defined as~\eqref{eq:sqhinge_def}.
+The $\epsilon$-insensitive loss defined as~\eqref{eq:epsins_def}, which is used in the regression L1-\acrshort{svm}, is replaced by the squared-hinge loss as defined in~\eqref{eq:sqepsins_def}.
+%
+
+We can give then the definitions of the L2-\acrshort{svm} problems for classification and regression.
+\begin{definition}[Primal Problem of L2-\acrshort{svm} for Classification]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    the primal problem of the L2-\acrshort{svm} for binary classification is:
+    \begin{equation}
+        \label{eq:l2_primal_clas}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & l_i (\dotp{w}{\phi(x_i)} + b) \geq 1 - \xi_i , 
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+%
+\begin{definition}[Primal Problem of L2-\acrshort{svm} for Regression]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the class labels, 
+    the primal problem of the L2-\acrshort{svm} for regression is:
+    \begin{equation}
+        \label{eq:l2_primal_reg}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m \left((\xi_i)^2 + (\hat{\xi}_i)^2 \right) + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & \dotp{w}{\phi(x_i)} + b \geq t_i - \epsilon - \xi_i  , \\
+            & & & \dotp{w}{\phi(x_i)} + b \leq t_i + \epsilon + \hat{\xi}_i , 
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+%
+Observe in both cases that, since the slack variables are squared in the objective function, the constraints to enforce that these slack variables are non-negative are no longer needed.
+As with the L1-\acrshort{svm}, we will use a formulation to unify both problems and show a development that is valid for both cases. 
+%
+%
+\begin{lemma}[Unifying Formulation for L2-\acrshort{svm}]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    the primal problem defined as
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i ,     
+        \end{aligned}  
+    \end{equation}
+    can be interpreted as the classification primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_clas} when $\nsamples=m$ and
+    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
+    and can be interpreted as the regression primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_reg} when $\nsamples = 2 m$ and
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            & p_i = t_i - \epsilon ,\; &y_i &= 1 &\text{ for } i=1, \ldots, m ; \\
+            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
+        \end{aligned}
+    \end{equation}
+\end{lemma}
+%
+\begin{definition}[Primal Problem - Unifying Formulation for L2-\acrshort{svm}]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    we define the unified primal problem of L2-\acrshort{svm} as
+    \begin{equation}
+        \label{eq:l2_primal}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i ,      
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
+\end{definition}
+%
+We follow an analogous procedure to the one we have used for the standard \acrshort{svm}. The Lagrangian corresponding to the primal problem~\eqref{eq:l2_primal} is 
+\begin{equation}
+    \label{eq:l2_lagr}
+    \lagr(w, b, \fv{\xi}, \fv{\alpha}) = \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i \right] ,
+\end{equation}
+%
+where $\fv{\alpha} \geq 0$ are the Lagrange multipliers.
+%
+Again, the dual problem is defined as 
+$$ \Theta(\fv{\alpha}) = \inf_{w, b, \fv{\xi}} \lagr(w, b, \fv{\xi}, \fv{\alpha}) , $$
+and $\lagr(w, b, \fv{\alpha})$ is convex in all the primal variables, $w, b$ and $\fv{\xi}$. Therefore, to find the minimum of the Lagrangian in the primal variables is sufficient to take derivatives and make them zero:
+\begin{align}
+    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_l2} \\
+    \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_l2} \\
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_l2}
+\end{align}
+If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, substiuting $w$ according to~\eqref{eq:lagr_diff_w}, we get 
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \inf_{w, b, \fv{\xi}} \lagr(w, b, \fv{\xi}, \fv{\alpha}) &= \frac{1}{2C} \sum_{i=1}^\nsamples \alpha_i^2 + \frac{1}{2} \dotp{\sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i)}{\sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i)} \\
+        &\quad- \sum_{i=1}^\nsamples \alpha_i \left[y_i \dotp{\sum_{j=1}^\nsamples y_j \alpha_j \phi(x_j)}{\phi(x_i)}  \right] - \frac{1}{C} \sum_{i=1}^\nsamples \alpha_i^2 + \sum_{i=1}^\nsamples \alpha_i p_i  \\
+        &= -\frac{1}{2} \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples y_i y_j \alpha_i \alpha_j \dotp{\phi(x_i)}{\phi(x_j)} - \frac{1}{2C} \sum_{i=1}^\nsamples \alpha_i^2 + \sum_{i=1}^\nsamples \alpha_i p_i .
+    \end{aligned}
+\end{equation}
+We observe here that now the partial derivative with respect to $\xi$, given in~\eqref{eq:lagr_diff_xi_l2}, does not establish an upper bound for $\alpha_i$, but a new term with $\alpha_i^2$ appears in the dual objective function.
+%
+We can define now the L2-\acrshort{svm} dual problem.
+\begin{definition}[Dual Problem - Unifying Formulation for L2-\acrshort{svm}]
+    The dual problem corresponding to problem~\eqref{eq:linear_primal} is
+    \begin{equation}
+        \label{eq:l2_dual_matrix}
+        \begin{aligned}
+            &\min_{\fv{\alpha}} & & \frac{1}{2} \fv{\alpha}^\intercal \left( \fm{Q} + \frac{1}{C} \fm{I}_\nsamples \right)\fv{\alpha} - \fv{\alpha}^\intercal \fv{p} \\
+            & \text{s.t.} & & \sum_{i=1}^\nsamples y_i \alpha_i = 0 , \\
+            & & & \alpha_i \geq 0 .
+        \end{aligned}  
+    \end{equation}
+\end{definition}
+Observe that we again obtain a quadratic optimization problem, as in the L1-\acrshort{svm} case, where we do no longer have the box constraints, but we have a diagonal matrix that is added to the kernel matrix. That is, there is not an upper bound for $\alpha_i$, but the diagonal term can be interpreted as a soft constraint for the size of $\fv{\alpha}$. 
+
+
+\subsubsection*{LS-\acrshort{svm}}
+%
+The LS-\acrshort{svm}~\citep{SuykensV99} replaces the losses of the L1-\acrshort{svm} for the squared loss.
+Even in classification, where the aim is to regress to the values $1$ and $-1$ the positive and negative classes.
+%
+We give the definitions of the LS-\acrshort{svm} problems for classification and regression next.
+\begin{definition}[Primal Problem of LS-\acrshort{svm} for Classification]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    the primal problem of the LS-\acrshort{svm} for binary classification is:
+    \begin{equation}
+        \label{eq:ls_primal_clas}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & l_i (\dotp{w}{\phi(x_i)} + b) = 1 - \xi_i , 
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+%
+\begin{definition}[Primal Problem of LS-\acrshort{svm} for Regression]
+    Given a binary classification sample
+    $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the class labels, 
+    the primal problem of the LS-\acrshort{svm} for regression is:
+    \begin{equation}
+        \label{eq:ls_primal_reg}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & \dotp{w}{\phi(x_i)} + b = t_i - \xi_i  , \\
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+\end{definition}
+%
+As with the other variants, we want to use a unifying formulation for the regression and classification problems.
+
+\begin{lemma}[Unifying Formulation for LS-\acrshort{svm}]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    the primal problem defined as
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) = p_i - \xi_i ,     
+        \end{aligned}  
+    \end{equation}
+    can be interpreted as the classification primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_clas} when $\nsamples=m$ and
+    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
+    and can be interpreted as the regression primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_reg} when $\nsamples = m$ and
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, m ; \\
+        \end{aligned}
+    \end{equation}
+\end{lemma}
+%
+\begin{definition}[Primal Problem - Unifying Formulation for LS-\acrshort{svm}]
+    Given a sample
+    $$ \sample = \set{(x_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+    we define the unified primal problem of LS-\acrshort{svm} as
+    \begin{equation}
+        \label{eq:ls_primal}
+        \begin{aligned}
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) = p_i - \xi_i ,      
+        \end{aligned}  
+    \end{equation}
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
+\end{definition}
+%
+We follow an analogous procedure to the one we have used for the standard \acrshort{svm}. The Lagrangian corresponding to the primal problem~\eqref{eq:l2_primal} is 
+\begin{equation}
+    \label{eq:ls_lagr}
+    \lagr(w, b, \fv{\xi}, \fv{\alpha}) = \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i \right] ,
+\end{equation}
+%
+where $\fv{\alpha} \in \reals$ are the Lagrange multipliers. Observe that we do not longer need the non-negativity of these variables, because they correspond to equality instead of inequality constraints.
+%
+Now we use \acrshort{kkt} conditions to find the solutions to the problem~\eqref{eq:ls_primal}
+\begin{align}
+    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_l2} \\
+    \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_l2} \\
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_l2}
+\end{align}
+
 
 \section{Conclusions}\label{sec-conclusions-1}
 
