@@ -47,10 +47,1032 @@ First, the values $A_{rs}$ have to be bounded, otherwise its interpretability is
 Even with bounded weights, in absence of expert knowledge to select them, it is necessary to find a procedure that finds a set of weights $A_{rs}$ that reflects the real relations between tasks. Because of this, in this chapter, a data-driven procedure to select the weights for a Laplacian regularization is presented.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%             SECTION         %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Kernels for Multi-Task Learning}\label{sec:ch3_mtl_kernelmethods}
+
+% Most multi-task methods are linear models, which may not be flexible enough to capture certain dependencies.
+% Deep Learning is a very popular and cost-effective way of overcoming this problem. The final linear models are substituted by the neural network output and the parameters are learned together using back propagation.
+% However, one of the main problems of deep learning is the lack of theoretical results and the non-convexity of the problems.
+% Other alternative to extend the \acrshort{mtl} models non-linearly is by using the kernels.
+
+% Most multi-task methods reviewed in Section~\ref{sec:ch3_overview} are based on linear models. This produces the models that are more interpretable and makes it easier to enforce some kind of coupling between tasks so there exists some kind of transfer learning. However, linear models are not powerful enough for most real-world problems, which might have non-linear properties.
+% %
+
+% Deep Learning is a very popular and cost-effective way of overcoming this problem. Neural Networks with multiple layers, where each layer may apply a non-linear transformation, are very powerful models that can estimate function using a hierarchical strategy where each new layer builds new features based on the output of the previous layer. 
+% This idea is very useful in \acrshort{mtl}, where some features are jointly learned for all the tasks and, in the last layer, final task-specific linear models are build using them.
+% %
+% Despite its great success, Deep Learning has some inconveniences. One is that to estimate the extensive number of parameters involved in a deep architecture, large quantities of data are needed. This large datasets are not usually of public domain.
+% Other problem found in Deep Learning is the lack of mathematical guarantees, at least when compared with other methods of Machine Learning.
+
+% %
+% The other alternative to extend \acrshort{mtl} models non-linearly is by using Kernel Methods. Kernel Methods, although they are more computationally challenging, offer some interesting characteristics. In the first place most problems using kernels are formulated as convex problems, which have a single optimum solution. Furthermore, they also offer some well-studied mathematical properties such as consistency of the methods, i.e. the algorithms will approximate this solution as the number of data grows, or rates of convergence, i.e. how fast this solution is approximated.
+% Also, Kernel Methods, thanks to this mathematical properties, usually require less data than Deep Learning models to achieve competitive results. 
+
+% % Evgeniou
+% \subsection{Regularized \acrshort{mtl}}
+% The work of~\cite{EvgeniouP04} presents a \acrshort{svm}-based \acrshort{mtl} problem formulation. 
+% The goal is to find a decision function for each task, each being defined by a vector
+% $$w_r = w + v_r,$$
+% where $w$ is common to all tasks and $v_r$ is task-specific.
+% The primal problem of \emph{regularized \acrshort{mtl}} \acrshort{svm}, using the unified formulation, is 
+% \begin{equation}
+%     \label{eq:regmtlsvm_primal}
+%     \begin{aligned}
+%         & \argmin_{w, v_r, \xi_i^r}
+%         & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \sum_{r=1}^\ntasks \frac{\mu}{2} \dotp{v_r}{v_r} \\
+%         & \text{s.t.}
+%         & & y_{i}^r ( \dotp{w}{x_{i}^r} + \dotp{v_r}{x_{i}^r}) \geq p_i^r - \xi_i^r ,\\
+%         & & &\xi_i^r \geq 0, \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%     \end{aligned}
+% \end{equation}
+% % Leveraging common and specific information
+% Note that $\mu$ is a parameter that controls the tradeoff between the relevance of common and specific models. That is, when $\mu$ tends to infinite, the resulting model approaches a common-task standard \acrshort{svm}; when $\mu$ tends to zero, a independent task approach is taken, with one standard \acrshort{svm} problem for each task.
+% This is also reflected in the corresponding dual problem
+% \begin{equation}\label{eq:regmtlsvm_dual}
+%     \begin{aligned}
+%         & \argmin_{\alpha_i} 
+%         & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \dotp{x_i^r}{x_j^s} + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} \dotp{x_i^r}{x_j^s} \\
+%         & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} p_i^r \alpha_i^r \\
+%         & \text{s.t.}
+%         & & 0 \leq \alpha_i^r \leq C \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%         \end{aligned}
+% \end{equation}
+% In this dual form, as $\mu$ grows, the task-specific part goes to zero, and the most important term is the first one, corresponding to the common part. The opposite effect is obtained when $\mu$ shrinks.
+% % Common + specific model which is equivalent to penalizing individual norm and variance
+% Moreover, in~\cite{EvgeniouP04} it is shown that solving~\eqref{eq:regmtlsvm_primal} is equivalent to solving the problem
+% \begin{equation}
+%     \nonumber
+%     \begin{aligned}
+%         & \argmin_{ww_r, \xi_i^r}
+%         & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r +  \frac{1}{2} \sum_{r=1}^\ntasks \norm{w_r}^2 + \frac{\mu}{2} \sum_{r=1}^\ntasks  \norm{w_r - \sum_{s=1}^\ntasks w_s}^2 \\
+%         & \text{s.t.}
+%         & & y_{i}^r ( \dotp{w_r}{x_{i}^r}) \geq p_i^r - \xi_i^r ,\\
+%         & & &\xi_i^r \geq 0, \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%     \end{aligned}
+% \end{equation}
+% Now, only the $w_r$ variables are included, and it is clearer that $\mu$ penalizes the variance of the $w_r$ vectors, so all models $w_r$ will tend to a common model as $\mu$ grows.
+
+
+% Kernels are functions that are used as a measure of similarity between data points, and have a notable relevance in \acrshort{ml} due to the success of kernel methods, such as the \acrshort{gp} or \acrshort{svm}. 
+% %
+% % Moreover, when using kernel methods, the parametric point of view for estimating a function of the primal formulation is changed for a non-parametric one in the dual problem, where the complexity of the model increase with the number of examples.
+% However, as we have observed in the previous section, designing \acrshort{mtl} is not a trivial task, and the proposals are fewer than those of linear models or \acrshort{nns}. 
+% Although the combination-based MTLSVM has a strong motivation in the \acrshort{lupi} paradigm, it assumes a common model for all tasks, which may not be always useful. Other approaches consider the pairwise task relations, so a more fine-grained inter-task coupling can be imposed.
+% In this section, we give some definitions and propose a formulation to extend some useful results, heading in this direction, for linear models, namely those of~\cite{EvgeniouMP05}, to kernelized ones.
+
+In \acrshort{mtl} different functions have to be estimated and the relation between those task-specific functions is desirable to be captured. Using kernels for these goals imposes some new challenges, that can be tackled from different perspectives. 
+% Learning Multiple Tasks with Kernel Methods
+One of them is interpreting the \acrshort{mtl} paradigm so that it can be seen as learning a vector-valued function, thus using a vector-valued \acrfull{rkhs}. We define this and some related contents, and also describe an extension of the Representer Theorem for vector-valued \acrshort{rkhs} problems.
+%
+Also, here we propose a reformulation where a tensor product of scalar \acrshort{rkhss} is used instead of the vector-valued ones, which leads to some more general results, including another extension of the Representer Theorem.
+%
+Finally, we take these definitions to show how to use them to solve \acrshort{mtl} problems and also give some examples of commonly used \acrshort{mt} kernels.
+
+
+\subsection{Vector-Valued Reproducing Kernel Hilbert Spaces}%Single-Task Learning with \acrshort{mtl} Kernels}
+To give different definitions of vector-valued kernels, we will follow the work of~\citet{MicchelliP05}.
+Consider $\Yspace$ a Hilbert space with inner product $\ydotp{.}{.}$, and $\mathcal{L}(\Yspace)$ the space of linear operators from $\Yspace$ to $\Yspace$; then we can study the Hilbert spaces $\hilbertspace$ of functions
+\begin{equation*}
+    \begin{aligned}
+        f: &&\Xspace&& &\to& &&&\Yspace&& \\
+             && x&&      &\to& &&& f(x) &&
+    \end{aligned}
+\end{equation*}
+with inner product $\dotp{\cdot}{\cdot}$.
+The kernels in such spaces are operator-valued functions $K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)$.
+We look at these spaces from three different and equivalent perspectives: continuous evaluation functionals, positive-definite kernels and feature maps.
+
+%\paragraph*{Continuous evaluation functionals.}
+The first approach considered is that of continuous evaluation functionals.
+% Given a Hilbert space with continuous evaluation functionals, which are defined later, we can find the reproducing kernel operator.
+Consider the vector-valued Hilbert space $\mathcal{H}$ with inner product $\dotp{\cdot}{\cdot}$ of functions defined in $\Xspace$ and values in $\Yspace$, and the functionals 
+%$L_{x, y} f = \ydotp{y}{f(x)}$,
+\begin{equation*}
+    \begin{aligned}
+        L_{x, y}:&&\hilbertspace& &\to& &&\Yspace&& &\to& &&\reals& & \\
+        &&f& &\to& &&f(x)&& &\to& &&\ydotp{y}{f(x)}& &
+    \end{aligned}.
+\end{equation*}
+If these functionals are continuous, we can apply Riesz representation theorem~\citep{riesz2012functional}. That is, for every $x \in \Xspace, y \in \Yspace$ we can find an unique $g_{x, y} \in \hilbertspace$ such that for all $f \in \hilbertspace$,
+\begin{equation}\label{eq:vector_riesz}
+    L_{x, y} f = \ydotp{y}{f(x)} = \dotp{g_{x,y}}{f}_{\hilbertspace} .
+\end{equation}
+We can now give the definition of vector-valued Hilbert space from the point of view of continuous functionals as in~\citet[Definition 2.1]{MicchelliP05}.
+\begin{definition}[vector-valued RKHS]
+    We say that $\hilbertspace$ is a vector-valued RKHS when for any $x \in \Xspace$ and $y \in \Yspace$, the functional $L_{x, y} f = \ydotp{y}{f(x)}$ is continuous.
+\end{definition}
+Note that this is a definition similar to the scalar case but we use the inner product of $\Yspace$ to construct the scalar-valued functionals $L_{x, y}$. The price we pay is that it is necessary to express the Riesz representation as dependent of the elements $y \in \Yspace$. To get rid of this dependence, for every $x \in \Xspace$ we can define the linear operator
+\begin{equation}
+    \label{eq:vector_riesz}
+    \begin{aligned}
+        g_x: &&\Yspace&& &\to& &&&\hilbertspace&& \\
+             && y&&      &\to& &&g_x y &= g_{x, y} &&
+    \end{aligned}.
+\end{equation}
+This operator is well defined because $g_{x, y}$ is unique for every $x \in \Xspace, y \in \Yspace$ and its linearity is easy to check from the linearity of the inner product $\ydotp{.}{.}$.
+%
+Using these results, we can now define the operator
+\begin{equation}\label{eq:vector_kernel}
+    \begin{aligned}
+        K(x, \hat{x}) : &&\Yspace&& &\to& &&&\Yspace&& \\
+                        && y &&     &\to& &&K(x, \hat{x}) y &= (g_{\hat{x}} y) (x)&&
+    \end{aligned}    
+\end{equation}
+for every $x, \hat{x} \in \Xspace$. 
+%Observe that $K(x, \hat{x})$ is linear since $\forall x,\;  g_x$ is linear, i.e. $g_x(\lambda_1 y_1 + \lambda_2 y_2) = \lambda_1 g_x(y_1) + \lambda_2 g_x(y_2)$.
+It is possible then to prove that $K(x, \hat{x})$ is a reproducing kernel in $\mathcal{H}$ as seen in~\citet[Propositon 2.1]{MicchelliP05}.
+
+\begin{proposition}
+    If $K(x, \tilde{x})$ is defined for every $x, \hat{x} \in \Xspace$ as in ~\eqref{eq:vector_kernel} and $g_x$ is defined as in ~\eqref{eq:vector_riesz}, then
+    \begin{equation}
+        \nonumber
+        K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)
+    \end{equation}
+    is a kernel that for every $x, \hat{x} \in \Xspace$ satisfies:
+    \begin{enumerate}
+        \item For every $y, \hat{y} \in \Yspace$, we have 
+        \begin{equation}
+            \nonumber
+            \ydotp{y}{K(x, \tilde{x}) \hat{y}} = \dotp{g_x \hat{y}}{g_{\hat{x}} y} .
+        \end{equation}
+        \item $K(x, \tilde{x}) = \adj{K(\tilde{x}, x)}$ and $K(x, x)$ is positive definite for every $x \in \Xspace$.
+        \item Given $n \in \naturals$, for any  $x_1, \ldots, x_n \in \Xspace,  y_1, \ldots, y_n \in \Yspace$,
+        \begin{equation}
+            \nonumber
+            \sum_{i, j =1}^n \ydotp{y_i}{K(x_i, x_j) y_j} \geq 0.
+        \end{equation}
+        \item $\norm{g_x} = \norm{K(x, x)}^{\frac{1}{2}}$.
+        \item $\norm{K(x, t)} \leq \norm{K(x, x)}^{\frac{1}{2}} \norm{K(t, t)}^{\frac{1}{2}}$.
+        \item For every $f \in \hypspace$ and $x \in \Xspace$, we have that
+        $$ \norm{f(x)} \leq \norm{f} \norm{K(x, x)}^{\frac{1}{2}} .$$
+    \end{enumerate}
+\end{proposition}
+
+% To do that, first we have to define a vector-valued kernel and the corresponding reproducing property.
+% \begin{definition}[operator-valued Kernel]
+%     Given a non-empty set $\Xspace$, if $\Yspace$ is a finite-dimensional Hilbert space
+%     % , and $\hilbertspace$ is a Hilbert space of $\Yspace$-valued functions with domain in $\Xspace$
+%      an operator-valued kernel is a function
+%     \begin{equation}
+%         \nonumber
+%         K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)
+%     \end{equation}
+%     which is symmetric and positive definite.
+% \end{definition}
+% For the clarity of the text an operator-valued $K$ will be referred just as a kernel unless an explicit distinction is needed.
+% \begin{definition}[Reproducing Property of operator-valued operators]
+%     If $\Yspace$ is a finite-dimensional Hilbert space, and $\hilbertspace$ is a Hilbert space of $\Yspace$-valued functions with domain in $\Xspace$, a function
+%     \begin{equation}
+%         \nonumber
+%         K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)
+%     \end{equation}
+%     has the reproducing property if $\forall x \in \Xspace, y \in \Yspace, \forall f \in \hilbertspace,$ 
+%     $$ \ydotp{y}{f(x)} = \dotp{K(\cdot, x) y}{f}_\hilbertspace.$$ 
+% \end{definition}
+% A kernel with the reproducing property is also called a reproducing kernel. The next proposition shows how we can build a reproducing kernel for a space $\hilbertspace$ in which the evaluation functionals are continuous.
+% \begin{proposition}
+%     If for every $x, \hat{x} \in \Xspace$, the function $K(x, \hat{x})$ is defined as in Equation~\eqref{eq:vector_kernel}, then the function
+%     \begin{equation}
+%         \nonumber
+%         K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)
+%     \end{equation}
+%     is a reproducing kernel.
+% \end{proposition}
+% \begin{proof}
+%     To prove that $K$ is a reproducing kernel we need to check: 
+%     \begin{enumerate}
+%         \item\label{item:vvkernel_bounded} $K(x, \hat{x})$ is bounded for every $x, \hat{x} \in \Xspace$ so $K$ is well defined.
+%         \item\label{item:vvkernel_symmetric} $K$ is symmetric: $\adj{K(x, \hat{x})} = K(\hat{x}, x)$, where $\adj{A} \in \mathcal{L}(\Yspace)$ is the adjoint of $A \in \mathcal{L}(\Yspace)$.
+%         \item\label{item:vvkernel_positive}  $K$ is positive definite: given $n \in \naturals$, for any  $x_1, \ldots, x_n \in \Xspace,  y_1, \ldots, y_n \in \Yspace$,
+%         \begin{equation}
+%             \nonumber
+%             \sum_{i, j =1}^n \ydotp{y_i}{K(x_i, x_j) y_j} \geq 0.
+%         \end{equation}
+%         \item\label{item:vvkernel_repr} It has the reproducing property: $\forall x \in \Xspace, y \in \Yspace, \forall f \in \hilbertspace,$ $ \ydotp{y}{f(x)} = \dotp{K(\cdot, x) y}{f}.$
+%     \end{enumerate}
+%     To prove~\ref{item:vvkernel_bounded} and~\ref{item:vvkernel_symmetric}, observe that by
+%     applying~\eqref{eq:vector_riesz} to $f = g_{\hat{x}}\hat{y}$, for every $x \in \Xspace, y \in \Yspace$ there exists an unique $g_{x, y} = g_{x}y$ such that
+%     \begin{equation}
+%         \ydotp{y}{(g_{\hat{x}} \hat{y}) (x)} = \dotp{g_{x}y}{g_{\hat{x}}\hat{y}} ,
+%     \end{equation}
+%     and combining this result with~\eqref{eq:vector_kernel} we get
+%     \begin{equation}
+%         \nonumber
+%         \ydotp{y}{K(x, \hat{x}) \hat{y}} = \ydotp{y}{(g_{\hat{x}} \hat{y})(x) }= \dotp{g_{x}y}{g_{\hat{x}}\hat{y}}.
+%     \end{equation}
+%     Also, using the definitions,
+%     \begin{equation}
+%         \nonumber
+%         \ydotp{K(\hat{x}, x) y}{ \hat{y}} = \ydotp{(g_{x} y)(\hat{x})}{\hat{y}} = \ydotp{\hat{y}}{(g_{x} y)(\hat{x})} = \dotp{g_{\hat{x}} \hat{y}}{g_x y}.
+%     \end{equation}
+%     Since both operators $K(x, \hat{x}), K(\hat{x}, x)$ are bilinear, by the Uniform Boundness Principle~\citep{Akhiezer1961TheoryOL}, $K(x, \hat{x}), K(\hat{x}, x)$ are bounded (hence continuous) and $K(x, \hat{x})^* = K(\hat{x}, x)$.
+%     \\
+%     To prove~\ref{item:vvkernel_positive} we write
+%     \begin{equation}
+%         \nonumber
+%         \sum_{i, j =1}^n \ydotp{y_i}{K(x_i, x_j) y_j} = \sum_{i, j =1}^n \dotp{g_{x_i} y_i}{g_{x_j} y_j}  = \norm{\sum_{i=1}^n g_{x_i} y_i}^2 \geq 0 .
+%     \end{equation}
+%     Finally, to prove~\ref{item:vvkernel_repr} we use that 
+%     $\forall x \in \Xspace, y \in \Yspace, \forall f \in \hilbertspace, \exists g_{x, y} \in \hilbertspace$ such that 
+%     $$ \ydotp{y}{f(x)} = \dotp{g_{x, y}}{f} = \dotp{g_{x} y}{f} =\dotp{K(\cdot, x) y}{f}.$$
+% \end{proof}
+
+%\paragraph*{Positive semi-definite kernels.}
+The second approach of~\citet{MicchelliP05} to define vector-valued kernels changes the point of view. Given a kernel $K$, the Hilbert space from which $K$ is the reproducing kernel is built.
+To do this, we use~\citet[Theorem 2.1]{MicchelliP05}, which extends the Moore-Aronszanj Theorem:
+\begin{theorem}\label{th:moore-arons_vector}
+    If $K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)$ is a kernel, then there exists a unique (up to an isometry) RKHS which admits $K$ as its reproducing kernel. 
+\end{theorem}
+The proof is similar to that of the Moore-Aronszanj Theorem, considering the space of the completion of the span of $\left\lbrace K_x = K(\cdot, x) , x \in \Xspace \right\rbrace$.
+
+%\paragraph*{Feature map.}
+The last approach is based on feature maps, which provide a very simple way of generating kernels.
+\begin{lemma}
+    Given some Hilbert space $\mathcal{W}$, any continuous feature map $\Phi: \Xspace \to \mathcal{L}(\mathcal{W}, \mathcal{Y})$ defines a kernel as
+\begin{equation}
+    \label{eq:kernel_featmap}
+    K(x, \hat{x}) = \Phi(x) \circ \adj{\Phi(\hat{x})}: \Yspace \to \Yspace .
+\end{equation}
+\end{lemma}
+\begin{proof} We need to prove that it is bounded, symmetric and positive definite:
+    \begin{enumerate}
+        \item Since $\Phi(x)$ is continuous, its adjoint $\adj{\Phi(x)}$ is continuous and the composition $\Phi(x) \circ \adj{\Phi(\hat{x})}$ is also continuous.
+        \item It is symmetric since  $\adj{(\Phi(x) \circ \adj{\Phi(\hat{x})})} = (\adj{(\adj{\Phi(x)})} \circ \adj{\Phi(\hat{x})}) = (\Phi(x) \circ \adj{\Phi(\hat{x})}) $.
+        \item It is semipositive definite since, given any $x_1, \ldots, x_n \in \Xspace,  y_1, \ldots, y_n \in \Yspace$
+        \begin{equation}
+            \nonumber
+            \begin{aligned}
+                \sum_{i, j =1}^n \ydotp{y_i}{K(x_i, x_j) y_j} &= \sum_{i, j =1}^n \ydotp{y_i}{ \Phi(x_i) \circ \adj{\Phi(x_j)} y_j} \\
+                & = \sum_{i, j =1}^n \ydotp{\adj{\Phi(x_i)} y_i}{ \adj{\Phi(x_j)} y_j} = \norm{\sum_{i=1}^n \adj{\Phi(x_i)} y_i}^2 \geq 0 .
+            \end{aligned}
+        \end{equation}
+    \end{enumerate}
+\end{proof}
+% Since $K$ as defined in~\eqref{eq:kernel_featmap} is a kernel, according to Theorem~\ref{th:moore-arons_vector} we can find its corresponding vector-valued Hilbert space $\hilbertspace$.
+
+%\subsubsection*{Representer Theorem for Operator-Valued Kernels}
+These definitions related to vector-valued \acrshort{rkhss} are useful to get a better understanding of how to apply operator-valued kernels for learning multi-target or multi-task functions. Concretely, we would like to develop some result similar to representer theorem~\cite{ScholkopfHS01}, which is a crucial result in optimization and \acrshort{ml}. Given a regularized empirical risk, under some assumptions, the theorem gives a precise description of the minimizer $f^*$ as a finite linear combination of functions $K(\cdot, x_i)$ where $x_i$ are part of the empirical sample.
+This result is extended in~\citet[Theorem 4.2]{MicchelliP05} for operator-valued kernels through the next theorem.
+\begin{theorem}
+    Let $\mathcal{Y}$ be a Hilbert space and let $\mathcal{H}$ be the Hilbert space of $\mathcal{Y}$-valued functions with an operator-valued reproducing kernel $K$. Let $V: \Yspace^n \times \reals_+ \to \reals$ be a function strictly increasing in its second variable and consider the problem of minimizing the functional    
+    \begin{equation}\label{eq:representer_functional}
+        \begin{aligned}
+            E(f) = V((f(x_1), \ldots, f(x_n)), \norm{f}^2)
+        \end{aligned}
+    \end{equation}
+    in $\hilbertspace$.
+    If
+    % for every $(f_1, \ldots, f_n) \in \Yspace^n$ the function $h: \reals_+ \to \reals_+$ defined as $h(t) = V((f_1, \ldots, f_n)), t)$ is strictly increasing and
+    $f_0$ minimizes $E$, then $f_0 = \sum_{j=1}^n K(\cdot, x_j) c_j$ where $c_j \in \mathcal{Y}$. In addition, if $V$ is strictly convex, the minimizer is unique. 
+\end{theorem}
+% The proof can be found in~\citet{MicchelliP05}.
+
+%\subsubsection*{Bijection between Scalar and Vector-Valued Kernels}
+The scalar-valued kernels are well known and studied but this is not the case for operator-valued kernels. However, as shown in~\cite{Hein04kernels,BaldassarreRBV12}, we can find a bijection between operator-valued kernels and scalar-valued ones.
+\begin{lemma}\label{lemma:kernel_bijection}
+    Let $\mathcal{Y}$ be a finite-dimensional Hilbert space and
+    $K: \Xspace \times \Xspace \to \mathcal{L}(\mathcal{Y})$
+    be an operator-valued kernel. Consider also the scalar-valued kernel
+    $L: (\Xspace, \mathcal{Y}) \times (\Xspace, \mathcal{Y}) \to \reals$
+    such that $L((x, z), (\hat{x}, \hat{z})) = \ydotp{z}{K(x, \hat{x}) \hat{z}}$. Then the map $K \to L$ is a bijection.
+\end{lemma}
+Moreover, if we focus on finite dimensional Hilbert spaces, that is, isomorphic to $\reals^d$, given an operator-valued kernel $K$, the corresponding scalar-valued kernel $L$ is defined using the normal basis as
+$$ L((x, e_r), (\hat{x}, e_s)) = \ydotp{e_r}{K(x, \hat{x}) e_s} = K(x, \hat{x})_{rs} ; \; r,s=1, \ldots, \dimx.$$
+That is, each pair $(x, \hat{x})$ defines a matrix which contains the information of how the different outputs, or tasks, are related.
+ 
+% \begin{figure}[t]
+%     \centering
+% \begin{tikzpicture}[node distance=1cm, auto,]
+%     %nodes
+%     \node[punkt] (market) {Market (b)};
+%     % We make a dummy figure to make everything look nice.
+%     \node[above=of market] (dummy) {};
+%     \node[right=of dummy] (t) {Ultimate borrower}
+%       edge[pil,bend left=45] (market.east) % edges are used to connect two nodes
+%     \node[left=of dummy] (g) {Ultimate lender}
+%       edge[pil, bend right=45] (market.west)
+%       %edge[pil,<->, bend left=45] node[auto] {Direct (a)} (t);
+% \end{tikzpicture}
+% \caption{Bijections between kernel functions.}
+% \end{figure}
+
+% \begin{figure}[t]
+%     \centering
+% \begin{tikzpicture}[node distance=1cm, auto,]
+%     %nodes
+%     \node[] (w) {};
+% \end{tikzpicture}
+% \caption{Bijections between kernel functions.}
+% \end{figure}
+
+
+\subsection{Tensor Product of Reproducing Kernel Hilbert Spaces}
+Given two finite-dimensional vector spaces $V$ and $W$ over a field $F$, with dimensions $n$ and $m$, the tensor product of these spaces, $V \otimes W$, is associated with the bilinear map
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        &V \times W &\to V &\otimes W & \\
+    &(v, w)  &\to v &\otimes w &
+    \end{aligned},
+\end{equation}
+such that
+\begin{equation}
+    \nonumber
+    \begin{bmatrix}
+        v_1 \\
+        \vdots \\
+        v_n
+    \end{bmatrix}
+    \otimes 
+    \begin{bmatrix}
+        w_1 \\
+        \vdots \\
+        w_n
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        v_1 w_1 \\
+        \vdots \\
+        v_1 w_n \\
+        \vdots \\
+        v_m w_1 \\
+        \vdots \\
+        v_m w_n \\
+    \end{bmatrix} .
+\end{equation}
+This tensor product can be constructed from the basis of the vector spaces. Consider $B_V$ and $B_W$ the basis of $V$ and $W$, respectively, then the tensor product $V \otimes W$ is a vector space which has as basis the set $\set{v \otimes w, \; v \in B_V, \; w \in B_W}$.
+%
+Since this definition seems recursive, we can also recur to the interpretation of the tensor product as a quotient space.
+Let $L$ be the vector space that has the Cartesian product $V \times W$ as its basis. Let $R$ be the linear subspace of $L$ that is the span of the elements of one of the following forms:
+\begin{align*}
+    (v_1 + v_2, w) - (v_1, w) - (v_2, w), \\
+    (v, w_1 + w_2) - (v, w_1) - (v, w_2), \\
+    (sv, w) - s(v, w), \\
+    (v, sw) - s(v, w), 
+\end{align*}
+where $v, v_1, v_2 \in V$, $w, w_1, w_2 \in W$ and $s \in F$. Then, we can define the tensor product space as the quotient space $L/R$. Observe that these are just the relations to ensure that the tensor product is a bilinear application.
+More concretely, we can name this definition as the algebraic product tensor product of vector spaces and denote it as $V \otimes_{\text{alg}} W$, which is just $V \otimes W$ in the finite dimensional case.
+If $\hilbertspace_1$ and $\hilbertspace_2$ are finite-dimensional Hilbert spaces, then the tensor product space $\hilbertspace_1 \otimes \hilbertspace_2$ is a Hilbert space with inner product
+\begin{equation}
+    \label{eq:innerprod_tensor}
+    \begin{aligned}
+        \dotp{}{}: &(\rkhs_1 \otimes \rkhs_2) &\times& &(\rkhs_1 \otimes \rkhs_2) &\to &\reals &&  \\
+    &(f_1 \otimes f_2) && &(\hat{f}_1 \otimes \hat{f}_2) &\to &\dotp{f_1}{\hat{f}_1} & \dotp{f_2}{\hat{f}_2} &.
+    \end{aligned}
+\end{equation}
+%
+Extending this definition to the infinite-dimensional case, such as the tensor product of Hilbert spaces is not trivial, and we follow roughly the work of~\citet{Kadison1983}. 
+%Let $X_1, X_2$ be finite-dimensional vector spaces.
+Consider the \acrshort{rkhss} $\hilbertspace_1$ of functions  $f: \Xspace_1 \to \reals$ and  $\hilbertspace_2$ of functions $g: \Xspace_2 \to \reals$, with the quotient space definition we can define the tensor product space $H_1 \otimes_{\text{alg}} H_2$ of functions
+\begin{equation}\nonumber
+    \begin{aligned}
+        f \otimes_{\text{alg}} g: &\Xspace_1 &\otimes & &\Xspace_2 &\to &\reals \\
+            &x_1 & \otimes & &x_2 &\to & f(x_1) g(x_2) ,
+    \end{aligned}
+\end{equation}
+which is a pre-Hilbert space with the inner product defined in~\eqref{eq:innerprod_tensor}.
+We can complete this space, i.e. include the limits of the Cauchy series, to get the corresponding Hilbert space~\citep{Kadison1983}, that we will denote as $\rkhs_1 \otimes \rkhs_2$.
+
+% Also, consider $\hilbertspace_1 \otimes \hilbertspace_2$ as the space of the tensor product of two scalar-valued RKHS' $\hilbertspace_1$ and $\hilbertspace_2$ with reproducing kernels $K_1, K_2$, where the functions $f \in \hilbertspace_i$ are defined as $f: \Xspace_i \to \Yspace_i$ for $i=1, 2$. This tensor space is also a Hilbert space endowed with the inner product:
+% \begin{equation}
+%     \label{eq:innerprod_tensor}
+%     \begin{aligned}
+%         \dotp{}{}: &(\rkhs_1 \otimes \rkhs_2) &\times& &(\rkhs_1 \otimes \rkhs_2) &\to &\reals &&  \\
+%     &(f_1 \otimes f_2) && &(\hat{f}_1 \otimes \hat{f}_2) &\to &\dotp{f_1}{\hat{f}_1} & \dotp{f_2}{\hat{f}_2} &.
+%     \end{aligned}
+% \end{equation}
+% It is easy to check that this inner product is symmetric because the inner products of both $\hilbertspace_1$ and $\hilbertspace_2$ are symmetric. It is linear because the inner products of both $\hilbertspace_1$ and $\hilbertspace_2$ are linear and the tensor product is linear. Finally, it is positive definite since 
+% $  \dotp{f_1}{f_1}  \dotp{f_2}{f_2} \geq 0$ and
+% $\dotp{f_1}{f_1}  \dotp{f_2}{f_2} = 0 \implies \dotp{f_i}{f_i} = 0$ for $i=1$ or $i=2$; taking $i=1$ without loss of generality, then $f_1 = 0$, so $f_1 \otimes f_2 = 0 \in \rkhs_1 \otimes \rkhs_2$. 
+To apply the Riesz Theorem in this Hilbert space it is necessary to check whether the evaluation functionals are continuous or, equivalently, bounded.
+%
+\begin{proposition}[\acrshort{rkhs} as tensor product of \acrshort{rkhs}']\label{prop:bounded_tensorfun}
+    Let $\rkhs_1$ and $\rkhs_2$ be \acrshort{rkhss} ; then
+    the space $\hilbertspace = \hilbertspace_1 \otimes \hilbertspace_2$ , with evaluation functionals $L_{x_1 \otimes x_2} $ defined as 
+    $$L_{x_1 \otimes x_2} (f_1 \otimes f_2) =L_{x_1}(f_1) \otimes L_{x_2}(f_2) = f_1(x_1) \otimes f_2(x_2)$$
+    for $x_1 \otimes x_2 \in \Xspace_1 \otimes \Xspace_2$,
+     is an \acrshort{rkhs} with the inner product defined in~\eqref{eq:innerprod_tensor}. 
+\end{proposition}
+\begin{proof}
+    It is necessary to ensure that the operators $L_{x_1 \otimes x_2}$ are bounded. Given any $f_1 \otimes f_2 \in \hilbertspace_1 \otimes \hilbertspace_2$, 
+    $$ \norm{L_{x_1 \otimes x_2} (f_1 \otimes f_2)} = \dotp{f_1(x_1)}{f_1(x_1)} \dotp{f_2(x_2)}{f_2(x_2)} \leq \norm{f_1(x_1)}^2  \norm{f_2(x_2)}^2 .$$
+    Then, since $\hilbertspace_1$ and $\hilbertspace_2$ are bounded, the product 
+$ \norm{f_1(x_1)}  \norm{f_2(x_2)} $
+is also bounded.
+\end{proof}
+
+%
+We also need to define the kernel function for this tensor product space.
+\begin{proposition}
+    Let $\rkhs_1$ and $\rkhs_2$ be \acrshort{rkhss} whose reproducing kernel are $K_1$ and $K_2$, respectively;
+    then the function
+    \begin{equation}
+        \nonumber
+        \begin{aligned}
+            K_1 \otimes K_2: &(\Xspace_1 \otimes \Xspace_2) &\times &&(\Xspace_1 \otimes \Xspace_2) &\to && \reals & \\
+        &(x_1 \otimes x_2) & &&(\hat{x}_1 \otimes \hat{x}_2) &\to & K_1(x_1, \hat{x}_1)  & K_2(x_2, \hat{x}_2) & ,
+        \end{aligned}
+    \end{equation}
+    is a reproducing kernel for the Hilbert space $\hilbertspace_1 \otimes \hilbertspace_2$.
+\end{proposition} 
+\begin{proof}
+    First, observe that $(K_1 \otimes K_2)^{x_1 \otimes x_2} =  K_1^{x_1} \otimes K_2^{x_2}  \in \rkhs_1 \otimes \rkhs_2$,
+    where 
+    \begin{equation}\nonumber
+        \dotp{K_1^{x}}{f} = f(x) , \; \forall f \in \rkhs_1 \text{ such that } K_1(x, \hat{x}) = \dotp{K_1^{x}}{K_1^{\hat{x}}} 
+    \end{equation}
+    and 
+    \begin{equation}\nonumber
+        \dotp{K_2^{x}}{g} = g(x) , \; \forall g \in \rkhs_2 \text{ such that } K_2(x, \hat{x}) = \dotp{K_2^{x}}{K_2^{\hat{x}}} ,
+    \end{equation}
+    satisfies that for every $f \otimes g \in \rkhs_1 \otimes \rkhs_2$, 
+    \begin{equation}\nonumber
+        \dotp{(K_1 \otimes K_2)^{x_1 \otimes x_2}}{f \otimes g} = f(x_1) g(x_2) .
+    \end{equation}
+    Since the evaluation functionals are bounded as shown in Proposition~\ref{prop:bounded_tensorfun}, by the Riesz theorem, for every $x_1 \otimes x_2 \in \Xspace_1 \otimes \Xspace_2$ there exists a single element $K^{x_1 \otimes x_2} \in \rkhs_1 \otimes \rkhs_2$ such that
+    \begin{equation}
+        \nonumber
+        \dotp{K_{x_1 \otimes x_2}}{f \otimes g}\;  \forall f \otimes g \in \rkhs_1 \otimes \rkhs_2 ,
+    \end{equation}
+    thus, this element must be $K_{x_1 \otimes x_2} = (K_1 \otimes K_2)^{x_1 \otimes x_2}$.
+    %
+
+    Then, we can define 
+    \begin{align*}
+        (K_1 \otimes K_2)(x_1 \otimes x_2, \hat{x}_1 \otimes \hat{x}_2) &= \dotp{(K_1 \otimes K_2)^{x_1 \otimes x_2}}{(K_1 \otimes K_2)^{\hat{x}_1 \otimes \hat{x}_2}} \\
+        & = \dotp{K_1^{x_1} \otimes K_2^{x_2}}{K_1^{\hat{x}_1} \otimes K_2^{\hat{x}_2}} \\
+        &= \dotp{K_1^{x_1}}{K_1^{\hat{x_1}}} \dotp{K_2^{x_2}}{K_2^{\hat{x_2}}} \\
+        &= K_1(x_1, \hat{x}_1) K_2(x_2, \hat{x}_2) .
+    \end{align*}
+    
+
+    We observe that $K_1 \otimes K_2$ is symmetric and positive-definite because both $K_1$ and $K_2$ are symmetric and positive definite, %The proof is very similar to the symmetry and positive definiteness proof of the inner product~\eqref{eq:innerprod_tensor}.
+    and, by construction, it has the reproducing property.
+\end{proof}
+
+%\subsubsection*{Separable Kernels}
+To understand the connection between tensor product RKHS's and vector-valued RKHS's we study a special case of operator-valued kernels.
+A standard assumption is that the relation among the different outputs is independent of the pair $(x, \hat{x})$, that is, the kernel is separable~\citep{AlvarezRL12, KadriDPCRA16}.
+\begin{definition}[Separable Kernel]
+    An operator-valued kernel $K(x, \hat{x}): \Yspace \to \Yspace$ is called separable if
+    $$ K(x, \hat{x})  = k(x, \hat{x}) M$$
+    here $k(\cdot, \cdot)$ is a scalar-valued kernel and $M$ is some fixed operator $M \in \mathcal{L}(\mathcal{Y})$.
+\end{definition}
+That is, the operator $K(x, \hat{x})$ decouples in two parts: the similarity between $x$ and $\hat{x}$ measured by $k(\cdot,\cdot)$ and the interaction between the different outputs expressed by $M$. 
+%In those cases it is easier to express the operator-valued kernel as the tensor product of two spaces. 
+%The following lemma shows how we can express such tensor product kernel.
+%
+% Consider the tensor product space $\Xspace \otimes \Tspace$, where $\Tspace$ is the space of tasks. We assume that $\Tspace$ has finite dimension, therefore it is isomorphic to $\reals^k$. We consider $\hilbertspace$ as the Hilbert space of functions $f: \Xspace \to \reals$ with reproducing kernel $K_\Xspace$, and $\Tspace = (\reals^k)^*$ as the space of linear functions $g: \reals^k \to \reals$, which is isomorphic to $\reals^k$. In $\reals^k$ we consider a general inner product induced by the positive definite matrix $A$.
+% Then $(\reals^k)^*$, by the Riesz Representation Theorem, $ \forall x \in \reals^k, \exists u_x \in (\reals^k)^*$ such that $\forall w \in (\reals^k)^*$ 
+% $$ \dotp{w}{u_x}_A = w x, $$
+% that is, $u_x = A^{-1}x$.
+% Then, the kernel is defined as
+% $K_{\Tspace}(x, y) = \dotp{u_x}{u_y}_A = x^\intercal A^{-1} y$.
+% Now we can define the following tensor product of two scalar-valued kernels:   
+% \begin{equation}
+%     \nonumber
+%     \begin{aligned}
+%         K_\Xspace \otimes K_\Tspace: &(\Xspace \otimes \reals^k) \times &(\Xspace \otimes \reals^k) &\to & \mathcal{L}(\reals) \otimes \mathcal{L}(\reals) \\
+%     &(x \otimes z) &(\hat{x} \otimes \hat{z}) &\to & K_\Xspace(x, \hat{x}) \otimes K_\Tspace(z, \hat{z}).
+%     \end{aligned}
+% \end{equation}
+% The function $K_\Xspace \otimes K_\Tspace$ is the reproducing kernel of $\hilbertspace \otimes (\reals^k)^*$.
+% %
+
+Given a symmetric, positive definite operator $M$, we can interpret the separable kernels as the tensor product of kernels.
+Let $\Xspace$ a non-empty set and consider the \acrshort{rkhs} $\rkhs$ of functions $f: \Xspace \to \reals$, with reproducing kernel $k_\rkhs(\cdot, \cdot)$.
+Also, let $\Yspace$ be a finite-dimensional Hilbert space, so it is isomorphic to $\reals^\dimx$, and consider the kernel $K_\Yspace(y, \hat{y}) = \ydotp{y}{M \hat{y}}$. Since $M$ is symmetric and positive definite, we can write $M = B^\intercal B$. Then, considering the map $\Phi(y) = B y$, we can express the kernel as 
+$$ K_\Yspace(y, \hat{y}) = \ydotp{y}{M \hat{y}} = \ydotp{\phi(y)}{\phi(\hat{y})},$$ 
+so $K_\Yspace(y, \hat{y})$ is a reproducing kernel for $\Yspace$.
+%\comm{\\TODO: Explicar en Chapter 2 cómo construir kernels escalares\\}
+Now, the separable operator-valued kernel 
+    $K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)$
+    such that
+    $K(x, \hat{x}) = k(x, \hat{x})M$
+    with $M \in \mathcal{L}(\Yspace)$,
+can be expressed as 
+$$ k_\rkhs \otimes K_\Yspace(x \otimes y, \hat{x} \otimes \hat{y}) = k_\rkhs(x, \hat{x}) K_\Yspace(y, \hat{y}) = k_\rkhs(x, \hat{x}) \ydotp{y}{M \hat{y}} .$$
+Moreover, observe that using this kernel with the standard basis of $\Yspace$,  $\set{e_1, \ldots, e_\dimx}$, 
+    $$ k_\rkhs \otimes K_\Yspace((x \otimes e_r) , (\hat{x} \otimes e_s)) = k_\rkhs(x, \hat{x}) (M)_{rs}.$$
+This last result will be useful for expressing \acrshort{mtl} problems as standard or \acrshort{ctl} ones, as we will see next.
+
+% \begin{lemma}
+%     Let $\Yspace$ be a finite-dimensional Hilbert space and
+%     $K: \Xspace \times \Xspace \to \mathcal{L}(\Yspace)$
+%     be a separable operator-valued kernel, that is
+%     $K(x, \hat{x}) = k(x, \hat{x})M$
+%     with $M \in \mathcal{L}^+(\Yspace)$.   
+%     Consider the kernel
+%     $K_\Xspace \otimes K_\Yspace: (\Xspace \otimes \Yspace) \times (\Xspace \otimes \Yspace) \to \reals$
+%     such that $K_\Xspace \otimes K_\Yspace((x \otimes z), (\hat{x} \otimes \hat{z})) = K_\Xspace(x, \hat{x}) K_\Yspace(z, \hat{z})$, with $K_\Yspace(z, \hat{z}) = \ydotp{z}{M \hat{z}}$ then the map $K \to K_\Xspace \otimes K_\Yspace$ is a bijection.
+% \end{lemma}
+% \begin{proof}
+%     First, observe that $K_\Yspace$ is the reproducing kernel of $\Yspace$ with the inner product induced by the operator $M^{-1} \in \mathcal{L}^+(\mathcal{Y})$.
+%     By Lemma~\ref{lemma:kernel_bijection} there exists a bijection between $K$ and $L$ where $L((x, z), (\hat{x}, \hat{z})) = \ydotp{z}{K(x, \hat{x}) \hat{z}}$. When $K(x, \hat{x}) = k(x, \hat{x})M$, we define 
+%     $$ K_\Xspace \otimes K_\Yspace(x \otimes z, \hat{x} \otimes \hat{z}) = K_\Xspace(x, \hat{x}) K_\Yspace(z, \hat{z}) = K_\Xspace(x, \hat{x}) \ydotp{z}{M \hat{z}} = L((x, z), (\hat{x}, \hat{z})) ,$$
+%     and the bijection is trivial by definition.
+%     %
+
+%     Moreover, observe that using this kernel with a basis of $\Yspace$,  $z=e_r, \hat{z}=e_s$, 
+%     $$ K_\Xspace \otimes K_\Yspace((x \otimes e_r) , (\hat{x} \otimes e_s)) = K_\Xspace(x, \hat{x}) (M)_{rs}.$$
+% \end{proof}
+% This kind of kernels are called separable kernels~\citep{AlvarezRL12, KadriDPCRA16}, however their connection with operator-valued kernels is not very clear. This subsection tries to explain the construction of separable kernels and how they relate to operator-valued kernels.
+ 
+
+
+\subsection{Kernel extensions for Multi-Task Learning} \label{subsec:kernels_mtl}
+There exists a plethora of work about Single-Task Learning within regularization theory, where the problem to solve is
+\begin{equation}
+    \label{eq:stl_general_formulation}
+    \begin{aligned}
+        \min_{w} & \sum_{i=1}^{\nsamples} \lossf(y_i, \dotp{w}{\phi(x_i)}) + \lambda \dotp{w}{w} .\\
+    \end{aligned}
+\end{equation}
+Here, $\lossf$ is the loss function and $\phi$ is a transformation to include non-linearity. Popular models such as Ridge Regression or SVMs are particular cases of this formulation for different choices of $\lossf$ and $\phi$.
+One crucial result for these kind of problems is the \emph{Representer Theorem}, which states that the any minimizer of problem~\eqref{eq:stl_general_formulation} has the form
+\begin{equation}
+    \label{eq:representerth_sol}
+    w = \sum_{i=1}^\nsamples c_j \phi(x_j) .
+\end{equation}
+%\comm{\\TODO: Explicar el Representer Theorem y Kernel Trick en Chapter 2 \\}
+Given $w$ represented as in~\eqref{eq:representerth_sol}, we write
+\begin{equation}
+    \nonumber
+    \dotp{w}{\phi(\hat{x})} = \sum_{i=1}^\nsamples c_j \dotp{\phi(x_j)}{\phi(\hat{x})}.
+\end{equation}
+This is very useful because we can apply the kernel trick and use the transformations $\phi$ only implicitly.
+In this subsection it is shown how a broad class of \acrshort{mt} problems can be expressed as regularized Single-Task problems.
+
+%\subsubsection*{Linear \acrshort{mtl} Models}
+Building upon the ideas discussed in~\cite{EvgeniouP04}, two useful results are presented in~\cite{EvgeniouMP05}, which show how we can apply Single-Task Learning methods to \acrshort{mtl} problems.
+The first result~\cite[Proposition 1]{EvgeniouMP05} is given for linear models and illustrates under which conditions we can adapt these results in an \acrshort{mtl} context.
+Consider the linear \acrshort{mtl} problem where we want to estimate the task parameters $u_r: r = 1, \ldots, T$, so we define $\myvec{u}^\intercal = (u_1^\intercal, \ldots, u_T^\intercal) \in \reals^{\ntasks \dimx}$. Then we want to minimize
+\begin{equation}
+    \label{eq:mtl_general_formulation}
+    \begin{aligned}
+        &R(\myvec{u}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{u_r}{x_i^r}) + \mu \left(\myvec{u}^\intercal \mymat{E} \myvec{u}\right) ,\\
+    \end{aligned}
+\end{equation}
+where
+\begin{equation}
+    \label{eq:regularizer_matrixE}
+    J(\myvec{u})= \myvec{u}^\intercal \mymat{E} \myvec{u}
+\end{equation}
+is the regularizer, and different choices of $J(\myvec{u})$, i.e. choices of the matrix $E$, can encode different beliefs about the task structure. For example, if $J(\myvec{u}) = \sum_{r=1}^T \norm{u_r}^2$ the problem decouples and we get independent task learning, so there is no relation among tasks; if $J(\myvec{u}) = \sum_{r, s=1}^T \norm{u_r - u_s}^2$ we are enforcing the parameters from different tasks to be close, so we expect all tasks to be related.
+%
+
+Then, Evgeniou \emph{et al.} propose to consider a vector $\myvec{w} \in \reals^p$ with $p \geq \ntasks \dimx$ such that we can express $\dotp{u_r}{x}$ as $\dotp{\mymat{B}_r^\intercal \myvec{w}}{x}$,  where $\mymat{B}_r$ is a $p \times \dimx$ matrix yet to be specified. One condition for $\mymat{B}_r$ is to be full rank so we can find such $\myvec{w}$.
+Note that we can also interpret $\mymat{B}_r$ as a feature map $f: \reals^\dimx \to \reals^p$ such that $\dotp{u_r}{x} = \dotp{\myvec{w}}{\mymat{B}_r x}$. 
+Observe that using the matrices $\mymat{B}_r$ we have the following \acrshort{mtl} kernel
+\begin{equation}
+    \nonumber
+    \hat{k}(x^r, y^s) = \hat{k}((x, r), (y, s)) = x^\intercal B_r^\intercal B_s y .
+\end{equation}
+Using these feature maps we would like to write the \acrshort{mtl} problem as a Single-Task problem 
+\begin{equation}
+    \label{eq:mtl_as_stl}
+    \begin{aligned}
+        &S(\myvec{w}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{\mymat{B}_r x_i^r}) + \mu \dotp{\myvec{w}}{\myvec{w}} ,\\
+    \end{aligned}
+\end{equation}
+We also define the feature matrix $\mymat{B}$ as the concatenation $\mymat{B} = (B_r: r=1, \ldots, T) \in \reals^{p \times \ntasks \dimx}$, then we present the first result of~\cite{EvgeniouMP05}.
+\begin{proposition}\label{prop:evgeniou1}
+    If the feature matrix $\mymat{B}$ is full rank and we define the matrix $\mymat{E}$ in equation~\eqref{eq:mtl_general_formulation} as $\mymat{E} = (\mymat{B}^\intercal \mymat{B})^{-1}$, then
+    \begin{equation}
+        \nonumber
+        S(\myvec{w}) = R(B^\intercal \myvec{w}),
+    \end{equation}
+    and therefore $\optim{\myvec{u}} = B^\intercal \optim{\myvec{w}}$.
+\end{proposition}
+One important consequence of this result is that since we can solve the \acrshort{mtl} problem~\eqref{eq:mtl_general_formulation} as the STL problem~\eqref{eq:stl_general_formulation} with $\phi$ being the identity function, then we can apply the {Representer Theorem}. That is, the solution $\optim{\myvec{w}}$ of problem~\eqref{eq:stl_general_formulation} has the form
+\begin{equation}
+    \nonumber
+    \myvec{w} = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask c_i B_r x_i^r ,
+\end{equation}
+and the prediction can be expressed as
+\begin{equation}
+    \nonumber
+    \dotp{\myvec{w}}{\hat{x}^s} = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  (x_i^r)^\intercal B_r^\intercal B_s \hat{x}^s = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask c_i  \hat{k}(x_i^r, \hat{x}^s).
+\end{equation}
+
+%\subsubsection*{A Posteriori Kernel Extension of \acrshort{mtl} Models}
+Evgeniou \emph{et al.} also extend these results to kernelized models. In the following lemma~\cite[Lemma 2]{EvgeniouMP05} they give the conditions under which the extension is possible.
+
+\begin{lemma}\label{lemma:evgeniou_2}
+    Given a space $\mathcal{T}$ such that for every $r=1, \ldots, T$  there are prescribed mappings
+    $\psi_r: \Xspace \to \mathcal{T}$, if $G$ is a kernel on $\mathcal{T} \times \mathcal{T}$, then 
+    \begin{equation}
+        \label{eq:evgeniou_lemma2}
+        K((x, r), (\hat{x}, s)) = G(\psi_r(x), \psi_s(t)),\; x, \hat{x} \in \Xspace,\; r,s = 1, \ldots, \ntasks ,
+    \end{equation}
+    is a multi-task kernel.
+\end{lemma}
+This defines $K$ as a semi-positive functional over the product space $\Xspace \times \mathcal{T}$, which is named a multi-task kernel.
+The mappings described in~\cite{EvgeniouMP05} are
+$$ \psi_r(x) = B_r x ,$$
+where $B_r$ are the $p \times d$ matrices previously defined.
+Then, two examples of multi-task kernels using this lemma are given. The polynomial kernel is defined as
+$$ K((x, r), (y, s)) = \left( x^\intercal B_r^\intercal B_s y\right) $$
+and the multi-task Gaussian kernel is defined as
+$$ K((x, r), (y, s)) = \exp\left(-\gamma \norm{B_r x - B_s y}^2 \right) .$$
+That is, applying Proposition~\ref{prop:evgeniou1}, since $E^{-1} = B^\intercal B$, we can incorporate the task-regularizer information into the Gaussian kernel using that
+\begin{align*}
+    \norm{B_r x - B_s y}^2 
+    &= x^\intercal B_r^\intercal B_r x + y^\intercal B_s^\intercal B_s y - 2 x_r^\intercal B_r^\intercal B_s y_s \\
+    &= x^\intercal E_{rr}^{-1} x + y^\intercal E_{ss}^{-1} y - 2 x_r^\intercal E_{rs}^{-1} y_s .
+\end{align*}
+That is, we use the task information in the original space and then apply the non-linear transformation implicitly using the kernel trick.
+%
+
+%\subsubsection*{A Priori Kernel Extension of \acrshort{mtl} Models}
+The kernel extension presented in~\cite{EvgeniouMP05} proposes using a mapping in the original finite space to incorporate the task information and then apply the kernel trick over the new mapped features. However, these results do not allow to perform the, possibly infinite dimensional, mapping corresponding to a kernel and then incorporate the task information in the new space.
+
+Here we propose another approach which makes it possible to replicate the results for the infinite-dimensional case by using tensor products. Consider the \acrshort{rkhs} $\hilbertspace$ and the functional
+\begin{equation}
+    \label{eq:mtl_kernel_altext_original}
+    \begin{aligned}
+        &R({u_1, \ldots, u_T}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{u_r}{\phi(x_i^r)}) + \mu \sum_r \sum_s E_{rs} \dotp{u_r}{u_s} ,\\
+    \end{aligned}
+\end{equation}
+where $\phi$ is a feature transformation, $u_1, \ldots, u_T \in \hilbertspace$, and $E$ is a $\ntasks \times \ntasks$ symmetric, positive definite matrix. The following lemma illustrates how to minimize this functional as a single task problem.
+\begin{lemma}\label{lemma:regproblems_kernel}
+    The predictions $\dotp{u_r^*}{\phi(x)}$ of the solutions $u_1^*, \ldots, u_\ntasks^*$ from the \acrshort{mtl} problem~\eqref{eq:mtl_kernel_altext_original} can be obtained solving the problem
+    \begin{equation}
+        \label{eq:mtl_kernel_tensor}
+        \begin{aligned}
+            &S(\myvec{w}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{(B_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal \myvec{w} ,\\
+        \end{aligned}
+    \end{equation}
+    where $\bm{w} \in \reals^p \otimes \hilbertspace$ with $p \geq \ntasks$ and $B_r$ are the columns of a full rank matrix $B \in \reals^{p \times \ntasks}$ such that $\mymat{E}^{-1} = \mymat{B}^\intercal \mymat{B}$.
+\end{lemma}
+
+\begin{proof}
+    Replicating the idea of~\cite{EvgeniouMP05}, given an orthonormal base of $\reals^\ntasks$, which we will name $\set{e_1, \ldots, e_\ntasks}$, we can define
+$$ \myvec{u} = \sum_{t=1}^T e_r \otimes u_r ,$$
+such that $\myvec{u} \in \reals^T \otimes \hilbertspace$. Then, we can reformulate~\eqref{eq:mtl_kernel_altext_original} as
+\begin{equation}
+    \label{eq:mtl_kernel_altext_tensor}
+    \begin{aligned}
+        &R(\myvec{u}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{u}}{e_r \otimes \phi(x_i^r)}) + \mu \left(  \myvec{u}^\intercal (E \otimes I) \myvec{u} \right).\\
+    \end{aligned}
+\end{equation}
+Since ${E} \in \reals^{\ntasks \times \ntasks}$ is symmetric and positive definite, we can find $B \in \reals^{p \times \ntasks}, p \geq \ntasks$ and $\rank{B} = \ntasks$ such that $E^{-1} = 
+{B^\intercal} {B}$, using for example the SVD. 
+% In the case that ${E} \in \reals^{\ntasks \times \ntasks}$ is a semipositive definite matrix with rank $r$ we can find $B \in \reals^{p \times r}, p \geq \ntasks$ and $\rank{B} = r$ such that $E^{+} = 
+% {B^\intercal} {B}$.
+% For the rest of the analysis we will consider a positive definite matrix $\mymat{E}$ but the results are also valid for positive semidefinite matrices.
+% 
+Then, with the properties of the tensor product of linear maps,  $$ E^{-1} \otimes I = (B^\intercal B) \otimes I = (B^\intercal \otimes I) (B \otimes I),$$
+%
+Consider the change of variable $\myvec{u} = (B^\intercal \otimes I)\myvec{w}$, where $\myvec{w} \in \reals^p \otimes \hilbertspace$. % Observe that this can always be done because %the columns of $B$ generates $\reals^T$, so we can always find $\hat{w}$ such that $e_r = B w$   .The condition of full rank for $B$ is necessary in this step. $B$ is full rank. That is, $B$ has linearly independent columns, and, thus, we can write its right inverse as $B^+$
+
+Rewriting \eqref{eq:mtl_kernel_altext_tensor} using $\myvec{w}$,
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        R(\myvec{w}) &= \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{(B^\intercal \otimes I) \myvec{w}}{ (e_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal (B^\intercal \otimes I)^\intercal (E \otimes I) (B^\intercal \otimes I)\myvec{w} \\
+        &= \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{(B \otimes I) (e_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal \myvec{w} ,\\
+    \end{aligned}
+\end{equation}
+which is equivalent to
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        &S(\myvec{w}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{(B_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal \myvec{w} .\\
+    \end{aligned}
+\end{equation}
+
+We are thus considering a regularized functional $S(\myvec{w})$ where we seek the minimum over functions $\fv{w}$ in the Hilbert space $\reals^p \otimes \hilbertspace$. Note that in this space the inner product is:
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \dotp{}{}: &(\reals^p \otimes \hilbertspace) &\times& &(\reals^p \otimes \hilbertspace) &\to &&\reals & \\
+    &(z_1, \phi(x_1)) && &(z_2, \phi(x_2)) &\to &\dotp{z_1}{z_2} &k(x_1, x_2) &
+    \end{aligned},
+\end{equation}
+where $k(\cdot, \cdot)$ is the reproducing kernel of the space of functions $\phi(\cdot)$.
+However, in the minimization problem we only have values $z = B e_r = B_r$ for some $r=1, \ldots, T$; then $\dotp{B_r}{B_s} = E^{-1}_{rs}.$
+Since the regularizer is clearly increasing in $\norm{w}^2$, we can apply the Representer theorem, which states that the minimizer of $S(\myvec{w})$ has the form
+\begin{equation}
+    \nonumber
+    %\label{eq:representer_tensor}
+    \optim{\myvec{w}} = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (B_r \otimes \phi(x_i^r)) .
+\end{equation}
+Using the correspondence between $\optim{\myvec{u}}$ and $\optim{\myvec{w}}$, we have
+\begin{equation}
+    \nonumber
+    \optim{\myvec{u}} = (B^\intercal \otimes I) \optim{\myvec{w}} =  \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r}} \otimes \phi(x_i^r)),
+\end{equation}
+where $\vect{a_1, \ldots, a_\ntasks}$ is a $\ntasks$-dimensional vector with elements $a_1, \ldots, a_\ntasks$.
+Then, we can recover the predictions corresponding to the solutions $u_r^*$ as
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \dotp{u_s}{\phi(\hat{x}^s)} &= \dotp{\myvec{u}}{e_s \otimes \phi(\hat{x}^s)} \\
+        &= \dotp{\sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (\vect{\dotp{B_1}{B_r}, \ldots, \dotp{B_\ntasks}{B_r}} \otimes \phi(x_i^r))}{e_s \otimes \phi(\hat{x}^s)} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  \dotp{B_s}{B_r} \dotp{\phi(x_i^r)}{\phi(x_s)} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r  (E^{-1})_{rs} k(x_i^r, \hat{x}^s).
+    \end{aligned}
+\end{equation}
+\end{proof}
+Observe that, applying the corresponding feature map $\mymat{B} \otimes I$, the predictions can be obtained equivalently using the common $\myvec{w}$ as
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        \dotp{\myvec{w}}{(B \otimes I) (e_s \otimes \phi(\hat{x}^s))} 
+        &= \dotp{\myvec{w}}{ (B_s \otimes \phi(\hat{x}^s))} \\ 
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r \dotp{B_r \otimes \phi(x_i^r)}{B_s \otimes \phi(\hat{x}^s)} \\
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r \dotp{B_r}{B_s} \dotp{\phi(x_i^r)}{\phi(\hat{x}^s)} \\ 
+        &= \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r (E^{-1})_{rs} k(x_i^r, \hat{x}^s).
+    \end{aligned}
+\end{equation}
+That is, we have expressed the \acrshort{mt} problem as a Single-Task problem with the \acrshort{mt} kernel being
+\begin{equation}
+    \nonumber
+    \hat{k}(x_i^r, x_j^s) = (E^{-1})_{rs} k(x_i^r, x_j^s).
+\end{equation}
+%
+Note that the kernels obtained in this way, unlike those obtained using Lemma~\ref{eq:evgeniou_lemma2}, split the inter-task relations and the similarity between data points. That is, we can implicitly send our data into another, possibly infinite-dimensional, space and apply the task information after this transformation.
+These are separable kernels~\citep{AlvarezRL12}, but, to the best of our knowledge, this is the first time they are constructed using tensor products.
+
+% However, there is another alternative for the kernel extension: first apply the non-linear transformation and then use the task information in the augmented space.
+% To do that we need to extend the notions of matrices to operators in (potentially infinite-dimensional) Hilbert spaces. Extending the general \acrshort{mtl} formulation of~\eqref{eq:mtl_general_formulation}
+% \begin{equation}
+%     \label{eq:mtl_general_formulation_nonlinear}
+%     \begin{aligned}
+%         &R(\myvec{u}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{u_r}{\phi(x_i^r)}) + \mu J(\myvec{u}) ,\\
+%     \end{aligned}
+% \end{equation}
+% where $\phi$ is a non-linear transformation
+% $\phi: \Xspace \to \mathcal{Y}$ where $\mathcal{Y}$
+%  is a Hilbert space and 
+% $ J(\myvec{u}) = \dotp{u}{\mymat{E} u} = \dotp{u \mymat{E}}{u}$
+% where $E$ is semi-positive definite linear operator in $\mathcal{Y}$.
+% Consider also the non-linear extension of~\eqref{eq:mtl_as_stl}:
+% \begin{equation}
+%     \label{eq:mtl_as_stl_nonlinear}
+%     \begin{aligned}
+%         &S(\myvec{w}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{\myvec{w}}{\mymat{B}_r \phi(x_i^r)}) + \mu \dotp{\myvec{w}}{\myvec{w}} ,\\
+%     \end{aligned}
+% \end{equation}
+% where $\phi$ is the same non-linear transformation and $B_r$ is a linear operator
+% $$B_r: \mathcal{Y} \to \mathcal{Y} .$$
+% \comm{Puede ser otro conjunto de llegada?, $w \in \mathcal{Z}$}
+% The goal now is to define under which conditions we can state an analogous result to that of Proposition~\ref{prop:evgeniou1}. To do that, we replicate the proof of~\cite{EvgeniouMP05} replacing the matrix arguments for operator ones.
+% \begin{proposition}\label{prop:evgeniou1}
+%     If the linear operator $\mymat{B}$ is injective and we define the operator $\mymat{E}$ in equation~\eqref{eq:mtl_general_formulation_nonlinear} as to be $\mymat{E} = (\mymat{B}^* \mymat{B})^{-1}$ then we have that
+%     \begin{equation}
+%         \nonumber
+%         S(\myvec{w}) = R(B^* \myvec{w}).
+%     \end{equation}
+%     and therefore $\optim{\myvec{u}} = B^* \optim{\myvec{w}}$.
+% \end{proposition}
+
+% If B is injective then B* is injective
+% If B, B* are injective, B*B is injective
+% We have two options:
+%   1. We prove the same for surjective
+%   2. We restrict the domain of B*B
+% This allows us to define E properly
+
+% For the other direction we have a problem because we need to decompose the operator E = T T* which is not trivial
+
+%\subsubsection*{Examples of \acrshort{mt} Kernels}
+Using the framework for \acrshort{mtl} with kernel methods just discussed we can choose different regularizations, induced by the matrix $\mymat{E}$, which lead to different \acrshort{mt} approaches. 
+
+One trivial example that we can illustrate using this framework is that of independent tasks. This is the case when $E = I_{\ntasks}$ and therefore $B =  I_{\ntasks}$ , that is 
+$$B_r^\intercal =  (\overbrace{0}^1, \ldots, \overbrace{1}^{r}, \ldots, \overbrace{0}^T), $$
+and the kernel is
+\begin{equation}
+    \nonumber
+    \hat{k}(x_i^r, x_j^s) = \dotp{B_r}{B_s} k(x_i^r, x_j^s) = (\delta_{rs}) k(x_i^r, x_j^s).
+\end{equation}
+This approach is not a proper \acrshort{mtl} method because each task is learned separately, and no coupling is being enforced among tasks.
+
+%\paragraph*{Independent Parts with Shared Common Model:}
+Other important example that we can model using this framework is that of a combination-based \acrshort{mtl}, where we use the combination of a common part and task-specific parts. For this case, we select the matrix $B$ such that its columns are
+$$B_r^\intercal =  \left(\overbrace{0}^1, \ldots, \overbrace{1}^{r}, \ldots,  \overbrace{0}^T, \overbrace{\frac{1}{\mu}}^{T+1} \right), $$
+the corresponding multi-task kernel is:
+\begin{equation}
+    \nonumber
+    \hat{k}(x_i^r, x_j^s) = \dotp{B_r}{B_s} k(x_i^r, x_j^s) = \left( \frac{1}{\mu} + \delta_{rs} \right) k(x_i^r, x_j^s) .
+\end{equation}
+% Evgeniou
+This is equivalent to the approach presented in the work of~\cite{EvgeniouP04}, that we have presented in~\eqref{eq:svmmtl_primal_add}.
+Here, for each task we use the vector
+$$w_r = w + v_r,$$
+to define the model of the $r-th$ task, where $w$ is common to all tasks and $v_r$ is task-specific.
+
+% % Leveraging common and specific information
+% Note that $\mu$ is a parameter that controls the tradeoff between the relevance of common and specific models. That is, when $\mu$ tends to infinite, the resulting model approaches a common-task standard \acrshort{svm}; when $\mu$ tends to zero, an independent task approach is taken, with one standard \acrshort{svm} problem for each task.
+
+
+% This is also reflected in the corresponding dual problem
+% \begin{equation}\label{eq:regmtlsvm_dual}
+%     \begin{aligned}
+%         & \argmin_{\alpha_i} 
+%         & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \dotp{x_i^r}{x_j^s} + \frac{1}{2 \mu} \sum_{r, s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \delta_{rs} \dotp{x_i^r}{x_j^s} \\
+%         & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} p_i^r \alpha_i^r \\
+%         & \text{s.t.}
+%         & & 0 \leq \alpha_i^r \leq C \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%         \end{aligned}
+% \end{equation}
+% In this dual form, as $\mu$ grows, the task-specific part goes to zero, and the most important term is the first one, corresponding to the common part. The opposite effect is obtained when $\mu$ shrinks.
+% Common + specific model which is equivalent to penalizing individual norm and variance
+
+Moreover, in~\cite{EvgeniouP04} it is shown that this is a problem equivalent to
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        & \argmin_{w, w_r, \xi_i^r}
+        & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r +  \frac{1}{2} \sum_{r=1}^\ntasks \norm{w_r}^2 + \frac{\mu}{2} \sum_{r=1}^\ntasks  \norm{w_r - \sum_{s=1}^\ntasks w_s}^2 \\
+        & \text{s.t.}
+        & & y_{i}^r ( \dotp{w_r}{x_{i}^r}) \geq p_i^r - \xi_i^r ,\\
+        & & &\xi_i^r \geq 0, \\
+        & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+    \end{aligned}
+\end{equation}
+Now, only the $w_r$ variables are included, and it is clear that $\mu$ penalizes the variance of the $w_r$ vectors, so all models $w_r$ will tend to a common model as $\mu$ grows.
+
+This is a very interesting approach because, as it was pointed out in~\cite{LiangC08}, this approach has connections with the \acrshort{svm}+ of the \acrshort{lupi} approach from~\cite{VapnikI15a}.
+
+
+Finally, we can take the case where the tasks are considered as nodes in a graph, and the non-negative weights of the edges of this graph capture the relation between each pair of tasks.
+Here, the matrix $\mymat{E}$ can be chosen as a Laplacian matrix $\mymat{L} = \mymat{D} - \mymat{A}$, where $\mymat{A}$ is the adjacency matrix indicating the weights of the edges between each pair of tasks, and $\mymat{D}$ is the degree matrix, a diagonal matrix where each diagonal term is the sum of the corresponding row of $\mymat{A}$. Observe that using this matrix, the regularization term is 
+\begin{align*}
+    \myvec{u}^\intercal (L \otimes I) \myvec{u}  
+    &=\sum_{r=1}^T \sum_{s=1}^T u_r^\intercal L_{rs} u_s \\
+    &= \sum_{r=1}^T \sum_{s=1}^T u_r^\intercal (D - A)_{rs} u_s \\
+    &= \sum_{r=1}^T  \sum_{s=1}^T u_r^\intercal \left(\delta_{rs} \sum_{q} A_{rq} \right) u_s - \sum_{r=1}^T  \sum_{s=1}^T u_r^\intercal A_{rs} u_s \\
+    &=  \sum_{r=1}^T u_r^\intercal \sum_{q} A_{rq} u_r + \sum_{s=1}^T u_s^\intercal \sum_{q} A_{sq} u_s  - \sum_{r=1}^T  \sum_{s=1}^T u_r^\intercal A_{rs} u_s \\
+    &=  \sum_{r=1}^T  \sum_{s=1}^T u_r^\intercal \left( A_{rs} u_s + u_s^\intercal A_{rs} u_s - u_r^\intercal A_{rs} u_s \right) \\
+    &= \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{u_r - u_s}^2 \; .
+\end{align*}
+That is, the distance between task models is penalized, weighted by the degree of similatiy between the tasks as indicated by the graph.
+%
+In this chapter we will focus on this approach, named \acrshort{gl}, we will develop it using linear models and extend it to the kernelized case, using our tensor product of \acrshort{rkhss} framework.
+% Here, the multi-task kernel is defined as 
+% \begin{equation}
+%     \nonumber
+%     \hat{k}(x_i^r, x_j^s) = \dotp{B_r}{B_s} k(x_i^r, x_j^s) = \left(\mymat{L}^{+}\right)_{rs} k(x_i^r, x_j^s) .
+% \end{equation}
+% Observe that the pseudoinverse is used because the Laplacian matrices are positive semidefinite. 
+
+%\subsection{Task-Specific Kernels for Kernel Methods}
+
+% On learning vector-valued functions 2004
+
+% Kernels for \acrshort{mtl} 2004
+
+% Learning multiple tasks with kernel methods? 2005
+
+% Multi-output learning via spectral filtering 2012
+
+% Kernels for vector-valued functions: A review 2012
+
+% Bounds for vector-valued function estimation 2016
+
+% Operator-valued Kernels for Learning from Functional Response Data 2016
+
+
+
+% \subsection{Connection with \acrshort{svm}+}
+% % Cai and Cherkassky
+% Another extension of the \emph{regularized \acrshort{mtl}} \acrshort{svm} model can be found in 
+% the multi-task problem described in~\cite{LiangC08} for classification, also adapted for regression problems in~\cite{CaiC09}. Using the unified formulation
+% \begin{equation}\label{eq:mtlsvm_primal_unif}
+%     \nonumber
+%     \begin{aligned}
+%         & \argmin_{w, b, v_r, b_r, \xi_i^r}
+%         & & C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \xi_i^r + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \sum_{r=1}^\ntasks \dotp{v_r}{v_r} \\
+%         & \text{s.t.}
+%         & & y_{i} ( \dotp{w}{\phi(x_{i}^r)} + b + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq p_i^r - \xi_i^r ,\\
+%         & & &\xi_i^r \geq 0, \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%     \end{aligned}
+% \end{equation}
+% Comparing~\eqref{eq:regmtlsvm_primal} and~\eqref{eq:mtlsvm_primal_unif} we observe that the subyacent idea is the same, but there exists some differences. In first place, note that~\eqref{eq:regmtlsvm_primal} is described as a linear model, while in~\eqref{eq:mtlsvm_primal_unif} not only non-linear transformations of the data are used, but different transformations can be selected $\phi, \phi_r$ for the common part and for each task-specific term, respectively. Moreover, it is relevant to note the incorporation of the bias terms in~\eqref{eq:mtlsvm_primal_unif}.
+% The dual form of~\eqref{eq:mtlsvm_primal_unif} is
+% \begin{equation}\label{eq:mtlsvm_dual_unif}
+%     \begin{aligned}
+%         & \argmin_{\alpha_i} 
+%         & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^s \left[k(x_i^r, x_j^s) + \delta_{rs} k_r(x^r_i, x^s_j) \right] - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} p_i^r \alpha_i^r \\
+%         & \text{s.t.}
+%         & & 0 \leq \alpha_i^r \leq C \\
+%         & & & \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r} = 0, \\
+%         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
+%         \end{aligned}
+% \end{equation}
+% In~\eqref{eq:mtlsvm_dual_unif}, $\ntasks$ equality constraints that are not present in~\eqref{eq:regmtlsvm_dual} have been added. This a direct consequence of the incorporation of bias terms in the primal formulation. Since the original SMO algorithm does not account for multiple equality constraints, in~\cite{CaiC12} a generalized SMO algorithm is developed.
+% Also, it is important to observe the use of different kernel spaces through the functions $k$ and $k_r$.
+% % Connection with \acrshort{lupi}!
+% This has connections with the \acrshort{lupi} paradigm~\cite{VapnikI15a} and the proposed \acrshort{svm}+ that embodies this paradigm, as described in Subsection~\ref{subsec:ch3_lupi}. The kernel space for the common part is named the decision space, and the spaces corresponding to the kernel functions $k_r$ are the correcting spaces. That is, each task can independently correct the similarity defined by the common decision space.
+
+% When is there a representer theorem? Vector versus matrix regularizers.
+
+% Multi-task least-squares support vector machines. Shuo
+
+% Multi-task Gaussian process prediction. Bonilla
+
+% Sparse coding for multitask and transfer learning
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Graph Laplacian Multi-Task Learning with Kernel Methods}\label{sec:graphlap}
 
-\comm{TODO: Motivar kernel extension, es dificil y usamos tensores}
-
+%\comm{TODO: Motivar kernel extension, es dificil y usamos tensores}
+Although the \acrshort{gl} approach had already been proposed in~\citet{EvgeniouMP05}, it is restricted to linear models, or to a kernel extension where the task information of the Laplacian is included before the kernel-related transformation.
+Here, we use the framework of tensor product of \acrshort{rkhss} to extend the \acrshort{gl} formulation and consider incorporating the Laplacian information in the Hilbert space, after the kernel-related transformation has been applied.
 \subsection{Linear Case}
 We start from the simplest scenario: using linear models. That is, given a $\dimx$-dimensional input space $\Xspace$, e.g. $\reals^\dimx$, we consider models of the form
 $$ h_r(\cdot) = \dotp{w_r}{\cdot} + b_r,\;  w_r \in \reals^\dimx .$$
@@ -182,14 +1204,17 @@ To check the second equation, see
     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks D_{rs} v_r^\intercal v_s - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
     &= \sum_{r=1}^\ntasks D_{rr} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
     &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_r - \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} v_r^\intercal v_s \\
-    &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s)  \\
-    &= \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace A_{rs}  (v_r^\intercal v_r - v_r^\intercal v_s) + A_{sr} (v_s^\intercal v_s - v_s^\intercal v_r) \rbrace \\
+    &= \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks A_{rs} (v_r^\intercal v_r - v_r^\intercal v_s) ,
+\end{align*}
+which can be expressed as
+\begin{align*}
+    &\sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace A_{rs}  (v_r^\intercal v_r - v_r^\intercal v_s) + A_{sr} (v_s^\intercal v_s - v_s^\intercal v_r) \rbrace \\
     &=
-    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  (v_r^\intercal v_r + v_s^\intercal v_s - 2v_r^\intercal v_s) \rbrace \\
+    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  (v_r^\intercal v_r + v_s^\intercal v_s - 2v_r^\intercal v_s) \rbrace \\
     &=
-    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
-    &=
-    \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
+    \sum_{r=1}^\ntasks \sum_{s=r}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
+    % &=
+    % \frac{1}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace (A_{rs} + A_{sr})  \norm{v_r - v_s}^2 \rbrace \\
     &=
      \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks \lbrace A_{rs}  \norm{v_r - v_s}^2 \rbrace .\\
 \end{align*}
@@ -408,10 +1433,10 @@ Substituting these results in the Lagrangian, we get
             \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
             &= \frac{1}{2} \dotp{\fv{v}}{E_\otimes \fv{v}} + \frac{1}{2} \dotp{w}{w}
             \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r]   } \\
-            &= \frac{1}{2} \dotp{E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E_\otimes E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
-            &\quad  +\frac{1}{2} \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
-            &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E_\otimes^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
-            &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
+            % &= \frac{1}{2} \dotp{E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E_\otimes E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
+            % &\quad  +\frac{1}{2} \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
+            % &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E_\otimes^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
+            % &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
             &= \frac{1}{2} \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E_\otimes^{-1} (e_r \otimes \psi(x_i^r))} \\ 
             &\quad +\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} \\
             &\quad - \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E_\otimes^{-1} (e_r \otimes \psi(x_i^r))} \\ 
@@ -475,13 +1500,19 @@ With $E_\otimes$ as defined in~\eqref{eq:expression_E} and using~\eqref{eq:commo
     \begin{aligned}
             \mathcal{L}&({w}, \fv{v}, b_r, \xi_i^r, {\fv{\alpha}}, \fv{\beta}) \\
             &= \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 + \frac{1}{2} \dotp{\fv{v}}{E_\otimes\fv{v}} + \frac{1}{2} \dotp{w}{w}
-            \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r]   } \\
-            &= \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 \\
-            &\quad + \frac{1}{2} \dotp{E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E_\otimes E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
-            &\quad  +\frac{1}{2} \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
-            &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E_\otimes^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
-            &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
-            &= \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 \\
+            \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r]   } ,\\
+            % &= \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 \\
+            % &\quad + \frac{1}{2} \dotp{E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}}{E_\otimes E_\otimes^{-1} \sum_{r=1}^\ntasks (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r (e_r \otimes \psi({x}_i^r))}} \\ 
+            % &\quad  +\frac{1}{2} \dotp{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}}{\sum_{r=1}^\ntasks \lambda_r \sum_{i=1}^{\npertask_r}{\alpha_i^r y_i^r \phi(x_i^r)}} \\
+            % &\quad - \sum_{r=1}^T (1 - \lambda_r) \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{E_\otimes^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s (e_s \otimes \psi({x}_j^s))}}{e_r \otimes \psi(x_i^r)} \right\rbrace   } \\
+            % &\quad - \sum_{r=1}^T \lambda_r \sum_{i=1}^{\npertask_r}{ \alpha_i^r y_{i}^r \left\lbrace  \dotp{\sum_{s=1}^\ntasks \lambda_s \sum_{j=1}^{\npertask_s}{\alpha_j^s y_j^s \phi(x_j^s)}}{\phi(x_i^r)} \right\rbrace   } - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
+    \end{aligned}
+\end{equation}
+which is equal to
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        &= \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 \\
             &\quad \frac{1}{2} \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E_\otimes^{-1} (e_r \otimes \psi(x_i^r))} \\ 
             &\quad +\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} \\
             &\quad - \sum_{r, s=1}^\ntasks (1-\lambda_r)(1-\lambda_s) \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{(e_s \otimes \psi(x_j^s))}{E_\otimes^{-1} (e_r \otimes \psi(x_i^r))} \\ 
@@ -543,7 +1574,8 @@ Applying~\eqref{eq:common_repr_cvxgl_ls},~\eqref{eq:specific_repr_cvxgl_ls} and~
         &\quad + (1 - \lambda_r) \dotp{\fm{E_\otimes}^{-1} \sum_{s=1}^\ntasks (1 - \lambda_s) \sum_{j=1}^{\npertask_s}{\alpha_i^s y_i^s (e_s \otimes \psi({x}_i^s))}}{y_{i}^r (e_r \otimes \psi({x}_i^r))}   + b_r + \frac{\alpha_i^r}{C} = p_i^r .\\
     \end{aligned}
 \end{equation}
-For each coefficient $\alpha_i^r$ we get an equality like this one, which, all together and alongside~\eqref{eq:specific_eqconstr_cvxgl_ls} form a system of equations that can be expressed as\begin{equation}\label{eq:dual_cvxgl_ls_kernel}
+For each coefficient $\alpha_i^r$ we get an equality like this one, which, all together and alongside~\eqref{eq:specific_eqconstr_cvxgl_ls} form a system of equations that can be expressed as
+\begin{equation}\label{eq:dual_cvxgl_ls_kernel}
     \begin{aligned}
     \left[
     \begin{array}{c|c}

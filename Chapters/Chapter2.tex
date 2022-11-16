@@ -655,36 +655,291 @@ This is a relevant result because it gives an explicit form of the minimizer of 
 % classification problem: logistic regression
 
 % joint formulation for both 
+The question of what is learning and when does learning take place has frequently been proposed in computer science or even philosophy, but it is difficult to formalize in order to provide some meaningful answers. Vapnik and Chervonenkis, two of the founders of statistical learning theory, expressed this question in terms of how well we minimize the expected risk when we focus on minimizing the empirical risk.
+%
+They develop a theory to give specific conditions, necessary and sufficient, for when does minimizing the empirical risk lead to a small expected risk, and also how can we expect this to happen.
+
+%
+One crucial result that they provide is that these conditions depend on the entire hypothesis space, so different concepts characterizing it are developed. The most important one is the \acrshort{vc} dimension, which sums the capacity of a hypothesis space with a single value. The smaller capacity one space has, the more the empirical risk results generalize to the expected one.
+%
+Moreover, using this notion of capacity, Vapnik \emph{et al.} derive methods that consider a particular class of functions with limited capacity, so they offer better generalization capabilities.
 
 
 \subsection{Uniform Convergence and Consistency}
-
+%
+As explained in the previous section, in the supervised learning framework, we have an input space $\Xspace$ and an output space $\Yspace$, where there exists a distribution $\distf$ in $\Xspace \times \Yspace$ that is unknown. Given a function $\hypf: \Xspace \to \Yspace$ the corresponding expected risk is defined as
+\begin{equation}
+    \nonumber %\label{eq:exprisk_def}
+    \exprisk(\hypf) = \int_{\Xspace \times \Yspace} \ell(y, \hypf(x)) d\distf(x, y) ,
+\end{equation}
+where $\lossf$ is some loss function, which is different depending on the context.
+%
+We would like then to select the function $\opt{\hypf}$ that minimizes $\exprisk(\hypf)$, but it is not possible since we do not know $\distf$. However, we have an empirical sample 
+$$ \sample = \set{(x_i, y_i) \sim \distf(x, y), \; i=1, \ldots, \nsamples} ,$$
+so we actually try to minimize the empirical risk, which is defined as
 % What is learning? Emp Risk vs Exp Risk. 
-% What is consistency
+\begin{equation}
+    \nonumber %\label{eq:emprisk_def}
+    \emprisk(\hypf) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hypf(x_i)) .
+\end{equation}
 
-% One-sided convergence implies consistency (sufficient), also necessary
+Consider the case now where we have a space of functions $\hypspace = \set{\hypf: \Xspace \to \Yspace}$ that admits any function. In particular, we can select one defined as: 
+\begin{equation}
+    \label{eq:f_tailor}
+    f(x) = 
+    \begin{cases}
+        y_i & \text{if } x = x_i \text{for some } i = 1, \ldots, \nsamples \\
+        0 & \text{otherwise}.
+    \end{cases}
+\end{equation}
+Then, we this function $f$ minimizes the expected error, but this does not account for any type of learning. If we sample new points $(\tilde{x}_i, \tilde{y}_i)$ from $\distf(x, y)$, if $\Xspace$ is a continuous domain, the new feature vectors $\tilde{x}_i$ will almost never be equal to $x_i$, and $f$ will predict $0$ almost always. Therefore, the expected risk will not be minimized.
+% in fact, it will be the expected value of $l(y)$, with $y \sim P(y \vert x)$
+%
+To avoid this kind of situations, we should somehow restrict the functions that we consider. For example, if we restrict ourselves to continuous functions, we cannot select the function~\eqref{eq:f_tailor}.   
+
+
+At the same time, we have shown that the empirical risk is an unbiased estimator of the expected one, but we can state a stronger assertion using the Chernoff bound~\citep{Chernoff52}.
+For simplicity, we will consider the binary classification case where we label the classes with $\set{-1, 1}$, we use a function $\hypf$ with values in this label set, and the loss is $\xi_i = \frac{1}{2} \abs{\hypf(x_i) - y_i}$, whose values are $0$ or $1$. We can see that $\xi_i$ are Bernoulli trials sampled from a random variable 
+$$ \xi = \frac{1}{2} \abs{\hypf(x) - y} ;$$
+then, we can apply the Chernoff inequality to characterize how the empirical mean converges to the expected value:
+\begin{equation}
+    \nonumber
+    P \left(\abs{\frac{1}{\nsamples} \sum_{i=1}^\nsamples \xi_i - \expect[\xi]} \geq \epsilon  \right) \leq 2 \exp(-2\nsamples \epsilon^2) .
+\end{equation}
+Therefore, the empirical risk converges in probability to the expected one, that is
+\begin{equation}
+    \label{eq:risk_chernoff}
+    \abs{\emprisk(\hypf) -\exprisk(\hypf)} \xrightarrow[\nsamples \to \infty]{\distf} 0 \iff P\left(\abs{\emprisk(\hypf) -\exprisk(\hypf)} \geq \epsilon  \right) \to 0,
+\end{equation}
+and a similar result can be obtained for the Regression case using the Hoeffding bound~\citep{Hoeffding63}.
+This means that, given a fixed function $\hypf$, the probability that there exists a large deviation between the empirical and expected risks is small. Moreover, this convergence is exponentially fast in the number of training samples.
+
+%
+These two point of views seem contradictory. While the empirical risk converges to the expected risk with high probability, we can still find functions, like the one defined in~\eqref{eq:f_tailor}, for which minimizing the empirical risk does not imply minimizing the expected one.
+%
+To reconcile these two results, we have to observe that~\eqref{eq:risk_chernoff} is a probabilistic result, and it states that the probability of finding a function $\hypf$ for which the empirical risk does not converge to the expected one is small. However, there might be some cases in which this occurs, as it is the case with~\eqref{eq:f_tailor}. This happens because we are not selecting one random function $\hypf$ from $\hypspace$, but we are selecting the one that minimizes the empirical risk.
+%
+Therefore, the convergence result of~\eqref{eq:risk_chernoff} is not enough to ensure that minimizing the empirical risk is a useful strategy.
+%
+Instead, we want that $\hypemp$, the function  minimizing the empirical risk satisfies
+\begin{equation}
+    \nonumber
+    \emprisk(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} \inf_{\hypf \in \hypspace} \exprisk(\hypf) .
+\end{equation}
+This is the consistency condition, and if this occurs, we say that the \acrshort{erm} is consistent.
+However, we want to remove from the definition the trivial cases, such as those in which a function $g(\cdot)$, does better than all others for any instance, that is 
+$\lossf(g(x_i), y_i) \leq \lossf(f(x_i), y_i)$ for any $(x, y) \in \Xspace \to \Yspace.$
+This is a trivial problem where we would just select always $g$ as the function minimizing both the empirical and expected risks, so the consistency holds trivially.
+To avoid this, we give the definition of nontrivial consistency.
+\begin{definition}[Nontrivial Consistency]
+    The \acrshort{erm} method is nontrivially consistent if for the set of fucntions $\hypspace$, and given $c \in \reals$, for any non-empty subset 
+    \begin{equation}
+        \nonumber
+        \hypspace_c = \set{\hypf: \emprisk(\hypf) > c, \; \hypf \in \hypspace}
+    \end{equation}
+    the convergence
+    \begin{equation}
+        \nonumber
+        \inf_{\hypf \in \hypspace_c} \emprisk(\hypf) \xrightarrow[\nsamples \to \infty]{\distf} \inf_{\hypf \in \hypspace_c} \exprisk(\hypf) 
+    \end{equation}
+    is valid.
+\end{definition}
+Observe that now, for large enough $c$ we rule out the function $g$, so we do not have a trivial case anymore.
+%
+% Therefore, we should study what happens for $\hypemp$,
+% \begin{equation}
+%     \nonumber
+%     \emprisk(\hypf) - \emprisk(\hypemp)  \geq 0 \;  \forall \hypf \in \hypspace ,
+% \end{equation}
+% and for $\hypexp$, the function such that
+% \begin{equation}
+%     \nonumber
+%     \exprisk(\hypf) - \exprisk(\hypexp) \geq 0 \;  \forall \hypf \in \hypspace .
+% \end{equation}
+% Both inequalities are valid for any $\hypf \in \hypspace$, in particular we can select $\hypexp$ in the first one and $\hypemp$ in the second one, and adding these two inequalities we have 
+% \begin{equation}
+%     \label{eq:consist_ineq}
+%     \begin{aligned}
+%         0 &\leq \emprisk(\hypexp) - \emprisk(\hypemp) + \exprisk(\hypemp) - \exprisk(\hypexp) \\
+%         &= \exprisk(\hypemp) - \emprisk(\hypemp) + \exprisk(\hypexp) - \emprisk(\hypexp)\\
+%         &\leq \sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) + \exprisk(\hypexp) - \emprisk(\hypexp) .
+%     \end{aligned}
+% \end{equation}
+% Applying the Chernoff bound, we know that for second part of the inequality we have
+% \begin{equation}
+%     \nonumber
+%     \abs{\exprisk(\hypexp) - \emprisk(\hypexp)} \xrightarrow[\nsamples \to \infty]{\distf} 0.
+% \end{equation}
+% Then, if we also have that the empirical risk converges (in probability) to the expected one one-sided uniformly, namely
+% \begin{equation}
+%     \nonumber
+%      \sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) \xrightarrow[\nsamples \to \infty]{\distf} 0 ,
+% \end{equation} 
+% we have that the terms in the middle of the two inequalities of~\eqref{eq:consist_ineq} also must satisfy 
+% $$ \exprisk(\hypemp) - \exprisk(\hypexp) \xrightarrow[\nsamples \to \infty]{\distf} 0, \; \emprisk(\hypexp) - \emprisk(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} 0 ,$$
+% and, combining both, also that $ \exprisk(\hypemp) - \emprisk(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} 0. $ This 
+Vapnik then describes the sufficient and necessary conditions for \acrshort{erm} to be consistent~\citep{Vapnik00}.
+\begin{theorem}[Key Theorem of Statistical Learning]
+    One-sided unifrom convergence in probability, 
+    \begin{equation}
+        \nonumber
+        \sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) \xrightharpoondown[\nsamples \to \infty]{\distf}  0,
+    \end{equation}    
+    or equivalently for all $\epsilon \geq 0$
+    \begin{equation}
+        \nonumber
+        \lim_{\nsamples \to \infty} P\left(\sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) > \epsilon \right) = 0,
+    \end{equation}
+    is a necessary and sufficient condition for nontrivial consistency of \acrshort{erm}.
+\end{theorem}
+Observe that here we have replaced the initial condition for consistency, which involved finding the minimizers of empirical and expected risks, for bounding the difference $\exprisk(\hypf) - \emprisk(\hypf)$.
+However, this is still not a very useful theorem, because we do not know the distribution $\distf$, so it is this difficult to find such bound.
+Nevertheless, Vapnik is also able to remove the explicit dependency on $\distf$ by using the symmetrization lemma~\citep{vapnik1982estimation}.
+\begin{lemma}[Symmetrization]\label{lemma:symetrization}
+    For $\nsamples \epsilon^2 \geq 2$, we have 
+    \begin{equation}
+        \nonumber
+        P_{\nsamples}\left(\sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) > \epsilon \right) 
+        \leq 
+        2P_{2 \nsamples} \left(\sup_{\hypf \in \hypspace} \left(\hat{\risk}_{\sample_{1:\nsamples}}(\hypf) - \hat{\risk}_{\sample_{\nsamples: 2\nsamples}}(\hypf) \right) > \epsilon/2 \right),
+    \end{equation}
+    where $P_{\nsamples}$ is the distribution of samples $\sample$ of size $\nsamples$ and $P_{2 \nsamples}$ is the distribution of samples of size $2 \nsamples$, where we use $\sample_{1:\nsamples}$ for the first half of size $\nsamples$ and $\sample_{\nsamples: 2\nsamples}$ for the second one.
+\end{lemma}
+Although we do not provide the proof, it is sensible to think that if two empirical risks for different samples is close, they are both close to the expected risk.
+%
+Consider again the binary classification case, with the labels $-1$ and $1$. Then, given a sample of size $2 \nsamples$,
+$$ \sample_{2\nsamples} = {(x_1, y_1), \ldots, (x_{2 \nsamples}, y_{2_\nsamples})} ,$$
+% any function $\hypf \in \hypspace$ can take
+there are at most $2^{2\nsamples}$ different values for the vector 
+$$ \left(h(x_1), \ldots, h(x_{2 \nsamples})  \right), \; \hypf \in \hypspace .$$
+%
+The power of this lemma lies on the fact that, now, for bounding 
+$$ P\left(\sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) > \epsilon \right) $$
+we need to take into account only a finite class of functions, that is the $2^{2 \nsamples}$ possible vectors of outputs, instead of the infinite space of functions $\hypspace$.
+%
+
+However, it is possible that not all the possible $2^{2 \nsamples}$ can be achieved using functions from $\hypspace$. Given a particular sample $D_{2 \nsamples}$, denote by $\mathcal{N}(\hypspace, \sample_{2\nsamples})$ the cardinality of the functions $\hypf$ from $\hypspace$ that have distinct values $({\hypf(x_1), \ldots, \hypf(x_{2 \nsamples})})$. Then, we can consider the maximum of $\mathcal{N}(\hypspace, \sample_{2\nsamples})$ among all possible samples of size $2 \nsamples$, which we define as $\mathcal{N}(\hypspace, 2\nsamples)$.
+%
+The function, $\mathcal{N}(\hypspace, \nsamples)$, where $\nsamples$ is the variable, is named the shattering coefficient, and it represents the number of different outputs that the functions in $\hypspace$ can achieve on samples of size $\nsamples$. We can interpret it as the maximum number of ways the functions from $\hypspace$ can separate a sample of size $\nsamples$ into two classes.
+%
+When $\mathcal{N}(\hypspace, \nsamples) = 2^\nsamples$, all possible separations are possible, we say the $\hypspace$ shatters $\nsamples$ points. Remind that this means that there exists at least one sample of size $\nsamples$ for which the functions from $\hypspace$ can achieve all possible values, but it does not imply that this is the case for all samples of size $\nsamples$.
+
 
 
 \subsection{VC dimension}
-
-% union bound
-
-% symmetrization
-
-% Shattering coefficient
-
-% confidence interval
-
-% growth function and vc entropy
+%
+Considering this finite class of functions, and alongside Lemma~\ref{lemma:symetrization}, it can be proved that for any $\epsilon > 0$,
+\begin{equation}
+    \label{eq:risk_bound_exp}
+    \begin{aligned}
+        P \left(\sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) > \epsilon \right) &\leq 4 \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right] \exp\left(- \frac{\nsamples \epsilon^2}{8} \right) \\
+        &= 4 \exp\left(\log \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right] - \frac{\nsamples \epsilon^2}{8} \right) .
+    \end{aligned}
+\end{equation}
+Then, if $\expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right]$ does not grow exponentially with $\nsamples$, then the right side goes to zero as $\nsamples$ grows, and we can use the \acrshort{erm} to approximate the expected risk minimizer. 
+%
+%
+The inequality~\eqref{eq:risk_bound_exp} bounds the probability that the deviation between the minimal values of the empirical and expected risks is larger than a given $\epsilon$. However, sometimes it is more practical to equal the right-hand side to $\delta$ and solve for $\epsilon$.
+Then, we get that with a probability of at least $1 - \delta$, 
+\begin{equation}
+    \label{eq:risk_bound_ent}
+    \exprisk(\hypf) \leq \emprisk(\hypf) + \sqrt{\frac{8}{\nsamples} \left(\log \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples})\right] + \log \frac{4}{\delta} \right)}
+\end{equation}
+for any $\hypf \in \hypspace$. Observe that this bound is valid for any function $\hypf$, not just for $\hypemp$, which is a strength for those methods that does not minimize the empirical risk.
+%
+Moreover, instead of minimizing the empirical risk directly, in~\citet{Vapnik00}, the authors propose to minimize the right-hand side. That is, we need to minimize 
+\begin{equation}
+    \nonumber
+    \mathcal{H}^{\text{ann}}_{\distf}(\nsamples) = \log \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right] ,
+\end{equation}
+which is referred as the annealed entropy, and it is a characteristic of the capacity of entire function space $\hypspace$. Recall that $\mathcal{N}(\hypspace, \sample_{2 \nsamples})$ indicates in how many ways we can separate the sample $\sample_{2 \nsamples}$ using functions $\hypf$ from $\hypspace$.
+%
+This annealed entropy depends, however, on the distribution of samples of size $2 \nsamples$, which is based on the unknown $\distf$ distribution. To get rid of the distribution dependence, we can use the following notion of capacity,
+\begin{equation}
+    \nonumber
+    \mathcal{G}(\nsamples) = \max_{D_\nsamples} \log \expect\left[\mathcal{N}(\hypspace, \sample_{\nsamples})\right] , 
+\end{equation}
+that is named the growth function. Observe that by definition, and since the logarithm is in increasing monotone function, this growth function is the logarithm of the shattering coefficient, $\mathcal{G}(\nsamples) = \log \mathcal{N}(\hypspace, \nsamples)$.
+%
+It can be shown~\citep{Vapnik00} that the convergence 
+\begin{equation}
+    \label{eq:growth_convergence}
+    \lim_{\nsamples \to \infty} \frac{\mathcal{G}(\nsamples)}{\nsamples} = 0
+\end{equation} 
+is a necessary and sufficient condition for exponentially fast convergence of the minimal empirical risk to the minimal expected risk for all underlying distributions $\distf$.
+%
+If for any $m$,  $\hypspace$ shatters $m$ points, we have that 
+\begin{equation}
+    \label{eq:growth_shatter}
+    \mathcal{G}(\nsamples) = \nsamples \log(2)
+\end{equation}
+and the convergence~\eqref{eq:growth_convergence} will not take place.
+However, Vapnik states that either~\eqref{eq:growth_shatter} happens for every $m$ or there exists a maximal $m$ for which it is satisfied, and any $\nsamples > m$ we have $\mathcal{G}(\nsamples) < \nsamples \log(2)$. This maximal $m$ value is called the \acrfull{vc} dimension, and we will denote it by $\vcdim{\hypspace}$. Therefore, $\vcdim{\hypspace}$ is the maximal number of points that can be shattered by $\hypspace$, and we use it as measure of the capacity of a hypothesis space. It can proved~\citep{Vapnik00} that 
+\begin{equation}
+    \label{eq:vcdim_ineq}
+    \mathcal{G}(\nsamples) \leq \vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right) .
+\end{equation}
+Thus, for $\nsamples \leq \vcdim{\hypspace}$,
+$$ 
+ \log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) \geq 0 \implies \mathcal{G}(\nsamples) \geq \vcdim{\hypspace} \geq \nsamples ,
+$$
+so we cannot ensure that the convergence~\eqref{eq:growth_convergence} happens. It is when $\vcdim{\hypspace} > \nsamples$ that the growth function grows logarithmically, and we have the convergence of the risks.
+%
+Combining all these capacity concepts, we have the following chain of inequalities that helps us to bound the right-hand side of~\eqref{eq:risk_bound_ent},
+\begin{equation}
+    \nonumber
+    \mathcal{H}^{\text{ann}}_{\distf}(\nsamples) \leq \mathcal{G}(\nsamples) \leq \vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right).
+\end{equation}
+Here, each bound is less precise, the annealed entropy is more precise, but it is distribution dependent. The growth function is independent of $\distf$, but it has a definition that is difficult to use, and the bound on the right side, although being the less precise, it is easy to apply because it sums up the information of the convergence in one number, the \acrshort{vc} dimension.
+%
+Therefore, we can use the following bound for the expected risk using the \acrshort{vc} dimension: 
+\begin{equation}
+    \label{eq:risk_bound_vc}
+    \exprisk(\hypf) \leq \emprisk(\hypf) + \sqrt{\frac{8}{\nsamples} \left(\vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right) + \log \frac{4}{\delta} \right)} .
+\end{equation}
 
 \subsection{Structural Learning}
 % Structural learning (SRM)
+Looking at the bound~\ref{eq:risk_bound_vc}, just minimizing the empirical risk might not be enough to ensure that the learning process works. Instead, Vapnik proposes to minimize the entire right-hand side, minimizing both the empirical risk and the term involving the \acrshort{vc} dimension.
+To do this, he proposes the paradigm of \acrfull{srm}, which consists on building a series of hypothesis spaces $\hypspace_1, \ldots, \hypspace_m$ of increasing capacity, such that 
+\begin{equation}
+    \nonumber
+    \vcdim{\hypspace_1} \leq \vcdim{\hypspace_2} \leq \ldots \leq \vcdim{\hypspace_m} .
+\end{equation}
+Then, for $j=1, \ldots, m$ we can find the function $\opt{\hypf}_j \in \hypspace_j$ that minimizes the empirical risk and compute $\emprisk(\opt{\hypf}_j)$, then we select the function $ \opt{\hypf}_j$ for which the value
+\begin{equation}
+    \emprisk(\opt{\hypf}_j) + \sqrt{\frac{8}{\nsamples} \left(\vcdim{\hypspace_j} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace_j}}\right) + 1 \right) + \log \frac{4}{\delta} \right)}
+\end{equation}
+is the smallest.
 
 % Regularized functional connection with SRM
-
-% teorema de Vapnik: Maximum Margin Hyperplane
-% esta idea constituye la base de las SVM
-% otra forma de limitar la capacidad es considerar solo las hipótesis que maximizan la distancia entre las clases
+Implementing the \acrshort{srm} paradigm is not easy, because it is necessary to construct that series of hypothesis classes of increasing capacity. It is not easy to find the exact \acrshort{vc} dimension of a hypothesis space, except for some particular cases.
+%
+For example, when using linear models, it can be proved that a hyperplane in a $\dimx$-dimensional space can shatter at most $\dimx+1$ points, so this is its \acrshort{vc} dimension.
+%
+However, the \acrshort{vc} dimension of non-linear hypothesis spaces, or that of linear models in an \acrshort{rkhs} with inifinite dimensions is not computable in general.
+%
+However, with some additional considerations, Vapnik gives the following result that is useful to bound the \acrshort{vc} dimension of any linear model, even in infinite-dimensional spaces~\citep{vapnik1982estimation}.
+\begin{theorem}[\acrshort{vc} Dimension of Margin Hyperplanes]
+    Consider the linear hyperplanes $\dotp{w}{x} = 0$ such that for a set of points $X = \set{x_1, \ldots, x_r}$,
+    \begin{equation}
+        \nonumber
+        \dotp{w}{x} = 1 .
+    \end{equation} 
+    The \acrshort{vc} dimension of the set of decision functions defined as $\hypf_w(x) = \sign \dotp{w}{x}$ defined on $X$, with $\norm{w} \leq \Lambda$, satisfies
+    \begin{equation}
+        \nonumber
+        \vcdim{\hypspace} \leq R^2 \Lambda^2 ,
+    \end{equation}
+    where $R$ is the radius of the smallest sphere centered at the origin containing the points in $X$.
+\end{theorem}
+Although this theorem talks about functions defined on $X$, with some modifications it is possible to extend it to functions defined over all the input domain $\Xspace$, but we will use this version just for illustration purposes.
+%
+Note that the condition $\dotp{w}{x} = 1$ implies that there exists a margin between points, which are in the correctly classified, and the decision boundary.
+%
+For such kind of hyperplanes, according to this result, we can control the \acrshort{vc} dimension of the hypothesis space by bounding the norm of $w$, independently on the dimension of the input space.
+%
+This is the idea motivating the \acrshort{svm}, that we will present later. These are models where we use hyperplanes that keep a margin between the points and the decision boundary, and where the norm $\norm{w}^2$ is penalized.
 
 
 
@@ -1081,8 +1336,9 @@ Now, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we c
     Consider an optimization problem~\eqref{eq:optproblem_def} where $f, c_i$ are continuously differentiable functions over $\vecspace$ and $e_i$ are affine functions. Suppose that there exists $\opt{x} \in \vecspace$ such that there exist $\alpha \in \reals^q$ and $\opt{\fv{\beta}} \in \reals^p$ that satisfy
     \begin{align}
         &\nabla_x f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i \nabla_x c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i \nabla_x e_i(\opt{x}) = 0 \; \text{(stationarity)}, \label{eq:kkt_station} \\
+        % &\nabla_\beta f(\opt{x}) + \sum_{i=1}^q \opt{\alpha}_i \nabla_\beta c_i(\opt{x}) + \sum_{j=1}^p \opt{\beta}_i \nabla_\beta e_i(\opt{x}) = 0 \; \text{(stationarity)}, \label{eq:kkt_station_dual} \\
         &\opt{\alpha}_i c_i(\opt{x}) = 0, \; \text{(complementary slackness)}, \label{eq:kkt_comp}\\
-        &c_i(\opt{x}) \leq 0 , \; h_j(x) = 0, \; \text{(primal feasibility)}, \label{eq:kkt_pfeas}\\
+        &c_i(\opt{x}) \leq 0 , \; e_j(x) = 0, \; \text{(primal feasibility)}, \label{eq:kkt_pfeas}\\
         &\alpha_i \geq 0,\;  \text{(dual feasibility)} , \label{eq:kkt_dfeas}
     \end{align}  
     where $i=1, \ldots, q$ and $j=1, \ldots, p$; then $\opt{x}$ is a solution of the optimization problem.
@@ -1685,6 +1941,7 @@ Observe that we again obtain a quadratic optimization problem, as in the L1-\acr
 %
 The LS-\acrshort{svm}~\citep{SuykensV99} replaces the losses of the L1-\acrshort{svm} for the squared loss.
 Even in classification, where the aim is to regress to the values $1$ and $-1$ the positive and negative classes.
+To do this, the inequality constraints are replaced by equality ones.
 %
 We give the definitions of the LS-\acrshort{svm} problems for classification and regression next.
 \begin{definition}[Primal Problem of LS-\acrshort{svm} for Classification]
@@ -1757,21 +2014,51 @@ As with the other variants, we want to use a unifying formulation for the regres
     where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
 \end{definition}
 %
-We follow an analogous procedure to the one we have used for the standard \acrshort{svm}. The Lagrangian corresponding to the primal problem~\eqref{eq:l2_primal} is 
+The corresponding Lagrangian to the primal problem~\eqref{eq:ls_primal} is 
 \begin{equation}
     \label{eq:ls_lagr}
     \lagr(w, b, \fv{\xi}, \fv{\alpha}) = \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i \right] ,
 \end{equation}
 %
-where $\fv{\alpha} \in \reals$ are the Lagrange multipliers. Observe that we do not longer need the non-negativity of these variables, because they correspond to equality instead of inequality constraints.
+where $\fv{\alpha} \in \reals$ are the Lagrange multipliers. Observe that we do no longer need the non-negativity of these variables, because they correspond to equality instead of inequality constraints.
 %
-Now we use \acrshort{kkt} conditions to find the solutions to the problem~\eqref{eq:ls_primal}
+Now we use \acrshort{kkt} conditions to find the solutions to the optimization problem. Recall that the \acrshort{kkt} are sufficient conditions, and for problems with convex, differentiable objective function with affine constraints can be expressed as:
 \begin{align}
-    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_l2} \\
-    \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_l2} \\
-    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_l2}
+    \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_ls} \\
+    \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_ls} \\
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_ls} \\
+    \nabla_{\alpha_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i = 0 , \label{eq:lagr_diff_alpha_ls}
 \end{align}
-
+Observe that we do not have inequality constraints here, so $\alpha_i$ is used for the equality constraints, and we do not need the complementary slackness condition.
+%
+Using now~\eqref{eq:lagr_diff_w_ls} and~\eqref{eq:lagr_diff_xi_ls} to replace $w$ and $\xi_i$ in~\eqref{eq:lagr_diff_alpha_ls} we get
+\begin{equation}
+    \nonumber
+    y_i \left(\dotp{\sum_{j=1}^\nsamples y_j \alpha_j \phi(x_j)}{\phi(x_i)} + b \right) + \frac{1}{C} \alpha_i = p_i
+\end{equation}
+for $i=1, \ldots, \nsamples$. Therefore, we have a system of equations, which can be expressed as 
+\begin{equation}\label{eq:ls_dual_matrix}
+    \begin{aligned}
+    \left[
+    \begin{array}{c|c}
+    0 & \fv{y}^\intercal \\
+    \hline
+    \fv{y} & \fm{Q} + \frac{1}{C} \fm{I}_\nsamples
+    \end{array}
+    \right] 
+    \begin{bmatrix}
+        b \\
+        \fv{\alpha}
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        0 \\
+        \fv{p}
+    \end{bmatrix},
+    \end{aligned}
+\end{equation}
+where $Q$ is the same kernel matrix we have used in the other variants.
+Therefore, instead of being a constrained convex problem, by solving a this linear system of equations, we obtain the optimal dual variable $\opt{\fv{\alpha}}$, and thus, the solutions $\opt{w}, \opt{b}$ and $\opt{\fv{\xi}}$ as well.
 
 \section{Conclusions}\label{sec-conclusions-1}
 
