@@ -587,7 +587,7 @@ We consider then problem of minimizing the regularized functional defined as fol
             &= \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) + \lambda \Theta\left(\norm{\hyp{\cdot}{\param}}^2_\hypspace \right) .
         \end{aligned}        
     \end{equation}
-    Here $\lambda$ is the regularization hyperparameter that regulates the trade-off between the errors and the complexity of the model.
+    Here $\lambda$ is the regularization hyperparameter that regulates the tradeoff between the errors and the complexity of the model.
 \end{definition}
 %
 Minimizing the regularized functional $\regrisk(\param)$ in a general setting, for example, when $\hypspace = L_2(\Xspace)$, is a challenging problem, because computing the norm of the hypotheses in such space is not trivial.
@@ -1537,7 +1537,7 @@ Now we can give the definition of the optimization problem that corresponds to f
     \end{equation}
     where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
 \end{definition}
-Observe that this primal problem can be interpreted then as a regularized risk functional, where we have the risk term, we use the hinge loss, and the regularization, penalizing $\norm{w}$; here $C$ is a hyperparameter that regulates the trade-off between the margin and errors that the model makes.
+Observe that this primal problem can be interpreted then as a regularized risk functional, where we have the risk term, we use the hinge loss, and the regularization, penalizing $\norm{w}$; here $C$ is a hyperparameter that regulates the tradeoff between the margin and errors that the model makes.
 
 % Regression
 In the regression setting we need to define the primal problem differently. We again want to define a regularized risk functional, but we need to use a loss suited for regression. In the \acrshort{svm} for regression, the goal is to find a regression function such that the points are at a distance smaller than a given $\epsilon \in \reals$. 
@@ -1556,7 +1556,7 @@ However, it is possible that there does not exist such function, so we introduce
 \end{equation}
 That is, the slack variables are defined as 
 \begin{equation}
-    \xi_i = \abs{t_i - (\dotp{w}{x_i} + b)}_\epsilon .
+    \xi_i = \epsins{t_i - (\dotp{w}{x_i} + b)} .
 \end{equation}
 That is, it is equivalent to using the $\epsilon$-insenstitive loss presented in~\eqref{eq:epsins_def}.
 Getting rid of the absolute value, these constraints can be decomposed as
@@ -1594,24 +1594,24 @@ Now, we can write the regression \acrshort{svm} primal problem
     \end{equation}
     where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
 \end{definition}
-We have again defined a regularized risk functional, where now the selected loss is the $\epsilon$-insensitive one. Again, $C$ is the trade-off hyperparameter, but in this case we also have $\epsilon$ as the hyperparameter that defines the width of the tube insensitive to errors.
+We have again defined a regularized risk functional, where now the selected loss is the $\epsilon$-insensitive one. Again, $C$ is the tradeoff hyperparameter, but in this case we also have $\epsilon$ as the hyperparameter that defines the width of the tube insensitive to errors.
 
 % Unifying formulation
-In both cases, classification and regression we have defined corresponding optimization problems, which can be also interpreted as regularized risk functionals, that present some similarities. In fact, it is possible to express both problems using a unifying formulation, as we show next.
-\begin{lemma}[Unifying Formulation for \acrshort{svm}]
+In both cases, classification and regression we have defined corresponding optimization problems, which can be also interpreted as regularized risk functionals, that present some similarities. In fact, it is possible to express both problems using a unifying formulation presented in~\cite{Lin01}.
+\begin{definition}[\acrshort{svm} Primal Problem]
     Given a sample
     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    the primal problem defined as
+    the primal problem is defined as
     \begin{equation}
-        \nonumber
+        \label{eq:linear_primal}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
             & & & \xi_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
-    can be interpreted as the classification primal \acrshort{svm} problem~\eqref{eq:linear_primal_clas} when $\nsamples=m$ and
+    which can be interpreted as the classification primal \acrshort{svm} problem~\eqref{eq:linear_primal_clas} when $\nsamples=m$ and
     $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
     and can be interpreted as the regression primal \acrshort{svm} problem~\eqref{eq:linear_primal_reg} when $\nsamples = 2 m$ and
     \begin{equation}
@@ -1621,27 +1621,27 @@ In both cases, classification and regression we have defined corresponding optim
             & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
         \end{aligned}
     \end{equation}
-\end{lemma}
-%
-\begin{definition}[Primal Problem - Unifying Formulation]
-    Given a sample
-    $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    we define the unified primal problem of \acrshort{svm} as
-    \begin{equation}
-        \label{eq:linear_primal}
-        \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
-            & & & \xi_i \geq 0 ,      
-        \end{aligned}  
-    \end{equation}
-    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
 \end{definition}
 %
-For the rest of this work we will use this formulation whenever it is not necessary to make a specific comment regarding the specific classification or regression characteristics.
+% \begin{definition}[Primal Problem - Unifying Formulation]
+%     Given a sample
+%     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+%     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+%     we define the unified primal problem of \acrshort{svm} as
+%     \begin{equation}
+%         \label{eq:linear_primal}
+%         \begin{aligned}
+%             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+%             & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
+%             & & & \xi_i \geq 0 ,      
+%         \end{aligned}  
+%     \end{equation}
+%     where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the tradeoff hyperparameter.
+% \end{definition}
+%
+For the rest of this work we will use this formulation whenever it is not necessary to make a comment regarding the specific classification or regression characteristics.
 
-\subsection{Solution and Analysis}
+\subsection{Dual Formulation}
 %
 The problem defined in~\eqref{eq:linear_primal} is an optimization primal problem with a convex and differentiable objective function, and with affine constraint functions; then, we know from the strong duality theorem, presented in~\ref{th:strong_duality}, that we can use its corresponding dual problem to find the solution. Recall that to obtain the dual problem, defined in~\ref{def:dual_problem}, we need the Lagrangian function. In this case, the Lagrangian corresponding to~\ref{eq:linear_primal} is 
 \begin{equation}
@@ -1653,13 +1653,13 @@ where $\fv{\alpha}, \fv{\beta} \geq 0$ are the Lagrange multipliers. Although in
 %
 Now, the dual problem is defined as 
 $$ \Theta(\fv{\alpha}, \fv{\beta}) = \inf_{w, b, \fv{\xi}} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) . $$
-Observe that $\lagr(w, b, \fv{\alpha}, \fv{\beta})$ is convex in all the primal variables, $w, b$ and $\fv{\xi}$, because the objective function is convex and the constraints are affine. Moreover, it is also differentiable in the primal variables, so to find the minimum of the Lagrangian in the primal variables is sufficient to take derivatives and select those points where these derivatives are zero:
+Observe that $\lagr(w, b, \fv{\alpha}, \fv{\beta})$ is convex in all the primal variables, $w, b$ and $\fv{\xi}$, because the objective function is convex and the constraints are affine. Moreover, it is also differentiable in the primal variables, so to find the minimum of the Lagrangian in the primal variables is sufficient to take derivatives and select those points where these derivatives are zero, we then get:
 \begin{align}
     \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i x_i , \label{eq:lagr_diff_w} \\
     \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b} \\
     \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 &\implies C - \alpha_i - \beta_i = 0 , \label{eq:lagr_diff_xi}
 \end{align}
-If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, substiuting $w$ according to~\eqref{eq:lagr_diff_w}, we get 
+If we plug these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, replacing $w$ according to~\eqref{eq:lagr_diff_w}, we get 
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -1669,7 +1669,7 @@ If we apply these results in the Lagrangian, we get a simpler formula. Using~\eq
     \end{aligned}
 \end{equation}
 We observe here that $\fv{\beta}$ disappear from the dual objective function $\Theta$. However, we still have to take into account that we have used~\eqref{eq:lagr_diff_b} and~\eqref{eq:lagr_diff_xi}. From~\eqref{eq:lagr_diff_xi}, since $\beta_i \geq 0$, we get that $\alpha_i \leq C$. Then, the dual problem can be defined as follows.
-\begin{definition}[Dual Problem - Unifying Formulation]
+\begin{definition}[\acrshort{svm} Dual Problem]
     The dual problem corresponding to problem~\eqref{eq:linear_primal} is
     \begin{equation}
         \label{eq:linear_dual}
@@ -1681,7 +1681,7 @@ We observe here that $\fv{\beta}$ disappear from the dual objective function $\T
     \end{equation}
     where the first constraint is named equality constraint and the rest are the box constraints.
 \end{definition}
-The result is a constrained quadratic problem where the first term is quadratic and the second is linear. Algorithms, like the \acrfull{smo}~\citep{KeerthiSBM01}, have been developed to solve this dual problem efficiently. Moreover, optimized implementations of \acrshort{smo} are available, like the one in \texttt{LIBSVM}~\citep{ChangL11}.
+The result is a constrained quadratic problem where the first term is quadratic and the second is linear. Algorithms, such as the \acrfull{smo}~\citep{KeerthiSBM01}, have been developed to solve this dual problem efficiently. Moreover, optimized implementations of \acrshort{smo} are available, for example, \texttt{LIBSVM}~\citep{ChangL11}.
 
 %
 Observe that~\eqref{eq:linear_dual} is a convex problem, so it has a single value $\opt{\fv{\alpha}}$ that is a solution. Therefore, by solving the dual problem, using algorithms like \acrshort{smo}, we obtain this optimal $\opt{\fv{\alpha}}$; then, using~\eqref{eq:lagr_diff_w} we can recover the optimal primal variable $\opt{w}$ as 
@@ -1703,7 +1703,7 @@ Now we realize from~\eqref{eq:comp_alpha} that when $y_i (\dotp{\opt{w}}{x_i} + 
     \nonumber
     \opt{w} = \sum_{i \in \svset} y_i \opt{\alpha}_i x_i ,
 \end{equation}
-where the elements of the set $\set{i: \alpha_i = 0}$ or $\svset = \set{i: y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i = 0}$ receive the name of support vectors.
+where the elements of the set $\set{i: \alpha_i > 0}$ or $\svset = \set{i: y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i = 0}$ receive the name of support vectors.
 %
 
 We still have to see how we can recover the other primal variables $\opt{\fv{\xi}}$ and $\opt{b}$. For this goal, the \acrshort{kkt} conditions will be useful.
@@ -1723,7 +1723,7 @@ After obtaining $\opt{b}$, we focus on the indices $i$ such that $\opt{\alpha}_i
 \end{equation}
 
 %
-Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, equations~\eqref{eq:comp_alpha} and~\eqref{eq:comp_beta}, to establish a classification of the support vectors according to its corresponding $\opt{\alpha}_i$, which we give in Table~\ref{tab:sv_clas}.
+Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, equations~\eqref{eq:comp_alpha} and~\eqref{eq:comp_beta}, to establish a classification of the support vectors according to their corresponding $\opt{\alpha}_i$, which we give in Table~\ref{tab:sv_clas}.
 %
 \begin{table}[t!]
     \caption{Classification of the support vectors in terms of the value of $\opt{\alpha}_i$.}
@@ -1743,16 +1743,14 @@ Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, 
 \end{table}
 %
 To study the meaning of this table, we will consider first the binary classification setting, where $y_i = l_i$ and $p_i=1$ for all $i=1, \ldots, \nsamples$. The first row correspond to points where $l_i (\dotp{\opt{w}}{x_i} + \opt{b}) = 1$, that is, points that are correctly classified and are just on the margin. The points from the second row are also points that are correctly classified, but they lie inside the margin. Finally, the points in the third row are misclassified.
-Therefore, the predictions of the \acrshort{svm} in the classification settings depend only on those points that lie over the margin, inside the margin, or are misclassified. The points that are correctly classified but outside the margin do not play any role in the final model.
+Therefore, the predictions of the \acrshort{svm} in the classification settings depend only on those points that lie over the margin border, inside the margin, or are misclassified. The points that are correctly classified but outside the margin do not play any role in the final model.
 %
 
-In the case of regression, we need to observe again that 
-$$ \xi_i + \hat{\xi}_i = \xi_i + {\xi}_{\nsamples + i} = \abs{\dotp{\opt{w}}{x_i} + \opt{b} - t_i}_\epsilon ,$$
-and $\xi_i {\xi}_{\nsamples + i} = 0$ 
-% Consider first the case where $y_i = 1$ and $p_i = t_i - \epsilon$.
-Consider the first row, if $\xi_i = 0$, as in the first row, then $\dotp{\opt{w}}{x_i} + \opt{b} = t_i - \epsilon$ is  a point in the lower border of the $\epsilon$-tube. If $\xi_{i + \nsamples} = 0$, as in the first row, then $\dotp{\opt{w}}{x_i} + \opt{b} = t_i + \epsilon$ is  a point in the upper border of the $\epsilon$-tube.
+In the case of regression, recall that we have two slack variables: $\xi_i$ for when de points are below the tube and $\hat{\xi_i}$ for points above it; however, in the unifying formulation we double the variables $\xi_i$ such that $\xi_i = \xi_i$ and $\hat{\xi}_i = \xi_{\nsamples + 1}$. Then, we can observe the following property: 
+$$ \xi_i + \hat{\xi}_i = \xi_i + {\xi}_{\nsamples + i} = \epsins{\dotp{\opt{w}}{x_i} + \opt{b} - t_i} ,$$
+where $\xi_i {\xi}_{\nsamples + i} = 0$. Consider the first row of Table~\ref{tab:sv_clas}; if $\xi_i = 0$, then $\dotp{\opt{w}}{x_i} + \opt{b} = t_i - \epsilon$, which corresponds to a point in the lower border of the $\epsilon$-tube, and if $\xi_{i + \nsamples} = 0$, we have that $\dotp{\opt{w}}{x_i} + \opt{b} = t_i + \epsilon$, which corresponds to a point in the upper border of the $\epsilon$-tube.
 %
-In the second and third rows, if $\xi_i > 0$, then ${\xi}_{i + \nsamples} = 0$, and we have points such that $\dotp{\opt{w}}{x_i} + \opt{b} < t_i - \epsilon$, that is, below the tube. 
+In the second and third rows, if $\xi_i > 0$, then ${\xi}_{i + \nsamples} = 0$, and we have points such that $\dotp{\opt{w}}{x_i} + \opt{b} < t_i - \epsilon$, that is, they are below the tube. 
 Analogously, if ${\xi}_{i + \nsamples} > 0$, we have points above the tube.
 %
 % In summary, the solutions of the \acrshort{svm} are composed only from ``extreme points'', those that are difficult to classify or are far from the regressor function.
@@ -1789,12 +1787,12 @@ and the optimal value for the variable $w$, which in the linear case was given i
 \begin{equation}\label{eq:lagr_diff_w_kernel}
     \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = 0 \implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) .
 \end{equation}
-Recall that in the case of infinite-dimensional case, we have that $\phi(x_i)$ are real-valued functions with domain in $\reals^\dimx$, and so is $\opt{w}$ then, that is 
-$\opt{w}: \reals^\dimx \to \reals$. 
+% Recall that in the infinite-dimensional case, we have that $\phi(x_i)$ are real-valued functions with domain in $\reals^\dimx$, and so is $\opt{w}$ then; that is 
+% $\opt{w}: \reals^\dimx \to \reals$. 
 Since $k$ is a reproducing kernel, we can also express this as 
 \begin{equation}
     \nonumber
-    \opt{w}(\cdot) = \dotp{\opt{w}}{\phi(\cdot)} = \sum_{i=1}^\nsamples y_i \opt{\alpha}_i k(x_i, \cdot),
+    \opt{w} = \sum_{i=1}^\nsamples y_i \opt{\alpha}_i k(x_i, \cdot),
 \end{equation}
 as the Representer Theorem indicates for a regularized risk functional like~\eqref{eq:kernel_primal}.
 %
@@ -1809,7 +1807,7 @@ Repeating the procedure that we have shown for the linear case, we can obtain th
 \end{equation}
 where we use that $k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}$.
 %
-We can express both the dual problem using a matrix formulation as 
+We can express the dual problem using a matrix formulation as 
 \begin{equation}
     \label{eq:kernel_dual_matrix}
     \begin{aligned}
@@ -1825,17 +1823,17 @@ $$ Q_{ij} = y_i y_j \dotp{x_i}{x_j} $$
 in the linear one.
 
 %\subsection{Connection with Structural Learning}
-\subsection{SVM Variants}
-The \acrshort{svm} has experienced a great popularity for many years, and several modifications and extensions have been proposed. In this work we will consider two relevant variants: the L2 and LS-\acrshort{svm}, and we can also refer to the standard \acrshort{svm} as L1-\acrshort{svm} to differentiate it from these variants.
+% \subsection{SVM Variants}
+The \acrshort{svm} has experienced a great popularity for many years, and several modifications and extensions have been proposed. In this work we will consider two relevant variants: the L2 and LS-\acrshort{svm}, and we will also refer to the standard \acrshort{svm} as L1-\acrshort{svm} to differentiate it from these variants.
 %
 For compactness, we will consider the non-linear models to present these variants, namely 
 $$ f(\cdot) = \dotp{w}{\phi(\cdot)} + b ,$$
 which can be reduced to the linear case just by selecting $\phi$ as the identity function.
 
-\subsubsection*{L2-\acrshort{svm}}
-The idea motivating the L2-\acrshort{svm}~\citep{Burges98} variant is replacing the loss functions used in the L1-\acrshort{svm} for their squared counterparts. 
+\subsection{L2-SVM}
+The idea motivating the L2-\acrshort{svm} variant~\citep{Burges98} is replacing the loss functions used in the L1-\acrshort{svm} for their squared counterparts. 
 The hinge loss, used for classification and defined in~\eqref{eq:hinge_def}, is replaced by the squared hinge loss, as defined as~\eqref{eq:sqhinge_def}.
-The $\epsilon$-insensitive loss defined as~\eqref{eq:epsins_def}, which is used in the regression L1-\acrshort{svm}, is replaced by the squared-hinge loss as defined in~\eqref{eq:sqepsins_def}.
+The $\epsilon$-insensitive loss defined as~\eqref{eq:epsins_def}, which is used in the regression L1-\acrshort{svm}, is replaced by its squared version as defined in~\eqref{eq:sqepsins_def}.
 %
 
 We can give then the definitions of the L2-\acrshort{svm} problems for classification and regression.
@@ -1855,9 +1853,9 @@ We can give then the definitions of the L2-\acrshort{svm} problems for classific
 \end{definition}
 %
 \begin{definition}[Primal Problem of L2-\acrshort{svm} for Regression]
-    Given a binary classification sample
+    Given a regression sample
     $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the class labels, 
+    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the target values, 
     the primal problem of the L2-\acrshort{svm} for regression is:
     \begin{equation}
         \label{eq:l2_primal_reg}
@@ -1871,22 +1869,22 @@ We can give then the definitions of the L2-\acrshort{svm} problems for classific
 \end{definition}
 %
 Observe in both cases that, since the slack variables are squared in the objective function, the constraints to enforce that these slack variables are non-negative are no longer needed.
-As with the L1-\acrshort{svm}, we will use a formulation to unify both problems and show a development that is valid for both cases. 
+As with the L1-\acrshort{svm}, we will use a formulation to unify both problems and give a development that is valid for both cases. 
 %
 %
-\begin{lemma}[Unifying Formulation for L2-\acrshort{svm}]
+\begin{definition}[L2-\acrshort{svm} Primal Problem]
     Given a sample
     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    the primal problem defined as
+    the primal problem is defined as
     \begin{equation}
-        \nonumber
+        \label{eq:l2_primal}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i ,     
         \end{aligned}  
     \end{equation}
-    can be interpreted as the classification primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_clas} when $\nsamples=m$ and
+    which can be interpreted as the classification primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_clas} when $\nsamples=m$ and
     $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
     and can be interpreted as the regression primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_reg} when $\nsamples = 2 m$ and
     \begin{equation}
@@ -1896,22 +1894,22 @@ As with the L1-\acrshort{svm}, we will use a formulation to unify both problems 
             & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
         \end{aligned}
     \end{equation}
-\end{lemma}
-%
-\begin{definition}[Primal Problem - Unifying Formulation for L2-\acrshort{svm}]
-    Given a sample
-    $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    we define the unified primal problem of L2-\acrshort{svm} as
-    \begin{equation}
-        \label{eq:l2_primal}
-        \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i ,      
-        \end{aligned}  
-    \end{equation}
-    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
 \end{definition}
+%
+% \begin{definition}[Primal Problem - Unifying Formulation for L2-\acrshort{svm}]
+%     Given a sample
+%     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+%     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+%     we define the unified primal problem of L2-\acrshort{svm} as
+%     \begin{equation}
+%         \label{eq:l2_primal}
+%         \begin{aligned}
+%             &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+%             & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i ,      
+%         \end{aligned}  
+%     \end{equation}
+%     where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the tradeoff hyperparameter.
+% \end{definition}
 %
 We follow an analogous procedure to the one we have used for the standard \acrshort{svm}. The Lagrangian corresponding to the primal problem~\eqref{eq:l2_primal} is 
 \begin{equation}
@@ -1929,7 +1927,7 @@ and $\lagr(w, b, \fv{\alpha})$ is convex in all the primal variables, $w, b$ and
     \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_l2} \\
     \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_l2}
 \end{align}
-If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b} the terms with $b$ disappear, and with~\eqref{eq:lagr_diff_xi} all the terms with $\xi_i$ vanish as well. Then, substiuting $w$ according to~\eqref{eq:lagr_diff_w}, we get 
+If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b_l2} and ~\eqref{eq:lagr_diff_xi_l2} all the terms with $b$ or $\xi_i$ vanish. Then, we plug~\eqref{eq:lagr_diff_w_l2} to replace $w$ to get 
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -1941,7 +1939,7 @@ If we apply these results in the Lagrangian, we get a simpler formula. Using~\eq
 We observe here that now the partial derivative with respect to $\xi$, given in~\eqref{eq:lagr_diff_xi_l2}, does not establish an upper bound for $\alpha_i$, but a new term with $\alpha_i^2$ appears in the dual objective function.
 %
 We can define now the L2-\acrshort{svm} dual problem.
-\begin{definition}[Dual Problem - Unifying Formulation for L2-\acrshort{svm}]
+\begin{definition}[L2-\acrshort{svm} Dual Problem]
     The dual problem corresponding to problem~\eqref{eq:linear_primal} is
     \begin{equation}
         \label{eq:l2_dual_matrix}
@@ -1955,7 +1953,7 @@ We can define now the L2-\acrshort{svm} dual problem.
 Observe that we again obtain a quadratic optimization problem, as in the L1-\acrshort{svm} case, where we do no longer have the box constraints, but we have a diagonal matrix that is added to the kernel matrix. That is, there is not an upper bound for $\alpha_i$, but the diagonal term can be interpreted as a soft constraint for the size of $\fv{\alpha}$. 
 
 
-\subsubsection*{LS-\acrshort{svm}}
+\subsection{LS-SVM}
 %
 The LS-\acrshort{svm}~\citep{SuykensV99} replaces the losses of the L1-\acrshort{svm} for the squared loss.
 Even in classification, where the aim is to regress to the values $1$ and $-1$ the positive and negative classes.
@@ -1978,9 +1976,9 @@ We give the definitions of the LS-\acrshort{svm} problems for classification and
 \end{definition}
 %
 \begin{definition}[Primal Problem of LS-\acrshort{svm} for Regression]
-    Given a binary classification sample
+    Given a regression sample
     $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the class labels, 
+    where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the target values, 
     the primal problem of the LS-\acrshort{svm} for regression is:
     \begin{equation}
         \label{eq:ls_primal_reg}
@@ -1994,19 +1992,19 @@ We give the definitions of the LS-\acrshort{svm} problems for classification and
 %
 As with the other variants, we want to use a unifying formulation for the regression and classification problems.
 
-\begin{lemma}[Unifying Formulation for LS-\acrshort{svm}]
+\begin{definition}[LS-\acrshort{svm} Primal Problem]
     Given a sample
     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    the primal problem defined as
+    the primal problem is defined as
     \begin{equation}
-        \nonumber
+        \label{eq:ls_primal}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) = p_i - \xi_i ,     
         \end{aligned}  
     \end{equation}
-    can be interpreted as the classification primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_clas} when $\nsamples=m$ and
+    which can be interpreted as the classification primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_clas} when $\nsamples=m$ and
     $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
     and can be interpreted as the regression primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_reg} when $\nsamples = m$ and
     \begin{equation}
@@ -2015,22 +2013,22 @@ As with the other variants, we want to use a unifying formulation for the regres
             p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, m ; \\
         \end{aligned}
     \end{equation}
-\end{lemma}
-%
-\begin{definition}[Primal Problem - Unifying Formulation for LS-\acrshort{svm}]
-    Given a sample
-    $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
-    we define the unified primal problem of LS-\acrshort{svm} as
-    \begin{equation}
-        \label{eq:ls_primal}
-        \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) = p_i - \xi_i ,      
-        \end{aligned}  
-    \end{equation}
-    where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the trade-off hyperparameter.
 \end{definition}
+%
+% \begin{definition}[Primal Problem - Unifying Formulation for LS-\acrshort{svm}]
+%     Given a sample
+%     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
+%     where $x_i \in \reals^\dimx$ are the feature vectors and $p_i \in \reals$, 
+%     we define the unified primal problem of LS-\acrshort{svm} as
+%     \begin{equation}
+%         \label{eq:ls_primal}
+%         \begin{aligned}
+%             &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
+%             & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) = p_i - \xi_i ,      
+%         \end{aligned}  
+%     \end{equation}
+%     where $\fv{\xi} = (\xi_1, \ldots, \xi_\nsamples)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables. Also, $C > 0$ is the tradeoff hyperparameter.
+% \end{definition}
 %
 The corresponding Lagrangian to the primal problem~\eqref{eq:ls_primal} is 
 \begin{equation}
@@ -2040,12 +2038,12 @@ The corresponding Lagrangian to the primal problem~\eqref{eq:ls_primal} is
 %
 where $\fv{\alpha} \in \reals$ are the Lagrange multipliers. Observe that we do no longer need the non-negativity of these variables, because they correspond to equality instead of inequality constraints.
 %
-Now we use \acrshort{kkt} conditions to find the solutions to the optimization problem. Recall that the \acrshort{kkt} are sufficient conditions, and for problems with convex, differentiable objective function with affine constraints can be expressed as:
+Now we use \acrshort{kkt} conditions to find the solutions to the optimization problem. Recall that the \acrshort{kkt} are sufficient conditions, and for problems with convex, differentiable objective function with affine constraints, they can be expressed as:
 \begin{align}
     \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_ls} \\
     \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_ls} \\
     \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_ls} \\
-    \nabla_{\alpha_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i = 0 , \label{eq:lagr_diff_alpha_ls}
+    \nabla_{\alpha_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies y_i (\dotp{w}{\phi(x_i)} + b) - p_i + \xi_i = 0 . \label{eq:lagr_diff_alpha_ls}
 \end{align}
 Observe that we do not have inequality constraints here, so $\alpha_i$ is used for the equality constraints, and we do not need the complementary slackness condition.
 %
@@ -2076,7 +2074,7 @@ for $i=1, \ldots, \nsamples$. Therefore, we have a system of equations, which ca
     \end{aligned}
 \end{equation}
 where $Q$ is the same kernel matrix we have used in the other variants.
-Therefore, instead of being a constrained convex problem, by solving a this linear system of equations, we obtain the optimal dual variable $\opt{\fv{\alpha}}$, and thus, the solutions $\opt{w}, \opt{b}$ and $\opt{\fv{\xi}}$ as well.
+Therefore, instead of being a constrained convex problem, by solving this linear system of equations, we obtain the optimal dual variable $\opt{\fv{\alpha}}$, and thus, the solutions $\opt{w}, \opt{b}$ and $\opt{\fv{\xi}}$ as well.
 
 \section{Conclusions}\label{sec-conclusions-1}
 
