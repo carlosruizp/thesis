@@ -102,11 +102,12 @@
 \newacronym{erm}{ERM}{Empirical Risk Minimization}
 \newacronym{srm}{SRM}{Structural Risk Minimization}
 \newacronym{sgd}{SGD}{Stochastic Gradient Descent}
-\newacronym{iid}{iid}{independent identically distributed}
+\newacronym{iid}{iid}{independent and identically distributed}
 
 \newacronym{mtl}{MTL}{Multi-Task Learning}
 \newacronym{gl}{GL}{Graph Laplacian}
 
+\newacronym{stl}{STL}{Single-Task Learning}
 \newacronym{itl}{ITL}{Independent-Task Learning}
 \newacronym{ctl}{CTL}{Common-Task Learning}
 \newacronym{ltl}{LTL}{Learning to Learn}
@@ -155,9 +156,10 @@
 \DeclareMathOperator{\rank}{rank}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\expect}{E}
+\DeclareMathOperator{\VCdim}{VCdim}
 
-\DeclareMathOperator{\mn}{\mathcal{MN}}
-\DeclareMathOperator{\tn}{\mathcal{TN}}
+\DeclareMathOperator{\mn}{\mathcal{M_N}}
+\DeclareMathOperator{\tn}{\mathcal{T_N}}
 
 
 
@@ -178,6 +180,8 @@
 \newcommand{\mymax}[1]{\max\left(#1\right)}
 \newcommand{\mymin}[1]{\min\left(#1\right)}
 \newcommand{\pospart}[1]{\left[#1\right]_{+}}
+\newcommand{\epsins}[1]{\left[#1\right]_{\epsilon}}
+
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\cardinal}[1]{\left|#1\right|}
 \newcommand{\defeq}{\vcentcolon=}
@@ -223,7 +227,7 @@
 
 \newcommand{\nsamples}{n}
 \newcommand{\dimx}{d}
-\newcommand{\vcdim}[1]{\text{VCdim}\left(#1\right)}
+\newcommand{\vcdim}[1]{\VCdim\left(#1\right)}
 \newcommand{\vc}{d}
 \newcommand{\hplane}{w}
 \newcommand{\bias}{b}
@@ -252,9 +256,13 @@
 
 \newcommand{\distf}{P}
 \newcommand{\sample}{D}
+\newcommand{\samplen}{D_{\nsamples}}
+
 \newcommand{\err}{e}
 \newcommand{\risk}{R}
-\newcommand{\emprisk}{\hat{\risk}_\sample}
+\newcommand{\emprisk}{\hat{\risk}_{\sample}}
+\newcommand{\empriskn}{\hat{\risk}_{\samplen}}
+
 \newcommand{\regrisk}{\hat{\risk}_{\sample, \lambda}}
 \newcommand{\exprisk}{\risk_\distf}
 \newcommand{\hypemp}{\opt{\hypf}_\nsamples}

@@ -116,7 +116,7 @@ The influence of the hyperparameters $C$ and $\mu$ is not straightforward, and t
 To obtain a more interpretable formulation, here we propose to use our convex \acrshort{mtl} framework of~\eqref{eq:convexmtl_general} and define the common part as $g(\cdot) =  {w}^\intercal {\phi(\cdot)} + b$ and the task-specific parts as $g_r(\cdot) = {v_r}^\intercal {\phi_r(\cdot)} + b_r$, so the \acrshort{mtl} models are
 \begin{equation}
     \nonumber
-    %\label{eq:convexmtl_modeldef}
+    \label{eq:convexmtl_modeldef}
     h_r(\cdot) = \lambda_r \left\lbrace {w}^\intercal {\phi(\cdot)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r^\intercal {\phi_r(\cdot)} + d_r \right\rbrace ,
 \end{equation}
 where $\lambda_r \in \left[0, 1\right]$ is a hyperparameter and the corresponding regularized risk is 
