@@ -31,10 +31,10 @@ This chapter presents\dots
 \section{Kernels and Implicit Features}
 % los kernels son centrales en ML
 Kernels are central in \acrshort{ml}, and some of the most successful methods use them, such as \acrshort{svms} or \acrshort{gps}.
-The main advantage of using kernels, as we will see, is that we can send our data to a high, even infinite, dimensional space, where the problems of interest, regression or classification, are expected to be easier. Moreover, this transformation is made implicitly by exploiting the reproducing property of the kernels. This is named the kernel trick, and we will explain more carefully later in this section.
+The main advantage of using kernels, as we will see, is that we can send our data to a high, even infinite, dimensional space, where the problems of interest, regression or classification, are expected to be easier. Moreover, this transformation is made implicitly by exploiting the reproducing property of the kernels. This is named the kernel trick, which we will explain more carefully later in this section.
 
 % están relacionados con la VC dimension porque nos permiten  
-As said, by using kernels, we change our feature space, from a finite-dimensional one to a much larger one, with possibly infinite dimensions. Although this might ease the problem of learning a function that explains our data, we also can encounter some problems. One is the curse of dimensionality, that is, the cost of finding a solution to optimization problems typically scales super-linearly with the dimension of our data~\citep{Chapelle07}. Other problem is overfitting; when the data is placed in a high-dimensional space the hypotheses that can explain the data are more expressive, and if they fit too exactly to the training data, they could not generalize well to new data. However, as we will see later in this Chapter, these problems can be solved.
+As said, by using kernels, we change our feature space, from a finite-dimensional one to a much larger one, with possibly infinite dimensions. Although this might ease the problem of learning a function that explains our data, we also can encounter some problems. One is the curse of dimensionality, that is, the cost of finding a solution to optimization problems typically scales super-linearly with the dimension of our data~\citep{Chapelle07}. Other problem is overfitting; when the data is placed in a high-dimensional space the hypotheses that can explain the data are more expressive, and if they fit too exactly the training data, they could not generalize well to new data. However, as we will see later in this chapter, these problems can be solved.
 
 
 \subsection{Learning in Feature Spaces} %
@@ -47,7 +47,7 @@ As said, by using kernels, we change our feature space, from a finite-dimensiona
     \subfloat[][Projections of simplified \fdata{iris} example.]{%
     \includegraphics[width=0.45\textwidth]{Chapter2/Iris/projections_iris.pdf}
     \label{fig:iris_projections}}\\
-    \caption{}
+    \caption{Representations of problem \fdata{iris}.}
     \label{fig:iris}
 \end{figure}
 
@@ -63,19 +63,19 @@ As said, by using kernels, we change our feature space, from a finite-dimensiona
     \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_cubicsol.pdf}
     \label{fig:cubicreg_cubicsol}}
     \\
-    \caption{}
+    \caption{Cubic regression problem example and two regression functions: one linear and one cubic.}
     \label{fig:cubicreg}
 \end{figure}
 
 In \acrshort{ml} the choice of the feature space is crucial. If it is too small or too poor, it is not possible to find a good solution to our problem.
 Consider the classification setting; here, when the feature space is low-dimensional, the classes are more overlapped and finding a decision boundary is more challenging. 
 %
-Take for example the popular \fdata{iris} dataset, where the goal is to discriminate between three species of iris flowers: \emph{setosa}, \emph{virginica} and \emph{versicolor}. To do this, $50$ samples from each species are gathered, and four features are measured for each sample: the length and width of the petals and of the sepals.
+Take for example the popular \fdata{iris} dataset, where the goal is to discriminate between three species of iris flowers: \emph{setosa}, \emph{virginica} and \emph{versicolor}. To do this, $50$ samples from each species are gathered, and four features are measured for each sample: the length and width of the petals and sepals.
 %
 Now, for illustration purposes, we take a simplified version in which the goal is to discriminate the \emph{setosa} class from the rest, and where we consider only two features: the length and width of the sepals. In Figure~\ref{fig:iris_example} we represent the data corresponding to this simplified version of the \fdata{iris} problem, and we can observe that the two clouds of points are easily separable by a linear function. However, if, instead of the two-dimensional space, we consider just one feature, the problem is no longer separable, as it can be noted in the example of Figure~\ref{fig:iris_projections}.
 %
 
-For an example of how enlarging the feature space can lead to better solutions, consider a regression problem where we take $100$ one-dimensional points linearly distributed in the feature space, in this case $[-2, 2]$; then we compute the target values as $y_i = x_i^3 + \epsilon_i$, where $\epsilon_i \sim \normal{0, 1}$. This is a regression problem that we illustrate in Figure~\ref{fig:cubicreg_example}. If we consider a linear regression model with the original feature space, it will not be able to approximate well the function $f(x)=x^3$, and the solution is depicted in Figure~\ref{fig:cubicreg_linearsol}.
+For an example of how enlarging the feature space can lead to better solutions, consider a regression problem where we take $100$ one-dimensional points linearly distributed in the feature space, in this case $[-2, 2]$; then we compute the target values as $y_i = x_i^3 + \epsilon_i$, where $\epsilon_i \sim \normal{0, 1}$; this problem is illustrated in Figure~\ref{fig:cubicreg_example}. If we consider a linear regression model with the original feature space, it will not be able to approximate well the function $f(x)=x^3$, and the solution is depicted in Figure~\ref{fig:cubicreg_linearsol}.
 However, if we enlarge the feature space using the transformation $\phi(\cdot)$ defined as
 \begin{equation}
     \begin{aligned}
@@ -88,7 +88,7 @@ then a linear regression model in this new space can find a good approximation, 
 %
 
 This kind of result is one of the motivations for using kernels. 
-As we will see later, linear formulations, such as the Linear Regression or \acrshort{svms}, have a dual formulation, which does not depend directly on the features $x_i$, but on the inner products $\dotp{x_i}{x_j}$.
+As we will see later, linear formulations, such as Linear Regression or \acrshort{svms}, have a dual formulation, which does not depend directly on the features $x_i$, but on the inner products $\dotp{x_i}{x_j}$.
 Consider now that we have the feature space $\Xspace = \reals^2$, and we define the following function:
 \begin{equation}
     \begin{aligned}
@@ -137,13 +137,13 @@ To make use of kernels and to ensure that they have a corresponding feature tran
 In the first place, we define the inner product.
 %
 \begin{definition}[Inner Product]
-    An inner product on vector space $\Vspace$ is a map
+    An inner product on a vector space $\Vspace$ is a map
     $$\dotp{\cdot}{\cdot}: \Vspace \times \Vspace \to \reals , $$
-    that for all $u, v, w \in \Vspace$ and $a, b \in \reals$ satisfy:
+    such that for all $u, v, w \in \Vspace$ and $a, b \in \reals$ satisfies:
     \begin{enumerate}
         \item $\dotp{u}{a v + b w} = a\dotp{u}{v} + b\dotp{u}{w}$ (linear);
-        \item $\dotp{u}{v} = \dotp{v}{u}$ (symmetric) ;
-        \item $\dotp{u}{u} \geq 0$ and $\dotp{u}{u} = 0 \implies u = 0$ (positive definite) .
+        \item $\dotp{u}{v} = \dotp{v}{u}$ (symmetric);
+        \item $\dotp{u}{u} \geq 0$ and $\dotp{u}{u} = 0 \implies u = 0$ (positive definite).
     \end{enumerate} 
 \end{definition}
 %
@@ -159,7 +159,7 @@ Then, we define a positive definite kernel function, which has some similarities
         \nonumber
         \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples c_i c_j k(x_i, x_j) \geq 0 ,
     \end{equation} 
-    and if $\sum_{i=1}^\nsamples \sum_{j=1}^\nsamples c_i c_j k(x_i, x_j)$, then $c_1, \ldots, c_n = 0$.
+    and if $\sum_{i=1}^\nsamples \sum_{j=1}^\nsamples c_i c_j k(x_i, x_j) = 0$, then $c_1, \ldots, c_n = 0$.
 \end{definition}
 %
 It can be seen that the inner product and the kernel function are symmetric and positive-definite. The connection between both goes further, and we will see it below.
@@ -172,7 +172,7 @@ For simplicity, we will say positive kernel or just kernel instead of positive d
         \nonumber
         k: \Xspace \times \Xspace \to \reals
     \end{equation}
-    and patterns $x_1, \ldots, x_\nsamples$, the matrix $\fm{K}$ with elements $\fm{K}_{ij} = k(x_i, x_j)$, with $i,j=1, \ldots, n$, is called the Gram matrix.
+    and patterns $x_1, \ldots, x_\nsamples \in \Xspace$, the matrix $\fm{K}$ with elements $\fm{K}_{ij} = k(x_i, x_j)$, with $i,j=1, \ldots, n$, is called the Gram matrix.
 \end{definition}
 %
 \begin{definition}[Positive Definite Matrix]
@@ -189,7 +189,7 @@ Then, it is easy to characterize a kernel function by its kernel matrices, as st
         \nonumber
         k: \Xspace \times \Xspace \to \reals
     \end{equation}
-    is a positive definite kernel if for any set $x_1, \ldots, x_\nsamples \in \Xspace$ and $c_1, \ldots, c_\nsamples \in \reals$, the corresponding Gram matrix is positive definite.
+    is a positive definite kernel if for any set $x_1, \ldots, x_\nsamples \in \Xspace$, the corresponding Gram matrix is positive definite.
 \end{lemma}
 %
 
@@ -202,7 +202,7 @@ As illustrated in the previous subsection, we are interested in using kernels to
         \end{aligned}
     \end{equation}
 where $k$ is a positive definite kernel. Here, we are transforming each point $x$ into a function that assigns the value $\phi(\tilde{x}) = k(\tilde{x}, x)$ to every $\tilde{x} \in \Xspace$. That is, in the new space, $x$ is defined by its similarity, expressed by $k(\tilde{x}, x)$, to every other points $\tilde{x} \in \Xspace$. This transformation seems difficult to work with because our new features are functions.
-However, we can define a feature space associated with $\phi$, with an inner product associated with the kernel function $k(\cdot, \cdot)$. To do this, we follow three steps: we define a vector space on the image of $\phi$, define an inner product in such space, and show that this inner product satisfies $\dotp{\phi(\tilde{x})}{\phi(x)} = k(\tilde{x}, x)$.
+However, we can define a feature space associated with $\phi$, with an inner product associated with the kernel function $k(\cdot, \cdot)$. To do this, we follow three steps: we define a vector space on the image of $\phi$, we define an inner product in such space, and we show that this inner product satisfies $\dotp{\phi(\tilde{x})}{\phi(x)} = k(\tilde{x}, x)$.
 We begin by considering all linear combinations of images of $\phi$, that is, the functions 
 $$ f(\cdot) = \sum_{i=1}^n \alpha_i \phi(x_i) =\sum_{i=1}^n \alpha_i k(\cdot, x_i), $$
 with $\alpha_1, \ldots, \alpha_n \in \reals$.
@@ -216,11 +216,11 @@ and we have to check that it satisfies the properties of an inner product. It is
 $$ \dotp{f(\cdot)}{f(\cdot)} = \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j k(x_i, x_j) \geq 0$$
 for any $x_1, \ldots, x_n \in \Xspace$ and $\alpha_1, \ldots, \alpha_n \in \reals$, and if $\dotp{f(\cdot)}{f(\cdot)} = 0$, then $\alpha_1, \ldots, \alpha_n =0$, hence $f(\cdot) = 0$.
 %
-This inner product is defined for any pair of functions $f(\cdot), g(\cdot) \in \Vspace_\phi$. In particular, consider $g(\cdot) = \phi(\tilde{x}) = k(\cdot, \tilde{x})$, then, from the definitions, we have that
+This inner product is defined for any pair of functions $f(\cdot), g(\cdot) \in \Vspace_\phi$. In particular, consider $g(\cdot) = \phi(\tilde{x}) = k(\cdot, \tilde{x})$; then, from the definitions, we have that
 $$ \dotp{f}{k(\cdot, \tilde{x})} = \sum_{i=1}^n \alpha_i \phi(x_i) =\sum_{i=1}^n \alpha_i k(x_i, \tilde{x}) = f(\tilde{x}) .$$
 That is, $k(\cdot, \tilde{x})$ is the representative of the evaluation on $\tilde{x}$ since to evaluate any function $f$ on $\tilde{x}$ is just necessary to compute $\dotp{f}{k(\cdot, \tilde{x})}$. Moreover, we observe that with $f(x) = \phi(x)$,
 $$ \dotp{\phi(x)}{\phi(\tilde{x})} = \dotp{k(\cdot, x)}{k(\cdot, \tilde{x})} = k(x, \tilde{x}) .$$  
-This is the reproducing property of the kernel, and it defines an easy way of computing inner products in the feature space of functions $\reals^\Xspace$, to compute the inner product between $\phi(x)$ and $\phi(\tilde{x})$, we just need to compute the kernel value $k(x, \tilde{x})$.
+This is the reproducing property of the kernel, and it defines an easy way of computing inner products in the feature space of functions $\reals^\Xspace$: to compute the inner product between $\phi(x)$ and $\phi(\tilde{x})$, we just need to compute the kernel value $k(x, \tilde{x})$.
 
 \subsection{Reproducing Kernel Hilbert Spaces}
 %
@@ -237,7 +237,7 @@ We are interested in drawing the connection between kernels and the \acrshort{rk
 \begin{definition}[\acrshort{rkhs}]
     Given a non-empty set $\Xspace$, a Hilbert space $\hilbertspace$ of functions $f: \Xspace \to \reals$ with an inner product $\dotp{\cdot}{\cdot}$ is an \acrshort{rkhs} if there exists a symmetric function $k: \Xspace \times \Xspace \to \reals$ such that $\dotp{f}{k(x, \cdot)} = f(x)$ for all $f \in \hilbertspace$, and $\overline{\Span{\set{k(\cdot, x), x \in \Xspace}}} = \hilbertspace$. 
 \end{definition}
-Here, $\Span{\set{k(\cdot, x), x \in \Xspace}}$ is the span of the functions $k(\cdot, x)$, that is, functions defined as
+Here, $\Span{\set{k(\cdot, x), x \in \Xspace}}$ is the span of the functions $k(\cdot, x)$, that is, functions which are defined as
 $$ f(\cdot) = \sum_{i=1}^n \alpha_i \phi(x_i) =\sum_{i=1}^n \alpha_i k(\cdot, x_i), $$
 and $\overline{\mathcal{A}}$ is the completion of the set $\mathcal{A}$, which include the set itself and the limits of all its Cauchy sequences~\citep{kelley2017general}.
 Other way to characterize an \acrshort{rkhs} is as a Hilbert space $\hilbertspace$ with continuous evaluation functionals, i.e. the maps
@@ -278,7 +278,7 @@ is positive definite; that is, for any $f \in L_2(\Xspace)$,
     \nonumber
     \int_{\Xspace \times \Xspace} k(x, \tilde{x}) f(x) f(\tilde{x}) d\mu(x) d\mu(\tilde{x}) \geq 0 ,
 \end{equation}
-then $k$ is a Mercer kernel
+then $k$ is a Mercer kernel.
 \end{definition}
 
 \begin{theorem}[Mercer Theorem]    
@@ -320,7 +320,7 @@ Therefore, we have seen that there is a one-to-one correspondence between positi
 
 \section{Risk and Regularization}
 To automatize the learning process, which is the goal of \acrshort{ml}, it is necessary to define a criterion to measure the performance of the model functions $f: \Xspace \to \Yspace$ estimated from the data.
-At each particular sample $(x_i, y_i)$ we can give a metric of how close we are to our desired goal, this is the selected loss function. If we have a classification problem, we may want to minimize the number of incorrectly classified patterns, but this quantity is not differentiable and not easy to work with. In regression problems, we would like to minimize the distance between the regression function and the training target values, but there are also multiple ways to define this distance. 
+At each particular sample $(x_i, y_i)$ we can give a metric of how close we are to our desired goal; this is the selected loss function. If we have a classification problem, we may want to minimize the number of incorrectly classified patterns, but this quantity is not continuous and not easy to work with. In regression problems, we would like to minimize the distance between the regression function and the training target values, but there are also multiple ways to define this distance. 
 %
 
 Anyway, independently of the chosen loss function, the data that we use have been sampled, and we do not know its distribution. There are some samples more important than others, because they belong to an area of high probability, according to this unknown distribution. Getting a bad result, as defined by the loss function, in a sample that is an outlier of the distribution is not that relevant, because few data are expected to be sampled in its neighborhood. 
@@ -329,18 +329,19 @@ To account for this, we define the expected risk, which is the expectation of th
 %
 When minimizing the empirical risk instead of the expected one, we might find that we are too influenced by the particular sample that we have been given.  If the training data is too scarce, or also if we have some prior knowledge that we want to incorporate to the learning process, the regularization of the models can be helpful, as we will describe.
 %
+
 Moreover, when we want to minimize the regularized risk using linear models, there is a result that describes the solution in terms of the training data, which is crucial for kernel methods, particularly where the linear model is built in an infinite dimensional space.
 
 \subsection{Loss Functions}
 Given a feature space $\Xspace$ and a target space $\Yspace$, the criterion that we use to measure the performance of our estimates $f: \Xspace \to \Yspace$ is defined by the loss functions.
-Here, we give the definition of a loss function and present the losses that we will use in the rest of this work.
+Here, we give a general definition of a loss function and present the losses that we will use in the rest of this work.
 
 \begin{definition}[Loss Function]
     Denote $(y, f(x))$ as the pairs consisting on an observation $y \in \Yspace$ and a prediction $f(x) \in \Yspace$, with $x \in \Xspace$ an element of the feature space; then any map
     \begin{equation}
         \begin{aligned}
     \nonumber
-    \lossf: &\Yspace \times \Yspace &\to &&[0, \infty) \\
+    \lossf:\; &\Yspace \times \Yspace &\to &&[0, \infty) \\
     &(y, f(x)) &\to  && \lossf(y, f(x)) 
 \end{aligned}
 \end{equation}
@@ -364,7 +365,7 @@ Observe that if $f$ only takes values in $\set{0, 1}$, we can express this loss 
     \nonumber
     \lossf(y, f(x)) = (y - f(x))^2 .
 \end{equation}
-However, this function only takes into account whether the example is correctly classified or not, but we might also want to take into account the confidence that we have in this decision. If we use the labels $\set{-1, 1}$ to denote the two classes, then we can look at the number $y f(x)$ to check if the decision is correct: only if $y f(x) > 0$ is the pattern correctly classified. That is, we are looking at a single value to determine the success of our decision, and we can also use it to define a confidence. For example, we can consider that in those patterns where $0 < y f(x) < 1$, although correctly classified, the confidence that we have to make such a decision is not enough, and only when $y f(x) \geq 1$ we consider that it is a correct classification. We can interpret this as a confidence margin, and the loss function that implements this is called \emph{soft margin}, or also \emph{hinge} loss, which is defined as
+However, this function only takes into account whether the example is correctly classified or not, but we might also want to take into account the confidence that we have in this decision. If we use the labels $\set{-1, 1}$ to denote the two classes, then we can look at the number $y f(x)$ to check if the decision is correct: only if $y f(x) > 0$ is the pattern correctly classified. That is, we are looking at a single value to determine the success of our decision, and we can also use it to define a confidence. For example, we can consider that in those patterns where $0 < y f(x) < 1$, although correctly classified, the confidence that we have to make such a decision is not enough, and only when $y f(x) \geq 1$ we consider that it is a correct classification. We can interpret this as a confidence margin, and the loss function that implements this is called \emph{soft margin}, or also \emph{hinge} loss, which is the loss function used in the \acrshort{svm} and it is defined as
 \begin{equation}
     \label{eq:hinge_def}
     \lossf(y, f(x)) = \pospart{1 - yf(x)} = 
@@ -373,7 +374,7 @@ However, this function only takes into account whether the example is correctly 
         1 - y f(x), & y f(x) < 1 .
     \end{cases}
 \end{equation}
-This is a continuous function where we can observe two charactistics. One is a confidence margin where we ask $y f(x) \geq 1$ to consider it a decision without penalization. The other, is that the penalization grows linearly as $y f(x)$ decreases.
+This is a continuous function where we can observe two characteristics. One is a confidence margin where we consider that only those instances such that $y f(x) > 1$ do not require a penalization. The other, is that the penalization grows linearly as $y f(x)$ decreases.
 %
 A modification of the hinge loss considers the same margin, but the penalization for the misclassified patterns grows as a quadratic function. This is the \emph{squared hinge} loss, whose expression is
 \begin{equation}
@@ -390,12 +391,14 @@ $$ s(f(x)) = \frac{1}{1 + \exp{(-f(x))}} .$$
 Here, although $f(x) \in \reals$, $s(f(x)) \in (0, 1)$, so we can see it as the probability of $x$ being from class $1$. Then, the loss function is defined as 
 \begin{equation}
     \label{eq:logistic_def}
-    \lossf(y, f(x)) = - y \log{(s(f(x)))} - (1 - y) \log{(1 - s(f(x)))} .
+    \lossf(y, f(x)) = - y \log{(s(f(x)))} - (1 - y) \log{(1 - s(f(x)))} ,
 \end{equation} 
+which, using $s(f(x)) = P(y=1 \vert x)$, can be interpreted as the negative logarithm of the likelihood of the observation.
+%
 Here, given for example a pattern from class $y=1$, only the first term is active, and the larger $f(x)$ is, the closer $s(f(x))$ gets to $1$, so the penalization is smaller.
 In the binary classification scenario, the \emph{logistic} loss resembles the \emph{hinge} one. 
 
-The formulae~\eqref{eq:logistic_def} also looks like the definition of entropy, so it is also named \emph{cross-entropy} loss. 
+The formula~\eqref{eq:logistic_def} also looks like the definition of entropy, so it is also named \emph{cross-entropy} loss, which, is the negative logarithm of the likelihood. 
 With the entropy interpretation, this loss is easily adaptable to the multi-class case with classes $\set{1, \ldots, C}$. Consider the one-hot encoding vector $\fv{y}$ of length $C$, such that $\fv{y}_c = 1$ if $y=c$ and $\fv{y}_j = 0$ otherwise, for $j, c \in \set{1, \ldots, C}$ and $j \neq c$.
 Now, we can model the probabilities $P(y=c \vert x) = f_c(x)$ with $c \in \set{1, \ldots, C}$ and form the corresponding vector $\fv{f}(x)$; then, the multi-class \emph{cross-entropy} loss is defined as 
 \begin{equation}
@@ -441,7 +444,7 @@ The \emph{squared} loss is also easily adaptable to multi-target regression prob
     \lossf(y, f(x)) =  \norm{\fv{y} - \fv{f}(x)}^2.
 \end{equation}
 %
-The $\epsilon$-insensitive loss can also be extended to use the squared value of the distance. The squared $\epsilon$-insensitive loss is defined as
+The $\epsilon$-insensitive loss can also be extended to use the squared value of the distance. The \emph{squared $\epsilon$-insensitive} loss is defined as
 \begin{equation}
     \label{eq:sqepsins_def}
     \lossf(y, f(x)) = \epsins{y - f(x)}^2 =
@@ -452,39 +455,41 @@ The $\epsilon$-insensitive loss can also be extended to use the squared value of
 \end{equation} 
 
 \subsection{Empirical and Expected Risk} 
-In \acrshort{ml}, we have a feature space $\Xspace$ and a target (or label) space $\Yspace$, and we believe that there is a function $f: \Xspace \to \Yspace$, and if we have a good estimate of such function, we will be able to predict new target values $y$ given a pattern $x$. 
+In \acrshort{ml}, we have a feature space $\Xspace$ and a target (or label) space $\Yspace$, and we believe that there is a function $f: \Xspace \to \Yspace$; if we have a good estimate of such function, we will be able to predict new target values $y$ given a pattern $x$. 
 
 %
-We begin with the classification setting. Take for example the popular problem \fdata{MNIST} of handwritten digits, where the feature space $\Xspace$ is the space of $28 \times 28$ matrices with values in $[0, 1]$, corresponding to the pixels of $28 \times 28$ grayscale images, i.e. $[0, 1]^{28 \times 28}$. We believe that there exists a function $f: \Xspace \to \reals$ that captures the properties of the handwritten digit $0$ such that $f(x)=1$ only when $x$ is an image of digit $0$ and $f(x)=0$ otherwise. Then, we would like to learn such function, so when a new image $\tilde{x}$ comes in, we can automatically decide if it represents the digit $0$ by looking at the value $f(x)$.
+We begin with the classification setting. Take for example the popular problem \fdata{MNIST} of handwritten digits, where the feature space $\Xspace$ is the space of $28 \times 28$ matrices with values in $[0, 1]$, corresponding to the pixels of $28 \times 28$ grayscale images, i.e. $[0, 1]^{28 \times 28}$. We believe that there exists a function $f: \Xspace \to \reals$ that captures the properties of the handwritten digit $0$ such that $f(x)=1$ only when $x$ is an image of digit $0$ and $f(x)=0$ otherwise. 
+Here, for simplicity, we forget about scores or probabilities and consider only a binary function $f$.
+Then, we would like to learn such function, so when a new image $\tilde{x}$ comes in, we can automatically decide if it represents the digit $0$ by looking at the value $f(x)$.
 %
 We suppose that there exists a distribution for images of digits and its labels, such that $\distf(x, y=0) = \distf(x \vert y = 0) \distf(y = 0)$ captures the properties of the images of digit $0$. Then, we want our function $f$ to minimize the expected accuracy
 $$ \int_{\Xspace \times \Yspace} (y - f(x))^2 d\distf(x, y) ,$$
 where we are using the \emph{accuracy} loss function $\ell(y, f(x)) = (y - f(x))^2$. 
 %
-If we want to consider other losses, such as the \emph{hinge} loss as defined in~\eqref{eq:hinge_def}, we can consider that $\mathcal{Y} = \reals$, where the labels are encoded as $\set{-1, 1}$, the goal is to minimize 
+If we want to consider other losses, such as the \emph{hinge} loss as defined in~\eqref{eq:hinge_def}, we can consider that $\mathcal{Y} = \reals$, where the labels are encoded as $\set{-1, 1}$; the goal is to minimize 
 $$ \int_{\Xspace \times \Yspace} \pospart{1 - y f(x)} d\distf(x, y) .$$
 
 %
 In the regression setting we find a similar situation. Consider the problems where we want to predict the economic value of houses using descriptive features of each property: location, number of rooms, floor number, etc. These characteristics are our feature space $\Xspace$, and the output space is $\Yspace = \reals^+$, i.e. the positive real numbers, since we want to predict prices. Again, we suppose that the prices are dependent on the characteristics of each house, such that there exists a joint distribution $\distf(x, y)$.
 Now, we want to find the function $f: \Xspace \to \Yspace$ that minimizes the expected \emph{squared} loss
 $$ \int_{\Xspace \times \Yspace} (y - f(x))^2 d\distf(x, y) .$$
-Observe that although the formula is the same as the one used for the accuracy loss in classification, here the output space $\Yspace$ is the positive reals, so it has a different meaning. Now, the function $f$ minimizing such quantity is a good estimate to predict the value of a new property given its characteristics.
+Observe that, although the formula is the same as the one used for the accuracy loss in classification, here the output space $\Yspace$ is the positive reals, so it has a different meaning. Now, the function $f$ minimizing such quantity is a good estimate to predict the value of a new property given its characteristics.
 
 %
 In both classification and regression cases, we arrive at an integral of a loss function.
 This is called the expected risk, because we take the expectation of the loss function with respect to the real distribution of data. 
 %
-In general, in \acrshort{ml} we consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ where $\param$ are the parameters that define each hypothesis and $\paramspace$ is the space of such parameters. Then, the desired goal is to select the candidate hypothesis that minimizes the expected risk, which is defined as follows.
+In general, in \acrshort{ml} we consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param),\; \param \in \paramspace}$ where $\param$ are the parameters that define each hypothesis and $\paramspace$ is the space of such parameters. Then, the desired goal is to select the candidate hypothesis that minimizes the expected risk, which is defined as follows.
 %
 \begin{definition}[Expected Risk Minimization]
-    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$. Then the expected risk minimization problem is 
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param),\; \param \in \paramspace}$ parametrized by $\param \in \paramspace$. Then the expected risk minimization problem is 
     \begin{equation}
         \label{eq:exprisk_def}
         \argmin_{\param \in \paramspace} \left\{ \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y) \right\} .
     \end{equation}
 \end{definition}
 %
-The distribution $\distf$ that appears in the expected risk is unknown, so it is not possible to find a solution to the minimization problem~\eqref{eq:exprisk_def}.
+The distribution $\distf$ that appears in the expected risk is in general unknown, so it is not possible to find a solution to the minimization problem~\eqref{eq:exprisk_def}.
 % 
 Instead, what we have is a sample 
 \begin{equation}
@@ -496,10 +501,10 @@ where each pair $(x_i, y_i)$ has been independently sampled from $\distf(x, y)$.
 Then, we use this sample $\sample$ to define the empirical risk minimization problem.
 %
 \begin{definition}[Empirical Risk Minimization]
-    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param),\; \param \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
     \begin{equation}
         \nonumber
-        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples}
     \end{equation}
     of pairs $(x_i, y_i)$ independently sampled from $\distf(x, y)$;    
     then, the empirical risk minimization problem is 
@@ -511,10 +516,10 @@ Then, we use this sample $\sample$ to define the empirical risk minimization pro
 %
 The paradigm of minimizing the expected risk to find a good estimate, as an alternative to minimizing the real expected risk, is called \acrfull{erm}.
 %
-It is easy to observe that the empirical risk $\emprisk$ is an unbiased estimator of $\exprisk$. The samples $(x_i, y_i), \; i=1, \ldots, \nsamples$, are \acrfull{iid} random variables, so we have 
+It is easy to observe that the empirical risk $\emprisk$ is an unbiased estimator of $\exprisk$. The samples $(x_i, y_i), \; i=1, \ldots, \nsamples$, are \acrfull{iid} random variables, so, using $\expect$ for the expected value, we have 
 \begin{equation}
     \nonumber
-     \expect_\sample \emprisk(\alpha) = \expect_{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)} \left[\frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param})\right] = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \expect_{(x_i, y_i)} \left[\ell(y_i, \hyp{x_i}{\param})\right],
+     \expect_\sample \left[ \emprisk(\alpha) \right] = \expect_{(x_1, y_1), \ldots, (x_\nsamples, y_\nsamples)} \left[\frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param})\right] = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \expect_{(x_i, y_i)} \left[\ell(y_i, \hyp{x_i}{\param})\right],
 \end{equation}
 where we have used that the samples are independent.
 Then, since all the pairs $(x_i, y_i)$ are sampled from the same distribution $\distf$, the conclusion is 
@@ -528,12 +533,13 @@ This is a desirable property of the expected risk; however, as we will see, it i
 % Regularization Motivation by Tikhonov
 % Ill posed problem
 % operator inversion lemma
-The empirical risk presented in~\eqref{eq:emprisk_def} can be interpreted as a map from the space of hypothesis $\hypspace$, which we can consider here to be $L_2(\Xspace)$, that is, the measurable functions $h: \Xspace \to \reals$, to the non-negative real numbers, namely
+Consider that our hypothesis space $\hypspace$ is $L_2(\Xspace)$, that is, the measurable functions $h: \Xspace \to \reals$.
+The empirical risk presented in~\eqref{eq:emprisk_def} can be interpreted as a map from the space of hypothesis $\hypspace = L_2(\Xspace)$ to the non-negative real numbers, namely
 $$ \emprisk: \hypspace \to \reals_{\geq 0} .$$
 %
 Let $f^* \in L_2(\Xspace)$ be the function that minimizes $\emprisk$, such that $\emprisk(f^*) = \rho$. If we find a solution $g \in L_2(\Xspace)$ such that $\emprisk(g) = \rho + \delta$, for $\delta > 0$, we would like then that $g$ is close to the optimal solution $f^*$.
 %
-In other words, we want the inverse of the map $\emprisk$ to be continuous, that is, given $\rho_1, \rho_2 \in \reals$ such that $\abs{\rho_1 - \rho_2} < \delta$, then two functions $f_1, f_2 \in L_2(\Xspace)$ such that $\emprisk(f_1) = \rho_1, \; \emprisk(f_2) = \rho_2$, must satisfy $\norm{f_1 - f_2}_{L_2(\Xspace)} < \epsilon$.
+In other words, we want the inverse of the map $\emprisk$ to be continuous, that is, for every $\epsilon$, there exists a $delta$ such that if $\abs{\rho_1 - \rho_2} < \delta$, where $\rho_1, \rho_2 \in \reals$, then two functions $f_1, f_2 \in L_2(\Xspace)$ such that $\emprisk(f_1) = \rho_1, \; \emprisk(f_2) = \rho_2$, must satisfy $\norm{f_1 - f_2}_{L_2(\Xspace)} < \epsilon$.
 %
 Even if the map $\emprisk$ is continuous, its inverse $\emprisk$ might not be continuous. In that cases we have, according to Tikhonov nomenclature, an ill-posed problem.
 %
@@ -544,9 +550,9 @@ Here is where the Operator Inversion Lemma~\citep{riesz2012functional} is useful
 %
 To apply this lemma to our situation, and get a well-posed problem, we need two conditions: we need $\emprisk$ to be a continous map, and we need $\hypspace$ to be compact.
 %
-We can assume that the empirical risk $\emprisk$ is continuous, although this is a strong assumption, it is true for the loss functions considered, except for the \emph{accuracy} loss.
+We can assume that the empirical risk $\emprisk$ is continuous; although this is a strong assumption, it is true for all the loss functions considered, except for the \emph{accuracy} loss.
 %
-The other condition, which involves the compactness of $\hypspace$ is more difficult to satisfy. Instead of considering a compact space of hypothesis, which would lead to a constrained optimization problem, we introduce the concept of regularization.
+The other condition, which involves the compactness of $\hypspace$, is more difficult to satisfy. Instead of considering a compact space of hypothesis, which would lead to a constrained optimization problem, we introduce the concept of regularization.
 
 %
 Given a map (or functional) $A: \mathcal{M} \to \reals_{\geq 0}$, with $\mathcal{M}$ being a metric space,
@@ -555,14 +561,16 @@ Tikhonov considers a ``stabilization'' (regularization) term $\Omega: \mathcal{M
     \nonumber
     A_\lambda = A + \lambda \Omega: \mathcal{M} \to \reals_{\geq 0} ,
 \end{equation}
-such that the sets $\set{m \in \mathcal{M}: \Omega(m) \leq c}$, with $c > 0$ are compact.
+such that the sets $\set{m \in \mathcal{M}: \Omega(m) \leq c}$, with $c > 0$, are compact.
 
-Now, the problem of minimizing $A_\lambda = A + \lambda \Omega$ is stable. That is, let $\rho^\lambda \in \reals_{\geq 0}$ be a minimal value of $A_\lambda$, and let $\rho^\lambda_\delta \in \reals_{\geq 0}$ be defined as $\rho^\lambda_\delta = \rho^\lambda + \delta$ for $\delta > 0$. Consider then for $\lambda \in \reals_{> 0}$, $m^\lambda, m^\lambda_\delta \in \mathcal{M}$ such that $A_\lambda(m^\lambda) = \rho^\lambda, \; A_\lambda(m^\lambda_\delta) = \rho^\lambda_\delta$, then these two elements are close, i.e. $\norm{m^\lambda - m^\lambda_\delta}_{\mathcal{M}} < \epsilon$.
+Now, the problem of minimizing $A_\lambda = A + \lambda \Omega$ is stable. That is, let $\rho^\lambda \in \reals_{\geq 0}$ be a minimal value of $A_\lambda$, and let $\rho^\lambda_\delta \in \reals_{\geq 0}$ be defined as $\rho^\lambda_\delta = \rho^\lambda + \delta$ for $\delta > 0$. Consider then for $\lambda \in \reals_{> 0}$, $m^\lambda, m^\lambda_\delta \in \mathcal{M}$ such that $A_\lambda(m^\lambda) = \rho^\lambda, \; A_\lambda(m^\lambda_\delta) = \rho^\lambda_\delta$, then these two elements are close, i.e. for every $\epsilon$, there exists a $\delta$ such that $\norm{m^\lambda - m^\lambda_\delta}_{\mathcal{M}} < \epsilon$.
 %
 We can say then that the problem $\argmin_{\mathcal{M}} A + \lambda \Omega$ is a well-posed problem. 
 %
 Moreover, with this result, it can be shown that the sequence of solutions $m^\lambda_\delta$ converges to the solution $m^* = \argmin_{\mathcal{M}} A$ as $\lambda \to 0$.
+%
 
+The regularization term is also typically used to avoid the overfitting of the models to the data. This has to do with the capacity of the models considered and how adding a regularization term we penalize those models that are more complex. We will see more carefully later how the regularization and capacity concepts relate to each other.
 
 
 
@@ -571,12 +579,12 @@ Moreover, with this result, it can be shown that the sequence of solutions $m^\l
 \subsection{Representer Theorem} % 
 %
 In our case, where our functional of interest is the empirical risk $\emprisk$, and we typically select a regularization term, or regularizer, that is convex, if $\emprisk$ is also convex, then, the corresponding regularized functional is so too. Therefore, a usual choice is $\Omega(f) = \norm{f}^2_\hypspace$, but we can use $\Omega(f) = \Theta(\norm{f}_\hypspace^2)$, where $\Theta(\cdot)$ is a monotonic increasing function.
-We consider then problem of minimizing the regularized functional defined as follows.
+We consider then the problem of minimizing the regularized functional defined as follows.
 \begin{definition}[Regularized Risk Functional]
-    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param) \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
+    Given the space $\Xspace \times \Yspace$ with a distribution $\distf(x, y)$ and a loss function $\ell$, consider a set of hypothesis $\hypspace = \set{\hypf(\cdot, \param),\; \param \in \paramspace}$ parametrized by $\param \in \paramspace$, and a set 
     \begin{equation}
         \nonumber
-        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+        \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} 
     \end{equation}
     of pairs $(x_i, y_i)$ independently sampled from $\distf(x, y)$.   
     Then, the regularized risk functional is defined as
@@ -625,13 +633,13 @@ However, when our hypothesis space $\hypspace$ is an \acrshort{rkhs}, there is a
     Moreover, we observe that for all $f_{\perp} \in \hypspace$,
     \begin{equation}
         \nonumber
-        \Theta(\norm{f}_{\hypspace}^2) = \Theta(\norm{f_{\Span}}_{\hypspace}^2 + \norm{f_{\perp}}_{\hypspace}^2) \leq \Theta(\norm{f_{\Span}}_{\hypspace}^2) .
+        \Theta(\norm{f}_{\hypspace}^2) = \Theta(\norm{f_{\Span}}_{\hypspace}^2 + \norm{f_{\perp}}_{\hypspace}^2) \geq \Theta(\norm{f_{\Span}}_{\hypspace}^2) .
     \end{equation}
     Since the orthogonal part $f_{\perp}$ does not play a role in the loss term, then the minimizer of the empirical risk must have $f_{\perp} = 0$, so 
     $$ f(\cdot) = \sum_{i=1}^\nsamples k(x_i, \cdot).$$
 \end{proof}
 % este resultado está relacionado con la dualidad de los problemas lineales, que veremos más adelante
-This is a relevant result because it gives an explicit form for the minimizer of the expected risk when working with \acrshort{rkhss}, which we will often do in this work. It is also related to the concept of duality, that, when considering linear models in some \acrshort{rkhs}, offers the possibility of formulating the solution of optimization problems in terms of the feature space, primal formulation, or the space of inputs, dual formulation. We will present later the duality concept in detail. 
+This is a relevant result because it gives an explicit form for the minimizer of the expected risk when working with \acrshort{rkhss}, which we will often do in this work. It is also related to the concept of duality, that, when considering linear models in some \acrshort{rkhs}, offers the possibility of formulating the solution of optimization problems in terms of the feature space (primal formulation) or the space of inputs (dual formulation). We will present later the duality concept in detail. 
 
 % \subsection{Regularization Operators in RKHS's}
 
@@ -667,7 +675,7 @@ This is a relevant result because it gives an explicit form for the minimizer of
 % classification problem: logistic regression
 
 % joint formulation for both 
-The question of what is learning and when does learning take place has frequently been proposed in computer science or even philosophy, but it is difficult to formalize in order to provide some meaningful answers. Vapnik and Chervonenkis, two of the founders of statistical learning theory, expressed this question in terms of how well we minimize the expected risk when we focus on minimizing the empirical risk.
+The question of what learning is and when it takes place has frequently been proposed in computer science or even philosophy, but it is difficult to formalize it in order to provide some meaningful answers. Vapnik and Chervonenkis, two of the founders of statistical learning theory, expressed this question in terms of how well we minimize the expected risk when we focus on minimizing the empirical risk.
 %
 They developed a theory to give specific conditions, necessary and sufficient, for when does minimizing the empirical risk lead to a small expected risk, and also how can we expect this to happen.
 
@@ -679,7 +687,7 @@ Moreover, using this notion of capacity, Vapnik \emph{et al.} derive methods tha
 
 \subsection{Uniform Convergence and Consistency}
 %
-As explained in the previous section, in the supervised learning framework, we have an input space $\Xspace$ and an output space $\Yspace$, where there exists a distribution $\distf$ in $\Xspace \times \Yspace$ that is unknown. Given a function $\hypf: \Xspace \to \Yspace$ the corresponding expected risk is defined as
+As explained in the previous section, in the supervised learning framework we have an input space $\Xspace$ and an output space $\Yspace$, where there exists a distribution $\distf$ in $\Xspace \times \Yspace$ that is unknown. Given a function $\hypf: \Xspace \to \Yspace$ the corresponding expected risk is defined as
 \begin{equation}
     \nonumber %\label{eq:exprisk_def}
     \exprisk(\hypf) = \int_{\Xspace \times \Yspace} \ell(y, \hypf(x)) d\distf(x, y) ,
@@ -700,14 +708,14 @@ Consider the case now where we admit any function. In particular, we can select 
     \label{eq:f_tailor}
     f(x) = 
     \begin{cases}
-        y_i & \text{if } x = x_i \text{ for some } i = 1, \ldots, \nsamples \\
+        y_i & \text{if } x = x_i \text{ for some } i = 1, \ldots, \nsamples, \\
         0 & \text{otherwise}.
     \end{cases}
 \end{equation}
 Although this function $f$ minimizes the expected error, it does not account for any type of learning. If we sample new points $(\tilde{x}_i, \tilde{y}_i)$ from $\distf(x, y)$, if $\Xspace$ is a continuous domain, the new feature vectors $\tilde{x}_i$ will almost never be equal to $x_i$, and $f$ will predict $0$ almost always. Therefore, the expected risk will not be minimized.
 % in fact, it will be the expected value of $l(y)$, with $y \sim P(y \vert x)$
 %
-To avoid this kind of situations, we should somehow restrict the functions that we consider. For example, if we restrict ourselves to continuous functions, we cannot select the function~\eqref{eq:f_tailor}.   
+To avoid this kind of situations, we should somehow restrict the functions that we consider. For example, if we restrict ourselves to continuous functions, we cannot select the one defined in~\eqref{eq:f_tailor}.   
 
 
 At the same time, we have shown that the empirical risk is an unbiased estimator of the expected one, but we can state a stronger assertion using the Chernoff bound~\citep{Chernoff52}.
@@ -721,7 +729,7 @@ then, we can apply the Chernoff inequality to characterize how the empirical mea
 Therefore, the empirical risk converges in probability to the expected one, that is
 \begin{equation}
     \label{eq:risk_chernoff}
-    \abs{\empriskn(\hypf) -\exprisk(\hypf)} \xrightarrow[\nsamples \to \infty]{\distf} 0 \iff P\left(\abs{\empriskn(\hypf) -\exprisk(\hypf)} \geq \epsilon  \right) \to 0,
+    \abs{\empriskn(\hypf) -\exprisk(\hypf)} \xrightarrow[\nsamples \to \infty]{\distf} 0 \iff \lim_{n \to \infty} P\left(\abs{\empriskn(\hypf) -\exprisk(\hypf)} \geq \epsilon  \right) = 0,
 \end{equation}
 and a similar result can be obtained for the Regression case using the Hoeffding bound~\citep{Hoeffding63}.
 This means that, given a fixed function $\hypf$, the probability that there exists a large deviation between the empirical and expected risks is small. Moreover, this convergence is exponentially fast in the number of training samples.
@@ -733,7 +741,7 @@ To reconcile these two results, we have to observe that~\eqref{eq:risk_chernoff}
 %
 Therefore, the convergence result of~\eqref{eq:risk_chernoff} is not enough to ensure that minimizing the empirical risk is a useful strategy.
 %
-Instead, we want that $\hypemp$, the function  minimizing the empirical risk satisfies
+Instead, we want that $\hypemp$, the function  minimizing the empirical risk, satisfies
 \begin{equation}
     \nonumber
     \empriskn(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} \inf_{\hypf \in \hypspace} \exprisk(\hypf) .
@@ -790,7 +798,7 @@ Observe that now, for large enough $c$ we rule out the function $g$, so we do no
 % we have that the terms in the middle of the two inequalities of~\eqref{eq:consist_ineq} also must satisfy 
 % $$ \exprisk(\hypemp) - \exprisk(\hypexp) \xrightarrow[\nsamples \to \infty]{\distf} 0, \; \emprisk(\hypexp) - \emprisk(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} 0 ,$$
 % and, combining both, also that $ \exprisk(\hypemp) - \emprisk(\hypemp) \xrightarrow[\nsamples \to \infty]{\distf} 0. $ This 
-Vapnik then describes the sufficient and necessary conditions for \acrshort{erm} to be consistent~\citep{Vapnik00}.
+Vapnik then describes the sufficient and necessary conditions for \acrshort{erm} to be nontrivially consistent~\citep{Vapnik00}.
 \begin{theorem}[Key Theorem of Statistical Learning]
     One-sided uniform convergence in probability, 
     \begin{equation}
@@ -834,7 +842,7 @@ However, it is possible that not all the possible $2^{2 \nsamples}$ values can b
 %
 The function, $$\mathcal{N}(\hypspace, \nsamples) = \max_{\sample_\nsamples} \mathcal{N}(\hypspace, \sample_{\nsamples}), $$ where $\nsamples$ is the variable, is named the \textbf{shattering coefficient}, and it represents the number of different outputs that the functions in $\hypspace$ can achieve on samples of size $\nsamples$. We can interpret it as the maximum number of ways the functions from $\hypspace$ can separate a sample of size $\nsamples$ into two classes.
 %
-When $\mathcal{N}(\hypspace, \nsamples) = 2^\nsamples$, all possible separations are possible, and we say the $\hypspace$ shatters $\nsamples$ points. Recall that this means that there exists at least one sample of size $\nsamples$ for which the functions from $\hypspace$ can achieve all possible values, but it does not imply that this is the case for all samples of size $\nsamples$.
+When $\mathcal{N}(\hypspace, \nsamples) = 2^\nsamples$, and hence all possible separations are possible, and we say the $\hypspace$ shatters $\nsamples$ points. Recall that this means that there exists at least one sample of size $\nsamples$ for which the functions from $\hypspace$ can achieve all possible values, but it does not imply that this is the case for all samples of size $\nsamples$.
 
 
 
@@ -850,7 +858,7 @@ and alongside Lemma~\ref{lemma:symetrization}, it can be proved that for any $\e
         &= 4 \exp\left(\log \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right] - \frac{\nsamples \epsilon^2}{8} \right) .
     \end{aligned}
 \end{equation}
-Then, if $\expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right]$ does not grow exponentially with $\nsamples$, then the right side goes to zero as $\nsamples$ grows, and we can use the \acrshort{erm} to approximate the expected risk minimizer. 
+Therefore, if $\expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right]$ does not grow exponentially with $\nsamples$, then the right side goes to zero as $\nsamples$ grows, and we can use the \acrshort{erm} to approximate the expected risk minimizer. 
 %
 %
 The inequality~\eqref{eq:risk_bound_exp} bounds the probability that the deviation between the minimal values of the empirical and expected risks is larger than a given $\epsilon$. However, sometimes it is more practical to fix $\delta \in \reals$ and find what for what value of $\epsilon$ we have that 
@@ -862,19 +870,19 @@ It can be proved~\citep{vapnik1982estimation} that with a probability of at leas
 \end{equation}
 for any $\hypf \in \hypspace$. Observe that this bound is valid for any function $\hypf$, not just for $\hypemp$, which is a strength for those methods that do not minimize the empirical risk.
 %
-Moreover, instead of minimizing the empirical risk directly, in~\citet{Vapnik00}, the authors propose to minimize the right-hand side. That is, we need to minimize 
+Moreover, instead of minimizing the empirical risk directly, in~\citet{Vapnik00}, the author proposes to minimize the right-hand side. That is, we need to minimize 
 \begin{equation}
     \nonumber
     \mathcal{H}^{\text{ann}}_{\distf}(\nsamples) = \log \expect\left[\mathcal{N}(\hypspace, \sample_{2 \nsamples}) \right] ,
 \end{equation}
-which is referred as the \textbf{annealed entropy}, and it is a characteristic of the capacity of entire function space $\hypspace$. Recall that $\mathcal{N}(\hypspace, \sample_{2 \nsamples})$ indicates in how many ways we can separate the sample $\sample_{2 \nsamples}$ using functions $\hypf$ from $\hypspace$.
+which is referred as the \textbf{annealed entropy}, and it is a characteristic of the capacity of the entire function space $\hypspace$. Recall that $\mathcal{N}(\hypspace, \sample_{2 \nsamples})$ indicates in how many ways we can separate the sample $\sample_{2 \nsamples}$ using functions $\hypf$ from $\hypspace$.
 %
 This \textbf{annealed entropy} depends, however, on the distribution of samples of size $2 \nsamples$, which is based on the unknown $\distf$ distribution. To get rid of the distribution dependence, we can use the following notion of capacity,
 \begin{equation}
     \nonumber
     \mathcal{G}(\nsamples) = \max_{D_\nsamples} \log \expect\left[\mathcal{N}(\hypspace, \sample_{\nsamples})\right] , 
 \end{equation}
-that is called the \textbf{growth function}. Observe that by definition, and since the logarithm is in increasing monotone function, this \textbf{growth function} is the logarithm of the shattering coefficient, $\mathcal{G}(\nsamples) = \log \mathcal{N}(\hypspace, \nsamples)$.
+that is called the \textbf{growth function}. Observe that by definition, and since the logarithm is an increasing monotone function, this \textbf{growth function} is the logarithm of the shattering coefficient, $\mathcal{G}(\nsamples) = \log \mathcal{N}(\hypspace, \nsamples)$.
 %
 It can be shown~\citep{Vapnik00} that the convergence 
 \begin{equation}
@@ -889,7 +897,7 @@ If for any $\nsamples$,  $\hypspace$ shatters $\nsamples$ points, we have that
     \mathcal{G}(\nsamples) = \nsamples \log(2)
 \end{equation}
 and the convergence~\eqref{eq:growth_convergence} will not take place.
-However, Vapnik states that either~\eqref{eq:growth_shatter} happens for every $\nsamples$ or there exists a maximal $m$ for which it is satisfied, and for any $\nsamples > m$ we have $\mathcal{G}(\nsamples) < \nsamples \log(2)$. This maximal $m$ value is called the \acrfull{vc} dimension, and we will denote it by $\vcdim{\hypspace}$. Therefore, $\vcdim{\hypspace}$ is the maximal number of points that can be shattered by $\hypspace$, and we use it as measure of the capacity of a hypothesis space. It can proved~\citep{Vapnik00} that 
+However, Vapnik states that either~\eqref{eq:growth_shatter} happens for every $\nsamples$ or there exists a maximal $m$ for which it is satisfied, and for any $\nsamples > m$ we have $\mathcal{G}(\nsamples) < \nsamples \log(2)$. This maximal $m$ value is called the \acrfull{vc} dimension, and we will denote it by $\vcdim{\hypspace}$. Therefore, $\vcdim{\hypspace}$ is the maximal number of points that can be shattered by $\hypspace$, and we use it as a measure of the capacity of a hypothesis space. It can proved~\citep{Vapnik00} that 
 \begin{equation}
     \label{eq:vcdim_ineq}
     \mathcal{G}(\nsamples) \leq \vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right) .
@@ -928,11 +936,11 @@ Then, for $j=1, \ldots, m$, we can find the function $\opt{\hypf}_j \in \hypspac
 is smallest.
 
 % Regularized functional connection with SRM
-Implementing the \acrshort{srm} paradigm is not easy, because it is necessary to construct that series of hypothesis classes of increasing capacity. It is not easy to find the exact \acrshort{vc} dimension of a hypothesis space, except for some particular cases.
+Implementing the \acrshort{srm} paradigm is not easy, because it is necessary to construct that series of hypothesis classes of increasing capacity. Moreover, computing the exact \acrshort{vc} dimension of a hypothesis space is not always possible, except for some particular cases.
 %
 For example, when using linear models, it can be proved that a hyperplane in a $\dimx$-dimensional space can shatter at most $\dimx+1$ points, so this is its \acrshort{vc} dimension.
 %
-However, the \acrshort{vc} dimension of non-linear hypothesis spaces, or that of linear models in an \acrshort{rkhs} with infinite dimensions is not computable in general.
+However, the \acrshort{vc} dimension of non-linear hypothesis spaces, or that of linear models in an \acrshort{rkhs} with infinite dimensions are not computable in general.
 %
 However, with some additional considerations, Vapnik gives the following result that is useful to bound the \acrshort{vc} dimension of any linear model, even in infinite-dimensional spaces~\citep{vapnik1982estimation}.
 \begin{theorem}[\acrshort{vc} Dimension of Margin Hyperplanes]
@@ -954,7 +962,7 @@ Note that the condition $\dotp{w}{x_i} = 1$ implies that there exists a margin b
 %
 For such kind of hyperplanes, according to this result, we can control the \acrshort{vc} dimension of the hypothesis space by bounding the norm of $w$, independently on the dimension of the input space.
 %
-This is the idea motivating the \acrshort{svm}, that we will present later. These are models where we use hyperplanes that keep a margin between the points and the decision boundary, and where the norm $\norm{w}^2$ is penalized.
+This is the idea motivating the \acrshort{svm}, that we will present later. These are models where we use hyperplanes that keep a margin between the points and the decision boundary, and where the norm $\norm{w}^2$ is penalized, which is a regularization term as those presented below.
 
 
 
@@ -962,22 +970,23 @@ This is the idea motivating the \acrshort{svm}, that we will present later. Thes
 
 \section{Optimization}
 %
-Most \acrshort{ml} problems, which define the training stage of some learning model, involve finding a solution of some minimization problem, e.g. \acrshort{svms} or \acrshort{nns}.
+The training of some learning models involve finding a solution of some optimization problem, e.g. \acrshort{svms} or \acrshort{nns}.
 %
 In general, we are interested in minimizing the empirical risk, and we expect that the solution also minimizes the expected risk. The results concerning the \acrshort{vc} dimension help us to understand to what extent and in what situations this is true. Nevertheless, the key resides in the choice of the family of hypotheses.
 %
-In practice, we can limit the capacity of our set of hypotheses by different means, some of which are more direct, like considering a maximum margin hyperplane, or more indirect, like including regularization. Anyway, the result is also a regularized risk functional that has to be minimized, which eventually translates to a minimization problem.
+In practice, we can limit the capacity of our set of hypotheses by different means, some of which are more direct, like considering a maximum margin hyperplane, and others more indirect, like including regularization. Anyway, the result is also a regularized risk functional that has to be minimized, which eventually translates to a minimization problem.
 
 %
-Optimization is the branch of mathematics that studies the solution of minimization problems, that is, finding the minimum of some objective function $f(x)$ in some domain $\domain$, that can be possibly constrained. Note that we can focus on minimization problem, since maximizing $f(x)$ is equivalent to minimizing $-f(x)$.
+Optimization is the branch of mathematics that studies the solution of minimization problems, that is, finding the minimum of some objective function $f(x)$ in some domain $\domain$, that can be possibly constrained. Note that we can focus on minimization problems, since maximizing $f(x)$ is equivalent to minimizing $-f(x)$.
 %
-By studying the characteristics of the objective function and the constraints, we can give some necessary and sufficient conditions for the existence of solutions of the minimization problem. Sufficient conditions indicate that the problem satisfying them has a solution, not necessarily a unique one. Necessary conditions, on the other hand, act in a reverse way: if the problem does not satisfy them, there is no solution for such a problem.
-% 
+By studying the characteristics of the objective function and the constraints, we can give some necessary and sufficient conditions for the existence of solutions of the minimization problem. Sufficient conditions indicate that the problem satisfying them has a solution, but not necessarily a unique one. Necessary conditions, on the other hand, act in a reverse way: if the problem does not satisfy them, there is no solution for such a problem.
+%
+
 Finding a solution is not always enough, as sometimes we want to be sure that it is the only one. This is important for reproducibility, if we minimize the same problem several times, we would like to always obtain the same solution.
 %
-Having an unique solution is a very desirable property, but it is not a general one. However, there are some kind of problems that have this characteristic; these are the convex problems. Convexity is a property, that can be defined in terms of sets of functions, that lead to this uniqueness of solutions.
+Having a unique solution is a very desirable property, but it is not a general one. However, there are some kinds of problems that have this characteristic; these are the convex problems. Convexity is a property, that can be defined in terms of sets of functions, that lead to this uniqueness of solutions.
 %
-Therefore, convex problems are interesting to study, and they have some specific properties like the duality concept, which we will develop.
+Therefore, convex problems are interesting to study, and they have some specific properties like the duality concept, which we will develop during this section.
 
 %
 
@@ -1034,11 +1043,11 @@ The two previous definitions are connected, as shown in the following lemma.
     $$f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) ,$$
     and if $x_1, x_2 \in \cvxset_c$ they satisfy
     $f(x_1) \leq c$ and $f(x_2) \leq c$; thus, we can write 
-    $$f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) \leq \lambda c + (1 - \lambda) c = c$$.
+    $$f\left(\lambda x_1 + (1 - \lambda) x_2 \right) \leq \lambda f(x_1) + (1 - \lambda) f(x_2) \leq \lambda c + (1 - \lambda) c = c.$$
 \end{proof}
 
 % Intersection of convex sets
-With the definitions that we have given we have the tools to prove the following theorem, which has an immediate application in optimization problems.
+With the definitions that we have given we have the tools to prove the following theorem, which has an immediate application to optimization problems.
 
 % Theorem: Minima in Convex Sets
 \begin{theorem}[Minima in Convex Sets]
@@ -1056,7 +1065,7 @@ With the definitions that we have given we have the tools to prove the following
     \end{equation}
     Now, for any $\tilde{x} \in \cvxset$ we have $\lambda f(x_1) \leq \lambda f(\tilde{x})$ and $(1 - \lambda) f(x_2) \leq (1 - \lambda) f(\tilde{x})$, so 
     $$f(x_\lambda) \leq  \lambda f(\tilde{x}) + (1 - \lambda) f(\tilde{x}) = f(\tilde{x}),$$ hence $x_\lambda \in \cvxset_{\min}$.
-
+    %
     When $f$ is strictly convex, we want to check that $\cvxset_{\min}$ has a single element. Suppose that $\cvxset_{\min}$ has two distinct elements $x_1, x_2, \; x_1 \neq x_2$; then, for any $\lambda \in (0, 1)$ we have that 
     $$ f(x_\lambda) = f(\lambda x_1 + (1 - \lambda) x_2) < \lambda f(x_1) + (1 - \lambda) f(x_2) = \lambda c + (1- \lambda)c = c.$$
     Thus, we have an element $x_\lambda \in \cvxset_{\min}$, where $x_\lambda \neq x_1, x_2$ such that $f(x_\lambda) < c$, but $c$ was the minimum value of $f$ in $\cvxset$, so we find a contradiction. Therefore, there is a single element in $\cvxset_{\min}$.
@@ -1076,10 +1085,10 @@ This theorem can be applied to a particular class of problems, the constrained c
 \begin{proof}
     Observe that
     $$\cvxset_f = \set{x \in \vecspace, c_i(x) \leq 0 \text{ for } i=1, \ldots, p} = \bigcap_{i=1}^p \set{x \in \vecspace, c_i(x) \leq 0}$$ 
-    is the intersection of the sets $\set{x \in \vecspace, c_i(x) \leq 0}$, which are the sets below a convex function, and thus convex. Therefore, the solutions of the optimization problem are the minima of the convex function $f$ on the convex set $\cvxset_f$, which are also a convex set.
+    is the intersection of the sets $\set{x \in \vecspace, c_i(x) \leq 0}$, which are the sets below convex functions, and thus convex. Therefore, the solutions of the optimization problem are the minima of the convex function $f$ on the convex set $\cvxset_f$, which is also a convex set.
     Also, if $f$ is strictly convex, there is a single minimizer.
 \end{proof}
-Although this is a nice result, it needs some strong assumptions: the objective function and all the constraint functions must be convex. Moreover, it does not give any clue on how to obtain those solutions, it states only some properties about them.
+Although this is a nice result, it needs some strong assumptions: the objective function and all the constraint functions must be convex. Moreover, it does not give any clue on how to obtain those solutions; it states only some properties about them.
 %
 
 
@@ -1100,17 +1109,17 @@ Typically, when we want to find the minimum of a differentiable function $f: \Xs
     If $f(x)$ is a real-valued differentiable function with open domain in $\vecspace$, a necessary condition for $x^* \in \vecspace$ to minimize $f(\cdot)$ is $\nabla_x f(x^*) = 0$. Moreover, if $f(x)$ is a convex function, then $\nabla_x f(x^*) = 0$ is also sufficient.
 \end{theorem}
 % Equality constraints
-This is a well-known result, but it is not always applicable. Consider for example a minimization problem with equality constraints
+This is a well-known result, but it is not always applicable. Consider for example a minimization problem with equality constraints:
 $$ \min_{x \in \vecspace} f(x) \text{ subject to } e_i(x)=0 \text{ for } i=1, \ldots, q .$$
-Then, it is possible that the stationary points $\tilde{x}$, where $\nabla_x f(\tilde{x}) = 0$, do not satisfy the constraints, i.e. $e_i(\tilde{x}) \neq 0$ for some $i=1, \ldots, q$. In this situation, Fermat's theorem is not useful, and, instead, to get some intuition on the concepts that are going to be presented, we can reason as follows. 
+Then, it is possible that the stationary points $\tilde{x}$, where $\nabla_x f(\tilde{x}) = 0$, do not satisfy the constraints, i.e. $e_i(\tilde{x}) \neq 0$ for some $i=1, \ldots, q$. In this situation, Fermat's theorem is not useful; and, instead, to get some intuition on the concepts that are going to be presented, we can reason as follows. 
 %
 First, observe that $e_i(x)=0$ are level curves of the function $e_i(\cdot)$, so each one is orthogonal to their respective gradient $\nabla_x e_i(\cdot)$.  Let $\hat{x} \in \vecspace$ be a feasible point, that is $e_i(\hat{x})=0$ for $i=1, \ldots, q$.
 At any point $x \in \vecspace$, the vector $-\nabla_x f(x)$ points to the direction of maximum descent of $f(\cdot)$.
-If $\hat{x}$ is a solution of the minimization problem such that $\nabla_x f(\hat{x}) \neq 0$, then if $\nabla_x f(\hat{x}) \notin \Span\left(\nabla_x e_1(\hat{x}), \ldots, \nabla_x e_q(\hat{x}) \right)$, we can move in a direction that is parallel to some level curve $e_j(\cdot)=0$ and is also a descent direction, which is not possible because we assumed that $\hat{x}$ was a minimum.
+If $\opt{x}$ is a solution of the minimization problem such that $\nabla_x f(\opt{x}) \neq 0$, then if $\nabla_x f(\opt{x}) \notin \Span\left(\nabla_x e_1(\opt{x}), \ldots, \nabla_x e_q(\opt{x}) \right)$, we can move in a direction that is parallel to some level curve $e_j(\cdot)=0$ and is also a descent direction, which is not possible because we assumed that $\opt{x}$ was a minimum.
 Therefore,
 \begin{equation}
     \label{eq:intuition_lagr}
-    \nabla_x f(\opt{x}) = \sum_{i=1}^q \beta_i \nabla_x e_i(\hat{x})
+    \nabla_x f(\opt{x}) = \sum_{i=1}^q \beta_i \nabla_x e_i(\opt{x})
 \end{equation}
 is a necessary condition for $\opt{x}$ to be a solution, replacing the necessary condition $\nabla_x f(\opt{x}) = 0$ from Fermat's theorem.
 %
@@ -1121,11 +1130,11 @@ Now, if we consider the function $$\lagr(x, \fv{\beta}) = f(x) + \sum_{i=1}^q \b
     \end{aligned}
 \end{equation}
 where the first one is~\eqref{eq:intuition_lagr} and the second one reduces to the equality constraints.
-This is the idea behind the more general Lagrangian function that we will present next. 
-However, before that, we need to consider constrained optimization problems, with both equality and inequality constraints.
+This is one of the intuitions behind the more general Lagrangian function that we will present next. 
+However, before that, we need to define the constrained optimization problems, with both equality and inequality constraints.
 % Primal Problem
 \begin{definition}[Constrained Optimization Problem]
-    Given real-valued functions $f$, $c_1, \ldots, c_p$ $e_1, \ldots, e_2$ with domain in the vector space $\vecspace$,
+    Given real-valued functions $f$, $c_1, \ldots, c_p$, $e_1, \ldots, e_2$, with domain in the vector space $\vecspace$,
     we say that the problem
     \begin{equation}\label{eq:optproblem_def}
         \begin{aligned}
@@ -1134,19 +1143,19 @@ However, before that, we need to consider constrained optimization problems, wit
             & & & e_i(x) = 0,\; i=1, \ldots, p              
         \end{aligned}
     \end{equation}
-    is a constrained optimization problem, where $f$ is the objective function, $e_1, \ldots, e_p$ are the equality constraints and $c_1, \ldots, c_q$ the inequality constraints.
+    is a constrained optimization problem, where $f$ is the objective function, $e_1, \ldots, e_p$ are the equality constraints, and $c_1, \ldots, c_q$ the inequality constraints.
     % Feasible region
     Moreover, the set where the constraints are satisfied, namely
     \begin{equation}
         \nonumber
-        \set{x \in \Xspace \text{ where } e_i(x)=0, i=1, \ldots, p; \; c_j(x)\leq 0, j=1, \ldots, q}
+        \set{x \in \Xspace \text{ where } e_i(x)=0, i=1, \ldots, p; \; c_j(x)\leq 0, j=1, \ldots, q} ,
     \end{equation}
     is called the feasible region, and its elements are the feasible points.
 \end{definition}
 For a shorter notation, we may also use the vector-valued functions 
 $$\fv{c}(x) = (c_1(x), \ldots, c_q(x))^\intercal, \; \fv{e}(x) = (e_1(x), \ldots, e_p(x))^\intercal .   $$
 % Lagrangian
-Now, as we have done in the previous example with only equality constraints, we define a function that, somehow, contains the information about conditions of the optimization problem; this is the Lagrangian function.
+Now, as we have done in the previous example with only equality constraints, we define a function that, somehow, contains the information about the conditions of the optimization problem; this is the Lagrangian function.
 \begin{definition}[Lagrangian]
     Given a constrained optimization problem like the one in~\eqref{eq:optproblem_def}, the corresponding Lagrangian is the function 
     \begin{equation}
@@ -1156,7 +1165,7 @@ Now, as we have done in the previous example with only equality constraints, we 
     where $\fv{\alpha} = (\alpha_1, \ldots, \alpha_q)^\intercal \in \reals^q$ and $\fv{\beta} = (\beta_1, \ldots, \beta_p)^\intercal \in \reals^p$ such that $\alpha_i \geq 0$ for $i=1, \ldots, q$ are the Lagrange multipliers, and using the vector formulation we can write the Lagrangian as 
     \begin{equation}
         \label{eq:lagr_defvec}
-        \lagr(x, \fv{\alpha}, \fv{\beta}) = f(x) + \fv{\alpha}^\intercal \fv{c}(x) + \fv{\beta}^\intercal \fv{e}(x) ,
+        \lagr(x, \fv{\alpha}, \fv{\beta}) = f(x) + \fv{\alpha}^\intercal \fv{c}(x) + \fv{\beta}^\intercal \fv{e}(x) .
     \end{equation}
 \end{definition}
 With the definition of the Lagrangian function, we can present two theorems that characterize the sufficient and necessary conditions for $x \in \Xspace$ to be a solution of the optimization problem. These are the \acrfull{kkt} conditions.
@@ -1187,7 +1196,7 @@ Now we can give the first theorem to characterize solutions of the optimization 
 %         \min_{x \in \vecspace} f(x) \text{ subject to } c_i(x) \leq 0 \text{ for } i=1, \ldots, m .
 %     \end{equation}
 % \end{proof}
-
+\begin{proof}
 Following the idea of the proof~\citep{ScholkopfS02}, consider the equivalent problem
     \begin{equation}
         \nonumber
@@ -1219,7 +1228,8 @@ and using~\eqref{eq:complementary_condition} and $\opt{\alpha}_i c_i(x) \leq 0$,
     f(\opt{x}) \leq f(x) + \sum_{i=1}^m \opt{\alpha}_i c_i(x) \leq f(x) ,
 \end{equation}
 so $\opt{x}$ is a solution of the optimization problem.
-
+\end{proof}
+%
 This theorem proves that the saddle-point condition is a sufficient one for $x$ to be a solution of the optimization problem~\eqref{eq:optproblem_def}.
 Nevertheless, if the objective function and constraints of the optimization problem~\eqref{eq:optproblem_def} are convex, and the constraints satisfy some requirements, it is possible to prove also that the saddle-point condition is a necessary one.
 There are different equivalent such requirements, but here we will use the Slater's condition, which we define next.
@@ -1234,7 +1244,7 @@ Now we can give the \acrshort{kkt} theorem, whose proof can be found in~\citet{S
 % KKT (Necessary condition Th. 6.25 in Schokolpf) (only with Slater Condition)
 \begin{theorem}[Saddle Point Theorem (Neccesary condition)]
     Given the constrained optimization problem~\eqref{eq:optproblem_def} with convex objective function $f$ and convex constraint functions $c_1, \ldots, c_q$ and $h_1, \ldots, h_p$, 
-    under the assumptions of Theorem~\ref{th:kkt_saddlepoint}, if the feasible region defined by the constraints satisfies Slater's condition, then, the saddle point condition of~\eqref{eq:saddle_point} is also a necessary condition.
+    under the assumptions of Theorem~\ref{th:kkt_saddlepoint}, if the feasible region defined by the constraints satisfies Slater's condition, then the saddle point condition of~\eqref{eq:saddle_point} is also a necessary condition.
 \end{theorem}
 This theorem characterizes the solutions of convex constrained optimization problems; however, it does not provide an algorithm or method to find such solutions.
 
@@ -1326,8 +1336,8 @@ Therefore, finding a saddle point $(\opt{x}, \opt{\fv{\alpha}})$ of $\lagr(x, \f
 %
 We can observe now the connection of duality with Theorem~\ref{th:kkt_saddlepoint}, which we present in the following lemma, and whose proof is similar to the reasoning we have given above.
 \begin{lemma}
-    A triplet $(\tilde{x}, \tilde{\fv{\alpha}}, \tilde{\fv{\beta}})$ is a saddle-point satisfying~\eqref{eq:saddle_point} if and only if the dual gap is zero, that is 
-    $ \Theta(\tilde{\fv{\alpha}}, \tilde{\fv{\beta}}) = f(\tilde{x}) .$
+    A triplet $(\opt{x}, \opt{\fv{\alpha}}, \opt{\fv{\beta}})$ is a saddle-point satisfying~\eqref{eq:saddle_point} if and only if the dual gap is zero, that is 
+    $ \Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}}) = f(\opt{x}) .$
 \end{lemma}
 % \begin{proof}
 %     Consider that $(\tilde{x}, \tilde{\fv{\alpha}}, \tilde{\fv{\beta}})$ satisfies~\eqref{eq:saddle_point}, then, since 
@@ -1344,8 +1354,8 @@ We can observe now the connection of duality with Theorem~\ref{th:kkt_saddlepoin
 %The next Theorem~\citep{Wolfe}, gives conditions 
 %
 We know now that finding a saddle point of the Lagrangian is equivalent to finding primal and dual solutions, and, moreover, that the dual gap is zero.
-However, with these results, to know if the dual gap is zero, we need to find the primal and dual solutions, so it is not very useful.
-Anyway, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we can give conditions ``a priori'' that are sufficient and necessary for the dual gap to be zero. These are the \acrshort{kkt} conditions that we present next.
+% However, with these results, to know if the dual gap is zero, we need to find the primal and dual solutions, so it is not very useful.
+Anyway, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, we can give conditions that are sufficient and necessary for the dual gap to be zero; these are the \acrshort{kkt} conditions that we present next.
 % KKT conditions
 \begin{theorem}[\acrshort{kkt} conditions]\label{th:kkt_conditions}
     Consider the optimization problem~\eqref{eq:optproblem_def} where $f, c_i$ are continuously differentiable functions over $\vecspace$ and $e_i$ are affine functions. Suppose that there exists $\opt{x} \in \vecspace$ such that there exist $\alpha \in \reals^q$ and $\opt{\fv{\beta}} \in \reals^p$ that satisfy
@@ -1362,7 +1372,7 @@ Anyway, when the functions $f$, $c_i$ and $e_i$ are convex and differentiable, w
         \nonumber
         c_i(\hat{x}) < 0 \; \text{(Slaters' condition)},
     \end{equation}
-    then the conditions~\eqref{eq:kkt_station}$\crefrangeconjunction$\eqref{eq:kkt_dfeas} are necessary.
+    then the conditions~\eqref{eq:kkt_station}-\eqref{eq:kkt_dfeas} are necessary.
 \end{theorem}
 % \begin{proof}
 %     % Sufficient
@@ -1403,7 +1413,7 @@ The \acrshort{kkt} conditions for problems with convex, differentiable functions
 %     \end{align*}
 %     where in the second inequality we use~\eqref{eq:kkt_station} and in the last one we use~\eqref{eq:kkt_comp}$\crefrangeconjunction$~\eqref{eq:kkt_dfeas}.
 % \end{proof}
-These two results will be helpful to find solution for the problems of interest in this thesis. The strategy that we will follow is to find $\opt{x}$ as the point where $\nabla_x \lagr(x, \fv{\alpha}, \fv{\beta}) $ vanishes, and define the dual problem as
+These two results will be helpful to find a solution for the problems of interest in this thesis. The strategy that we will follow is to find $\opt{x}$ as the point where $\nabla_x \lagr(x, \fv{\alpha}, \fv{\beta}) $ vanishes, and define the dual problem as
 \begin{equation}
     \nonumber
     \Theta(\fv{\alpha}, \fv{\beta}) = \inf_{x} \lagr(x, \fv{\alpha}, \fv{\beta}) =  \lagr(\opt{x}, \fv{\alpha}, \fv{\beta}) ;
@@ -1413,8 +1423,8 @@ then, by finding its maximum, since $\Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}})
 
 
 \section{Support Vector Machines}
-Vapnik presented the \acrshort{svm} as a model that considers only a particular kind of hypothesis, that which, in a binary classification context, leaves a maximum margin between the classes. The motivation behind this is to limit the capacity of the hypothesis space. To minimize the empirical risk with such set of hypotheses, we formulate an optimization problem, which can be solved using the tools that we have given in the previous section. The \acrshort{svm} has many interesting and useful properties; for example, the optimization problem is a convex one, so the solution is unique. Also, one of the most relevant characteristic is the possibility of transforming the data into a possibly infinite-dimensional Hilbert space using the kernel trick.
-In this section we will present the \acrshort{svm}, we will motivate it and give the definition for the linear formulation and its kernel extension. We will also explain \acrshort{svm} variants such as the L2, and LS-\acrshort{svm}.
+Vapnik presented the \acrshort{svm} as a model that considers only a particular kind of hypothesis, that which, in a binary classification context, leaves a maximum margin between the classes. The motivation behind this is to limit the capacity of the hypothesis space. To minimize the empirical risk with such set of hypotheses, we formulate an optimization problem, which can be solved using the tools that we have given in the previous section. The \acrshort{svm} has many interesting and useful properties; for example, the optimization problem is a convex one, so the solution is unique. Also, one of the most relevant characteristics is the possibility of transforming the data into a possibly infinite-dimensional Hilbert space using the kernel trick.
+In this section we will present the \acrshort{svm}, we will motivate it and give the definition for the linear formulation and its kernel extension. We will also explain \acrshort{svm} variants such as the L2 and LS-\acrshort{svm}.
 
 \subsection{Motivation}
 %
@@ -1429,18 +1439,18 @@ Before illustrating the idea that leads to the \acrshort{svm} model, we have to 
     \nonumber
     \sample = \set{(x_i, y_i) \in \Xspace \times \Yspace, \; i=1, \ldots, \nsamples}
 \end{equation}
-where we typically use the class labels $\Yspace = \set{0, 1}$ or $\Yspace={-1, 1}$, and $\Xspace$ is usually $\reals^\dimx$. As we have seen, the goal in this problem is to find a rule $f: \Xspace \to \Yspace$ that minimizes the number of errors, namely $\emprisk(f) = \abs{\set{i: f(x_i) \neq y_i}}$, which using the labels $\Yspace = \set{0, 1}$ can be expressed as
+where we typically use the class labels $\Yspace = \set{0, 1}$ or $\Yspace=\set{-1, 1}$, and $\Xspace$ is usually $\reals^\dimx$. As we have seen, the goal in this problem is to find a rule $f: \Xspace \to \Yspace$ that minimizes the number of errors, namely $\emprisk(f) = \abs{\set{i: f(x_i) \neq y_i}}$, which using the labels $\Yspace = \set{0, 1}$ can be expressed as
 \begin{equation}
     \nonumber
     \emprisk(f) = \sum_{i=1}^\nsamples (y_i - f(x_i))^2 .
 \end{equation}
-If, for a classification problem with a sample $\sample$, there exists a rule $f(\cdot)$ such that all the instances are correctly classified, that is, its corresponding $\emprisk(f)$ is $0$, we say that the problem is separable; if this rule is linear, $f(x) = \dotp{w}{x} + b$, we say that the problem is linearly separable. That is, we can find a hyperplane that divides the space in two halves, and the two classes are completely contained in one of the halves, each in a different one; see Figure~\ref{fig:separable_problem} to see an example of such problems.
+If, for a classification problem with a sample $\sample$, there exists a linear rule $f(x) = \dotp{w}{x} + b$ that classify correctly all the instances, that is, its corresponding $\emprisk(f)$ is $0$, we say that the problem is linearly separable. That is, we can find a hyperplane that divides the space in two halves, and each class is completely contained in a different half; see Figure~\ref{fig:separable_problem} to see an example of such problems.
 On the other hand, if for any linear rule $f$, its associated $\emprisk(f)$ is greater than $0$, we say that the problem is not linearly separable. 
 %
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter2/SeparableProblem/stochastic_boundaries.pdf}
-    \caption{Separable problem with three different perfect classification rules.}
+    \caption{Linearly separable problem with three different perfect classification rules.}
     \label{fig:stochastic_boundaries}
 \end{figure}
 
@@ -1459,14 +1469,14 @@ However, if we select the boundary that is the furthest away from its closest po
     \label{fig:maxmargin_boundary}
 \end{figure}
 %
-See in Figure~\ref{fig:maxmargin_boundary} our separable problem divided by a maximum margin hyperplane, which is a line in the two-dimensional case. We can see that in this case, the distance from the decision boundary to its closest point is maximal, which intuitively accounts for a better generalization to new data.
+See in Figure~\ref{fig:maxmargin_boundary} our separable problem divided by a maximum margin hyperplane, which is a line in the two-dimensional case. We can see that, in this case, the distance from the decision boundary to its closest point is maximal, which intuitively accounts for a better generalization to new data.
 
-To find the maximum margin hyperplane, recall first that the signed distance from a point $\tilde{x}$ to plane defined by $\dotp{w}{\cdot} + \hat{b} = 0$ is given by 
+To find the maximum margin hyperplane, recall first that the signed distance from a point $\tilde{x}$ to plane defined by $\dotp{w}{\cdot} + b = 0$ is given by 
 \begin{equation}
     \nonumber
-    d(\tilde{x}) = \frac{1}{\norm{w}} (\dotp{w}{\tilde{x}} + b) ,
+    d(\tilde{x}) = \frac{1}{\norm{w}} (\dotp{w}{\tilde{x}} + b) .
 \end{equation}
-where we replace $\frac{1}{\norm{w}} \hat{b}$ by the bias $b$.
+%where we replace $\frac{1}{\norm{w}} \hat{b}$ by the bias $b$.
 Also, if we label the two classes using $\Yspace = \set{-1, 1}$, we can say that an instance $(x_i, y_i)$ is correctly classified when $$y_i \frac{1}{\norm{w}} \left(\dotp{w}{x_i} + b \right) > 0 .$$
 Then, if we want to find the hyperplane that maximizes the margin while classifying all instances correctly, we can express it as
 \begin{equation}\nonumber
@@ -1498,7 +1508,7 @@ which has the same solutions as the following problem with easier derivatives:
     \end{aligned}  
 \end{equation}
 %
-Observe that in order to satisfy the constraints, it is not enough for the instances $(x_i, y_i)$ to be well classified, namely 
+Observe that, in order to satisfy the constraints, it is not enough for the instances $(x_i, y_i)$ to be well classified, namely 
 $$ y_i (\dotp{w}{x_i} + b) > 0 ,$$
 but we are imposing a margin between the decision boundary and the data points, so the constraints are actually 
 $$ y_i (\dotp{w}{x_i} + b) \geq 1 .$$
@@ -1507,12 +1517,12 @@ Therefore, we have expressed the problem of finding the maximum margin hyperplan
 \subsection{Linear Support Vector Machines}
 %
 When we face a problem that is not linearly separable, it means that, for any rule $f(\cdot) = \dotp{w}{\cdot} + b$ there exist instances such that 
-$$ y_j (\dotp{w}{x_j} + b) \leq 0 .$$
-Moreover, when considering the constraints of the \acrshort{svm}, any instance $(x_j, y_j)$ such that 
-$$ y_j (\dotp{w}{x_j} + b) < 1 $$
+$$ y_i (\dotp{w}{x_i} + b) \leq 0 .$$
+Moreover, when considering the constraints of the \acrshort{svm}, any instance $(x_i, y_i)$ such that 
+$$ y_i (\dotp{w}{x_i} + b) < 1 $$
 is not satisfying the constraints.
 %
-We can fix this by adding some slack variables $\xi_j \geq 0$ which we use to compensate in these contraints as
+We can fix this by adding some slack variables $\xi_i \geq 0$, which we use to compensate in these constraints as
 $$ y_i (\dotp{w}{x_i} + b) \geq 1 - \xi_i. $$
 Now, for instances $(x_i, y_i)$ such that $y_i (\dotp{w}{x_i} + b) \geq 1$, its corresponding slack variable is $\xi_i = 0$. However, for instances such that $y_i (\dotp{w}{x_i} + b) < 1$, its corresponding slack variable is $\xi_i = 1 - y_i (\dotp{w}{x_i} + b)$; thus, $y_i (\dotp{w}{x_i} + b) = 1 - \xi_i .$
 Summing it up, we can express then the slack variables as 
@@ -1524,20 +1534,20 @@ which is the hinge loss function defined in~\eqref{eq:hinge_def}, so the slack v
 Now we can give the definition of the optimization problem that corresponds to finding a maximum margin hyperplane with slack variables.
 \begin{definition}[Primal Problem for Classification \acrshort{svm}]
     Given a binary classification sample
-    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    $$ \sample = \set{(x_i, y_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $y_i \in \set{-1, 1}$ are the class labels, 
     the primal problem of the \acrshort{svm} for binary classification is:
     \begin{equation}
         \label{eq:linear_primal_clas}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^m \xi_i + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & l_i (\dotp{w}{x_i} + b) \geq 1 - \xi_i , \\
+            & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq 1 - \xi_i , \\
             & & & \xi_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
     where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
 \end{definition}
-Observe that this primal problem can be interpreted then as a regularized risk functional, where we have the risk term, we use the hinge loss, and the regularization, penalizing $\norm{w}$; here $C$ is a hyperparameter that regulates the tradeoff between the margin and errors that the model makes.
+Observe that this primal problem can be interpreted then as a regularized risk functional, where we have the risk term, we use the hinge loss, and the regularization, penalizing $\norm{w}^2$; here $C$ is a hyperparameter that regulates the tradeoff between the margin and errors that the model makes.
 
 % Regression
 In the regression setting we need to define the primal problem differently. We again want to define a regularized risk functional, but we need to use a loss suited for regression. In the \acrshort{svm} for regression, the goal is to find a regression function such that the points are at a distance smaller than a given $\epsilon \in \reals$. 
@@ -1577,7 +1587,7 @@ so that
 \end{itemize}
 Therefore, we can also assert that $\xi_i \hat{\xi}_i = 0$.
 %
-Now, we can write the regression \acrshort{svm} primal problem
+Now, we can write the regression \acrshort{svm} primal problem as follows.
 \begin{definition}[Primal Problem of \acrshort{svm} for Regression]
     Given a binary classification sample
     $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
@@ -1586,18 +1596,18 @@ Now, we can write the regression \acrshort{svm} primal problem
     \begin{equation}
         \label{eq:linear_primal_reg}
         \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^m \left(\xi_i + \hat{\xi}_i\right) + \frac{1}{2} \norm{w}^2 \\
+            &\min_{w, b, \fv{\xi}, \hat{\fv{\xi}}} & & C \sum_{i=1}^m \left(\xi_i + \hat{\xi}_i\right) + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & \dotp{w}{x_i} + b \geq t_i - \epsilon - \xi_i  , \\
             & & & \dotp{w}{x_i} + b \leq t_i + \epsilon + \hat{\xi}_i , \\
             & & & \xi_i \geq 0 , \hat{\xi}_i \geq 0 ,      
         \end{aligned}  
     \end{equation}
-    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$ and analogously for $\hat{\fv{\xi}}$, and $w, b, \fv{\xi}, \hat{\fv{\xi}}$ are the primal variables.
 \end{definition}
 We have again defined a regularized risk functional, where now the selected loss is the $\epsilon$-insensitive one. Again, $C$ is the tradeoff hyperparameter, but in this case we also have $\epsilon$ as the hyperparameter that defines the width of the tube insensitive to errors.
 
 % Unifying formulation
-In both cases, classification and regression we have defined corresponding optimization problems, which can be also interpreted as regularized risk functionals, that present some similarities. In fact, it is possible to express both problems using a unifying formulation presented in~\cite{Lin01}.
+In both cases, classification and regression we have defined the corresponding optimization problems, which can be also interpreted as regularized risk functionals, that present some similarities. In fact, it is possible to express both problems using a unifying formulation presented in~\cite{Lin01}.
 \begin{definition}[\acrshort{svm} Primal Problem]
     Given a sample
     $$ \sample = \set{(x_i, y_i, p_i), \; i=1, \ldots, \nsamples} ,$$
@@ -1612,7 +1622,7 @@ In both cases, classification and regression we have defined corresponding optim
         \end{aligned}  
     \end{equation}
     which can be interpreted as the classification primal \acrshort{svm} problem~\eqref{eq:linear_primal_clas} when $\nsamples=m$ and
-    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
+    $$ p_i = 1,\; \text{ for } i=1, \ldots, m ;$$
     and can be interpreted as the regression primal \acrshort{svm} problem~\eqref{eq:linear_primal_reg} when $\nsamples = 2 m$ and
     \begin{equation}
         \nonumber
@@ -1643,7 +1653,7 @@ For the rest of this work we will use this formulation whenever it is not necess
 
 \subsection{Dual Formulation}
 %
-The problem defined in~\eqref{eq:linear_primal} is an optimization primal problem with a convex and differentiable objective function, and with affine constraint functions; then, we know from the strong duality theorem, presented in~\ref{th:strong_duality}, that we can use its corresponding dual problem to find the solution. Recall that to obtain the dual problem, defined in~\ref{def:dual_problem}, we need the Lagrangian function. In this case, the Lagrangian corresponding to~\ref{eq:linear_primal} is 
+The problem defined in~\eqref{eq:linear_primal} is an optimization primal problem with a convex and differentiable objective function, and with affine constraint functions; then, we know from the strong duality theorem, presented in Theorem~\ref{th:strong_duality}, that we can use its corresponding dual problem to find the solution. Recall that to obtain the dual problem, defined in Definition~\ref{def:dual_problem}, we need the Lagrangian function. In this case, the Lagrangian corresponding to~\eqref{eq:linear_primal} is 
 \begin{equation}
     \label{eq:linear_lagr}
     \lagr(w, b, \fv{\xi}, \fv{\alpha}, \fv{\beta}) = C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 - \sum_{i=1}^\nsamples \alpha_i \left[ y_i (\dotp{w}{x_i} + b) - p_i + \xi_i \right] - \sum_{i=1}^\nsamples \beta_i \xi_i ,
@@ -1668,7 +1678,7 @@ If we plug these results in the Lagrangian, we get a simpler formula. Using~\eqr
         &= -\frac{1}{2} \sum_{i=1}^\nsamples \sum_{j=1}^\nsamples y_i y_j \alpha_i \alpha_j \dotp{x_i}{x_j} + \sum_{i=1}^\nsamples \alpha_i p_i .
     \end{aligned}
 \end{equation}
-We observe here that $\fv{\beta}$ disappear from the dual objective function $\Theta$. However, we still have to take into account that we have used~\eqref{eq:lagr_diff_b} and~\eqref{eq:lagr_diff_xi}. From~\eqref{eq:lagr_diff_xi}, since $\beta_i \geq 0$, we get that $\alpha_i \leq C$. Then, the dual problem can be defined as follows.
+We observe here that $\fv{\beta}$ disappears from the dual objective function $\Theta$. However, we still have to take into account that we have used~\eqref{eq:lagr_diff_b} and~\eqref{eq:lagr_diff_xi}. From~\eqref{eq:lagr_diff_xi}, since $\beta_i \geq 0$, we get that $\alpha_i \leq C$. Then, the dual problem can be defined as follows.
 \begin{definition}[\acrshort{svm} Dual Problem]
     The dual problem corresponding to problem~\eqref{eq:linear_primal} is
     \begin{equation}
@@ -1703,7 +1713,7 @@ Now we realize from~\eqref{eq:comp_alpha} that when $y_i (\dotp{\opt{w}}{x_i} + 
     \nonumber
     \opt{w} = \sum_{i \in \svset} y_i \opt{\alpha}_i x_i ,
 \end{equation}
-where the elements of the set $\set{i: \alpha_i > 0}$ or $\svset = \set{i: y_i (\dotp{\opt{w}}{x_i} + \opt{b}) - p_i + \opt{\xi}_i = 0}$ receive the name of support vectors.
+where the elements of the set $\svset = \set{i: \alpha_i > 0}$ receive the name of support vectors.
 %
 
 We still have to see how we can recover the other primal variables $\opt{\fv{\xi}}$ and $\opt{b}$. For this goal, the \acrshort{kkt} conditions will be useful.
@@ -1726,23 +1736,29 @@ After obtaining $\opt{b}$, we focus on the indices $i$ such that $\opt{\alpha}_i
 Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, equations~\eqref{eq:comp_alpha} and~\eqref{eq:comp_beta}, to establish a classification of the support vectors according to their corresponding $\opt{\alpha}_i$, which we give in Table~\ref{tab:sv_clas}.
 %
 \begin{table}[t!]
-    \caption{Classification of the support vectors in terms of the value of $\opt{\alpha}_i$.}
+    \caption{Classification of the vectors in terms of the value of $\opt{\alpha}_i$. The first three rows illustrate the support vectors, while the last one illustrates those instances that are not support vectors.}
     \label{tab:sv_clas}
     \centering
     \scalebox{1}{
      \begin{tabular}{*{4}{c}}
      \toprule
-     \fhead{$\opt{\alpha}_i$} & \fhead{$\opt{\beta}_i$} & \fhead{$\opt{\xi}_i$} & \fhead{$y_i (\dotp{\opt{w}}{x_i} + \opt{b})$}   \\
+     {$\opt{\alpha}_i$} & {$\opt{\beta}_i$} & {$\opt{\xi}_i$} & {$y_i (\dotp{\opt{w}}{x_i} + \opt{b})$}   \\
+     \midrule
+     \multicolumn{4}{c}{Support Vectors} \\
      \midrule
      $0 < \opt{\alpha}_i < C$ & $\opt{\beta} > 0$ & $\opt{\xi}_i = 0$ & $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) = p_i$ \\
      $\opt{\alpha}_i = C$ & $\opt{\beta} = 0$ & $0 < \opt{\xi}_i < p_i$ & $0 < y_i (\dotp{\opt{w}}{x_i} + \opt{b}) < p_i$ \\
      $\opt{\alpha}_i = C$ & $\opt{\beta} = 0$ & $p_i \leq \opt{\xi}_i $ & $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) \leq 0$ \\
-      \bottomrule
+    \midrule
+     \multicolumn{4}{c}{Non-Support Vectors} \\
+     \midrule
+     $\alpha_i = 0$ & $-$ & $-$ & $-$ \\
+     \bottomrule
      \end{tabular}
      }
 \end{table}
 %
-To study the meaning of this table, we will consider first the binary classification setting, where $y_i = l_i$ and $p_i=1$ for all $i=1, \ldots, \nsamples$. The first row correspond to points where $l_i (\dotp{\opt{w}}{x_i} + \opt{b}) = 1$, that is, points that are correctly classified and are just on the margin. The points from the second row are also points that are correctly classified, but they lie inside the margin. Finally, the points in the third row are misclassified.
+To study the meaning of this table, we will consider first the binary classification setting, where $p_i=1$ for all $i=1, \ldots, \nsamples$. The first row corresponds to points where $y_i (\dotp{\opt{w}}{x_i} + \opt{b}) = 1$, that is, points that are correctly classified and are just on the margin. The points from the second row are also points that are correctly classified, but they lie inside the margin. Finally, the points in the third row are misclassified.
 Therefore, the predictions of the \acrshort{svm} in the classification settings depend only on those points that lie over the margin border, inside the margin, or are misclassified. The points that are correctly classified but outside the margin do not play any role in the final model.
 %
 
@@ -1839,14 +1855,14 @@ The $\epsilon$-insensitive loss defined as~\eqref{eq:epsins_def}, which is used 
 We can give then the definitions of the L2-\acrshort{svm} problems for classification and regression.
 \begin{definition}[Primal Problem of L2-\acrshort{svm} for Classification]
     Given a binary classification sample
-    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    $$ \sample = \set{(x_i, y_i), \; i=1, \ldots, m} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $y_i \in \set{-1, 1}$ are the class labels, 
     the primal problem of the L2-\acrshort{svm} for binary classification is:
     \begin{equation}
         \label{eq:l2_primal_clas}
         \begin{aligned}
             &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & l_i (\dotp{w}{\phi(x_i)} + b) \geq 1 - \xi_i , 
+            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq 1 - \xi_i , 
         \end{aligned}  
     \end{equation}
     where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
@@ -1885,7 +1901,7 @@ As with the L1-\acrshort{svm}, we will use a formulation to unify both problems 
         \end{aligned}  
     \end{equation}
     which can be interpreted as the classification primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_clas} when $\nsamples=m$ and
-    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
+    $$ p_i = 1,\; \text{ for } i=1, \ldots, m ;$$
     and can be interpreted as the regression primal L2-\acrshort{svm} problem~\eqref{eq:l2_primal_reg} when $\nsamples = 2 m$ and
     \begin{equation}
         \nonumber
@@ -1962,14 +1978,14 @@ To do this, the inequality constraints are replaced by equality ones.
 We give the definitions of the LS-\acrshort{svm} problems for classification and regression next.
 \begin{definition}[Primal Problem of LS-\acrshort{svm} for Classification]
     Given a binary classification sample
-    $$ \sample = \set{(x_i, l_i), \; i=1, \ldots, m} ,$$
-    where $x_i \in \reals^\dimx$ are the feature vectors and $l_i \in \set{-1, 1}$ are the class labels, 
+    $$ \sample = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,$$
+    where $x_i \in \reals^\dimx$ are the feature vectors and $y_i \in \set{-1, 1}$ are the class labels, 
     the primal problem of the LS-\acrshort{svm} for binary classification is:
     \begin{equation}
         \label{eq:ls_primal_clas}
         \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
-            & \text{s.t.} & & l_i (\dotp{w}{\phi(x_i)} + b) = 1 - \xi_i , 
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) = 1 - \xi_i , 
         \end{aligned}  
     \end{equation}
     where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
@@ -1977,13 +1993,13 @@ We give the definitions of the LS-\acrshort{svm} problems for classification and
 %
 \begin{definition}[Primal Problem of LS-\acrshort{svm} for Regression]
     Given a regression sample
-    $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, m} ,$$
+    $$ \sample = \set{(x_i, t_i), \; i=1, \ldots, \nsamples} ,$$
     where $x_i \in \reals^\dimx$ are the feature vectors and $t_i \in \reals$ are the target values, 
     the primal problem of the LS-\acrshort{svm} for regression is:
     \begin{equation}
         \label{eq:ls_primal_reg}
         \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
+            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^\nsamples (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & \dotp{w}{\phi(x_i)} + b = t_i - \xi_i  , \\
         \end{aligned}  
     \end{equation}
@@ -2004,13 +2020,13 @@ As with the other variants, we want to use a unifying formulation for the regres
             & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) = p_i - \xi_i ,     
         \end{aligned}  
     \end{equation}
-    which can be interpreted as the classification primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_clas} when $\nsamples=m$ and
-    $$ p_i = 1,\; y_i = l_i \text{ for } i=1, \ldots, m ;$$
-    and can be interpreted as the regression primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_reg} when $\nsamples = m$ and
+    which can be interpreted as the classification primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_clas} when
+    $$ p_i = 1,\; \text{ for } i=1, \ldots, \nsamples ;$$
+    and can be interpreted as the regression primal LS-\acrshort{svm} problem~\eqref{eq:ls_primal_reg} when
     \begin{equation}
         \nonumber
         \begin{aligned}
-            p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, m ; \\
+            p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, \nsamples ; \\
         \end{aligned}
     \end{equation}
 \end{definition}
