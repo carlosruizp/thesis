@@ -539,16 +539,16 @@ $$ \emprisk: \hypspace \to \reals_{\geq 0} .$$
 %
 Let $f^* \in L_2(\Xspace)$ be the function that minimizes $\emprisk$, such that $\emprisk(f^*) = \rho$. If we find a solution $g \in L_2(\Xspace)$ such that $\emprisk(g) = \rho + \delta$, for $\delta > 0$, we would like then that $g$ is close to the optimal solution $f^*$.
 %
-In other words, we want the inverse of the map $\emprisk$ to be continuous, that is, for every $\epsilon$, there exists a $delta$ such that if $\abs{\rho_1 - \rho_2} < \delta$, where $\rho_1, \rho_2 \in \reals$, then two functions $f_1, f_2 \in L_2(\Xspace)$ such that $\emprisk(f_1) = \rho_1, \; \emprisk(f_2) = \rho_2$, must satisfy $\norm{f_1 - f_2}_{L_2(\Xspace)} < \epsilon$.
+In other words, we want the inverse of the map $\emprisk$ to be continuous, that is, for every $\epsilon$, there exists a $\delta$ such that if $\abs{\rho_1 - \rho_2} < \delta$, where $\rho_1, \rho_2 \in \reals$, then two functions $f_1, f_2 \in L_2(\Xspace)$ such that $\emprisk(f_1) = \rho_1, \; \emprisk(f_2) = \rho_2$, must satisfy $\norm{f_1 - f_2}_{L_2(\Xspace)} < \epsilon$.
 %
-Even if the map $\emprisk$ is continuous, its inverse $\emprisk$ might not be continuous. In that cases we have, according to Tikhonov nomenclature, an ill-posed problem.
+Even if the map $\emprisk$ is continuous, its inverse $(\emprisk)^{-1}$ might not be continuous. In that cases we have, according to Tikhonov nomenclature, an ill-posed problem.
 %
 Here is where the Operator Inversion Lemma~\citep{riesz2012functional} is useful.
 \begin{lemma}[Operator Inversion Lemma]
     Let $\mathcal{M}$ be a compact set and let $A$ be a continuous map $A: \mathcal{M} \to \reals_{\geq 0}$. Then, there exists an inverse map $A^{-1}: A(\mathcal{M}) \to \mathcal{M}$ that is continuous.
 \end{lemma}
 %
-To apply this lemma to our situation, and get a well-posed problem, we need two conditions: we need $\emprisk$ to be a continous map, and we need $\hypspace$ to be compact.
+To apply this lemma to our situation, and get a well-posed problem, we need two conditions: we need $\emprisk$ to be a continuous map, and we need $\hypspace$ to be compact.
 %
 We can assume that the empirical risk $\emprisk$ is continuous; although this is a strong assumption, it is true for all the loss functions considered, except for the \emph{accuracy} loss.
 %
@@ -1627,8 +1627,8 @@ In both cases, classification and regression we have defined the corresponding o
     \begin{equation}
         \nonumber
         \begin{aligned}
-            & p_i = t_i - \epsilon ,\; &y_i &= 1 &\text{ for } i=1, \ldots, m ; \\
-            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
+            & p_i = t_i - \epsilon ,\; &y_i &= 1 &&\text{ for } i=1, \ldots, m ; \\
+            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &&\text{ for } i=m+1, \ldots, 2m .
         \end{aligned}
     \end{equation}
 \end{definition}
@@ -1848,7 +1848,7 @@ which can be reduced to the linear case just by selecting $\phi$ as the identity
 
 \subsection{L2-SVM}
 The idea motivating the L2-\acrshort{svm} variant~\citep{Burges98} is replacing the loss functions used in the L1-\acrshort{svm} for their squared counterparts. 
-The hinge loss, used for classification and defined in~\eqref{eq:hinge_def}, is replaced by the squared hinge loss, as defined as~\eqref{eq:sqhinge_def}.
+The hinge loss, used for classification and defined in~\eqref{eq:hinge_def}, is replaced by the squared hinge loss, as defined in~\eqref{eq:sqhinge_def}.
 The $\epsilon$-insensitive loss defined as~\eqref{eq:epsins_def}, which is used in the regression L1-\acrshort{svm}, is replaced by its squared version as defined in~\eqref{eq:sqepsins_def}.
 %
 
@@ -1876,12 +1876,12 @@ We can give then the definitions of the L2-\acrshort{svm} problems for classific
     \begin{equation}
         \label{eq:l2_primal_reg}
         \begin{aligned}
-            &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m \left((\xi_i)^2 + (\hat{\xi}_i)^2 \right) + \frac{1}{2} \norm{w}^2 \\
+            &\min_{w, b, \fv{\xi, \hat{\fv{\xi}}}} & & \frac{C}{2} \sum_{i=1}^m \left((\xi_i)^2 + (\hat{\xi}_i)^2 \right) + \frac{1}{2} \norm{w}^2 \\
             & \text{s.t.} & & \dotp{w}{\phi(x_i)} + b \geq t_i - \epsilon - \xi_i  , \\
             & & & \dotp{w}{\phi(x_i)} + b \leq t_i + \epsilon + \hat{\xi}_i , 
         \end{aligned}  
     \end{equation}
-    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$, and $w, b, \fv{\xi}$ are the primal variables.
+    where $\fv{\xi} = (\xi_1, \ldots, \xi_m)^\intercal$ and analogously for $\hat{\fv{\xi}}$, and $w, b, \fv{\xi}, \hat{\fv{\xi}}$ are the primal variables.
 \end{definition}
 %
 Observe in both cases that, since the slack variables are squared in the objective function, the constraints to enforce that these slack variables are non-negative are no longer needed.
@@ -1906,8 +1906,8 @@ As with the L1-\acrshort{svm}, we will use a formulation to unify both problems 
     \begin{equation}
         \nonumber
         \begin{aligned}
-            & p_i = t_i - \epsilon ,\; &y_i &= 1 &\text{ for } i=1, \ldots, m ; \\
-            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &\text{ for } i=m+1, \ldots, 2m .
+            & p_i = t_i - \epsilon ,\; &y_i &= 1 &&\text{ for } i=1, \ldots, m ; \\
+            & p_i = -t_i - \epsilon ,\; &y_i &= -1 &&\text{ for } i=m+1, \ldots, 2m .
         \end{aligned}
     \end{equation}
 \end{definition}
@@ -1941,7 +1941,7 @@ and $\lagr(w, b, \fv{\alpha})$ is convex in all the primal variables, $w, b$ and
 \begin{align}
     \nabla_w \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies w = \sum_{i=1}^\nsamples y_i \alpha_i \phi(x_i) , \label{eq:lagr_diff_w_l2} \\
     \nabla_b \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies \sum_{i=1}^\nsamples y_i \alpha_i = 0, \label{eq:lagr_diff_b_l2} \\
-    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 , \label{eq:lagr_diff_xi_l2}
+    \nabla_{\xi_i} \lagr(w, b, \fv{\xi}, \fv{\alpha}) = 0 &\implies C \xi_i - \alpha_i  = 0 . \label{eq:lagr_diff_xi_l2}
 \end{align}
 If we apply these results in the Lagrangian, we get a simpler formula. Using~\eqref{eq:lagr_diff_b_l2} and ~\eqref{eq:lagr_diff_xi_l2} all the terms with $b$ or $\xi_i$ vanish. Then, we plug~\eqref{eq:lagr_diff_w_l2} to replace $w$ to get 
 \begin{equation}
@@ -1971,8 +1971,7 @@ Observe that we again obtain a quadratic optimization problem, as in the L1-\acr
 
 \subsection{LS-SVM}
 %
-The LS-\acrshort{svm}~\citep{SuykensV99} replaces the losses of the L1-\acrshort{svm} for the squared loss.
-Even in classification, where the aim is to regress to the values $1$ and $-1$ the positive and negative classes.
+The LS-\acrshort{svm}~\citep{SuykensV99} replaces the losses of the L1-\acrshort{svm} for the squared loss, even in classification, where the aim is to regress to the values $1$ and $-1$ the positive and negative classes.
 To do this, the inequality constraints are replaced by equality ones.
 %
 We give the definitions of the LS-\acrshort{svm} problems for classification and regression next.
@@ -2026,7 +2025,7 @@ As with the other variants, we want to use a unifying formulation for the regres
     \begin{equation}
         \nonumber
         \begin{aligned}
-            p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, \nsamples ; \\
+            p_i = t_i  ,\; y_i = 1 \text{ for } i=1, \ldots, \nsamples . \\
         \end{aligned}
     \end{equation}
 \end{definition}

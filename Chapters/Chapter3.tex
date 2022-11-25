@@ -292,14 +292,14 @@ Then, a \emph{distribution-driven} pseudo-metric is defined.
     Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
 \begin{equation}
     \nonumber
-    \hypspace_\distf^* = \inf_{\hypf \in \hypspace} \risk_P(\hypf).
+    \risk^*_\distf(\hypspace) = \inf_{\hypf \in \hypspace} \risk_P(\hypf).
 \end{equation}
 The family of such sets is defined as 
-$\bsetdist_\lossf = \set{\hypspace_\distf^*, \hypspace \in \hypspacef}$.
-Then, for $\hypspace_\distf^*, \widetilde{\hypspace_\distf^*} \in \hypspacef_\lossf^*$,
+$\bsetdist_\lossf = \set{\risk^*_\distf(\hypspace), \hypspace \in \hypspacef}$.
+Then, for $\risk^*_\distf(\hypspace), \widetilde{\risk^*_\distf(\hypspace)} \in \hypspacef_\lossf^*$,
 \begin{equation}
     \nonumber
-    \dist{\bdistf}(\hypspace_\distf^*, \widetilde{\hypspace_\distf^*}) = \int_\bprobspace \abs{\hypspace_\distf^* - \widetilde{\hypspace_\distf^*}} d\bdistf(\distf)
+    \dist{\bdistf}(\risk^*_\distf(\hypspace), \widetilde{\risk^*_\distf(\hypspace)}) = \int_\bprobspace \abs{\risk^*_\distf(\hypspace) - \widetilde{\risk^*_\distf(\hypspace)}} d\bdistf(\distf)
 \end{equation}
 is a pseudometric in $\hypspacef_\lossf^*$.
 \end{definition}
@@ -560,8 +560,8 @@ Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tas
 \begin{enumerate}
     \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
     \begin{equation}
-        \nonumber
-        \equivclass{\hypf^\frelset} = \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_i}(\hypf_i) ,
+        \label{eq:first_stage}
+        \equivclass{\hypf^\frelset} = \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) ,
     \end{equation}
     \item Select the best hypothesis $h^\diamond$ for the target task (without loss of generality, consider that the target task is the first one):
     \begin{equation}
@@ -593,7 +593,7 @@ Now, one of the main results in~\citet[Theorem~2]{baxter2000model} can be given.
         \nonumber
         \abs{\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) - \inf_{\hypf' \in \equivclass{\hypf}}\risk_{P_1}(\hypf')}  \leq \epsilon
     \end{equation}
-    with probability greater than $\eta$ if the number of samples from each distribution satisfies
+    with probability at least $1 - \eta$ if the number of samples from each distribution satisfies
     \begin{equation}
         \label{eq:ben-david_sample_inequality}
         m_r \geq  \frac{88}{\epsilon^2} \left[2 d_{\hypspace_\frelset}(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right],
@@ -609,9 +609,9 @@ Using this result, a bound for learners using the \acrshort{mt} \acrshort{erm} p
     Let $h^\diamond$ be the hypothesis selected using the \acrshort{mt} \acrshort{erm} principle. Then, for every $\epsilon_1, \epsilon_2 > 0$ and $0 < \eta < 1$:
     \begin{equation}
         \nonumber
-        {\hat{\risk}_{\sample_1}(\hypf^\diamond) - \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')}  \leq 2(\epsilon_1 + \epsilon_2)
+        {\hat{\risk}_{\sample_1}(\hypf^\diamond)  \leq \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')} + 2(\epsilon_1 + \epsilon_2)
     \end{equation}
-    with probability greater than $\eta$ if
+    with probability greater than $1 - \eta$ if
     \begin{equation}
         \label{eq:ben-david_th3_ineq1}
         m_1 \geq  \frac{64}{\epsilon^2} \left[2 \underline{d}(\hypspace_\frelset) \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right], \; 
@@ -626,36 +626,50 @@ Using this result, a bound for learners using the \acrshort{mt} \acrshort{erm} p
 The idea of the proof of this theorem helps to understand how using different tasks can help to improve the performance in the target task. 
 Consider $\hypf^* = \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf)$ the best hypothesis for the $P_1$ distribution.
 %
-In the first stage of \acrshort{mt} \acrshort{erm} principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ that minimizes $\inf_{\myvec{\hypf} \in \equivclass{\hypf}} \risk_{\bprobseq}(\myvec{\hypf})$ where $\myvec{\hypf}$ is a sequence of hypothesis of $\hypspace_\frelset$.
-According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^\frelset}$ we have that
+In the first stage of \acrshort{mt} \acrshort{erm} principle, we select the hypothesis class $\equivclass{\hypf^\frelset}$ as in~\eqref{eq:first_stage}, such that for all $\hypf \in \hypspace$ it satisfies
 \begin{equation}
     \nonumber
-    {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1.
+    \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) .
 \end{equation}
-According to Theorem~\ref{th:ben-david_th2}, for $\equivclass{\hypf^*}$ we have that
+According to Theorem~\ref{th:ben-david_th2}, with probability greater than $1 - \eta/2$ we have that
+\begin{equation}
+    \nonumber
+    {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1,
+\end{equation}
+and also,
 \begin{equation}
     \nonumber
     {\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^*}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf')}  + \epsilon_1.
 \end{equation}
-Using these two inequalities we get
+Combining these two inequalities we get
 \begin{equation}
     \nonumber
     \inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf') \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf') + 2\epsilon_1 
 \end{equation}
-when $m_r$ is large enough for every task, as in the condition~\eqref{eq:ben-david_sample_inequality}. This bounds the risk of the hypothesis space given by the equivalence class of $\hypf^\frelset$ and establishes the inequality~\eqref{eq:ben-david_th3_ineq2}.
+when $m_r$ is large enough for every task, as in the condition~\eqref{eq:ben-david_sample_inequality}. This bounds the risk of the hypothesis space given by the equivalence class of $\hypf^\frelset$ and establishes the inequality~\eqref{eq:ben-david_th3_ineq2} as a requirement.
 %
 
 Once we select $\equivclass{\hypf^\frelset}$ as our hypothesis space, the second stage is just standard \acrshort{erm} using this hypothesis space.
 %
 According to~\cite{vapnik1982estimation}, given any hypothesis space $\hypspace$, we have the bound
 \begin{equation}\nonumber
-    \inf_{\hypf \in \hypspace} \risk_{z_1}(\hypf) - \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) \leq \epsilon_2
+    \inf_{\hypf \in \hypspace} \risk_{\sample_1}(\hypf) \leq \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) + 2 \epsilon_2
+\end{equation}
+if the size of the sample $\sample_1$ satisfies
+\begin{equation}
+    \nonumber
+    m_1 \geq  \frac{64}{\epsilon_2^2} \left[2 \vcdim{\hypspace} \log \frac{12}{\epsilon_2} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
+\end{equation}
+In this second stage of the \acrshort{mt} \acrshort{erm}, the hypothesis space is $\hypspace = \equivclass{\hypf^\frelset}$, so we have that 
+\begin{equation}\nonumber
+    \inf_{\hypf \in \equivclass{\hypf^\frelset}} \risk_{P_1}(\hypf) \leq \inf_{\hypf \in \equivclass{\hypf^\frelset}} \risk_{\sample_1}(\hypf) +  2 \epsilon_2
 \end{equation}
 if
 \begin{equation}
     \nonumber
-    m_1 \geq  \frac{64}{\epsilon^2} \left[2 \vcdim{\hypspace} \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
+    m_1 \geq  \frac{64}{\epsilon_2^2} \left[2 \vcdim{\equivclass{\hypf^\frelset}} \log \frac{12}{\epsilon_2} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
 \end{equation}
+%
 Recall that, according to Definition~\ref{def:gen_vcdim}, 
 $$ \underline{d}(\hypspace_\frelset) = \max_{\equivclass{\hypf} \in \hypspace_\frelset} \vcdim{\equivclass{\hypf}}, $$
 %Since the \acrshort{erm} will not use the entire space $\hypspace$ but the subset $\equivclass{\hypf^\frelset} \subset \hypspace$, we have that
@@ -664,18 +678,9 @@ thus, by definition we have that
     \label{eq:ineq_relatedtasks}
     \vcdim{\equivclass{\hypf^\frelset}} \leq \underline{d}(\hypspace_\frelset) .
 \end{equation}
-In the second stage of the \acrshort{mt} \acrshort{erm}, the hypothesis space is $\hypspace = \equivclass{\hypf^\frelset}$, so we have that 
-\begin{equation}\nonumber
-    \inf_{\hypf \in \equivclass{\hypf^\frelset}} \risk_{z_1}(\hypf) - \inf_{\hypf \in \equivclass{\hypf^\frelset}} \risk_{P_1}(\hypf) \leq \epsilon_2
-\end{equation}
-if
-\begin{equation}
-    \nonumber
-    m_1 \geq  \frac{64}{\epsilon^2} \left[2 \vcdim{\equivclass{\hypf^\frelset}} \log \frac{12}{\epsilon} + \frac{1}{\ntasks}\log\frac{8}{\eta} \right] .
-\end{equation}
-That is, with the inequality~\eqref{eq:ineq_relatedtasks}, a weaker bound for $m_1$ is the one given in~\eqref{eq:ben-david_th3_ineq1}.
-
+That is, with the inequality~\eqref{eq:ineq_relatedtasks}, we can bound $m_1$ as in~\eqref{eq:ben-david_th3_ineq1}.
 %
+
 The advantage of using multiple tasks is then illustrated in this bound, and it will be defined by the gap between $\vcdim{\hypspace}$ and $\underline{d}(\hypspace_\frelset)$. 
 Observe that using standard \acrshort{erm} with no information about the tasks relations, a learner would have to select the hipothesis from the entire space $\hypspace$, however, in this \acrshort{mt} \acrshort{erm} we restrict our search to the space $\equivclass{\hypf^\frelset}$.
 If $\underline{d}(\hypspace_\frelset)$ is smaller than $\vcdim{\hypspace}$, the number of samples needed to solve the target task will also be smaller.
@@ -1308,7 +1313,7 @@ Instead of imposing some restrictions, such as low-rank or inter-task regulariza
 Multiple extensions of the work of~\cite{EvgeniouP04} have been presented: in~\cite{XuAQZ14, LiTST15} the method is extended to the Proximal \acrshort{svm}~\citep{FungM01} and Least Squares \acrshort{svm}~\citep{SuykensV99}, respectively. Also, in~\cite{ParameswaranW10} the idea is adapted for the Large Margin Nearest Neighbor model~\citep{WeinbergerS09}.
 %
 % Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning multiple tasks with kernel methods.
-% MTLSVM and Generalized SMO
+% \acrshort{mtl} \acrshort{svm} and Generalized SMO
 However, in this work we are interested mainly in two extensions: one is the work of~\cite{EvgeniouMP05} and the other is developed in~\cite{LiangC08} and in~\cite{CaiC09}; both will be described in detail in Chapter~\ref{Chapter4}.
 %Using the unified formulation we can express the more general primal problem as
 % \begin{equation}
@@ -1807,9 +1812,9 @@ We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the \acrshort{lupi}
 
 \subsection{Connection between \acrshort{svm}+ and \acrshort{mtl}}
 % Liang and Cherkassky
-In~\cite{LiangC08} the connection between \acrshort{svm}+ and \acrshort{mtl} \acrshort{svm} (MTLSVM) is discussed. 
+In~\cite{LiangC08} the connection between \acrshort{svm}+ and \acrshort{mtl} \acrshort{svm} is discussed. 
 % Definition
-The MTLSVM proposed in~\cite{LiangC08} is an \acrshort{mtl} model based on the \acrshort{svm}. It solves the primal problem
+The \acrshort{mtl} \acrshort{svm} proposed in~\cite{LiangC08} is an \acrshort{mtl} model based on the \acrshort{svm}. It solves the primal problem
 \begin{equation}
     \label{eq:mtlsvm_primal}
     \begin{aligned}
@@ -1840,7 +1845,7 @@ The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
 \end{equation}
 where $\delta_{rs}$ is the Dirac's delta.
 % Similarities and differences
-In~\cite{LiangC08} some similarities between MTLSVM and \acrshort{svm}+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve \acrshort{mtl} problems, where different tasks are incorporated and multiple correcting spaces are defined using the transformations $\phi_r$.
+In~\cite{LiangC08} some similarities between \acrshort{mtl} \acrshort{svm} and \acrshort{svm}+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve \acrshort{mtl} problems, where different tasks are incorporated and multiple correcting spaces are defined using the transformations $\phi_r$.
 If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a modification of the \acrshort{svm}+ problem~\eqref{eq:svmplus_delta_primal} where the slack variables are modeled as
 $$ \xi(x, y) = y (w^* \phi^*(x) + b^*)  .$$
 That is, it is a relaxation of the original problem~\eqref{eq:svmplus_delta_primal}, where the second constraint to model the positive part of the slack variables disappears.
@@ -1848,8 +1853,8 @@ This relaxation gives place to some important differences between both models. S
 The \acrshort{mt} part in~\eqref{eq:mtlsvm_dual} resides in the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
 %
 
-A major remark can be made about the differences between MTLSVM and \acrshort{svm}+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid for MTLSVM, since we are not modelling the slack variables $\xi$ adequately. 
-It is still a work in progress to study the rate of convergence of MTLSVM and to establish clearer links with \acrshort{svm}+.
+A major remark can be made about the differences between \acrshort{mtl} \acrshort{svm} and \acrshort{svm}+. The results for the improved rate of convergence with an Intelligent Teacher may not be valid for \acrshort{mtl} \acrshort{svm}, since we are not modelling the slack variables $\xi$ adequately. 
+It is still a work in progress to study the rate of convergence of \acrshort{mtl} \acrshort{svm} and to establish clearer links with \acrshort{svm}+.
 % Relation with the simplified approach?
 
 
@@ -1916,10 +1921,10 @@ It is still a work in progress to study the rate of convergence of MTLSVM and to
 \section{Conclusions}\label{sec:conclusions_ch3}
 
 In this chapter, we covered some of the most relevant works in \acrshort{mtl}.
-We have started with the theoretical motivation behind \acrshort{mtl}, and we have also added a discussion on kernels useful for this goal: operator-valued kernels and kernels of a tensor product of spaces. Then, we have surveyed previous works in \acrshort{mtl} and establish categories, which help us understand the background in this field.
+We have started with the theoretical motivation behind \acrshort{mtl}. Then, we have surveyed previous works in \acrshort{mtl} and establish categories, which help us understand the background in this field.
 
 %
-In Section~\ref{sec:ch3_mtl_theory} we have presented the work of~\citep{baxter2000model}, which sets the foundation for \acrshort{mtl} and \acrshort{ltl} theory, establishing bounds for the excess risk, that is, the difference between the best empirical and best expected error. These bounds are later extended in several works, from which we highlight the work of~\citet{Ben-DavidS03}, that defines a definition for related tasks and use it to derive new bounds. Other important theoretical motivation for \acrshort{mtl} that we have presented is its connection with the \acrshort{lupi} paradigm, presented in~\citet{VapnikI15a}.
+In Section~\ref{sec:ch3_mtl_theory} we have presented the work of~\citep{baxter2000model}, which sets the foundation for \acrshort{mtl} and \acrshort{ltl} theory, establishing bounds for the excess risk, that is, the difference between the best empirical and best expected error. These bounds are later extended in several works, from which we highlight the work of~\citet{Ben-DavidS03}, that defines a definition for related tasks and use it to derive new bounds.
 %
 
 Moreover, in Section~\ref{sec:ch3_overview} we have reviewed multiple approaches for \acrshort{mtl} and categorize them in three main groups: feature-based, parameter-based and combination-based methods.
@@ -1929,6 +1934,7 @@ The feature-based methods are more common in linear models or \acrshort{nns}, th
 In Section~\ref{sec:deep_mtl}, a survey of the \acrshort{mtl} methods based on \acrshort{nns} has been given, where it can be observed that they are mainly focused on finding a shared representation beneficial to all tasks. In Chapter~\ref{Chapter4} we will present an alternative combination-based \acrshort{mtl} method with \acrshort{nns}.
 Also, an overview of \acrshort{mtl} with kernel methods is given in Section~\ref{sec:kernel_mtl}, where there are fewer works than for \acrshort{nns} or linear models, especially for \acrshort{svms}. 
 In the next chapters we try to cover this gap, presenting novel methods for \acrshort{mtl} with \acrshort{svms}. 
+Other important theoretical motivation for \acrshort{mtl} that we have presented is its connection with the \acrshort{lupi} paradigm, presented in Section~\ref{sec:ch3_lupi}.
 %
 
-Finally, a discussion about operator-valued kernels, and kernels of tensor product of spaces, which are equivalent under some conditions, has been given in Section~\ref{sec:ch3_mtl_kernelmethods}. The kernels defined as product of two kernels in a tensor product space will be useful for a particular approach to \acrshort{mtl}, the graph Laplacian approach, that will be presented in Chapter~\ref{Chapter5}.
+% Finally, a discussion about operator-valued kernels, and kernels of tensor product of spaces, which are equivalent under some conditions, has been given in Section~\ref{sec:ch3_mtl_kernelmethods}. The kernels defined as product of two kernels in a tensor product space will be useful for a particular approach to \acrshort{mtl}, the graph Laplacian approach, that will be presented in Chapter~\ref{Chapter5}.
