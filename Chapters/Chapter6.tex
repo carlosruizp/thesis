@@ -4,25 +4,25 @@
 \label{Chapter6}
 \lhead{Chapter \ref{Chapter6}. \emph{Experiments}} 
 
-{\bf \small{
-small  }}
+% {\bf \small{
+% small  }}
 
-\section{Introduction}
-In the previous chapter, we have given the theoretical framework of our proposals for \acrfull{mtl}. In Chapter~\ref{Chapter4} we have presented the convex \acrshort{mtl} formulation, that, like the previous additive formulation, combines a common and task-specific parts, but our proposal uses a convex combination, which is useful for interpretability and hyperparameter selection.
-We develop the convex formulation for kernel methods, such as L1, L2 and LS-\acrshort{svms}, and also for \acrfull{nns}. We also show how we can optimally select the convex combination of pre-trained models.
+%\section{Introduction}
+In the previous chapter, we have given the theoretical framework of our proposals for \acrfull{mtl}. In Chapter~\ref{Chapter4} we have presented the convex \acrshort{mtl} formulation, that uses a convex combination of common and task-specific parts, which is convenient for interpretability and hyperparameter selection.
+We developed the convex formulation for kernel methods, such as L1, L2 and LS-\acrfull{svm}, and also for \acrfull{nns}. We also show how we can optimally select the convex combination of pre-trained models.
 %
-In this chapter we will present several experiments to better understand this convex formulation, and also to test its performance \acrshort{mtl} problems.
+In this chapter we will present several experiments to better understand this convex formulation, and also to test its performance on \acrshort{mtl} problems.
 %
-Moreover, in Chapter~\ref{Chapter5} we present the \acrfull{gl} formulation for \acrshort{mtl}, which we combine also with the convex approach to define the convex \acrshort{gl} formulation.
-We develop it for linear models and then for kernel methods, such as the L1, L2 and LS-\acrshort{svms}. This approach, however, involves the selection of an adjacency matrix that reflects the relations between the tasks. We propose also the Adaptive \acrshort{gl} approach, which uses a data-driven procedure to automatically learn this adjacency matrix.
+Moreover, in Chapter~\ref{Chapter5} we presented the \acrfull{gl} formulation for \acrshort{mtl}, which we combine also with the convex approach to define the convex \acrshort{gl} formulation.
+We develop it for linear models and then for kernel methods, such as the L1, L2 and LS-\acrshort{svms}. This approach, however, involves the selection of an adjacency matrix that reflects the relations between the tasks. We proposed also the Adaptive \acrshort{gl} approach, which uses a data-driven procedure to automatically learn this adjacency matrix.
 %
-We will present in this chapter multiple experiments to test a fixed convex \acrshort{gl} model, as well as the adaptive version of it.
+We will present in this chapter multiple experiments to test a fixed convex \acrshort{gl} model, as well as its adaptive version.
 %
 
 More specifically, in Section~\ref{sec:convexmtlsvm_exp} we present experiments that test the convex formulation with kernel methods. In Section~\ref{sec:convexmlt_renewable} we present the application of the convex formulation to the problem of predicting the production of solar and wind energy.
-In Section~\ref{sec:convexmtl_nn_experiments} we give experiments that consider \acrfull{mt} image datasets and, thus, neural networks, in particular we test our proposed convex \acrshort{mtl} \acrshort{nn}. 
+In Section~\ref{sec:convexmtl_nn_experiments} we give experiments that consider \acrfull{mt} image datasets and, thus, \acrshort{nns} are the models better suited for this kind of problems, in particular we test our proposed convex \acrshort{mtl} \acrshort{nn}. 
 %
-Then, in Section~\ref{sec:convexgl_experiments} we give experiments with models that implement the \acrshort{gl}-based \acrshort{mtl}. And, finally, in Section~\ref{sec:adapconvexgl_experiments} we illustrate our adaptive algorithm for the \acrshort{gl}-based \acrshort{mtl} in several experiments with real and synthetic data.
+Then, in Section~\ref{sec:convexgl_experiments} we give experiments with models that implement \acrshort{gl}-based \acrshort{mtl}. And, finally, in Section~\ref{sec:adapconvexgl_experiments} we illustrate our adaptive algorithm for \acrshort{gl}-based \acrshort{mtl} in several experiments with real and synthetic data.
 
 
 
@@ -34,16 +34,17 @@ In this section we present the experiments used to test the convex \acrshort{mtl
 %
 First, following our work in~\citep{RuizAD19}, experiments comparing convex and additive \acrshort{mtl} formulations in the L1-\acrshort{svm} are described. 
 %
-Then, the experiments that we presented in~\citep{RuizAD21} are exposed, where multiple convex \acrshort{mtl} models, using L1, L2 and LS-\acrshort{svm}s as well as optimal convex combination of pre-trained models, are compared over multiple real problems.
+Next, we present experiments where multiple convex \acrshort{mtl} models, using L1, L2 and LS-\acrshort{svms}, as well as optimal convex combinations of pre-trained models, are compared over multiple real problems.
+%
 
 Before diving into the results, some technical details have to be explained. The convex \acrshort{mtl} formulation, as presented in Equation~\eqref{eq:svmmtl_primal_convex}, uses task-specific hyperparameters $\lambda_r$, as well as common and task-specific kernels, with their corresponding hyperparameters; however, the selection of many hyperparameters is always a challenge because of the curse of dimensionality. 
 %
-To select the hyperparameters $p_1, \ldots, p_L$ of a learning algorithm using CV the following problem is solved:
+In general, to select the hyperparameters $p_1, \ldots, p_L$ of a learning algorithm using \acrshort{cv} the following problem is solved:
 \begin{equation}
     \label{eq:hp-selection_general}
     p_1^*, \ldots, p_L^* = \argmin_{p_i \in \mathcal{S}_{p_i}, i=1, \ldots, L} \sum_{j=1}^{F} \rho(\mathcal{A}(p_1, \ldots, p_L; (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
 \end{equation}
-where $\rho$ is some measure; $\mathcal{A}$ is our choice of learning algorithm; $p_1, \ldots, p_L$ are the parameters on which $\mathcal{A}$ depends and $\mathcal{S}_{p_i}$ a feasible space for the parameter $p_i$; and $(X^j_\text{train}, y^j_\text{train}), (X^j_\text{val}, y^j_\text{val})$ are the training and validation sets, respectively. We are using $F$ folds, that is, for $j=1, \ldots, F$ we select different training and validation sets and we train our algorithm $\mathcal{A}$ on the training set $(X^j_\text{train}, y^j_\text{train})$; then we use $\rho$ to measure the wellness of our model on $(X^j_\text{val}, y^j_\text{val})$. 
+where $\rho$ is some score measure; $\mathcal{A}$ is our choice of learning algorithm, $p_1, \ldots, p_L$ are the parameters on which $\mathcal{A}$ depends and $\mathcal{S}_{p_i}$ a feasible space for the parameter $p_i$, and $(X^j_\text{train}, y^j_\text{train}), (X^j_\text{val}, y^j_\text{val})$ are the training and validation sets, respectively. We are using $F$ folds, that is, for $j=1, \ldots, F$, we select different training and validation sets and we train our algorithm $\mathcal{A}$ on the training set $(X^j_\text{train}, y^j_\text{train})$; then we use $\rho$ to measure the performance of our model on $(X^j_\text{val}, y^j_\text{val})$. 
 %
 Observe that our search space is the product space $\mathcal{S}_{p_1} \times \ldots \times \mathcal{S}_{p_L}$, so the difficulty of selecting an optimal combination of hyperparameters scales exponentially with the number of such parameters.
 
@@ -68,19 +69,19 @@ we have the following hyperparameters:
     \item the convex combination parameters $\lambda_1, \ldots, \lambda_\ntasks$,
     \item and possibly the $\epsilon$ parameter.
 \end{itemize}
-That is, there are at least $2\ntasks + 2$ hyperparameters that have to be selected. Even with $\ntasks=2$, a search space of dimension $6$ is computationally unfeasible to cover with a grid search.
+That is, there are at least $2\ntasks + 2$ hyperparameters that have to be selected. Even with $\ntasks=2$, a search space of dimension $6$ is computationally unfeasible to cover with a grid search. Although there exist other methods to select thy hyperparameters, such as random search or Bayesian optimization, we will only consider \acrshort{cv} in this work.
 % \begin{equation}
 %     \nonumber
 %     C^*, \gamma^*, \gamma_1^*, \ldots, \gamma_\ntasks^*, \lambda_1^*, \ldots, \lambda_\ntasks^*   (, \epsilon^*) = \argmin_{\substack{C \in \mathcal{S}_C ; \\ \substack{\gamma \in \mathcal{S}_\gamma} ; \\ \left(\substack{\epsilon \in \mathcal{S}_\epsilon} \right); }}
 %      \sum_{j=1}^{F} \rho(\mathcal{A}(C, \gamma (, \epsilon); (X^j_\text{train}, y^j_\text{train})); (X^j_\text{val}, y^j_\text{val})) ,
 % \end{equation}
 
-To face this caveat and select the optimal parameters for the convex \acrshort{mtl} formulation we use the next strategy.
+To face this issue and select the optimal parameters for the convex \acrshort{mtl} formulation we use the following strategy strategy.
 %
-For the kernel widths, we proceed as follows: we first hyperparametrize the corresponding \acrshort{ctl} and \acrshort{itl} kernel models, which have a common and task-specific kernel widths, respectively. 
+For the kernel widths, we first hyperparametrize the corresponding \acrshort{ctl} and \acrshort{itl} kernel models, which have a common and task-specific kernel widths, respectively. 
 This step would give also optimal $C$ and $\epsilon$ values, but we discard them.
-Observe that in the \acrshort{ctl} approach, where a single virtual task is solved, and in the \acrshort{itl} approach, where we solve the tasks independently, we have $2$ or $3$ hyperparameters. We solve the corresponding problems, which are represented in Equation~\eqref{eq:hp-selection_general}, using grid search, and we obtain optimal common $C^*, \gamma^*$ and task-specific ones $C_r^*, \gamma^*_r$ for $r=1, \ldots, \ntasks$ (also the respective $\epsilon^*$ values in the regression setting).
-Then, we reutilize the optimal widths for these models, and fix them in the \acrshort{mtl} one.
+Observe that in the \acrshort{ctl} approach, where a single task is solved, and in the \acrshort{itl} approach, where we solve the tasks independently, we have either $2$ or $3$ hyperparameters. We solve the corresponding problems, which are represented in Equation~\eqref{eq:hp-selection_general}, and using grid search, we obtain the optimal common $C^*, \gamma^*$ and the task-specific ones $C_r^*, \gamma^*_r$ for $r=1, \ldots, \ntasks$, and also the respective $\epsilon^*$ values in the regression setting.
+Then, we reutilize the optimal widths for these models, and fix them in the \acrshort{mtl} one. 
 %
 Moreover, for the convex combination parameters we use a single $\lambda$ for all tasks, that is, $\lambda_1 = \ldots = \lambda_\ntasks = \lambda$.
 %
@@ -98,13 +99,13 @@ The first adjustment concerning kernel widths does not change the model definiti
 Consider the Gaussian kernel
 \begin{equation}
     \nonumber
-    k(x, y) = \frac{1}{\sqrt{2\pi} \sigma}\exp{\left(-\frac{1}{2\sigma^2} (x-y)^2\right)},
+    k(x, y) = \exp{\left(-\gamma \frac{\norm{x - y}^2}{2} \right)},
 \end{equation}
-where $\sigma$ is the kernel width and it regulates ``how wide is the influence of each point'';
-then, kernel widths are not that descriptive of the model but of the data used, which makes the reutilization of kernel widths seem a sensible decision.
+where $\sigma$ is the kernel width and regulates ``how wide is the influence of each point'';
+then, kernel widths are not that descriptive of the model but of the data used, which makes the reutilization of kernel widths seems to be a sensible decision.
 The combined data from all tasks, which is used in the \acrshort{ctl} approach, is well ``characterized'' by the width $\sigma^*$ so we expect that this width is also useful for the common part of the \acrshort{mtl} model. The same reasoning applies to task-specific data and \acrshort{itl} approach.
 %
-The second adjustment does change the models definition, because we use a single $\lambda$ that determines the specifity of all models. However, we expect that the possible difference in specifity among tasks can be corrected in the training process by selecting larger task-specific weights $v_r$ if necessary.
+The second adjustment does change the models' definition, because we use a single $\lambda$ that determines the specifity of all models. However, we expect that the possible difference in specifity among tasks can be corrected in the training process by selecting larger task-specific weights $v_r$ if necessary.
 
 \subsection{Comparison of Convex and Additive Formulations}
 % Figure Synthetic Problem HAIS2019
@@ -126,12 +127,13 @@ The second adjustment does change the models definition, because we use a single
 
 \begin{figure}[t!]
     \centering
-    \subfloat[][Synthetic example dataset, where the data of each task (corresponding to a different function $f_i$) are represented with a different color.]{%    
+    \subfloat[][Synthetic problem, where the data of each task (corresponding to a different function $f_i$) are represented with a different color.]{%    
     \includegraphics[width=0.45\textwidth]{Chapter6/HAIS2019/synthetic_example-crop.pdf}
     \label{fig:synthetic_example}}\quad%
     \subfloat[][Comparison of the weights obtained by the {convex} and {additive} approaches.]{%
     \includegraphics[width=0.45\textwidth]{Chapter6/HAIS2019/synthetic_comparison-crop.pdf}
     \label{fig:synthetic_comparison}}\\
+    \caption{Synthetic problem and comparison of convex and additive formulations weights.}
     \label{fig:lines_slopes}
 \end{figure}
 
@@ -159,6 +161,7 @@ The second adjustment does change the models definition, because we use a single
     \subfloat[][{Convex} MTLSVR slope estimates weights as a function of $\lambda$. We represent the common part of the models as $\lambda u$, and the task-specific parts as $(1 - \lambda) u_r$.]{%
     \includegraphics[width=0.45\textwidth]{Chapter6/HAIS2019/synthetic_specWeights_conv-crop.pdf}
     \label{fig:convex_weights}}\\
+    \caption{Additive and Convex \acrshort{mtl}\acrshort{svr} slope estimates.}
     \label{fig:synthetic_specWeights}
 \end{figure}
 
@@ -166,36 +169,38 @@ The second adjustment does change the models definition, because we use a single
 
 %The work shown in~\cite{RuizAD19} focuses on 
 
-In~\citet{RuizAD19}, we illustrate the results of the equivalence between the additive and convex formulations in an empirical way. To do this we generate a synthetic problem, shown in Figure~\ref{fig:synthetic_example}, as a four linear regression tasks problem. 
+In~\citet{RuizAD19}, we illustrate the results of the equivalence between the additive and convex formulations in an empirical way. To do this we generate a synthetic problem, shown in Figure~\ref{fig:synthetic_example}, as a four tasks linear regression problem. 
 %
-We use four different functions $f_0, f_1, f_2, f_3$ by considering a base function $f(x) = 2x - 1$ with slope $m=2$ and bias $n=1$, then we sample $z_m^r, z_n^r \sim \normal{0, 1}$ for each task $r=0, \ldots, 3$, and, create the $r$-th slope and bias by adding these Gaussian samples, i.e., $m_r = m + z_m^r$ and $n_r = n + z_n^r$. Also, we sample the noise level $\sigma_r$ for each task uniformly in $(0, 5)$. 
+We use four different functions $f_0, f_1, f_2, f_3$ by considering a base function $f(x) = 2x - 1$ with slope $m=2$ and bias $n=1$; then we sample $z_m^r, z_n^r \sim \normal{0, 1}$ for each task $r=0, \ldots, 3$, and, create the $r$-th slope and bias by adding these Gaussian samples, i.e., $m_r = m + z_m^r$ and $n_r = n + z_n^r$. Also, we sample the noise level $\sigma_r$ for each task uniformly in $(0, 5)$. 
 %
 Then, the $r$-th task consists in estimating $m_r$ and $n_r$ from the data. To do this, for each task we uniformly sample $30$ points $x_i^r \in [1, 50)$, and the target values are defined as $y_i^r = f_r(x_i^r) + \epsilon^i_r$ where $\epsilon^i_r \sim \normal{0, \sigma_r}$ and $f_r(x) = m_r x + n_r$.
 %
-Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a task-stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes; in this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
+
+Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a task-stratified way: two thirds, i.e. $80$ points are used for training, and the rest are used for testing purposes. In this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
 %
 With this synthetic problem, we train four convex \acrshort{mtl} models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding equivalent additive \acrshort{mtl} models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
 %
-Our goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so the regularization and, therefore, $\mu$ are relevant; the value $C_{\text{conv}} = 10^{-2}$ is found to be useful. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:synthetic_comparison}, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the slopes estimated using the convex approach and in the $y$ axis those estimated with the additive one. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
+
+Our first goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so that the regularization and, therefore, $\mu$ are relevant; the value $C_{\text{conv}} = 10^{-2}$ is found to be useful. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:synthetic_comparison}, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the slopes estimated using the convex approach and in the $y$ axis those estimated with the additive one. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
 
 %
-To further compare the two formulations, we visualize how the change on the hyperparameters imposes a change on the final models. Using the already described synthetic problem of Figure~\ref{fig:synthetic_example}, we select values of $\lambda$ ranging from $0$ to $1$, and their corresponding values $\mu = (1-\lambda)^2 / \lambda^2$, and fit convex and additive \acrshort{mtl} linear \acrshort{svm}s using these values. In Subfigures~\ref{fig:additive_weights} and~\ref{fig:convex_weights} we show the coefficients obtained for the common and task-specific parts with the additive formulation and convex one, respectively.
+To further compare the two formulations, we visualize how the change on the hyperparameters imposes a change on the final models. Using the already described synthetic problem of Figure~\ref{fig:synthetic_example}, we select values of $\lambda$ ranging from $0$ to $1$, and their corresponding values $\mu = (1-\lambda)^2 / \lambda^2$, and fit convex and additive \acrshort{mtl} linear \acrshort{svm}s using these values. In Subfigures~\ref{fig:additive_weights} and~\ref{fig:convex_weights} we show the coefficients obtained for the common and task-specific parts with the additive and convex formulations, respectively.
 %
 We can observe how both graphics show a similar behaviour, with the common model starting in $0$ when $\mu$ is large or $\lambda=0$, and, as $\mu$ decreases and $\lambda$ grows, the task-specific parts go to zero and the common model reaches the optimal value for \acrshort{ctl}.
 %
 
-However, two facts are noticeable. The first one is the range of the hyperparameters needed for each formulation; while the convex formulation always uses $[0, 1]$, with the additive formulation it seems that $(10^{-3}, 10^3)$ is useful in this problem, but we cannot extrapolate to other problems; the second one is the smoother transition of the convex formulation, where the changes are steadily made, while with the additive one the changes look more abrupt.
+However, two facts are noticeable. The first one is the range of the hyperparameters needed for each formulation: while the convex formulation always uses $[0, 1]$, with the additive formulation it seems that $(10^{-3}, 10^3)$ is useful in this problem, but we cannot extrapolate to other problems. The second one is the smoother transition of the convex formulation, where the changes are steadily made, while with the additive one the changes look more abrupt.
 
 
 
 \subsection{Performance of Convex \acrshort{mtl} and Optimal Convex Combination}
 
 To test the performance of the convex \acrshort{mtl} formulation, in~\citet{RuizAD19} we also conduct experiments with real problems, which we later extend in~\citet{RuizAD21}. 
-To test our proposal we apply it to three \acrshort{svm} variants: L1, L2 and LS-\acrshort{svm}. For each variant, we compare the \acrshort{ctl}, \acrshort{itl} with our convex \acrshort{mtl} formulation. To do this, we use fourteen different problems, six regression problems and eight classification ones.
+To test our proposal we apply it to three \acrshort{svm} variants: L1, L2 and LS-\acrshort{svm}. For each variant, we compare the \acrshort{ctl}, \acrshort{itl} with our convex \acrshort{mtl} formulation. To do this, we use fourteen different problems, six regression ones and eight classification ones.
 
 % Models
-\subsubsection*{Models}
-Considering that {LX} can stand for {L1}, {L2} or {LS}, we use the following models to test our proposal:
+%\subsubsection*{Models}
+Considering the models, we use {LX} such that it can stand for {L1}, {L2} or {LS}, we use the following models to test our proposal:
 \begin{itemize}
     \item {Common Task Learning LX-\acrshort{svm} (\fmod{\acrshort{ctl}-LX})}: A single LX-\acrshort{svm} fitted using data from all the tasks and does not use task information.
     \item {Independent Task Learning LX-\acrshort{svm} (\fmod{\acrshort{itl}-LX})}: Multiple task-specific LX-\acrshort{svm}s, each of which is fitted with the data from its own task.
@@ -204,27 +209,28 @@ Considering that {LX} can stand for {L1}, {L2} or {LS}, we use the following mod
 \end{itemize}
 
 % Problems
-\subsubsection*{Problems}
-To compare these approaches we will use several regression and classification problems. We use a total of six regression problems:
+%\subsubsection*{Problems}
+We next describe the problems regression and classification problems.
+We use a total of six regression problems:
 \begin{itemize}
     \item \fdata{majorca}: The goal is to predict the photovoltaic energy production in Mallorca. The tasks are defined as the energy prediction at each of the $14$ hours with sunlight (we remove the night hours).
     \item \fdata{tenerife}: The goal is to predict the photovoltaic energy production in Tenerife. The tasks are defined as the energy prediction at each of the $14$ hours with sunlight (we remove the night hours).
-    \item \fdata{boston}\footnote{https://www.kaggle.com/datasets/schirmerchad/bostonhoustingmlnd}: This is the housing problem in Boston, where the goal is to predict house prices, and the tasks are defined as the predictions in different areas of the city. In Boston we have the houses that are next to the river and those that are not. 
-    \item \fdata{california}\footnote{https://www.kaggle.com/datasets/camnugent/california-housing-prices}: This is the housing problem in California, where the goal is also to predict house prices. Here the tasks correspond to 4 different areas of California, according to their distance to the sea.
+    \item \fdata{boston}\footnote{https://www.kaggle.com/datasets/schirmerchad/bostonhoustingmlnd}: This is the Boston housing problem, where the goal is to predict house prices, and the tasks are defined as the predictions in different areas of the city. In this problem we define two tasks: the houses that are next to the river and those that are not. 
+    \item \fdata{california}\footnote{https://www.kaggle.com/datasets/camnugent/california-housing-prices}: This is the housing problem in California, where the goal is also to predict house prices. Here the tasks correspond to four different areas of California, according to their distance to the sea.
     \item \fdata{abalone}\footnote{https://archive.ics.uci.edu/ml/datasets/abalone}: The goal is to predict the number of rings of a specie of marine molluscs. The tasks are male, female or infant specimens.
-    \item \fdata{crime}\footnote{https://archive.ics.uci.edu/ml/datasets/communities+and+crime}: The goal is to predict the number of crimes per \num{100000} habitants in the U.S., the tasks are the prediction of the crime rate in different states, and we consider nine states.
+    \item \fdata{crime}\footnote{https://archive.ics.uci.edu/ml/datasets/communities+and+crime}: The goal is to predict the number of crimes per \num{100000} habitants in the U.S.. The tasks are the prediction of the crime rate in nine different states.
 \end{itemize}
 For the classification setting, we consider eight problems, six of which are generated by applying different task definitions to two different problems.
 \begin{itemize}
     \item \fdata{landmine}\footnote{https://andreric.github.io/files/datasets/LandmineData\_19.mat}: This is a binary classification problem in which the goal is to detect landmines. Detection of different types of landmines define different tasks. 
     \item \fdata{binding}\footnote{https://github.com/pcpLiu/DeepSeqPan/tree/master/dataset}: This is a binary classification problem where the goal is to determine if a given molecule will bind with peptides. Different molecules define different tasks and the patterns are the characteristics of the peptides.
-    \item \fdata{adult}\footnote{https://archive.ics.uci.edu/ml/datasets/adult}: The goal is to predict whether the yearly salary of a particular person is greater than 50K based on sociocultural data. We can define different tasks dividing the population by either gender or race, so we have the problems:
+    \item \fdata{adult}\footnote{https://archive.ics.uci.edu/ml/datasets/adult}: The goal is to predict whether the yearly salary of a particular person is greater than \num{50}K based on sociocultural data. We can define different tasks dividing the population by either gender or race, so we have the problems:
     \begin{itemize}
         \item \fdata{ad\_(G)}: dividing by gender. We consider $2$ tasks.
         \item \fdata{ad\_(R)}: dividing by race. We consider $5$ tasks.
         \item \fdata{ad\_(G, R)}: dividing by both gender and race, so we define a total of $10$ tasks.
     \end{itemize}
-    \item \fdata{compas}\footnote{https://www.kaggle.com/datasets/danofer/compass}: The goal is to predict whether the COMPAS algorithm will assign "low" or "high" scores of recidivism to a particular subject. We can also divide the sample by either race or gender, so we obtain:
+    \item \fdata{compas}\footnote{https://www.kaggle.com/datasets/danofer/compass}: The goal is to predict whether the COMPAS algorithm will assign ``low'' or ``high'' scores of recidivism to a particular subject. We can also divide the sample by either race or gender, so we obtain:
     \begin{itemize}
         \item \fdata{comp\_(G)}: dividing by gender. We consider $2$ tasks.
         \item \fdata{comp\_(R)}: dividing by race. We consider $4$ tasks
@@ -232,7 +238,7 @@ For the classification setting, we consider eight problems, six of which are gen
     \end{itemize}
 \end{itemize}
 % The characteristics of some of the problems considered are present in Table~\ref{tab:mtl_problems} but, considering the different task definitions for \fdata{compas} and \fdata{adult} 
-We give in Table~\ref{tab:problems_hais19} a description of the characteristics of each problem.
+We give in Table~\ref{tab:problems_hais19} a description of the characteristics of the datasets.
 
 % Table Problems HAIS19
 \begin{table*}[t!]
@@ -274,37 +280,38 @@ We give in Table~\ref{tab:problems_hais19} a description of the characteristics 
      \toprule
      \fhead{} & \fhead{Grid} & \fhead{\fmod{\acrshort{ctl}-L1,2}} & \fhead{\fmod{\acrshort{itl}-L1,2}} & \fhead{\fmod{cvxMTL-L1,2}}  & \fhead{\fmod{\acrshort{ctl}-LS}} & \fhead{\fmod{\acrshort{itl}-L,S}} & \fhead{\fmod{cvxMTL-LS}}   \\
      \midrule
-      $C$ &  \scalebox{.9}{$\set{4^k: -2 \leq k \leq 6}$} & CV & CV & CV & CV & CV & CV  \\ 
-      $\epsilon$ & \scalebox{.9}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & CV & CV & CV & - & - & - \\
-      $\gamma_c$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & CV & - & \fmod{\acrshort{ctl}-L1,2} & CV & - & \fmod{\acrshort{ctl}-LS} \\
-      $\gamma_s^r$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & CV & \fmod{\acrshort{itl}-L1,2} & - & CV & \fmod{\acrshort{itl}-LS}\\
-      $\lambda$ & \scalebox{.9}{$\set{0.1 k : 0 \leq k \leq 10}$} & - & - & CV & - & - & CV \\
+      $C$ &  \scalebox{.9}{$\set{4^k: -2 \leq k \leq 6}$} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv}  \\ 
+      $\epsilon$ & \scalebox{.9}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & - & - & - \\
+      $\gamma_c$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & \acrshort{cv} & - & \fmod{\acrshort{ctl}-L1,2} & \acrshort{cv} & - & \fmod{\acrshort{ctl}-LS} \\
+      $\gamma_s^r$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & \acrshort{cv} & \fmod{\acrshort{itl}-L1,2} & - & \acrshort{cv} & \fmod{\acrshort{itl}-LS}\\
+      $\lambda$ & \scalebox{.9}{$\set{0.1 k : 0 \leq k \leq 10}$} & - & - & \acrshort{cv} & - & - & \acrshort{cv} \\
       \bottomrule
      \end{tabular}
      }
   \end{table}
 
-\subsubsection*{Experimental Procedure}
-To obtain the experimental results, we have to select the optimal hyperparameters for each model in a training-validation set and measure their performance on a test set. To do this, we follow the adjustments and experimental procedure described at the beginning of this subsection, reusing the kernel widths from \acrshort{ctl} and \acrshort{itl} approaches and limiting the convex \acrshort{mtl} formulation to a single convex combination hyperparameter $\lambda$.
+%\subsubsection*{Experimental Procedure}
+To obtain the experimental results, we have to select the optimal hyperparameters for each model in a training-validation set and measure their performance on a test set. To do this, we follow the adjustments and experimental procedure described at the beginning of this subsection, reusing the kernel widths from the \acrshort{ctl} and \acrshort{itl} approaches and limiting the convex \acrshort{mtl} formulation to a single convex combination hyperparameter $\lambda$.
 %
 In all models considered we use Gaussian kernels, so all features have been scaled to the $[0, 1]$ interval.
 As previously explained, the hyperparameters for the \acrshort{ctl} and \acrshort{itl} approaches in the classification setting are $\set{C, \gamma}$ for all variants L1, L2 and LS-\acrshort{svm}.
 In the regression setting we have $\set{C, \gamma, \epsilon}$ for the L1 and L2 variants, and $\set{C, \gamma}$ for the LS-\acrshort{svm}.
 %
 After selecting the optimal kernel widths in the \acrshort{ctl} approach $\sigma^*$, and the task-specific widths $\sigma_r^*$ in the \acrshort{itl} approach, we use these values to fix them in the convex \acrshort{mtl} formulation.
-Then, the hyperparameters that we are considering for CV search in the convex \acrshort{mtl} approaches in the classification settings are $\set{C, \lambda}$ for all variants, while in the regression problems they are $\set{C, \lambda, \epsilon}$ for the L1 and L2 variants and $\set{C, \lambda}$ for the LS-\acrshort{svm}.
+Then, the hyperparameters that we are considering for \acrshort{cv} search in the convex \acrshort{mtl} approaches in the classification settings are $\set{C, \lambda}$ for all variants, while in the regression problems they are $\set{C, \lambda, \epsilon}$ for the L1 and L2 variants and $\set{C, \lambda}$ for the LS-\acrshort{svm}.
 %
-The optimal combination approaches do not have proper hyperparameters, since $\lambda$ is computed.
+The optimal combination approaches do not have specific hyperparameters, since $\lambda$ is computed.
 %
-In all problems, the hyperparameters considered are selected with a grid search using a task-stratified $3$-fold CV. That is, given a training-validation set, we divide it in three different folds where the task proportions are kept constant, and we use two of these folds for training the model and evaluate its performance in the remaining one.
+
+In all problems, the hyperparameters considered are selected with a grid search using a task-stratified $3$-fold \acrshort{cv}. That is, given a training-validation set, we divide it in three different folds where the task proportions are kept constant, and we use two of these folds for training the model and evaluate its performance in the remaining one.
 %
-In the regression problems, we will measure the validation performance using the MAE, see Table~\ref{tab:error_models_reg_mae_mae}, and MSE, see Table~\ref{tab:error_models_reg_mse_mae}.  Observe that the objective function of L1-\acrshort{svm} based models is more aligned with minimizing the MAE, while those of L2 and LS-\acrshort{svm} based models are more related to minimizing the MSE.
-In the classification problems, see Table~\ref{tab:error_models_class_f1}, we will consider the F1 score to deal with the class-imbalance ratio that we find, for example, in the \fdata{landmine} dataset where we have 200 negative examples for each 13 positive ones.
+In the regression problems, we will measure the validation performance using the MAE (see Table~\ref{tab:error_models_reg_mae_mae}) and MSE (see Table~\ref{tab:error_models_reg_mse_mae}).  Observe that the objective function of L1-\acrshort{svm} based models is more aligned with minimizing the MAE, while those of L2 and LS-\acrshort{svm} based models are more related to minimizing the MSE.
+In the classification problems (see Table~\ref{tab:error_models_class_f1}) we will consider the F1 score to deal with the class-imbalance ratio that we find, for example, in the \fdata{landmine} dataset where we have 200 negative examples for each 13 positive ones.
 %
-In Table~\ref{tab:hyperpars_grid} we show for each hyperparameter of the considered approaches whether they are selected using a CV procedure or recycling them from other approach, as well as the grids used for the CV search.
+In Table~\ref{tab:hyperpars_grid} we show for each hyperparameter of the considered approaches whether they are selected using a \acrshort{cv} procedure or reusing them from another approach, as well as the grids used for the \acrshort{cv} search.
 
 We have explained how we select the hyperparameters given a training-validation set, but it is necessary also to describe how we get the final test results that we present in the tables.
-In every problem, except for \fdata{majorca} and \fdata{tenerife}, we will consider three external folds, each with the internal three folds for \acrshort{cv}. That is, the whole dataset of each problem is first divided in three task-stratified external folds: $F_1, F_
+In every problem, except for \fdata{majorca} and \fdata{tenerife}, we will consider three external folds, each with the internal three folds for \acrshort{cv}. That is, the entire dataset of each problem is first divided in three task-stratified external folds: $F_1, F_
 2, F_3$; then, two folds will form the training-validation set and the third one will be used as the test set. All folds have the same task proportions. There are three different combinations to do this division: $\set{F_1, F_2; F_3}, \set{F_1, F_3; F_2}$ and $\set{F_2, F_3; F_1}$, where the first two folds form the train-validation set and the other one is the test set.
 %
 In each train-validation set we follow the procedure described above to select the optimal hyperparameters, and the performance model with the optimal hyperparameters will be tested in the remaining fold, i.e., the test set.
@@ -473,26 +480,27 @@ For the regression problems, in Tables~\ref{tab:error_models_reg_mae_mae} and~\r
   \end{table*}
 
 
-\subsubsection*{Results}
-The tables with the numerical results have three blocks, one for each variant (L1, L2 or LS-\acrshort{svm}s), and, in each block, for each problem we show in bold the model with best test results.
+%\subsubsection*{Results}
+Regarding the numerical results, the tables with these results have three blocks, one for each variant (L1, L2 or LS-\acrshort{svm}s), and, in each block, for each problem we show in bold the model with best test results.
 %
 We also provide a statistical significance ranking based on the Wilcoxon test. The Wilcoxon test is a pairwise test that checks whether the difference of two samples has 0 median, i.e., the distribution is symmetric around 0. Instead of showing every Wilcoxon test result between all pairs of models, which would result in a $12 \times 12$ matrix difficult to interpret, we take the following approach. We first sort the models, according to some criterion, and test the significance between one model and the next one in the sorting order. Then we create a new significance ranking, the ranking increases only if this difference is significant. For example, if there are no significant differences between the first and second model, according the sorting order, they both obtain a ranking of $1$.
 
 %Regression
 %
-To apply the Wilcoxon test in the regression problems, we sort the models (using all blocks) according to their mean score. Then, we test if the difference between each model and the next one in the ranking is significant. To do this, we take the list of errors committed by each model in the test set, that is, $e_1 = y - \hat{y_1}$ and $e_2 = y - \hat{y_2}$. Then, we use the Wilcoxon test to check whether $e_1 - e_2$ is centered around 0.
-If the null hypothesis is rejected at a $5\%$ level, then we say that the difference is significant.
+To apply the Wilcoxon test in the regression problems, we combine all blocks. We sort the models (using all blocks) according to their mean score. Then, we test whether the difference between each model and the next one in the ranking is significant. To do this, we take the list of errors committed by each model in the test set, that is, $e_1 = y - \hat{y_1}$ and $e_2 = y - \hat{y_2}$. Then, we use the Wilcoxon test to check whether $e_1 - e_2$ is centered around 0.
+If the null hypothesis is rejected at a $5\%$ level, then we say that the difference is significant, and we take as better the model with smaller error.
 %
 % For instance, according to MAE, in Table~\ref{tab:error_models_reg_mae_mae}, for the \fdata{majorca} dataset, the best model is the convex \fmod{cvxMTL-LS} proposal and the second best is the \fmod{cvxMTL-L2} model, while the \fmod{cvxMTL-L1} ties for fifth place with \fmod{cvxCMB-L1}.
 %
+
 The results for regression problems are shown in Table~\ref{tab:error_models_reg_mae_mae}, where the best parameters are selected according to the MAE validation score, and in Table~\ref{tab:error_models_reg_mse_mae}, where the MSE is used as the validation metric.
 %
-Although we cannot pick a single overall winner, we can still draw some conclusions from the tables. Notice that the convex \acrshort{mtl} approaches usually perform better, obtaining the best result in 11 out of 18 MAE blocks and 16 out of 18 R2 blocks of Table~\ref{tab:error_models_reg_mae_mae}; in Table~\ref{tab:error_models_reg_mse_mae} it obtains 12 out of 18 MAE blocks and 15 out of 18 R2 blocks.
-Also, a convex \acrshort{mtl} approach obtains the single best overall model in four problems, while ties for the first place in \fdata{boston} and, only in \fdata{tenerife} ends up as second, after the \fmod{cvxCMB-L1} model.
+Although we cannot pick a single overall winner, we can still draw some conclusions from the tables. Notice that the convex \acrshort{mtl} approaches usually perform better, obtaining the best result in 11 out of 18 MAE blocks and 16 out of the 18 R2 blocks of Table~\ref{tab:error_models_reg_mae_mae}; in Table~\ref{tab:error_models_reg_mse_mae} it obtains 12 out of 18 MAE blocks and 15 out of 18 R2 blocks.
+Also, a convex \acrshort{mtl} approach yields the single best overall model in four problems, while ties for the first place in \fdata{boston} and, only in \fdata{tenerife} ends up as second, after the \fmod{cvxCMB-L1} model.
 
 %Classification
 The classification results, in Table~\ref{tab:error_models_class_f1} show a similar behavior. In this table, the ranking is not computed for each problem, but in general, computing the mean of scores across all problems. This mean score is used to rank the models, which is the second left-most column, and, using the Wilcoxon-based procedure we produce a statistical significance ranking shown in the last column. Now, the Wilcoxon tests are done with samples of size eight, the number of classification problems, so it is more difficult to find significant differences. In any case, the Wilcoxon test here uses a very small sample size and is given only for illustration purposes.
-The convex \acrshort{mtl} approaches gets the best 18 F1 scores out of 24 and the 22 best accuracy scores out of 26. The best overall model is the \fmod{cvxMTL-L2}, while the other convex \acrshort{mtl} models are tied with it in the significance ranking.
+The convex \acrshort{mtl} approaches gets the best 18 F1 scores out of 24 and the 22 best accuracy scores out of 24. The best overall model is the \fmod{cvxMTL-L2}, while the other convex \acrshort{mtl} models are tied with it in the significance ranking.
 %%%%%%%%%%%%%%%%%
 
 
@@ -610,12 +618,12 @@ The convex \acrshort{mtl} approaches gets the best 18 F1 scores out of 24 and th
 \section{Application to Renewable Energy Prediction}\label{sec:convexmlt_renewable}
 
 A transition towards renewable energies is taking place, with particular interest for solar and wind generation, which implies a demand for accurate energy production forecasts to be made for the transmission system operators, wind and solar farm managers and market agents. These forecasts can be made at different time horizons: very short (up to one hour), short (up to a few hours), or medium-long (one or more days ahead).
-In this application of our convex \acrshort{mtl} techniques to renewable energies forecast, we will focus in the latter, in particular, the hourly, day-ahead prediction, that is, the prediction of tomorrow, at each hour, is predicted today.
+In this application of our convex \acrshort{mtl} techniques to renewable energies forecast, we will focus in the latter, in particular, the hourly, day-ahead prediction, that is, the prediction of tomorrow, of each hour, is given today.
 
-Machine Learning (\acrshort{ml}), like in other forecasting problems, has an increasing presence in energy prediction approaches. 
-The usage of ML models requires choosing the predictive features, which depends on the time horizon of interest. 
-For short-term forecast, past values of energy production and real time meteorological data can be used; however, for longer horizons, the most common features are numerical weather predictions (\acrshort{nwp}), that can be provided by entities such as the \acrlong{ecmwf}, which is the one used in this work.
-For the hourly day-ahead predictions of interest here, we use the NWP forecasts of the ECMWF run at \utc{00} in a given day to predict the hourly energy productions the day after. That is, using the NWP of \utc{00}, the energy generation predictions are given for each hour from {24}h to {47}h.
+Machine Learning (\acrshort{ml}), like in other forecasting scenarios, has an increasing presence in energy prediction approaches. 
+The use of ML models requires choosing the predictive features, which depends on the time horizon of interest. 
+For short-term forecast, past values of energy production and real time meteorological data can be used; however, for longer horizons, the most common features are those from numerical weather predictions (\acrshort{nwp}), that can be provided by entities such as the \acrlong{ecmwf}, which is the one used in this work.
+For the hourly day-ahead predictions of interest here, we use the NWP forecasts of the ECMWF run at \utc{00} in a given day to predict the hourly energy productions the day after. That is, using the NWP generated at \utc{00}, the energy predictions are given for each hour from {24}h to {47}h.
 
 After the selection of predictive features, the ML method better suited for the problem at hand has to be selected. Also, each method has a set of hyperparameters that influence its behaviour and have to be adjusted in each occasion.
 In the case of interest here, there are two possibilities: using local models for single installations or global models for multiple installations within a geographic area.
@@ -625,15 +633,15 @@ In the case of interest here, there are two possibilities: using local models fo
 % For solar energy, we can see the surveys of~\citep{Antonanzas2016,Inman2013,Wan2015}, and a good reference for many aspects of photovoltaic energy can be found in~\cite{SEK}.
 
 Anyway, any ML approach has to deal with the changing behaviour of a wind or solar farm, which can be altered substantially according to different conditions or time.
-In the \acrfull{pv} energy production this is obvious, since different times of the day, from sunrise to sunset, have very different behaviours; but there are also seasonal effects that affect the energy generation in the solar farms.
+In the \acrfull{pv} energy production this is obvious, since different times of the day, from sunrise to sunset, have very different behaviours, but there are also seasonal effects that affect the energy generation in the solar farms.
 For wind energy, it is more difficult to define the variables that determine different scenarios. 
 The wind velocity forecast is the most relevant variable for energy generation, but it is important to take into account the power curve of wind turbines, which has three different response zones: one for low speed and near zero production, an intermediate one with power growing with wind velocity and one with~maximum constant power up to the cut-off speed.
 The angle in which this wind incides is also important, since the turbines of a farm are set for a specific direction. 
-Finally, the assymetrical wind velocities between the day and night period can also affect the energy production.
+Finally, the assymetric wind velocities between the day and night period can also affect the energy production.
 
 One way to deal with these different behaviour scenarios is to apply an \acrshort{mtl} model, where the models built are specialized in each scenario but all scenarios are used in the learning process.
-In this section a convex \acrshort{mtl} kernel-based approach will be used for wind and solar energy forecasting. To do this, it is necessary to define the tasks of interest on each case, which are described in the following subsections.
-In the first subsection the experimental methodology is described, showing how the models are chosen and the hyperparameters are selected. Then, the next two subsection presents the approach and the detailed task definitions used for solar and wind energy, respectively, as well as the results to measure the resultant performance.
+In this section a convex \acrshort{mtl} kernel-based approach will be used for wind and solar energy forecasting. To do this, it is necessary to define the tasks of interest on each case, which are described next.
+In the first subsection the experimental methodology is described, showing how the models are chosen and the hyperparameters are selected. Then, the next two subsections present the approach and the detailed task definitions used for solar and wind energy, respectively, as well as the results to measure the resultant performance.
 
 \subsection{Experimental~Methodology}
 
@@ -648,11 +656,11 @@ In the first subsection the experimental methodology is described, showing how t
      \toprule
      \fhead{Par.} & \fhead{Grid} & \fhead{\fmod{ctlSVR}} & \fhead{\fmod{itlSVR}} & \fhead{\fmod{cvxMTL}} \\
      \midrule
-      $C$ &  $\set{10^k: -1 \leq k \leq 6}$ & CV & CV & CV  \\
-      $\epsilon$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & CV & CV & CV  \\
-      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & CV & - & ctlSVR \\
-      $\gamma_r$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & CV & itlSVR\\
-      $\lambda$ & $\set{10^{-1}k: 0 \leq k \leq 10}$ & - & - & CV \\
+      $C$ &  $\set{10^k: -1 \leq k \leq 6}$ & \acrshort{cv} & \acrshort{cv} & \acrshort{cv}  \\
+      $\epsilon$ & $\set{\frac{\sigma}{2^k}: 1 \leq k \leq 6}$ & \acrshort{cv} & \acrshort{cv} & \acrshort{cv}  \\
+      $\gamma$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & \acrshort{cv} & - & ctlSVR \\
+      $\gamma_r$ & $\set{\frac{4^k}{d}: -2 \leq k \leq 3}$ & - & \acrshort{cv} & itlSVR\\
+      $\lambda$ & $\set{10^{-1}k: 0 \leq k \leq 10}$ & - & - & \acrshort{cv} \\
       \bottomrule
      \end{tabular}
     }
@@ -660,57 +668,57 @@ In the first subsection the experimental methodology is described, showing how t
 
 Here we describe the methodology that we have followed to conduct the experiments of renewable energy prediction.
 %
-For both the solar and wind energy, we use the same procedure. In each problem, we have a train, validation and test sets, each corresponding to one year of data. In the solar energy problems, where we have data from photovoltaic parks in Mallorca and Tenerife, and we use 2013, 2014 and 2015 as train, validation and test sets, respectively; while for wind energy problems, where we have data from the Sotavento park, in Spain, we use the years 2016, 2017 and 2018.
+For both the solar and wind energy, we use the same procedure. In each problem, we have a train, validation and test sets, each corresponding to one year of data. In the solar energy problems, where we have data from photovoltaic parks in Mallorca and Tenerife, we consider 2013, 2014 and 2015 as train, validation and test sets, respectively, while for wind energy problems, where we have data from the Sotavento park, in Spain, we have the years 2016, 2017 and 2018.
 %
-For both solar and wind problems we use different definition of tasks. For the tasks definition we use only the training data for establishing rules to partition the data in different tasks; then, with these tasks' definition, we apply them to get the tasks of the validation and test examples.
+For both solar and wind problems we apply different definition of tasks. For task definition we use only the training data for establishing rules to partition the data in different tasks; then, with these tasks' definition, we apply them to get the tasks of the validation and test instances.
 %
-For example, if we use the wind velocity to define three tasks, we study the velocities of the training examples to set the boundaries that define each task: low, medium and high velocity; then, we use these definitions on the validation and test sets.
+For example, if we consider the wind velocity to define three tasks, we study the velocities of the training samples to set the boundaries that define each task: low, medium and high velocity; then, we use these definitions on the validation and test sets.
 %
-We will represent the task definition applied with the nomenclature: \fmodt{taskDef}{modelName}, where \fmod{taskDef} is a name for the task definition and \fmod{modelName} is the name of the model.
+We will represent the task definition applied with the nomenclature \fmodt{taskDef}{modelName}, where \fmod{taskDef} is a name for the task definition and \fmod{modelName} is the name of the model.
 
 %
 We consider three different models based on the standard Gaussian kernel SVR:
 \begin{itemize}
     \item \fmod{ctlSVR}: a \acrshort{ctl} model, that is, a single SVR for all tasks. Its set of hyperparameters is $\set{C, \gamma, \epsilon}$, where $C$ is the regularization trade-off parameter, $\gamma$ is the kernel width, and $\epsilon$ the width of the error insensitive area.
     \item \fmod{itlSVR}: an \acrshort{itl} model, that is, an independent SVR for each task, each with its hyperparameters: $\set{C_r, \gamma_r, \epsilon_r}$ for $r=1, \ldots, \ntasks$.
-    \item \fmod{mtlSVR}: a convex \acrshort{mtl} model, as shown in Section~\ref{sec:convexmlt_kernel}, with its corresponding set of hyperparameters is $\set{C, \epsilon, \gamma, \gamma_1, \ldots, \gamma_\ntasks, \lambda_1, \ldots, \lambda_\ntasks}$, where $\gamma$ is the kernel width of the common part and $\gamma_r$ the one of the $r$-th specific part; also, $\lambda_r$ is the convex combination parameter corresponding to the $r$-th task.
+    \item \fmod{mtlSVR}: a convex \acrshort{mtl} model, as shown in Section~\ref{sec:convexmlt_kernel}, with its corresponding set of hyperparameters is in principle $\set{C, \epsilon, \gamma, \gamma_1, \ldots, \gamma_\ntasks, \lambda_1, \ldots, \lambda_\ntasks}$, where $\gamma$ is the kernel width of the common part and $\gamma_r$ the one of the $r$-th specific part; also, $\lambda_r$ is the convex combination parameter corresponding to the $r$-th task.
 \end{itemize}
 %
 Although the \acrshort{ctl} approach does not use the tasks information, the \acrshort{itl} and \acrshort{mtl} models depend on the task definition that we use. For instance, prediction at different hours can define different tasks, where one possible value is (\fmod{hour}=14) or (\fmod{hour}=12). The models using this task definition will be named \fmodt{hour}{itlSVR} and \fmodt{hour}{mtlSVR}. 
 %
 Since each task definition partitions the data, we can also use multiple task definitions, combining them and creating finer partitions. 
-We will name \fmod{(taskDef1,...,taskDefM)} the combination of task definitions \fmod{taskDef1}, ..., \fmod{taskDefM}. For example, consider the \fmod{(hour)} definition for solar energy, in which we consider 14 different hours, hence, 14 tasks; and consider the \fmod{season} definition, which considers the prediction in each season as a different task, hence, four tasks. The combined definition \fmod{(hour, season)} generates $14 \times 4$ possible tasks, whose values can be, for example, \fmod{(hour = 12, season = summer)}.
+We will name \fmod{(taskDef1,...,taskDefM)} the combination of task definitions \fmod{taskDef1}, ..., \fmod{taskDefM}. For example, consider the \fmod{(hour)} definition for solar energy, in which we consider 14 different hours, hence, 14 tasks, and consider the \fmod{season} definition, which considers the prediction in each season as a different task, hence, four tasks. The combined definition \fmod{(hour, season)} generates $14 \times 4$ possible tasks, whose values can be, for example, \fmod{(hour = 12, season = summer)}.
 The models using this combination will be named \fmodt{hour, season}{itlSVR} or \fmodt{hour, season}{mtlSVR}.
 
 %
-As explained in Section~\ref{sec:convexmtlsvm_exp}, the cost of methods to select the optimal hyperparameters scales exponentially with the dimension, so it is not feasible to use a CV grid search, for example, if we have more than $3$ hyperparameters.
+As explained in Section~\ref{sec:convexmtlsvm_exp}, the cost of selecting the optimal hyperparameters scales exponentially with their number, so it is not feasible to use a \acrshort{cv} grid search, for example, if we have more than $3$ hyperparameters.
 %
-In the \fmod{ctlSVR} and \fmod{itlSVR} it is not a problem, since we have $3$ hyperparameters, for the common, single SVR, and for the task-independent ones, respectively. We use then a CV grid search, using the train and validation sets described above.
+In the \fmod{ctlSVR} and \fmod{itlSVR} it is not a problem, since we have $3$ hyperparameters, for the common, single SVR, and for the task-independent ones, respectively. We apply then a \acrshort{cv} grid search, with the train and validation sets described above.
 However, to find the hyperparameters of \fmod{mtlSVR} we have to make some adjustments, as discussed in Section~\ref{sec:convexmtlsvm_exp}. 
 %
-First, we use a convex \acrshort{mtl} formulation with a single $\lambda$ parameter, common to all tasks.
+First, we apply a convex \acrshort{mtl} formulation with a single $\lambda$ parameter, common to all tasks.
 %
 Second, we use the optimal kernel widths selected in validation for the \acrshort{ctl} and \acrshort{itl} approaches as the widths in the \acrshort{mtl} approach. That is, we get the optimal common $\gamma^*$ and task-specific $\gamma^*_1, \ldots, \gamma^*_\ntasks$, and fix them in the \fmod{mtlSVR} model, not including them in the grid search procedure.
-Then, we use a CV grid search to find the optimal values of the remaining hyperparameters, that is, $\set{C, \epsilon, \lambda}$.
+Then, we apply a \acrshort{cv} grid search to find the optimal values of the remaining hyperparameters, that is, $\set{C, \epsilon, \lambda}$.
 %
-In Table~\ref{tab:hyperpars_grid_energies} we show the method to obtain each hyperparameter, as well as the grids used in the CV grid search procedures.
-We use the \acrshort{mae} as the validation metric, because it is the most natural for the $\epsilon$-insensitive loss that is used in the SVRs, and the most commonly used in energy forecasting.
+In Table~\ref{tab:hyperpars_grid_energies} we show the method to obtain each hyperparameter, as well as the grids considered in the \acrshort{cv} grid search procedures.
+We use the \acrshort{mae} as the validation metric, because it is the most natural for the $\epsilon$-insensitive loss that is used in the SVRs, and the most common in energy forecasting.
 
 %
-The whole procedure to get the final scores is:
+The complete procedure to get the final scores is:
 \begin{enumerate}
     \item \textbf{Scale the target and normalizing the features.} We scale the target values to $[0, 1]$ and we normalize each feature, so it has $0$ mean and a standard deviation of $1$. This is done using the training data only. 
     For the target scale, we select the target minimum and maximum values of the training set, that is, $y_\text{min} = 0$, when no energy is produced, and $y_\text{max}$ is the maximum capacity of the park.    
     %Then, the target in train, validation and test sets is normalized as     $y_\text{scaled} = (y - y^\text{tr}_\text{min}) / (y^\text{tr}_\text{max} - y^\text{tr}_\text{min} )$.
     %For example, for feature normalization, we compute the training mean $\mu_d^\text{tr}$ and standard deviation $\sigma_d^\text{tr}$ of feature $d$, then we normalize the corresponding feature in the whole dataset using $\hat{X}_d = (\hat{X}_d - \mu_d^\text{tr}) /  \sigma_d^\text{tr}$.
-    \item \textbf{Use a CV grid search to select the optimal hyperparameters.} This is done with the train and validation sets, with the grids and adjustements already explained. We use the MAE as our validation metric.
+    \item \textbf{Use a \acrshort{cv} grid search to select the optimal hyperparameters.} This is done with the train and validation sets, with the grids and adjustements already explained. We use the MAE as our validation metric.
     \item \textbf{Predict on the test set and rescale to the original scale.} That is, we use the corresponding model $f(\cdot)$ to compute the prediction of the normalized $i$-th test example from task $r$, $\tilde{x}_i^r$, as $f(\tilde{x}_i^r)$. Then, we rescale it back to obtain the final prediction $\hat{y}_i^r = f(x_i^r) \times (y_\text{max} - y_\text{min} ) + y_\text{min}$
     \item \textbf{Compute the test score.} Using the target values $y_i^r$ and their corresponding predictions, $\hat{y}_i^r$, we measure the performance of our model using both MAE and MSE.
 \end{enumerate}
-The entire process is carried out using a \fcode{Pipeline} object, where we make use of class \fcode{StandardScaler} to normalize the data, and \fcode{TransformedTargetRegressor} class to scale the targets. All these classes are part of the \emph{scikit-learn} library~\citep{scikit-learn}.
+The entire process is carried out using a \fcode{Pipeline} object, where we make use of the class \fcode{StandardScaler} to normalize the data, and the \fcode{TransformedTargetRegressor} class to scale the targets. All these classes are part of the \emph{scikit-learn} library~\citep{scikit-learn}.
 
 %
-To put our results in perspective, we also show the errors of simple persistence models and of multilayer perceptrons. For the perceptron we use the \fcode{MLPRegressor} class of \emph{scikit-learn}. The architecture for both problems consists on fully connected networks with two hidden layers, with $100$ and $50$ neurons. We train these networks using the L-BFGS solver with a maximum of $800$ iterations and a tolerance of $10^{-10}$. The regularization hyperparameter is selected using a CV grid search, as those described above, where the grid is $\set{4^k: -2 \leq j \leq 3}$.
+To put our results in perspective, we also show the errors of simple persistence models and of multilayer perceptrons. For the perceptron we use the \fcode{MLPRegressor} class of \emph{scikit-learn}. The architecture for both problems consists on fully connected networks with two hidden layers, with $100$ and $50$ neurons. We train these networks using the L-BFGS solver with a maximum of $800$ iterations and a tolerance of $10^{-10}$. The regularization hyperparameter is selected using a \acrshort{cv} grid search, as those described above, where the grid is $\set{4^k: -2 \leq j \leq 3}$.
 
 
 
@@ -722,7 +730,7 @@ The goal is to predict the hourly energy production in the islands of Mallorca a
 %
 In this subsection the experiments with these solar problems are presented, using the experimental procedure already described. First a description of the problems and the data used is given; then the results are presented and analyzed.
 
-\subsubsection*{Data and~Tasks}
+%\subsubsection*{Data and~Tasks}
 For both problems, \fdata{majorca} and \fdata{tenerife}, the same variables, extracted from the Numerical Weather Prediction (NWP), are used:
 %These variables, extracted from NWP predictions made by the European Center for Medium Weather Forecasts 
 %(ECMWF;~\cite{ECMWF}), are:
@@ -746,11 +754,11 @@ That is, both grids have a longitude width of 2 degrees and a latitude height of
 
 %
 Observe that we obtain large dimensional patterns, where the features might be highly correlated. That is, a feature, \ftt{SSR} for example, measured in one point of the grid and another close point might be very correlated, since the grids are squares with sides of about $\km{12}$.
-This correlation will affect those models based on matrix-vector computations, such as linear models, which are the most obvious, but, also, to some extent, neural networks.
-Although ridge (or Tikhonov) regularization can alleviate this issue for these models, the kernel-methods, such as the kernel \acrshort{svm}s, seems better suited for these kind of problems.
-When we use kernels, like the Gaussian kernel $\exp{-\gamma \norm{x-y}^2}$, the algorithm learns using the distances among patterns $\norm{x - y}$, instead of its features.
+This correlation will affect those models based on matrix-vector computations, such as linear models, but, also, to some extent, to neural networks.
+Although ridge (or Tikhonov) regularization can alleviate this issue for these models, kernel-methods, such as the kernel \acrshort{svm}s, seems better suited for this kind of problems.
+When we apply kernels, like the Gaussian kernel $\exp{-\gamma \norm{x-y}^2}$, the algorithm learns using the distances among patterns $\norm{x - y}$, instead of its features.
 %
-These distances scale linearly with the dimension of data, that is, consider the features scaled to $[0, 1]$; then a rough estimate of the distance between two patterns would scale with $d$. In the extreme case where all features are equal, i.e. $x_j = x_1$ for all $j=1, \ldots, \dimx$; then, $\norm{x - x'} = d \abs{x_1 - {x'}_1} $.
+These distances scale linearly with the dimension of data; that is, consider the features scaled to $[0, 1]$; then a rough estimate of the distance between two patterns would scale with $d$. In the extreme case where all features are equal, i.e. $x_j = x_1$ for all $j=1, \ldots, \dimx$; then, $\norm{x - x'} = d \abs{x_1 - {x'}_1} $.
 However, this influence of the dimension can be easily controlled by $\gamma$, and, if selected properly, should not affect the performance of a Gaussian SVR.
 
 %
@@ -764,12 +772,12 @@ The hour of the day has a direct influence on the solar radiation, and, therefor
 \begin{itemize}
     \item	\fcode{hour}: The prediction at each hour is defined as a different task; there are thus 14 tasks in \fcode{majorca} (from 06 to \utc{19}) and \fcode{tenerife} (from 07 to \utc{20}).
     %We observe in Figures~\ref{fig:maj_groupby_hour} and~\ref{fig:ten_groupby_hour} that the distribution of the target, i.e.,~the photovoltaic energy, is very dependent on the hour chosen.
-    \item	\fcode{season}: The prediction at each season is defined as different task.  With~a slight abuse of language, the following definitions for each season are used: Spring, from~16 February to 15 May; Summer, from~16 May to 15 August; Autumn, from~16~August to 15 November; and~Winter, from~16 November to 15 February.
+    \item	\fcode{season}: The prediction at each season is defined as a different task.  With~a slight abuse of language, the following definitions for each season are used: Spring, from~16 February to 15 May; Summer, from~16 May to 15 August; Autumn, from~16~August to 15 November; and~Winter, from~16 November to 15 February.
     %We can observe in Figures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season} that different seasons have different means of the target.
 \end{itemize}
 %
 In Subfigures~\ref{fig:maj_groupby_hour} and~\ref{fig:ten_groupby_hour} the hourly averages of the \acrshort{pv} energy in \mwhu{} are shown for \fdata{majorca} and \fdata{tenerife}.
-Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season} we show the monthly averages are depicted, colored by season, where we take the season in first half of each month to select the color.
+Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season} we show the monthly averages, colored by season, where we take the season in first half of each month to select the color.
 \begin{figure}[t!]
     \centering%
     \subfloat[][]{%    
@@ -869,7 +877,7 @@ Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season
 In Tables~\ref{table:solar_scores_m} and~\ref{table:solar_scores_t} we show the numerical results for \fdata{majorca} and \fdata{tenerife}, respectively. We give the test MAE, which is the most natural metric for SVRs, as well as the MSE. 
 In the case of percentages, for MAE, we give the percentage corresponding to the total installed power, and for the MSE, the permyriad, that is per \num{10000}, of the installed power.
 %
-We also show the rankings in terms of MAE or MSE, and the optimal hyperparameter $\lambda^*$ selected by the CV for the \acrshort{mtl} models.
+We also show the rankings in terms of MAE or MSE, and the optimal hyperparameter $\lambda^*$ selected by the \acrshort{cv} for the \acrshort{mtl} models.
 %
 
 To assess statistical significance the Wilcoxon test is used, but instead of testing every pair of models, the rankings of Tables~\ref{table:solar_scores_m} and~\ref{table:solar_scores_t} are used. The Wilcoxon test is applied between each model and the next in ranking at the $0.05$ level, to determine if the difference is significant.
@@ -1276,13 +1284,13 @@ For the \fmod{hsNN}, a single network with the \fmod{convNet} architecture is us
 In the \fmod{cvxmtlNN} we use a network with the \fmod{convNet} architecture and $10$ output neurons to model the common network and each of the task-specific networks. That is, given an example from task $r$, the $10$ common output neurons and the  $r$-th task-specific ones are combined to obtain the final output. 
 
 % Optimizer and Hyperparameters
-We use the AdamW algorithm~\citep{LoshchilovH19} to train all the models considered, and the weight decay parameter $\mu$ for each model is selected using a CV-based search over the values $\set{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}, 10^{0}}$. The rest of the parameters, which are part of the architecture, are fixed and set to the default values: the dropout rate is $0.5$ and we use a $2\times 2$ max pooling layer with a stride of $2$.
+We use the AdamW algorithm~\citep{LoshchilovH19} to train all the models considered, and the weight decay parameter $\mu$ for each model is selected using a \acrshort{cv}-based search over the values $\set{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}, 10^{0}}$. The rest of the parameters, which are part of the architecture, are fixed and set to the default values: the dropout rate is $0.5$ and we use a $2\times 2$ max pooling layer with a stride of $2$.
 %
-The \fmod{cvxmtlNN} model also has $\lambda$ as a hyperparameter, and it is selected, alongside $\mu$, using a CV grid search, where the grid for $\lambda$ is $\set{0, 0.2, 0.4, 0.6, 0.8, 1}$.
+The \fmod{cvxmtlNN} model also has $\lambda$ as a hyperparameter, and it is selected, alongside $\mu$, using a \acrshort{cv} grid search, where the grid for $\lambda$ is $\set{0, 0.2, 0.4, 0.6, 0.8, 1}$.
 
 %
 The train and test sets are generated using a task-stratified split of $70\%$ and $30\%$, respectively.
-The CV grid searches are carried out using the training set, where we use a $5$-fold CV scheme. These folds are task-stratified, that is, all have the same task proportions. Also, since the problems are class-balanced and the sample size is reasonably large, the folds are expected to be class-balanced as well.
+The \acrshort{cv} grid searches are carried out using the training set, where we use a $5$-fold \acrshort{cv} scheme. These folds are task-stratified, that is, all have the same task proportions. Also, since the problems are class-balanced and the sample size is reasonably large, the folds are expected to be class-balanced as well.
 
 \subsubsection*{Results}
 
@@ -1325,7 +1333,7 @@ The CV grid searches are carried out using the training set, where we use a $5$-
 \end{table}
 
 % Refitting models
-To get more accurate results, less sensitive to randomness, we train each model $5$ different times. To do this, once the optimal hyperparameters have been selected using the CV in the training set, we refit the model with these hyperparameters using the entire training set. That is, \acrshort{cv} is done only once for each model in each problem, but then we repeat $5$ times the procedure of training the network over the whole training set.
+To get more accurate results, less sensitive to randomness, we train each model $5$ different times. To do this, once the optimal hyperparameters have been selected using the \acrshort{cv} in the training set, we refit the model with these hyperparameters using the entire training set. That is, \acrshort{cv} is done only once for each model in each problem, but then we repeat $5$ times the procedure of training the network over the entire training set.
 
 % Accuracy vs Categorical CE
 Although maximizing the accuracy is ultimately the goal in classification problems, it is not a differentiable measure, so we use the categorical cross entropy instead as the loss function to train the networks. Both measures are broadly correlated, but they do not represent exactly the same behavior. We will show the results using both for completeness.
@@ -1336,7 +1344,7 @@ In Table~\ref{tab:test_accuracy_majority} we show the test accuracy, using the l
 %
 Other approach to visualize these results is to compute the categorical cross entropy directly on the averaged logits, which we show in Table~\ref{tab:test_crossentropy_mean}.
 %
-In both tables we also show the optimal values for $\lambda$ selected in the CV.
+In both tables we also show the optimal values for $\lambda$ selected in the \acrshort{cv}.
 
 % Analysis
 Our proposal, the \fmod{cvxmtlNN} model, obtains the best results in all the problems, either in terms of accuracy or cross entropy.
@@ -1464,12 +1472,12 @@ In Table~\ref{table:hyperpars_grid} we give the grids used and illustrate how ea
     \toprule
     \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL}} & \fhead{\fmod{ITL}} & \fhead{\fmod{cvxMTL}} & \fhead{\fmod{GLMTL}} & \fhead{\fmod{cvxGLMTL}} \\
     \midrule
-    $C$ &  \scalebox{.9}{$\set{4^k: -2 \leq k \leq 2}$} & CV & CV & CV & CV & CV  \\ 
-    $\epsilon$ & \scalebox{.9}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & CV & CV & CV & CV & CV  \\
-    $\gamma_c$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & CV & - & \fmod{CTL} & - & \fmod{CTL} \\
-    $\gamma_s$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & CV & \fmod{ITL} & \fmod{CTL} & \fmod{CTL}\\
-    $\lambda$ & \scalebox{.9}{$\set{0.2 k : 0 \leq k \leq 5}$} & - & - & CV & - & CV\\
-    $\mu$ & \scalebox{.9}{$\set{4^k : -1 \leq k \leq 3}$} & - & - & - & CV & \fmod{GLMTL}\\
+    $C$ &  \scalebox{.9}{$\set{4^k: -2 \leq k \leq 2}$} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv}  \\ 
+    $\epsilon$ & \scalebox{.9}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv} & \acrshort{cv}  \\
+    $\gamma_c$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & \acrshort{cv} & - & \fmod{CTL} & - & \fmod{CTL} \\
+    $\gamma_s$ & \scalebox{.9}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & \acrshort{cv} & \fmod{ITL} & \fmod{CTL} & \fmod{CTL}\\
+    $\lambda$ & \scalebox{.9}{$\set{0.2 k : 0 \leq k \leq 5}$} & - & - & \acrshort{cv} & - & \acrshort{cv}\\
+    $\mu$ & \scalebox{.9}{$\set{4^k : -1 \leq k \leq 3}$} & - & - & - & \acrshort{cv} & \fmod{GLMTL}\\
     \bottomrule
     \end{tabular}
     }

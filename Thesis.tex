@@ -43,6 +43,13 @@
 \usepackage{subcaption}
 \usepackage{textcomp}   % to use the permyriad symbol
 
+% mathtools
+\mathtoolsset{showonlyrefs}
+
+% algorithm
+\makeatletter
+\renewcommand{\@algocf@capt@plain}{above}% formerly {bottom}
+\makeatother
 
 % % subcaption
 % \renewcommand\thesubfigure{(\alph{subfigure})}
@@ -121,6 +128,9 @@
 \newacronym{gp}{GP}{Gaussian Process}
 \newacronym{gps}{GPs}{Gaussian Processes}
 \newacronym{svm}{SVM}{Support Vector Machine}
+\newacronym{svr}{SVR}{Support Vector Regressor}
+\newacronym{svc}{SVC}{Support Vector Classifier}
+
 \newacronym{smo}{SMO}{Sequential Minimal Optimization}
 \newacronym{svms}{SVMs}{Support Vector Machines}
 \newacronym{nn}{NN}{Neural Network}
