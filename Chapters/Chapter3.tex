@@ -20,7 +20,7 @@ This chapter presents\dots
 % Some important references
 % Caruana, Baxter... (ver review de Caruana para ver más)
 
-In \acrfull{ml}, we typically try to minimize some loss metric that defines the performance on a single task. Given a data sample, we choose a model, select its hyperparameters and optimize the parameters of such model to achieve a minimal sample-dependent error. However, this process may seem too focused on the task at hand, since it ignores any other information that could be useful in the learning process, like that of related tasks. 
+In \acrfull{ml}, we typically try to minimize some loss metric that defines the performance on a single task. Given a data sample, we choose a model, select its hyperparameters and optimize the parameters of the model to achieve a minimal sample-dependent error. However, this process may seem too focused on the task at hand, since it ignores any other information that could be useful in the learning process, such as that of related tasks. 
 \acrfull{mtl} aims at solving different related tasks simultaneously, so that the information of each task can leverage the learning process in the rest, thus achieving an overall greater generalization ability.
 This goal requires selecting which tasks should be learned together, that is, defining \acrfull{mt} problems, and also designing algorithms that can benefit from the presence of different tasks.
 On the early stages of \acrshort{mtl}~\citep{Caruana97,baxter2000model}, one motivation was data scarcity, since by combining different sources of information, this problem could be solved. Nowadays, in the age of ``big data'' this is not the main motivation, but other benefits can be extracted from \acrshort{mtl}, such as bias mitigation, domain adaptation or the avoidance of overfitting. 
@@ -32,7 +32,7 @@ In this thesis, only supervised problems will be considered, so we will refer to
 %
 Multiple kind of problems can be faced with an \acrshort{mtl} approach. 
 %
-The most common definition of \acrshort{mt} problem is a homogeneous setting, where all tasks are sampled from the same space. That is, we have a space $\Xspace \times \Yspace$ where $\Xspace$ is the input space and $\Yspace$ is the output space, which can be $\reals$ in the regression case or $\set{0, 1}$ in the binary classification one, and each task has a possibly different distribution $P_r(x, y)$ over this shared space.
+The most common definition of \acrshort{mt} problem is a homogeneous setting, where all tasks are sampled from the same space. That is, we have a space $\Xspace \times \Yspace$ where $\Xspace$ is the input space and $\Yspace$ is the output space, which can be $\reals$ in the regression case or $\set{0, 1}$ in the binary classification one, and each task $r$ has a possibly different distribution $P_r(x, y)$ over this shared space.
 In this type of problems, all the tasks have the same number of features and the same target space, that is, every task is either a regression or classification problem; there cannot be a mix of regression and classification tasks.
 %
 There are other heterogeneous definitions where each task can be sampled from a different space $\Xspace_r \times \Yspace_r$, and, therefore, a mix of regression or classification tasks can be considered. However, in this work we only consider the homogeneous case.
@@ -47,7 +47,7 @@ Within the homogeneous \acrshort{mtl} problems we can consider the following cas
         \item \acrshort{mt} multi-target regression: This is the case where each task is a regression problem with multiple targets, e.g. $\Yspace = \reals^m$, where $m$ is the number of targets. 
         \item \acrshort{mt} multi-class classification: This is the case where each task is a multi-class classification problem, e.g. $\Yspace = \set{1, \ldots, C}$, where $C$ is the number of classes.
     \end{itemize}
-    \item Artificial \acrshort{mt} Problems: These are problems that can be seen as \acrshort{mt} and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$. Examples of such problems are:
+    \item Non-pure \acrshort{mt} Problems: These are problems that can be seen as \acrshort{mt} and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$. Examples of such problems are:
     \begin{itemize}
         \item multi-target regression: This is the case where an $m$-target regression problem is converted into a multi-task problem by replicating $m$ times the features $X$ and using one of the targets on each repetition, so we have $m$ single target regression problems, each considered a different task.
         \item multi-class classification: This is the case where a multi-class classification problem with $C$ classes is converted into a multi-task problem by replicating $C$ times the features $X$ and considering a one-vs-all scheme for each repetition, with a different positive class in each one, so we have $C$ binary classification problems, each considered a different task.
@@ -63,15 +63,15 @@ The first approaches~\citep{Caruana97} were focused on sharing a common represen
 Independently of the method considered to exploit the information of different tasks, the mechanisms of the advantage obtained by using \acrfull{mtl} have also been studied. These results show how incorporating different tasks can improve the generalization ability of the learning processes, and under what circumstances this is possible.
 
 % Chapter
-In this chapter, in Section~\ref{sec:ch3_mtl_theory}, we present the fundamentals of \acrshort{mtl} theory. We introduce the concept of \acrfull{ltl}, related tasks, and review some of the most relevant theoretical works in this area. 
+In this chapter, in Section~\ref{sec:ch3_mtl_theory}, we present the fundamentals of \acrshort{mtl} theory. We introduce the concept of \acrfull{ltl}, a notion of task relatedness, and review some of the most relevant theoretical works in this area. 
 %
-In Section~\ref{sec:ch3_overview} we present a survey of the most relevant \acrshort{mtl} works, and we also update the taxonomy presented in~\cite{ZhangY17aa} defining three main groups: 
+In Section~\ref{sec:ch3_overview} we present a survey with some of the most important \acrshort{mtl} approaches, and we also update the taxonomy presented in~\cite{ZhangY17aa} defining three main groups: 
 \begin{itemize}
     \item feature-based methods,
     \item parameter-based methods,
     \item and combination-based methods.
 \end{itemize}
-Given the importance of \acrfull{nns} and kernel methods, we also present specific surveys of their \acrshort{mtl} strategies for them in Section~\ref{sec:deep_mtl} and Section~\ref{sec:kernel_mtl}, respectively.
+Given the importance of \acrfull{nns} and kernel methods, we also present specific surveys of the \acrshort{mtl} strategies for them in Section~\ref{sec:deep_mtl} and Section~\ref{sec:kernel_mtl}, respectively.
 Finally, related to \acrshort{mtl} with kernel methods, specially the \acrfull{svm}, in Section~\ref{sec:ch3_lupi} we present the \acrfull{lupi} paradigm and connect it with the \acrshort{mtl} framework.
 %
 % Finally, in Section~\ref{sec:ch3_mtl_kernelmethods} we define the operator-valued kernels, typically used in \acrshort{mtl}, and show their connection with the kernels defined over the tensor product of spaces, leading to an easier formulation for a class of \acrshort{mtl} strategies using kernel methods.
@@ -92,7 +92,7 @@ Finally, related to \acrshort{mtl} with kernel methods, specially the \acrfull{s
 % The first theoretical work on \acrshort{mtl}... \acrshort{mtl} as a bias learning Problem
 To give an answer to how does \acrshort{mtl} obtain its leverage, we present some theoretical results that provide a better insight.
 Typically in \acrshort{ml} the goal is to find the candidate from a space of hypotheses that minimizes some risk. 
-This risk is the expectation of a loss function over the input space, that can differ depending on what kind of problem we are facing: regression or classification. This expectation is taken using an unknown probability distribution that expresses how the data points are distributed in the input space. 
+This risk is the expectation of a loss function over the input space, that can differ depending on what kind of problem we are facing: regression or classification. This expectation is taken using an unknown probability distribution that expresses how the data points and targets are distributed in the joint space. 
 Then, the best candidate can be selected according to different inductive principles, which define a method of approximating a global function from a training set.
 %
 % In classical statistics we have the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypothesis space is $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the likelihood of the data given the hypothesis.

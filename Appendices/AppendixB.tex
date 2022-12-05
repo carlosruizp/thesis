@@ -1,8 +1,8 @@
 % Appendix B
 
-\chapter{Appendix for Chapter \ref{Chapter4}}
+\chapter{Additional Material}
 \label{AppendixB}
-\lhead{Appendix \ref{AppendixB}. \emph{Appendix for Chapter \ref{Chapter4}}}
+\lhead{Appendix \ref{AppendixB}. \emph{Additional Material}}
 
 We provide, in this Appendix, additional material that complements the exposition of the PESMOC approach introduced in Chapter \ref{Chapter4}. Concretely, we show the exact computations done by the expectation propagation algorithm to approximate the intractable factors of the conditional predictive distribution involved in the PESMOC acquisition function approximation. We also include a sensitivity analysis of the number of Monte Carlo iterations of the Slice sampling algorithm. Additionaly, we include another sensitivity analysis of the sampled Pareto sets and an analysis of the infeasible solutions in benchmark experiments.
 
@@ -318,3 +318,7 @@ Here, the matrix $\mymat{E}$ can be chosen as a Laplacian matrix $\mymat{L} = \m
      & = \sum_{r=1}^T \sum_{s=1}^T A_{rs} \norm{u_r - u_s}^2 \; .
 \end{align*}
 That is, the distance between task models is penalized, weighted by the degree of similatiy between the tasks as indicated by the graph.
+
+
+
+

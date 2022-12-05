@@ -1107,8 +1107,8 @@ In the forward pass of the network, the output for an example $x_i^r$ from task 
 In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
 By doing this, when using examples from the $r$-th task only the parameters corresponding to the common module and its corresponding specific one are updated.
 Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
-Our implementation is a general framework to combine in a convex manner any   \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
-\comm{TODO: ponerlo en github}
+Our implementation\footnote{https://github.com/carlosruizp/convexMTLPyTorch} is a general framework to combine in a convex manner any \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
+
 
 {In Algorithm~\ref{alg:forward} we show the pseudocode of the forward pass of the convex \acrshort{mtl} neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on \texttt{PyTorch} automatic differentiation.}
 
@@ -1751,4 +1751,19 @@ Therefore, again, with sorted elbows we have a linear cost to check the optimali
 
 \section{Conclusions}\label{sec-conclusions-3}
 
-In this chapter, we have\dots
+In this chapter, we have presented a convex formulation for \acrshort{mtl}, which combines a common and task-specific parts. The idea of learning jointly two parts for \acrshort{mtl} had already been proposed for \acrshort{svms}, but in Section~\ref{sec:convexmlt_kernel} we give a more general formulation, where the combination is convex and we have a specific hyperparameter $\lambda_r \in [0, 1]$ for each task.
+%
+We present a proposition to show that a particular case of our formulation can be equivalent to the previous combination-based approach.
+
+%
+In Section~\ref{sec:convexmlt_kernel} we have also described in depth the convex \acrshort{mtl} formulation for kernel methods, concretely we present the convex \acrshort{mtl} L1, L2, and LS-\acrshort{svm}. For these models, we give their corresponding primal problems and develop the procedure needed to obtain the dual ones.
+%
+
+Next, in Section~\ref{sec:convexmlt_network} we apply the convex \acrshort{mtl} strategy to \acrshort{nns}. Here, we also combine the outputs of a common and task-specific nets. The training procedure involves a joint optimization of all nets using backpropagation, which requires the gradient computation.
+We describe how the gradients can be obtained with this \acrshort{mtl} approach, but we give an implementation, using \texttt{PyTorch} where we do not need to explicitly compute the gradients, we rely on the automatic differentiation instead.
+
+%
+One natural alternative for this \acrshort{mtl} formulation is to consider convex combinations of models that have been previously trained. We present this idea in Section~\ref{sec:optimal_comb}: we can take a common model fitted with the data from all tasks, and task-specific models trained only the data corresponding to their task, and apply a convex combination of them to define an \acrshort{mtl} model. It is necessary only to select the optimal convex combination parameters $\lambda_r \in [0, 1]$. We provide four propositions to find such parameters when using the absolute, squared, hinge and squared hinge losses.
+
+%
+In summary, we have proposed a novel convex formulation for \acrshort{mtl} and we have described it thoroughly, presenting several models that apply this strategy: L1, L2, LS-\acrshort{svm}, \acrshort{nns} and also the convex combination of pre-trained models.

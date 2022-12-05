@@ -1771,4 +1771,18 @@ Assuming a standard situation, where $\nsamples$ is much larger than $\ntasks$, 
 
 \section{Conclusions}\label{sec-conclusions-4}
 
-In this chapter, we have\dots
+In this chapter, we have focused on the \acrshort{gl} approach for \acrshort{mtl}, which penalizes the distances between task models; we consider that the tasks can be interpreted as nodes in a graph, and the corresponding adjacency matrix values are used to weight the sum of pairwise distances.
+%
+Since this method relies on distance computation, it is trivial to apply it in the linear case, but it is more challenging when non-linear transformations, related to reproducing kernels, are applied.
+
+To overcome this issue, in Section~\ref{sec:mtl_kernelmethods} we present an \acrshort{mtl} framework based on tensor product of \acrshort{rkhss}. We describe some relevant concepts, and we develop the necessary elements to define the kernel of the tensor product space as the product of the kernels in each space. Then, we show how they can be applied in the context of \acrshort{mtl}: we define a kernel between tasks using a fixed tasks relation matrix and, given a kernel defined over the feature space, the \acrshort{mtl} kernel can be defined as the product of these two kernels.
+
+Next, in Section~\ref{sec:graphlap} we describe the \acrshort{gl} \acrshort{mtl} formulation for kernel methods, and specifically for the L1-\acrshort{svm}. We first present the linear case, and then, with the tensor product of \acrshort{rkhss} definitions, we present the extension to the kernelized case.
+
+We combine this \acrshort{gl} approach with the convex combination of Chapter~\ref{Chapter4} in Section~\ref{sec:convexgl}. Again, for the kernel case we need to use the concepts related to tensor product of \acrshort{rkhss}. We describe the convex \acrshort{gl} \acrshort{mtl} for the L1, L2 and LS-\acrshort{svm}.
+
+Finally, in Section~\ref{sec:adapconvexgl} we propose an algorithm to automatically learn the adjacency weights between tasks from data. We motivate this method using the entropy interpretation of the rows of the adjacency matrix, we describe the algorithm and discuss its computational complexity.
+
+
+
+

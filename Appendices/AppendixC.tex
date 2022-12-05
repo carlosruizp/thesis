@@ -1,408 +1,55 @@
 % Appendix C
 
-\chapter{Appendix for Chapter \ref{Chapter5}}
+\chapter{Multi-Task Datasets}
 \label{AppendixC}
-\lhead{Appendix \ref{AppendixC}. \emph{Appendix for Chapter \ref{Chapter5}}}
+\lhead{Appendix \ref{AppendixC}. \emph{Multi-Task Datasets}}
 
-In this Appendix, we give additional information about PPESMOC. In particular, we provide information about the EP algorithm used to compute the approximation to the PPESMOC acquisition function, the computation of the PPESMOC gradients to introduce them into the L-BFGS optimization algorithm in order to getter better results from the optimization of the acquisition function and results of additional experiments.
+In this appendix, we present a table with some of the most commonly used \acrfull{mtl} datasets. In Table~\ref{tab:mtl_problems} we give the number of samples, dimension and number of tasks of each dataset.
 
-\section{Optimization of the PPESMOC Acquisition Function Approximation}
-The PPESMOC acquisition function $\alpha(\cdot)$ has $B$ times more dimensions than the sequential PESMOC acquisition function, where $B$ is the number of points considered in the batch. Due to the curse of dimensionality, obtaining an estimate of the maximum of the acquisition function is not longer feasible by the procedure done in the PESMOC acquisition function, based only on using a grid and a local search procedure, like the L-BFGS algorithm, approximating the gradients by differences. Hence, it is necessary to compute the exact gradients of the PPESMOC acquisition function w.r.t the inputs, $\mathbf{X}$.
-
-Importantly, as explained in the main document, the parameters of the approximate factors can be considered to be fixed after EP has converged. This simplifies significantly the gradient computation. We compute the gradients of the PPESMOC acquisition function by using the Autograd tool. To optimize PPESMOC, we choose an initial point of PPESMOC at random. Then, we run the L-BFGS algorithm with the initial point and the gradients of PPESMOC computed by Autograd. We only compute the factors of the observations and Pareto set point in the first iteration of the optimization as they are the same for all the optimization process. For every new point in the optimization done by L-BFGS we only refine once with EP the test factors. We set a maximum of $100$ iterations of the L-BFGS optimization procedure.
-
-\section{Expectation Propagation Factors Computation}
-
-Recall from the main manuscript that, in this work, we wish to approximate the Conditional Predictive Distribution of the set defined by the points $\mathcal{X} = \{\{\boldsymbol{x}_n\}_{n=1}^{N} \cup \mathcal{X}^* \cup \boldsymbol{X}\}$. This set is, the union between the $N$ observation points in the input space $\{\boldsymbol{x}_n\}_{n=1}^{N}$, the Pareto set points $\mathcal{X}^\star$ of $M$ points and the $B$ candidate points $\mathbf{X}$ to be evaluated. The Gaussian Approximation will then be a multivariate Gaussian Distribution over $N+M+B$ variables. The Conditional Predictive Distribution is given by the following expression:
-\begin{align}
-p(\mathbf{Y}|\mathcal{D},\mathbf{X},\mathcal{X}^\star) = & 
-        \int p(\mathbf{Y}|\mathbf{X},\mathbf{F},\mathbf{C}) p(\mathcal{X}^\star|\mathbf{F},\mathbf{C})
-        p(\mathbf{F}|\mathcal{D}) p(\mathbf{C}|\mathcal{D}) d\mathbf{F} d \mathbf{C}\,,
-        \label{eq:conditional_pred}
-\end{align}
-where
-{\small
-\begin{align}
-p(\mathcal{X}^\star|\mathbf{F},\mathbf{C}) \propto 
-        \prod_{\mathbf{x}^\star \in \mathcal{X}^\star}
-        \left( \left[ \prod_{j=1}^J \Phi_j(\mathbf{x}^\star) \right] \left[ \prod_{\mathbf{x}'\in \mathcal{X}}
-        \Omega(\mathbf{x}',\mathbf{x}^\star)\right]
-        \right)\,,
-        \label{eq:prob_pareto_set}
-\end{align}}
-and:
-{\small
-\begin{align}
-\Omega(\mathbf{x}',\mathbf{x}^\star) &= \left[ \prod_{j=1}^J \Theta(c_j(\mathbf{x}')) \right]
-\Psi(\mathbf{x}',\mathbf{x}^\star) + \left[1 - \prod_{j=1}^J \Theta(c_j(\mathbf{x}')) \right] \cdot 1\,,
-\end{align}}
-\begin{align}
-\psi(\textbf{x}',\textbf{x}^{\star}) = 1 - \prod_{k=1}^K \Theta (f_k(\textbf{x}^{\star})-f_k(\textbf{x}'))\,,
-\end{align}
-\begin{align}
-\Phi_j(\mathbf{x}^\star) = \Theta(c_j(\mathbf{x}^\star))\,,
-\end{align}
-All the non-Gaussian factors ($\Theta(c_j(\mathbf{x}^\star)), \Theta (f_k(\textbf{x}^{\star})-f_k(\textbf{x}')), \Theta(c_j(\mathbf{x}')), \Omega(\textbf{x}_q,\textbf{x}^{\star})$) are approximated using the expectation propagation algorithm. In this section, we provide the necessary computations to approximate these factors. In the noiseless case the Dirac delta functions are substituted by Gaussians.
-
-In PESMOC the factors that depend and not depend on the candidate point $\mathbf{x}$ and those that depend are treated differently. For the former ones, the EP algorithm is only executed for one iteration. We employ the same procedure for the PPESMOC acquisition function.
-
-We define the sampled Pareto set as $\mathcal{X}^\star = \{\boldsymbol{x}^\star_{1},...,\boldsymbol{x}^\star_{M}\}$ of size $M$ and the set of $N$ observations in the input space as $\hat{\mathcal{X}} = \{\boldsymbol{x}_1,...,\boldsymbol{x}_N\}$ with the corresponding batch of observations of the k-th objective $\boldsymbol{Y}_k$ and of the c-th constraint $\boldsymbol{Y}_j$. Then, the process values for each objectives and constraints at that points observed are defined by $\boldsymbol{F}_k = ( f_k(\boldsymbol{x}^{\star}_1), ... , f_k(\boldsymbol{x}^{\star}_M), f_k(\boldsymbol{x}_1),  \ldots,f_k(\boldsymbol{x}_N))^T$ and $\boldsymbol{C}_j = ( c_j(\boldsymbol{x}^{\star}_1), ... , c_j(\boldsymbol{x}^{\star}_M), c_j(\boldsymbol{x}_1), \ldots,c_j(\boldsymbol{x}_N))^T$. If we define $\boldsymbol{F} = \{\boldsymbol{F}_1,...,\boldsymbol{F}_K\}$ and $\boldsymbol{C} = \{\boldsymbol{C}_1,...,\boldsymbol{C}_J\}$, let $q(\boldsymbol{F},\boldsymbol{C})$ be the distribution that we want tt
-o approximate, $p(\mathcal{X}^{\star}|\textbf{F},\textbf{C}) p(\textbf{F}|\mathcal{D}) p(\textbf{C}|\mathcal{D})$ is:
-\begin{align}
-p(\boldsymbol{F},\boldsymbol{C}|\mathcal{X}^\star) \propto \prod_{\textbf{x}^\star\in \mathcal{X}^\star} 
-        \left(
-        \Bigg[\prod_{j=1}^{J}\Phi_j(\textbf{x}^{\star})\Bigg]
-        \left[ 
-        \prod_{\textbf{x}'\in \mathcal{X}} 
-        \Omega(\textbf{x}',\textbf{x}^{\star})
-        \right] 
-        \right)
-p(\textbf{F}|\mathcal{D}) p(\textbf{C}|\mathcal{D})
- d\textbf{F} d\textbf{C}\,.
-\end{align}
-This last expression becomes equivalent to the next one using
-the fact that the posterior distributions of the GPs factorize
-as a product of Gaussians:
-
-\begin{align}
-p(\boldsymbol{F},\boldsymbol{c}) & = \frac{1}{Z_q} \bigg[\prod_{k=1}^{K}\mathcal{N}\big(\boldsymbol{f}_k\ |\  \boldsymbol{m}_{pred}^{\boldsymbol{f}_k}, \boldsymbol{V}_{pred}^{\boldsymbol{f}_k}\big)\bigg] \bigg[\prod_{j=1}^{J}\mathcal{N}\big(\boldsymbol{c}_j\ |\  \boldsymbol{m}_{pred}^{\boldsymbol{c}_j}, \boldsymbol{V}_{pred}^{\boldsymbol{c}_j}\big)\bigg] \times \nonumber
-\\
-        & \quad \prod_{\textbf{x}^\star\in \mathcal{X}^\star} 
-        \left(
-        \Bigg[\prod_{j=1}^{J}\Phi_j(\textbf{x}^{\star})\Bigg]
-        \left[ 
-        \prod_{\textbf{x}'\in \mathcal{X}} 
-        \Omega(\textbf{x}',\textbf{x}^{\star})
-        \right] 
-        \right)\,,
-        \label{eq:target}
-\end{align}
-where $\boldsymbol{m}_{pred}^{\boldsymbol{f}_k}$ and $\boldsymbol{V}_{pred}^{\boldsymbol{f}_k}$ are the mean and covariance matrix of the posterior distributions of $\boldsymbol{f}_k$ given the data in $\mathcal{D}$ and $\boldsymbol{m}_{pred}^{\boldsymbol{c}_j}$ and $\boldsymbol{V}_{pred}^{\boldsymbol{c}_j}$ are the mean and covariance matrix of the posterior distribution of $\boldsymbol{c}_j$ given the data in $\mathcal{D}$. These means and variances are computed according to the equations 2.22-2.24 in \citep{rasmussen2003gaussian}:
-\begin{align}
-    &
-    \boldsymbol{m}_{pred}^{\boldsymbol{f}_{k}} = \boldsymbol{K}_{*}^{k}\big(\boldsymbol{K}^{f} + v_{f}^{2}        \mathds{I}\big)^{-1}\boldsymbol{y}^k\,, \nonumber \\
-    & 
-    \boldsymbol{V}_{pred}^{\boldsymbol{f}_{k}} = \boldsymbol{K}_{*,*}^{k} - \boldsymbol{K}_{*}^{k}\big(\boldsymbol{K}^{k} + v_{f}^{2}        \mathds{I}\big)^{-1}\big[\boldsymbol{K}_{*}^{k}\big]\,,
-\end{align}
-where $\boldsymbol{K}_{*}^{k}$ is an $(N + 1) \times N$ matrix with the prior cross-covariances between elements of $\boldsymbol{f}_k$ and $f_{k,1},...,f_{k,n}$ and $\boldsymbol{K}_{*,*}^{k}$ is an $(N + 1) \times (N + 1)$ matrix with the prior covariances between the elements of $\boldsymbol{f}_k$ and $v_k$ is the standard deviation of the additive Gaussian noise in the evaluations of $\boldsymbol{f}_k$. Following the same reasoning, we have that:
-\begin{align}
-    &
-    \boldsymbol{m}_{pred}^{\boldsymbol{c}_{j}} = \boldsymbol{K}_{*}^{j}\big(\boldsymbol{K}^{j} + v_{j}^{2}        \mathds{I}\big)^{-1}\boldsymbol{y}^j\,, \nonumber \\
-    & 
-    \boldsymbol{V}_{pred}^{\boldsymbol{c}_{j}} = \boldsymbol{K}_{*,*}^{j} - \boldsymbol{K}_{*}^{j}\big(\boldsymbol{K}^{j} + v_{j}^{2}        \mathds{I}\big)^{-1}\big[\boldsymbol{K}_{*}^{j}\big]\,,
-\end{align}
-where $\boldsymbol{K}_{*}^{j}$ is an $(N + M) \times N$ matrix with the prior cross-covariances between elements of $\boldsymbol{c}_j$ and $c_{j,1},...,c_{j,n}$ and $\boldsymbol{K}_{*,*}^{j}$ is an $(N + M) \times (N + M)$ matrix with the prior covariances between the elements of $\boldsymbol{c}_j$ and $v_j$ is the standard deviation of the additive Gaussian noise in the evaluations of $\boldsymbol{c}_j$.
-
-The other non-Gaussian factors presented in Eq.(11), $\Phi_j(\textbf{x}^{\star})$ and  $\Omega(\textbf{x}',\textbf{x}^{\star})$, are the problematic ones, as they are not Gaussian Distributions. Hence they will be approximated by Gaussians with EP, as will be described in the next sections.
-
-\section{Using Expectation Propagation to Approximate the Conditional Predictive Distribution}
-
-This section explains how the EP algorithm approximate the previous product of factors, giving a product of Gaussian Distributions which we call the Gaussian Approximation to the Conditional Predictive Distribution, shown in the previous section. As it is a product where different factors are involved, we have to divide the problem in the approximation of the different factors for Gaussian Distributions. These are the $\Phi_j(\boldsymbol{x}^*$ factors and the $\Omega(\textbf{x}',\textbf{x}^{\star})$ factors, which will be approximated by one-dimensional and two-dimensional Gaussian Distributions respectively.
-
-The factors $\Phi(\boldsymbol{x}^*)$ that represent if a Pareto Set point $\boldsymbol{x}^*$ is feasible evaluated in a certain constraint $c_j(\boldsymbol{x}^*)$, are approximated by a one-dimensional un-normalized Gaussian distribution $\tilde{\Phi}(\boldsymbol{x}^*)$. This distribution is expressed in exponential family form in the next equation:
-\begin{align}
-    \Phi(\boldsymbol{x}^*) \approx \tilde{\Phi}(\boldsymbol{x}^*) \propto \exp\bigg\{ - \frac{c_j(\boldsymbol{x}^{*})^{2}\hat{v}_{j}^{\boldsymbol{x}^{*}}}{2} + c_j(\boldsymbol{x}^*)\hat{m}_{j}^{\boldsymbol{x}^*}\bigg\}\,,
-\end{align}
-where $\hat{v}_{j}^{\boldsymbol{x}^{*}}$ and $\hat{m}_{j}^{\boldsymbol{x}^*}$ are natural parameters that are going to be adjusted by EP. The variance of the Gaussian Distribution, $\hat{v}_{j}^{\boldsymbol{x}^{*}}$, EP factor in every point, $\boldsymbol{x}^*$, for every constraint, $c_j$ will be denoted by $\hat{e}_{j}$ and the mean EP factor by $\hat{f}_{j}$. That is, the one-dimensional Gaussian Distribution approximation of ${\Phi}(\boldsymbol{x}^*)$, in every constraint $c_j$ computed by EP, $\tilde{\Phi}(\boldsymbol{x}^*)$ is defined in every point $\boldsymbol{x}^*$ belonging to $\mathcal{X}^*$, by its mean $\hat{f}_{j}$ and its variance $\hat{e}_{j}$. There will be as many Gaussian Distributions as points multiplied by constants.
-
-The factors $\Omega(\cdot,\cdot)$, that represent if a point $\boldsymbol{x}_j$ is not dominated by the other point $\boldsymbol{x}_i$ and it is feasible over all the constraints $\boldsymbol{c}(\boldsymbol{x}_j)$, are approximated by a product of $\mathcal{J}$ one-dimensional un-normalized Gaussian Distributions where $\mathcal{J}$ are the number of constraints and $\mathcal{K}$ two-dimensional un-normalized Gaussian Distributions where $\mathcal{K}$ are the number of objectives. This product of distributions is expressed by the following equation:
-\begin{align}
-\Omega(\boldsymbol{x}',\boldsymbol{x}^*) & \approx \tilde{\Omega}(\boldsymbol{x}',\boldsymbol{x}^*) \propto \prod_{k=1}^{K}\exp\bigg\{-\frac{1}{2}\boldsymbol{v}_{k}^{T}\tilde{\boldsymbol{V}}_{k}^{\Omega}\boldsymbol{v}_k + (\tilde{\boldsymbol{m}}_{k}^{\Omega})^{T}\boldsymbol{v}_k\bigg\} \  \times \nonumber \\ & \prod_{j=1}^{J} \exp \bigg\{ - \frac{c_j(\boldsymbol{x}^*)^2\tilde{v}_j^{\Omega}}{2} + c_j(\boldsymbol{x}^*)\tilde{m}_j^{\Omega} \bigg\}\,,
-\end{align}
-where $\boldsymbol{v}_k$ is defined as the vector $(f_k(\boldsymbol{x}'),f_k(\boldsymbol{x}^*))^T$, and $\tilde{\boldsymbol{V}}_{k}$, $\tilde{\boldsymbol{m}}_{k}$, $\tilde{v}_j^{\Omega}$ and $\tilde{m}_j^{\Omega}$ are natural parameters adjusted by EP. As the product represents a product of two-dimensional un-normalized Gaussian Distributions, $\tilde{\boldsymbol{V}}_{k}$ is a 2 $\times$ 2 matrix and $\tilde{\boldsymbol{m}}_{k}$ is a two-dimensional vector.
-
-For the set of $\mathcal{N}$ observation points in the input space $\hat{\mathcal{X}}$ and the set of $\mathcal{M}$ Pareto Set points $\mathcal{X}^*$, we define the variance of the two-dimensional Gaussian Distribution, $\tilde{\boldsymbol{V}}_{k}$, EP factor of an observation point $\boldsymbol{x}_i$ with respect to a Pareto Point $\boldsymbol{x}_j$ as $\hat{\boldsymbol{A}}_{ij}$ and the mean EP factor as $\hat{\boldsymbol{b}_{ij}}$. We denote the variance of the one-dimensional Gaussian Distribution, $\tilde{v}_j^{\Omega}$, EP factor in every point $\boldsymbol{x}_j$ as $\hat{ac}_j$ and the mean EP factor by $\hat{bc}_j$.
-
-For the set of $\mathcal{M}$ Pareto Set points $\mathcal{X}^*$, we define the variance of the two-dimensional Gaussian Distribution, $\tilde{\boldsymbol{V}}_{k}$, EP factor of a point $\boldsymbol{x}_i$ with respect to another Pareto Point $\boldsymbol{x}_j$ as $\hat{\boldsymbol{C}}_{ij}$ and the mean EP factor as $\hat{\boldsymbol{d}}_{ij}$. We denote the variance of the one-dimensional Gaussian Distribution $\tilde{v}_j^{\Omega}$ EP factor in every point $\boldsymbol{x}_j$ as $\hat{cc}_j$ and the mean EP factor by $\hat{dc}_j$.
-
-That is, the approximation $\tilde{\Omega}(\boldsymbol{x}',\boldsymbol{x}^*)$ computed by EP consisting of a product of one-dimensional Gaussian Distributions and two-dimensional Gaussian distributions of the distribution $\Omega(\boldsymbol{x}',\boldsymbol{x}^*)$, is defined in the set of points $\hat{\mathcal{X}}$ and $\mathcal{X}^*$ by a product of one-dimensional Gaussian Distributions with mean $\hat{bc}_j$ and variance $\hat{ac}_j$ and a product of two-dimensional Gaussian Distributions with variance $\hat{\boldsymbol{A}}_{ij}$ and mean $\hat{\boldsymbol{b}}_{ij}$. The approximation for the set of points $\mathcal{X}^*$ is defined by a product of one-dimensional Gaussian Distributions with mean $\hat{dc}_j$ and variance $\hat{cc}_j$ and a product of two-dimensional Gaussian Distributions with variance $\hat{\boldsymbol{C}}_{ij}$ and mean $\hat{\boldsymbol{d}}_{ij}$.
-
-In the next section, the computations of the Gaussian factor approximations $\Tilde{\Phi}(\cdot)$ and $\Tilde{\Omega}(\cdot,\cdot)$ defined by the EP factors $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{e}_{j}$, $\hat{f}_{j}$, $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$, required by EP, are explained in detail, following the algorithm described in Chapter 3.
-
-\section{The EP Approximation to the $\Phi(\cdot)$ and $\Omega(\cdot,\cdot)$ Factors}
-
-The EP algorithm updates each of the approximate factors presented in the previous section until convergence. The following sections will describe the necessary operations needed for the EP algorithm to update each of the factors. It the following subsection, it is assumed that we have already obtained the mean and variances of each of the $\mathcal{K}$ and $\mathcal{J}$ conditional predictive distributions, which will be explained in detail in section 4.3.
-
-\subsection{EP Update Operations for the $\Phi(\cdot)$ Factors}
-
-As it was explained in section 3, for the $\mathcal{M}$ Pareto Set points defined by the set $\mathcal{X}^*$, in every point $\boldsymbol{x}_i \in \mathcal{X}^*$, the EP algorithm will generate $J$ approximations for the $\Phi(\boldsymbol{x}_j)$ factors for every constraint $c_j$ that will be defined by its mean $\hat{f}_{j}^{\boldsymbol{x}}$ and its variance $\hat{e}_{j}^{\boldsymbol{x}}$. Computations are done for all the points $\boldsymbol{x}_i \in \mathcal{X}^*$. The operations for these factors are described as follows.
-
-\subsubsection{Computation of the Cavity Distribution}
-
-The first step performed by the EP algorithm is the computation of the Cavity Distribution $\tilde{q}^{\setminus n}(\boldsymbol{x})$. In order to make the computations easier, we first obtain the natural parameters of the Gaussian Distributions for all the $\mathcal{M}$ Pareto Set points by using the equations:
-\begin{align}
-& \boldsymbol{\hat{m}}_{j} = \frac{\boldsymbol{\xi}_j}{diag(\boldsymbol{\Xi}_j)}\,, \nonumber \\
-& \boldsymbol{\hat{v}}_{j} = \frac{1}{diag(\boldsymbol{\Xi}_j)}\,.
-\end{align}
-Where $\boldsymbol{\Xi}_j$ is a vector of the variances of the $\mathcal{M}$ points for the constraint $c_j$ and $\boldsymbol{\Xi}$ is the matrix of all the variances of all $\mathcal{M}$ and $\mathcal{N}$ points which construction will be explained in detail in section 4.3. The term $diag$ holds for the diagonal of $\boldsymbol{\Xi}$ as we are only interested in the variance of the $M$ points and not the variance of these points with the $N$ points for the factor $\Phi(\cdot)$. In the same way, $\boldsymbol{\xi}_j$, is the vector of means for the constraint $c_j$ and $\boldsymbol{\xi}$ contains all the means of all the points for every constraint in $\boldsymbol{c}$. $\boldsymbol{\hat{m}}_{j}$ and $\boldsymbol{\hat{v}}_{j}$ hold the mean and variance natural parameters corresponding for all the points in the set $\mathcal{X}^*$.
-
-Once we have obtain the natural parameters $\boldsymbol{\hat{m}}_{j}$ and $\boldsymbol{\hat{v}}_{j}$, we obtain the cavity distribution. As we are dealing with natural parameters, it is not necessary to use the formula for the ratio of Gaussian Distributions, the cavity distribution defined by mean $\boldsymbol{\hat{m}}^{\setminus j}$ and variance $\boldsymbol{\hat{v}}^{\setminus j}$ will simply be obtained by the subtraction of the natural parameters between the approximated distribution defined by parameters $\boldsymbol{\hat{m}_{j}}$ and $\boldsymbol{\hat{v}_{j}}$ (which is equivalent to the product of all the factors for all the constraints) and the factor $\boldsymbol{\hat{e}}_{j}$ and $\boldsymbol{\hat{f}}_{j}$ corresponding to the constraint $c_j$ that we want to update:
-\begin{align}
-& \boldsymbol{\hat{v}}_{nat}^{\setminus j} = \boldsymbol{\hat{v}_{j}} - \boldsymbol{\hat{e}}_{j}\,, \nonumber \\
-& \boldsymbol{\hat{m}}_{nat}^{\setminus j} = \boldsymbol{\hat{m}_{j}} - \boldsymbol{\hat{f}}_{j}\,.
-\end{align}
-Once the subtraction is done, we transform the natural parameters of the cavity distribution into Gaussian parameters again by using the formula that converts natural to Gaussian parameters.
-\begin{align}
-& \boldsymbol{\hat{v}}^{\setminus j} = \frac{1}{\boldsymbol{\hat{v}}_{nat}^{\setminus j}}\,, \nonumber \\
-& \boldsymbol{\hat{m}}^{\setminus j} = \boldsymbol{\hat{m}}_{nat} \boldsymbol{\hat{v}}^{\setminus j}\,.
-\end{align}
-The variances $\boldsymbol{\hat{v}}^{\setminus j}$ need to be positive for the following operations.
-
-\subsubsection{Computation of the Partial Derivatives of the Normalization Constant}
-
-Once the cavities $\boldsymbol{\hat{v}}^{\setminus j}$ and $\boldsymbol{\hat{m}}^{\setminus j}$ have been computed, the EP need to compute the quantities required for the update of the factors $\boldsymbol{\hat{e}}_{j}$ and $\boldsymbol{\hat{f}}_{j}$ in order to minimize the KL divergence between $\Phi(\cdot)$ and the approximation distribution. These quantities are the first and second moments of the distribution that we want to approximate. These are given by the log of the partial derivatives of $Z_j$, the constant that normalizes the distribution that we want to approximate, in this case, $\hat{\Phi}(\cdot)$.
-\begin{align}
-Z_j = \int \hat{\Phi}(\boldsymbol{x}^*)\ dc_j\,.
-\end{align}
-As $\Phi(\boldsymbol{x}^*)$ is approximated by a Gaussian Distribution $\hat{\Phi}(\boldsymbol{x}^*)$ with mean $\boldsymbol{\hat{m}}^{\setminus j}$ and variance $\boldsymbol{\hat{v}}^{\setminus j}$, the normalization constant $Z_j$ can be computed in closed form and its given by the cumulative distribution function ,$\Phi(\cdot)$, of this Gaussian Distribution:
-\begin{align}
-Z_j = \Phi\Bigg(\frac{\boldsymbol{\hat{m}}^{\setminus j}}{\sqrt{\boldsymbol{\hat{v}}^{\setminus j}}}\Bigg)\,.
-\end{align}
-Let $\alpha =  \frac{\boldsymbol{\hat{m}}^{\setminus j}}{\sqrt{\boldsymbol{\hat{v}}^{\setminus j}}}$, then $\log(Z_j) = \log(\Phi(\alpha))$. For numerical robustness, if $a,b \in \mathbb{R}$, we apply the rule $ \frac{a}{b} = \exp{(\log(a)-\log(b))}$. Using these expressions, the log-derivatives are computed as follows:
-\begin{align}
-& \frac{\partial \log(Z_j)}{\partial \boldsymbol{\hat{m}}^{\setminus j}} = \frac{\exp\{\log(N(\alpha))-\log(Z_j)\}}{\sqrt{\boldsymbol{\hat{v}}^{\setminus j}}}\,, \nonumber \\
-& \frac{\partial \log(Z_j)}{\partial \boldsymbol{\hat{v}}^{\setminus j}} = - \frac{\exp\{\log(N(\alpha))-\log(Z_j)\}\alpha}{2\boldsymbol{\hat{v}}^{\setminus j}}\,.
-\end{align}
-Where $N(\cdot)$ represent the Gaussian probability density function. These expressions are valid for computing the first and second moments, but they do not present numerical robustness in all experiments. Since the lack of robustness of $\frac{\partial \log(Z_j)}{\partial \boldsymbol{\hat{v}}^{\setminus j}}$, we use the formula given by the Appendix A of the work by Opper \cite{opper2009variational}, and use the second partial derivative $\frac{\partial^{2} \log(Z_j)}{\partial [\boldsymbol{\hat{m}}^{\setminus j}]^2}$ rather than $\frac{\partial \log(Z_j)}{\partial \boldsymbol{\hat{v}}^{\setminus j}}$. This derivative is given by the following expression:
-\begin{align}
-\frac{\partial^{2} \log(Z_j)}{\partial [\boldsymbol{\hat{m}}^{\setminus j}]^2} = - \exp\{\log(N(\alpha))-\log(Z_j)\}\frac{\alpha\exp\{\log(N(\alpha))-\log(Z_j)\}}{\boldsymbol{\hat{v}}^{\setminus j}}\,.
-\end{align}
-Given these derivatives, in the next section it will be explained how to obtain the individual approximate factors $\boldsymbol{\hat{e}}_{j}$ and $\boldsymbol{\hat{f}}_{j}$.
-
-\subsection{EP Update Operations for the $\Omega(\cdot,\cdot)$ Factors}
-
-Recalling section 3, for the $\mathcal{M}$ Pareto Set points defined by the set $\mathcal{X}^*$ and the $\mathcal{N}$ input space observation points defined by the set $\hat{\mathcal{X}}$, for every pair of points $\boldsymbol{x}_i \in \hat{\mathcal{X}}$ and $\boldsymbol{x}_j \in \mathcal{X}^*$, the EP will generate $K$ two-dimensional Gaussian approximations for every objective $\boldsymbol{f}_k$ that will be defined for the pair observation and Pareto set point by factors defined by mean $\hat{\boldsymbol{b}}_{ij}$ and variance $\hat{\boldsymbol{A}}_{ij}$ and for the pair of Pareto set points by factors defined by mean $\hat{\boldsymbol{d}}_{ij}$ and variance $\hat{\boldsymbol{C}}_{ij}$. It will also define $J$ one-dimensional Gaussian approximations for every constraint $c_j$ that will be defined for the pair observation and Pareto set point by factors defined by mean $\hat{bc}_j$ and variance $\hat{ac}_j$ and for the pair of Pareto set points by factors defined by mean $\hat{dc}_j$ and variance $\hat{cc}_j$. Computations are done for all the pairs of points from the sets $\mathcal{X}^*$ and $\hat{\mathcal{X}}$. The necessary operations for computing these factors are described in the following sections.
-
-\subsubsection{Computation of the Cavity Distribution}
-For the factors $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ that approximate the $\mathcal{J}$ one-dimensional Gaussian approximations for every constraint $c_j$, the operations needed to extract the cavity distribution from the approximate distribution are the same ones as the ones described in Section 4.1.1. These operations are done for the observation points in $\hat{\mathcal{X}}$ for the factors $\hat{ac}_j$, $\hat{bc}_j$ and for the Pareto Set points in $\mathcal{X}^*$ for the factors $\hat{cc}_j$ and $\hat{dc}_j$. That is, obtaining the natural parameters of $\boldsymbol{\Xi}_j$ as in Eq. (16), subtracting the natural parameters of the factor that is approximated, Eq. (17), and obtaining the Gaussian parameters of the cavity that we define for a point $\boldsymbol{x}_i$, $m_{ij}^{\setminus b_j}$ and $v_{ij}^{\setminus a_j}$, as shown in Eq. (18).
-
-Obtaining the cavity distribution for the factors $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$ and $\hat{\boldsymbol{d}}_{ij}$ that approximate the $\mathcal{K}$ two-dimensional Gaussian approximations for every objective $\boldsymbol{f}_k$ follow different expressions as in this case the Gaussian Distributions are bivariate for every pair of points considered.
-
-In the first case, for the case of approximating a distribution that consider a point $\boldsymbol{x}_i$ belonging to the observations set $\hat{\mathcal{X}}$ and a point $\boldsymbol{x}_j$ from the Pareto set $\mathcal{X}^*$, that is, the factors $\hat{\boldsymbol{A}}_{ij}$ and $\hat{\boldsymbol{b}}_{ij}$, it is necessary to obtain, for every objective $k$ and each of the pair of points mentioned, the natural parameters $\boldsymbol{m}_{ij(nat)}^{k}$ and ${\boldsymbol{V}_{ij}^{k}}^{-1}$ of the Gaussian Process that models each of the $\mathcal{K}$ objectives $f(\cdot)_j$.
-These natural parameters are obtained by the following expressions:
-\begin{align}
-   & \boldsymbol{m}_{ij(nat)}^{k} = {\boldsymbol{V}_{ij}^{k}}^{-1}\boldsymbol{m}_{ij}^{k}\,, \nonumber \\
-   & {\boldsymbol{V}_{ij}^{k}}^{-1} = (\boldsymbol{V}_{ij}^{k})^{-1}\,,
-\end{align}
-where $\boldsymbol{V}_{ij}^{k}$ is a 2x2 matrix that represent in the points $\boldsymbol{x}_i$ and $\boldsymbol{x}_j$ the variance of the Gaussian approximation of the objective $k$ and $\boldsymbol{m}_{ij}^{k}$ is a vector that represent in the points $\boldsymbol{x}_i$ and $\boldsymbol{x}_j$ the mean of the Gaussian approximation of the objective $k$.
-
-As in the constraints case, we now extract the cavity distribution that we define by the natural parameters $\boldsymbol{m}_{ijk(nat)}^{\setminus b}$ and $\boldsymbol{V}_{ijk(nat)}^{\setminus A}$, by subtracting to the computed natural parameters $\boldsymbol{m}_{ij(nat)}^{k}$ and ${\boldsymbol{V}_{ij}^{k}}^{-1}$, computed in the previous step, the factors that we want to update $\boldsymbol{b}_{ij}^{k}$ and $\boldsymbol{A}_{ij}^{k}$. That is:
-\begin{align}
-    & \boldsymbol{m}_{ijk(nat)}^{\setminus b} = \boldsymbol{m}_{ij(nat)}^{k} - \boldsymbol{b}_{ij}^{k}\,, \nonumber \\
-    & \boldsymbol{V}_{ijk(nat)}^{\setminus A} = {\boldsymbol{V}_{ij}^{k}}^{-1} - \boldsymbol{A}_{ij}^{k}\,.
-\end{align}
-For the bivariate Gaussian distribution, the step of obtaining the Gaussian parameters from the natural parameters is defined by the following expressions:
-\begin{align}
-    & \boldsymbol{m}_{ijk}^{\setminus b} = \boldsymbol{V}_{ijk}^{\setminus A}\ \boldsymbol{m}_{ijk(nat)}\,, \nonumber \\
-    & \boldsymbol{V}_{ijk}^{\setminus A} = (\boldsymbol{V}_{ijk(nat)}^{\setminus A})^{-1}\,,
-\end{align}
-where $\boldsymbol{V}_{ijk}^{\setminus A}$ is a 2x2 matrix with the variances of each of the points and the correlation between each of them and $\boldsymbol{m}_{ijk}^{\setminus b}$ is a two position vector that represent the means. In the case of the factors $\hat{\boldsymbol{C}}_{ij}$ and $\hat{\boldsymbol{d}}_{ij}$ that consider two Pareto Set points, the operations for extracting the cavity distribution are the same ones as in the previous case.
-
-\subsubsection{Computation of the Partial Derivatives of the Normalization Constant}
-
-In this section, the operations needed to compute the partial derivatives for all the $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ are described. These derivatives need previous computations in order to compute the normalization constant $Z_\Omega$ of the factor $\Omega(\cdot,\cdot)$ that we want to approximate. These computations are given by the following expressions, all of which depend upon terms computed in the previous section. The shown computations are the result of applying rules in order to be robust such as $a/b = \exp\{\log(a)-\log(b)\}$ and $ab = \exp\{\log(a)+\log(b)\}$.These operations are equivalent for the two points cases, but here, the necessary operations for computing the normalization constant $Z_\Omega$ are described for the case of the factors $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{ac}_j$ and $\hat{bc}_j$:
-\begin{align}
-    & \boldsymbol{s}_k = \boldsymbol{V}_{ijk[0,0]}^{\setminus A} + \boldsymbol{V}_{ijk[1,1]}^{\setminus A} - 2\boldsymbol{V}_{ijk[0,1]}^{\setminus A}\,, \\
-    & \boldsymbol{\alpha}_k = \frac{\boldsymbol{m}_{ijk[0]}^{\setminus b}-\boldsymbol{m}_{ijk[1]}^{\setminus b}}{\sqrt{s_k}}\,, \\
-    & \boldsymbol{\beta}_j = \frac{m_{ij}^{\setminus b_j}}{\sqrt{v_{ij}^{\setminus a_j}}}\,, \\
-    & \boldsymbol{\phi} = \Phi(\boldsymbol{\alpha})\,, \\
-\end{align}
-where $\Phi(\cdot)$ represents the c.d.f of a Gaussian distribution,
-\begin{align}
-    & \boldsymbol{\gamma} = \Phi(\boldsymbol{\beta})\,, \\
-    & \zeta = 1-\exp\{\sum_{k=1}^{K} \log(\boldsymbol{\phi}_k)\}\,, \\
-    & \log(\eta) = \sum_{j=1}^{J}\log(\boldsymbol{\gamma}_j) + \log(\zeta)\,, \\
-    & \lambda = 1-\exp\{\sum_{j=1}^{J}\log(\boldsymbol{\gamma}_j)\}\,, \\
-    & \tau = \max(\log(\eta),\log(\lambda))\,, \\
-    & \log(Z_\Omega) = \log(\exp\{\log(\eta) - \tau\} + \exp\{\log(\lambda) - \tau\}) + \tau\,.
-\end{align}
-Having computed these terms, the log partial derivatives for the update of the factors that collaborate to the approximation of the objective variances $\hat{\boldsymbol{A}}_{ij}$ and the objective means $\hat{\boldsymbol{b}}_{ij}$ are given by the expressions:
-\begin{align}
-    &  \boldsymbol{\rho}_k = - \exp\{\log(\mathcal{N}(\boldsymbol{\alpha}_k))\} - \log(Z_\Omega) + \sum_{k=1}^{K}\{\log(\Phi(\boldsymbol{\alpha}_k))\} - \log(\Phi(\boldsymbol{\alpha}_k)) + \sum_{j=1}^{J}\{\log(\Phi(\boldsymbol{\beta}_j))\}\,, \\
-    & \frac{\partial \log(Z_\Omega)}{\partial\boldsymbol{m}_{ijk}^{\setminus b}} = \frac{\boldsymbol{\rho}_k}{\sqrt{\boldsymbol{s}_k}}\big[1,-1\big] \,, \nonumber \\
-    & \frac{\partial \log(Z_\Omega)}{\partial\boldsymbol{V}_{ijk}^{\setminus A}} = - \frac{\boldsymbol{\rho}_k\boldsymbol{\alpha}_k}{2\boldsymbol{s}_k}[[1,-1],[-1,\ 1]]\,.
-\end{align}
-Derivatives are computed for the two position vector mean and the 2x2 variance matrix, so they have the same structure, given by the [1, -1] and [[1, -1],[-1, 1]] expressions. The change in the sign appears due to the fact that the expression changes, whether it is the derivative of the mean of the observation point or the Pareto Set point or the derivative of the variance of one point or their correlation.
-
-Alas, the derivative of the variance presents the same lack of robustness as in the constraint case shown in section 4.1.2. In order to ensure numerical robustness, we use the second partial derivative of the mean of the normalization constant instead of the first partial derivative of the variance for the further computation of the second moment. That is,
-\begin{align}
-    & \frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2} = - \frac{\boldsymbol{\rho}_k}{\boldsymbol{s}_k}(\boldsymbol{\alpha}_k+ \boldsymbol{\rho}_k) [[1,-1],[-1,\ 1]]\,.
-\end{align}
-For the log partial derivatives for the update of the factors that collaborate to the approximation of the constraint variances $\hat{ac}_j$ and the constraint means $\hat{bc}_j$, let $\boldsymbol{\omega}_j$ be defined as:
-\begin{align}
-\boldsymbol{\omega}_j = &  \exp\{\log(\mathcal{N}(\boldsymbol{\beta}_j))\} - \log(Z_\Omega) + \log(\zeta) + \sum_{j=1}^{J}(\log(\Phi(\boldsymbol{\beta}_j))) - \log(\Phi(\boldsymbol{\beta}_j)) - \exp\{\log(\mathcal{N}(\boldsymbol{\beta}_j))\}\,, \nonumber \\ & - 
-\log(Z_\Omega) + \sum_{j=1}^{J}(\log(\Phi(\boldsymbol{\beta}_j))) - \log(\Phi(\boldsymbol{\beta}_j))\,.
-\end{align}
-Then, the robust log partial derivatives for the first and the second moments are given by the expressions:
-\begin{align}
-    & \frac{\partial \log(Z_\Omega)}{\partial m_{ij}^{\setminus \boldsymbol{b}_j}} = \frac{\boldsymbol{\omega}_j}{\sqrt{\boldsymbol{s}_j}}\,, \nonumber \\
-    & \frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ij}^{\setminus \boldsymbol{b}_j}]^2} = - \frac{\boldsymbol{\omega}_j}{\boldsymbol{s}_j}\ (\boldsymbol{\beta}_j + \boldsymbol{\omega}_j)\,.
-\end{align}
-The expressions for the log partial derivatives of $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{cc}_j$ and $\hat{dc}_j$ are similar to the presented expressions in this section, but taking into account pairs of points belonging to the set $\mathcal{X}^*$.
-
-\subsubsection{Computation of the First and Second Moments for the Updates}
-Giving the expressions computed in the previous section, the first and second moments of the different Gaussian Distributions that approximate the factor $\Omega(\cdot,\cdot)$ can now be computed.
-
-The expressions for computing the factors $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$ for each of the $K$ objectives and the factors $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ for each of the $J$ constraints are the following ones:
-\begin{align}
-    & \hat{\boldsymbol{A}}_{ij}^{k} = \frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2}\ ((\boldsymbol{V}_{ijk}^{\setminus A}\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})^{-1}[[1, 0],[0, 1]])\,,\\
-    & \hat{\boldsymbol{b}}_{ij}^{k} = ((\frac{\partial \log(Z_\Omega)}{\partial\boldsymbol{m}_{ijk}^{\setminus b}} - \boldsymbol{m}_{ijk}^{\setminus b})\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})\ ((\boldsymbol{V}_{ijk}^{\setminus A}\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})^{-1}+[[1, 0],[0, 1]])\,,\\
-    & \hat{\boldsymbol{C}}_{ij}^{k} = \frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2}\ ((\boldsymbol{V}_{ijk}^{\setminus A}\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})^{-1}[[1, 0],[0, 1]])\,,\\
-    & \hat{\boldsymbol{d}}_{ij}^{k} = ((\frac{\partial \log(Z_\Omega)}{\partial\boldsymbol{m}_{ijk}^{\setminus b}} - \boldsymbol{m}_{ijk}^{\setminus b})\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})\ ((\boldsymbol{V}_{ijk}^{\setminus A}\frac{\partial^2 \log(Z_\Omega)}{\partial\big[\boldsymbol{m}_{ijk}^{\setminus b}\big]^2})^{-1}+[[1, 0],[0, 1]])\,,
-\end{align}
-for the the rest of the factors, suppose that the index $h$ refers to the points of the Pareto Set $\mathcal{X}^*$:
-\begin{align}
-    & \hat{ac}_{h}^{j} = - \frac{\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}}{1+\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}v_{ic}^{\setminus a_j}}\,, \\
-    & \hat{bc}_{h}^{j} = \frac{\frac{\partial \log(Z_\Omega)}{\partial m_{ic}^{\setminus \boldsymbol{b}_j}}-m_{ic}^{\setminus b_j}\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}}{1+\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}v_{ic}^{\setminus a_j}}\,, \\
-    & \hat{cc}_{h}^{j} = - \frac{\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}}{1+\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}v_{ic}^{\setminus a_j}}\,, \\
-    & \hat{dc}_{h}^{j} = \frac{\frac{\partial \log(Z_\Omega)}{\partial m_{ic}^{\setminus \boldsymbol{b}_j}}-m_{ic}^{\setminus b_j}\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}}{1+\frac{\partial^2 \log(Z_\Omega)}{\partial [m_{ic}^{\setminus \boldsymbol{b}_j}]^2}v_{ic}^{\setminus a_j}}\,. 
-\end{align}
-All these factors are then used to rebuild the means and the variances of the Gaussian Processes that model the $K$ objectives and $C$ constraints of a constrained multi-objective optimization problem, as will be shown in the following section. That is, $C$ one-dimensional Gaussian Distributions for the constraint models and $C$ one-dimensional Gaussian Distributions and $K$ two-dimensional Gaussian Distributions for the objective models in each of the points in $\mathcal{X} = \{\mathcal{X}^* \cup \hat{\mathcal{X}} \cup \boldsymbol{x}\}$.
-
-\subsection{Reconstruction of the Conditional Predictive Distribution}
-In this section, we illustrate the way of obtaining a Conditional Predictive Distribution for every objective $f_k$ and every constraint $c_j$, given a sampled Pareto Set $\mathcal{X}^* = \{\boldsymbol{x}_1^*,...,\boldsymbol{x}_M^*\}$ of size $M$ and a set of $N$ input locations $\hat{\mathcal{X}} = \{\boldsymbol{x}_1,...,\boldsymbol{x}_N\}$ with corresponding observations of the $k$-th objective $\boldsymbol{y}_k$ and of the $j$-th constraint $\boldsymbol{y}_j$. For the following, it is assumed that we are given the EP approximate factors $\Phi(\cdot)$ and $\Omega(\cdot,\cdot)$, as an input for the next operations, which computation is explained in the previous section.
-
-Recalling Eqs. 7, 8 and 9 of section 2, we want to obtain the $J$ Conditional Predictive Distributions in the products of constraints and the $K$ Conditional Predictive Distributions of the Gaussian Processes that model the objectives. The products presented in these factors are not a problem, due to the fact that the Gaussian Distributions are closed under the product operation, that is, the product of Gaussian Distributions is another Gaussian Distribution. These Conditional Predictive Distributions of the objectives and constraints are then used in Eq.(11) to build the final approximation.
-
-Following the notation of section 4.1.1, let $\boldsymbol{\xi}_j$ and $\boldsymbol{\Xi}_j$ be the mean vector and variance matrix of the one-dimensional Gaussian Distributions of the $M+N$ points that generate the Gaussian Processes that model the constraints and let $\boldsymbol{m}_{k}$ and $\boldsymbol{V}_{k}$ be the mean vector and variance matrix of the two-dimensional Gaussian Distributions of the $M+N$ points that generate the Gaussian Processes that model the objectives. In order to update the constraint and objective distribution marginals, it is necessary to first follow the operations given by the equations 14 and 22, to obtain the natural parameters from the means and variances. Intuitively, as they are all natural parameters, these will be just sums taking into account that the matrices are formed first by the Pareto Set Points ,$M$, and then by the observations $N$. Univariate factors are added to the diagonal of these matrices, as they are not correlated with other points. Once the natural parameters are computed, the new means $\boldsymbol{\xi}_j$, $\boldsymbol{m}_{k}$ and variances $\boldsymbol{\Xi}_j$, $\boldsymbol{V}_{k}$ marginals are updated from the EP factors $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{e}_{j}$, $\hat{f}_{j}$, $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ by the following expressions:
-\begin{align}
-& \boldsymbol{\Xi}_{ii}^{j} = \boldsymbol{\Xi}_{ii(old)}^{j} + \sum_{m=1}^{M}\hat{cc}_{mi}^{j} + \hat{e}_{i}^{j} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = 1,...,M\,, \nonumber \\
-& \boldsymbol{\Xi}_{ii}^{c} = \boldsymbol{\Xi}_{ii(old)}^{j} + \sum_{m=1}^{M}\hat{ac}_{mi}^{j} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = M+1,...,N+M\,, \nonumber \\
-& \boldsymbol{\xi}_{i}^{c} = \ \boldsymbol{\xi}_{i(old)}^{j} + \sum_{m=1}^{M}\hat{dc}_{mi}^{j} + \hat{f}_{i}^{j} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = 1,...,M\,, \nonumber \\
-& \boldsymbol{\xi}_{i}^{c} = \ \boldsymbol{\xi}_{i(old)}^{j} +  \sum_{m=1}^{M}\hat{bc}_{mi}^{j} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \textrm{for}\ \ i = M+1,...,N+M\,, \nonumber \\
-& \boldsymbol{V}_{ii}^{k} = \boldsymbol{V}_{ii(old)}^{k} +  \sum_{j=M+1}^{N}\hat{\boldsymbol{A}}_{ji[1,1]}^{k} + \sum_{j=1}^{M}\hat{\boldsymbol{C}}_{ij[0,0]}^{k} + \sum_{j=1}^{M}\hat{\boldsymbol{C}}_{ji[1,1]}^{k} \ \ \  \textrm{for}\ \ i = 1,...,M\,, \nonumber \\
-& \boldsymbol{V}_{ii}^{k} = \boldsymbol{V}_{ii(old)}^{k} +   \sum_{j=1}^{M}\hat{\boldsymbol{A}}_{ij[0,0]}^{k} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = M+1,...,N+M\,, \nonumber \\
-& \boldsymbol{V}_{ij}^{k} = \boldsymbol{V}_{ij(old)}^{k} + \boldsymbol{C}_{ij[0,1]}^{k} + {\boldsymbol{C}_{ij[1,0]}^{k}}^T \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = 1,...,M,\ \textrm{and}\ \textrm{for}\ \ j = 1,...,M\,, \nonumber \\
-& \boldsymbol{V}_{ij}^{k} = \boldsymbol{V}_{ij(old)}^{k} + \boldsymbol{A}_{ij[0,1]}^{k} \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = M+1,...,N,\ \textrm{and}\ \textrm{for}\ \ j = 1,...,M\,, \nonumber \\
-& \boldsymbol{V}_{ij}^{k} = \boldsymbol{V}_{ij(old)}^{k} + {\boldsymbol{A}_{ij[0,1]}^{k}}^T \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = 1,...,M,\ \textrm{and}\ \textrm{for}\ \ j = M+1,...,N\,, \nonumber \\
-& \boldsymbol{m}_{i}^{k} = \boldsymbol{m}_{i(old)}^{k} +  \sum_{j=M+1}^{N+M}\hat{\boldsymbol{b}}_{ji[1]}^{k} + \sum_{j=1}^{M}\hat{\boldsymbol{d}}_{ij[0]}^{k} + \sum_{j=1}^{M}\hat{\boldsymbol{d}}_{ji[1]}^{k} \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = 1,...,M\,, \nonumber \\
-& \boldsymbol{m}_{i}^{k} = \boldsymbol{m}_{i(old)}^{k} + \sum_{j=1}^{M}\hat{\boldsymbol{b}}_{ij[0]}^{k} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{for}\ \ i = M+1,...,N+M\,. \nonumber \\
-\end{align}
-These natural parameters are then converted into Gaussian ones using the equations and 16 and 24. Once these operations are done the Gaussian Processes that model the objectives and constraints are updated from a full EP iteration.
-
-\subsection{The Conditional Predictive Distribution at a New Batch}
-
-After running EP until convergence one simply has to compute the covariance matrix of the posterior distribution for the process values of each objective and constraint at the candidate points $\mathbf{X}$. This implies computing the covariance matrix that results from the EP approximation to (\ref{eq:target}).  For this, one only has to replace the non-Gaussian factors with the corresponding approximation. The covariance matrices that are needed can be obtained using the fact that the Gaussian family is closed under the product operation. See Eq. (\ref{eq:ep_approx}).
-
-\subsection{Initialization and Convergence of EP}
-
-When the EP algorithm computes the $\Phi(\cdot)$ and $\Omega(\cdot,\cdot)$ factors, it requires to set an initial value to all the factors that generates the Gaussians that approximate the $\Phi(\cdot)$ and $\Omega(\cdot,\cdot)$ factors. These factors, $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{e}_{j}$, $\hat{f}_{j}$, $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ are all set to be zero. The convergence criterion for stopping the EP algorithm updating the parameters is that the absolute change in all the cited parameters should be below $10^{-4}$. Other criteria may be used.
-
-\subsection{Parallel EP Updates and Damping}
-
-The updates of every approximate factor $\hat{\boldsymbol{A}}_{ij}$, $\hat{\boldsymbol{b}}_{ij}$, $\hat{\boldsymbol{C}}_{ij}$, $\hat{\boldsymbol{d}}_{ij}$, $\hat{e}_{j}$, $\hat{f}_{j}$, $\hat{ac}_j$, $\hat{bc}_j$, $\hat{cc}_j$ and $\hat{dc}_j$ are executed in parallel as it is described in the work by Gerven \cite{gerven2009bayesian}. The cavity distribution for each of the factors is computed and then the factors are updated afterwards. Once these operations are done the EP approximation is recomputed as it is described in the section 4.3.
-
-In order to improve the convergence behavior of EP we use the damping technique described in Minka \& Lafferty \cite{minka2012expectation}. We use this technique for all the approximate factors. Damping simply reduces the quantity that the factor changes in every update as a linear combination between the old parameters and the new parameters. That is, if we define the old parameters of the factor to be updated as $u_{old}$, the new parameters as $u_{new}$ and the updated factor as $u$, then the update expression is:
-\begin{align}
-    u = \theta u_{new} + (1-\theta)u_{old}\,.
-\end{align}
-Where $\theta$ is the damping factor whose initial value is set to be 0.5, this factor controls the amount of damping, if this value is set to be one then no damping is employed. This factor is multiplied by 0.99 at each iteration, reducing the amount of change in the approximate factors in every iteration of the Bayesian Optimization. An issue that happens during the optimization process is that some covariance matrices become non positive definite due to a high large step size, that is, a high value of $\theta$. If this happens in any iteration, an inner loop executes again the update operation with $\theta_{new} = \theta_{old}\ /\ 2$ and the iteration is repeated. This inner loop is performed until the covariance matrices become non positive definite.
-
-\section{Additional Experiments Information}
-In this section, we include additional information about the experiments described on the main manuscript and their results.
-
-\subsection{Benchmark Experiments}
-We include tables with the analytical expressions of the benchmark of functions used for the benchmark experiments.
-
-\begin{table}[H]
-\centering
-\caption{Summary of BNH, SRN, TNK and OSY problems used in the benchmark experiments.}
-{\small
-\begin{tabular}{| c | c | c |}
- \hline
- \multicolumn{3}{|c|}{Benchmark Experiments} \\
- \hline
- Problem Name & Input Space & Objectives $f_k(\mathbf{x})$ and Constraints $c_j(\mathbf{x})$ \\
- \hline
- \multirow{4}{4em}{BNH} & \multirow{4}{7em}{$x_1 \in [0,5]$\\$x_2 \in [0,3]$} & $f_1(\mathbf{x}) = 4x_1^2 + 4x_2^2$ \\
- & & $f_2(\mathbf{x}) = (x_1-5)^2 + (x_2-5)^2$ \\
- & & $c_1(\mathbf{x}) \equiv (x_1-5)^2 + x_2^2 \leq 25$ \\
- & & $c_2(\mathbf{x}) \equiv (x_1-8)^2 + (x_2+3)^2 \geq 7.7$ \\
- \hline
- \multirow{4}{4em}{SRN} & \multirow{4}{7em}{$x_1 \in [-20,20]$\\$x_2 \in [-20,20]$} & $f_1(\mathbf{x}) = 2+(x_1-2)^2+(x_2-2)^2$ \\
- & & $f_2(\mathbf{x}) = 9x_1 - (x_2-1)^2$ \\
- & & $c_1(\mathbf{x}) \equiv x_1^2 + x_2^2 \leq 225$ \\
- & & $c_2(\mathbf{x}) \equiv x_1 - 3x_2 + 10 \leq 0$ \\
- \hline
- \multirow{4}{4em}{TNK} & \multirow{4}{7em}{$x_1 \in [0,\pi]$\\$x_2 \in [0,\pi]$} & $f_1(\mathbf{x}) = x_1$ \\
- & & $f_2(\mathbf{x}) = x_2$ \\
- & & $c_1(\mathbf{x}) \equiv x_1^2 + x_2^2 - 1 - 0.1 cos(16arctan\frac{x_1}{x_2}) \geq 0$ \\
- & & $c_2(\mathbf{x}) \equiv (x_1-0.5)^2 + (x_2-0.5)^2 \leq 0.5$ \\
- \hline
-\multirow{9}{4em}{OSY} & \multirow{9}{7em}{$x_1 \in [0,10]$\\$x_2 \in [0,10]$\\$x_3 \in [1,5]$\\$x_4 \in [0,6]$\\$x_5 \in [1,5]$\\$x_6 \in [0,10]$} &
-$f_1(\mathbf{x}) = -[25(x_1-2)^2+(x_2-2)^2+(x_3-1)^2$ \\
- & &  $+(x_4-4)^2+(x_5-1)^2$ \\
- & & $f_2(\mathbf{x}) = x_1^2+x_2^2+x_3^2+x_4^2+x_5^2+x_6^2$ \\
- & & $c_1(\mathbf{x}) \equiv x_1+x_2-2 \geq 0$ \\
- & & $c_2(\mathbf{x}) \equiv 6-x_1-x_2 \geq 0$ \\
- & & $c_3(\mathbf{x}) \equiv 2-x_2+x_1 \geq 0$ \\
- & & $c_4(\mathbf{x}) \equiv 2-x_1+3x_2 \geq 0$ \\
- & & $c_5(\mathbf{x}) \equiv 4-(x_3-3)^2-x_4 \geq 0$ \\
- & & $c_6(\mathbf{x}) \equiv (x_5-3)^2+x_6-4 \geq 0$ \\
- \hline
-\end{tabular}
-}
-\label{table:1}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Summary of CONSTR and Two-bar Truss problems used in the benchmark experiments.}
-{\small
-\begin{tabular}{| c | c | c |}
- \hline
- \multicolumn{3}{|c|}{Benchmark Experiments} \\
- \hline
- Problem Name & Input Space & Objectives $f_k(\mathbf{x})$ and Constraints $c_j(\mathbf{x})$ \\
- \hline
- \multirow{4}{4em}{CONSTR} & \multirow{4}{7em}{$x_1 \in [0.1,10]$\\$x_2 \in [0,5]$} & $f_1(\mathbf{x}) = x_1$ \\
- & & $f_2(\mathbf{x}) = \frac{(1+x_2)}{x_1}$ \\
- & & $c_1(\mathbf{x}) \equiv x_2+9x_1 \geq 6$ \\
- & & $c_2(\mathbf{x}) \equiv -x_2+9x_1 \geq 1$ \\
- \hline
- \multirow{3}{4em}{Two-bar\\Truss\\Design} & \multirow{3}{7em}{$x_1 \in [0,0.01]$\\$x_2 \in [0,0.01]$\\$x_3 \in [1,3]$} &
-$f_1(\mathbf{x}) = x_1\sqrt{16+x_3^2} + x_2\sqrt{1+x_3^2}$ \\
- & & $f_2(\mathbf{x}) = \max(\frac{20\sqrt{16+x_3}}{x_1x_3},\frac{80\sqrt{1+x_3^2}}{x_2x_3})$ \\
- & & $c_1(\mathbf{x}) \equiv \max(\frac{20\sqrt{16+x_3}}{x_1x_3},\frac{80\sqrt{1+x_3^2}}{x_2x_3}) \leq 10^5$ \\
- \hline
-%\multirow{10}{4em}{Welded\\Beam\\Design} & %\multirow{9}{7em}{$h \in [0.125,5]$\\$b \in %[0.125,5]$\\$l \in [0.1,10]$\\$t \in [0.1,10]$} %&
-%$f_1(\mathbf{x}) = 1.10471h^2l + %0.04811tb(14+l)$ \\
-% & & $f_2(\mathbf{x}) = \frac{2.1952}{t^3b}$ \\
-% & & $c_1(\mathbf{x}) \equiv %13600-\tau(\mathbf{x}) \geq 0$ \\
-% & & $c_2(\mathbf{x}) \equiv %%30000-\frac{504000}{t^2b} \geq 0$ \\
-% & & $c_3(\mathbf{x}) \equiv b-h \geq 0$ \\
-%% & & $c_4(\mathbf{x}) \equiv %64746.022(1-0.0282346t)tb^3-6000 \geq 0$ \\
-% & & $\tau(\mathbf{x}) = %\sqrt{\gamma(\mathbf{x})^2+\epsilon(\mathbf{x})^2+\frac{l\gamma(\mathbf{x})\epsilon(\mathbf{x})}{\sqrt{0.25(l^2+(h+t)^2)}}}$ \\
-% & & $\gamma(\mathbf{x}) = \frac{6000}{\sqrt{2}hl}$ \\
-% & & $\epsilon(\mathbf{x}) = \frac{6000(14+0.5l)\sqrt{0.25(l^2+(h+t)^2)}}{2\sqrt{2}hl(\frac{l^2}{12+0.25(h+t)^2})}$ \\
- %\hline
-\end{tabular}
-}
-\label{table:1_b}
-\end{table}
-
-\subsection{Real Experiments}
-
-A summary of the parameters considered in the experiment of the hyper-parameter tuning of the deep neural network, their potential values, and their impact in each
-black-box function (prediction error, time and chip area) is displayed in Table \ref{table:aladdin}.
-
-\begin{table}[htb]
-\centering
-\caption{Parameter space of the deep neural network experiments. PE = Prediction error. T = Time. CA = Chip area.}
-\begin{tabular}{lcccc}
- \hline
-\textbf{Parameter} & \textbf{Min} & \textbf{Max} & \textbf{Step} & \textbf{Black-box} \\
- \hline
-Hidden Layers & 1& 3& 1& PE/T/CA\\
-Neurons per Layer & 5& 300& 1& PE/T/CA\\
-Learning rate & $e^{-20}$& 1& $\epsilon$ & PE\\
-Dropout rate & 0& 0.9& $\epsilon$ & PE\\
-$\ell_1$ penalty & $e^{-20}$& 1& $\epsilon$ & PE\\
-$\ell_2$ penalty & $e^{-20}$& 1& $\epsilon$ & PE\\
-\hline
-Memory partition & 1& 32& $2^{x}$& CA\\
-Loop unrolling & 1& 32& $2^{x}$& CA\\
-\hline
-\end{tabular}
-\label{table:aladdin}
-\end{table}
+% Explanation of datasets
+\newpage
+%\begin{center}
+    \begin{longtable}{
+        %@{}
+        l % Name
+        l % n
+        l % d
+        l % T
+        l % Nature
+        l % References
+        @{}
+        }
+        \caption{\acrshort{mtl} Problems. The columns show the number of samples $n$, the dimension $d$, the number of tasks $T$ and the nature of the problem.} \label{tab:mtl_problems} \\
+    \toprule 
+    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
+    \endfirsthead
+    \multicolumn{6}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \midrule \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
+    \endhead
+    
+    \midrule \multicolumn{6}{|r|}{{Continued on next page}} \\ \midrule
+    \endfoot
+    
+    \midrule \bottomrule
+    \endlastfoot    
+    \multirow{13}{*}{\fdata{school}} & \multirow{13}{*}{\num{15362}} & \multirow{13}{*}{27} & \multirow{13}{*}{139} & \multirow{13}{*}{MT single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ &&&&&~\cite{HanZ16} \\ &&&&&~\cite{JeongJ18}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{\num{18000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{\num{800000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
+    \multirow{6}{*}{\fdata{computer}} & \multirow{6}{*}{\num{3600}} & \multirow{6}{*}{13} & \multirow{6}{*}{180} & \multirow{6}{*}{MT single-reg}  & \multirow{6}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{\num{14820}} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{MT bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
+    \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{\num{32302}} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{MT bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{\num{366}} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
+    \multirow{5}{*}{\fdata{sentiment}} & \multirow{5}{*}{\num{2000}} & \multirow{5}{*}{473856} & \multirow{5}{*}{4} & \multirow{5}{*}{MT bin-clas}  & \multirow{5}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{BarzilaiC15} \\ [3.0ex]
+    \\ \\ 
+    \multirow{6}{*}{\fdata{sarcos}} & \multirow{6}{*}{\num{44484}} & \multirow{6}{*}{21} & \multirow{6}{*}{7} & \multirow{6}{*}{multi-reg}  & \multirow{6}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{CilibertoMPR15} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{isolet}} & \multirow{2}{*}{\num{7797}} & \multirow{2}{*}{617} & \multirow{2}{*}{5} & \multirow{2}{*}{MT multi-clas}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ [3.0ex]
+%    \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{\num{340}} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
+    \multirow{4}{*}{\fdata{mnist}} & \multirow{4}{*}{\num{70000}} & \multirow{4}{*}{400} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{4}{*}{\fdata{usps}} & \multirow{4}{*}{\num{9298}} & \multirow{4}{*}{256} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{\num{675}} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{\num{131}} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{cifar10}} & \multirow{2}{*}{\num{50000}} & \multirow{2}{*}{1024} & \multirow{2}{*}{10} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{ZweigW13} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
+    \multirow{2}{*}{\fdata{parkinson}} & \multirow{2}{*}{\num{5875}} & \multirow{2}{*}{19} & \multirow{2}{*}{42} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{JawanpuriaN12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
+    \end{longtable}
+    %\end{center}

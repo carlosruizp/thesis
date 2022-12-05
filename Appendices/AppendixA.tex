@@ -1,55 +1,60 @@
 % Appendix A
 
-\chapter{Multi-Task Datasets}
+
+
+\chapter{List of Publications.}
 \label{AppendixA}
-\lhead{Appendix \ref{AppendixA}. \emph{Multi-Task Datasets}}
+\lhead{Appendix \ref{AppendixA}. \emph{List of Publications.}}
 
-In this appendix, we present a table with some of the most commonly used \acrfull{mtl} datasets. In Table~\ref{tab:mtl_problems} we give the number of samples, dimension and number of tasks of each dataset.
-
-% Explanation of datasets
-\newpage
-%\begin{center}
-    \begin{longtable}{
-        %@{}
-        l % Name
-        l % n
-        l % d
-        l % T
-        l % Nature
-        l % References
-        @{}
-        }
-        \caption{\acrshort{mtl} Problems. The columns show the number of samples $n$, the dimension $d$, the number of tasks $T$ and the nature of the problem.} \label{tab:mtl_problems} \\
-    \toprule 
-    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
-    \endfirsthead
-    \multicolumn{6}{c}%
-    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
-    \midrule \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{$\nsamples$}} & \multicolumn{1}{c}{\textbf{$\dimx$}} & \multicolumn{1}{c}{\textbf{$T$}} & \multicolumn{1}{c}{\textbf{Nature}} & \multicolumn{1}{c}{\textbf{References}} \\ \midrule 
-    \endhead
-    
-    \midrule \multicolumn{6}{|r|}{{Continued on next page}} \\ \midrule
-    \endfoot
-    
-    \midrule \bottomrule
-    \endlastfoot    
-    \multirow{13}{*}{\fdata{school}} & \multirow{13}{*}{\num{15362}} & \multirow{13}{*}{27} & \multirow{13}{*}{139} & \multirow{13}{*}{MT single-reg}  & \multirow{9}{*}{}~\cite{EvgeniouP04} \\ &&&&&~\cite{EvgeniouMP05} \\ &&&&&~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{BonillaCW07} \\ &&&&&~\cite{ZhangY10}  \\ &&&&&~\cite{AgarwalDG10}  \\ &&&&&~\cite{ChenZY11}   \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{GongYZ12rmfl} \\ &&&&&~\cite{KumarD12}  \\ &&&&&~\cite{ZhangY13a}  \\ &&&&&~\cite{HanZ16} \\ &&&&&~\cite{JeongJ18}  \\ [3.0ex]
-    \multirow{2}{*}{\fdata{20-newsgroup}} & \multirow{2}{*}{\num{18000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{20} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{AndoZ05} \\ &&&&&~\cite{Daume09} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{Reuters-RCV1}} & \multirow{2}{*}{\num{800000}} & \multirow{2}{*}{t.v.} & \multirow{2}{*}{103} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{YuTS05}  \\ &&&&&~\cite{AndoZ05} \\ [3.0ex]
-    \multirow{6}{*}{\fdata{computer}} & \multirow{6}{*}{\num{3600}} & \multirow{6}{*}{13} & \multirow{6}{*}{180} & \multirow{6}{*}{MT single-reg}  & \multirow{6}{*}{}~\cite{ArgyriouEP06,ArgyriouMPY07,ArgyriouEP08} \\ &&&&&~\cite{EvgeniouMP05}  \\ &&&&&~\cite{AgarwalDG10} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{4}{*}{\fdata{landmine}} & \multirow{4}{*}{\num{14820}} & \multirow{4}{*}{10} & \multirow{4}{*}{29} & \multirow{4}{*}{MT bin-clas}  & \multirow{4}{*}{}~\cite{XueLCK07} \\ &&&&&~\cite{Jebara11} \\ &&&&&~\cite{Daume09}  \\ &&&&&~\cite{JawanpuriaN12}  \\ [3.0ex]
-    \multirow{2}{*}{\fdata{MHC-I}} & \multirow{2}{*}{\num{32302}} & \multirow{2}{*}{184} & \multirow{2}{*}{47} & \multirow{2}{*}{MT bin-clas}  & \multirow{2}{*}{}~\cite{JacobBV08} \\ &&&&&~\cite{JawanpuriaN12} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{dermatology}} & \multirow{2}{*}{\num{366}} & \multirow{2}{*}{33} & \multirow{2}{*}{6} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{Jebara04} \\ &&&&&~\cite{ArgyriouEP08} \\ [3.0ex]
-    \multirow{5}{*}{\fdata{sentiment}} & \multirow{5}{*}{\num{2000}} & \multirow{5}{*}{473856} & \multirow{5}{*}{4} & \multirow{5}{*}{MT bin-clas}  & \multirow{5}{*}{}~\cite{Daume09} \\ &&&&&~\cite{ZhangY10} \\ &&&&&~\cite{CrammerM12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{BarzilaiC15} \\ [3.0ex]
-    \\ \\ 
-    \multirow{6}{*}{\fdata{sarcos}} & \multirow{6}{*}{\num{44484}} & \multirow{6}{*}{21} & \multirow{6}{*}{7} & \multirow{6}{*}{multi-reg}  & \multirow{6}{*}{}~\cite{ZhangY10} \\ &&&&&~\cite{ChenZY11} \\ &&&&&~\cite{ZhouCY11} \\ &&&&&~\cite{JawanpuriaN12} \\ &&&&&~\cite{ZhangY13a} \\ &&&&&~\cite{CilibertoMPR15} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{isolet}} & \multirow{2}{*}{\num{7797}} & \multirow{2}{*}{617} & \multirow{2}{*}{5} & \multirow{2}{*}{MT multi-clas}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&&~\cite{GongYZ12} \\ [3.0ex]
-%    \multirow{2}{*}{\fdata{coil}} & \multirow{2}{*}{\num{340}} & \multirow{2}{*}{17} & \multirow{2}{*}{7} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{ParameswaranW10} \\ &&&&& - \\ [3.0ex]
-    \multirow{4}{*}{\fdata{mnist}} & \multirow{4}{*}{\num{70000}} & \multirow{4}{*}{400} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{4}{*}{\fdata{usps}} & \multirow{4}{*}{\num{9298}} & \multirow{4}{*}{256} & \multirow{4}{*}{10} & \multirow{4}{*}{multi-clas}  & \multirow{4}{*}{}~\cite{KangGS11} \\ &&&&&~\cite{KumarD12} \\ &&&&&~\cite{ZweigW13} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{adni}} & \multirow{2}{*}{\num{675}} & \multirow{2}{*}{306} & \multirow{2}{*}{6} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{GongYZ12} \\ &&&&&~\cite{GongYZ12rmfl} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{microarray}} & \multirow{2}{*}{\num{131}} & \multirow{2}{*}{21} & \multirow{2}{*}{19} & \multirow{2}{*}{multi-reg}  & \multirow{2}{*}{}~\cite{LozanoS12} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{cifar10}} & \multirow{2}{*}{\num{50000}} & \multirow{2}{*}{1024} & \multirow{2}{*}{10} & \multirow{2}{*}{multi-clas}  & \multirow{2}{*}{}~\cite{ZweigW13} \\ &&&&&~\cite{HanZ16} \\ [3.0ex]
-    \multirow{2}{*}{\fdata{parkinson}} & \multirow{2}{*}{\num{5875}} & \multirow{2}{*}{19} & \multirow{2}{*}{42} & \multirow{2}{*}{MT single-reg}  & \multirow{2}{*}{}~\cite{JawanpuriaN12} \\ &&&&&~\cite{JeongJ18} \\ [3.0ex]
-    \end{longtable}
-    %\end{center}
+This appendix contains a relation of the articles published during the development of this thesis.
+%
+The full list of journal articles is:
+\begin{enumerate}
+    \item \textbf{Adaptive Graph Laplacian MTL L1, L2 and
+    LS-SVMs.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Logic Journal of the IGPL}. 2022.\\
+    Under review.\\
+    SJR Rank: Q1
+    \item \textbf{Multitask SVR Models for Solar and Wind Energy.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Energies}. 2020.\\
+    DOI: 10.3390/en13236308\\
+    SJR Rank: Q3
+    \item \textbf{Convex Formulation for Multi-Task L1-, L2-, and LS-SVMs.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Neurocomputing}. 2020.\\
+    DOI: 10.1016/j.neucom.2021.01.137\\
+    SJR Rank: Q2
+\end{enumerate}
+%
+The full list of conference articles is:
+\begin{enumerate}
+    \item \textbf{Convex Multi-Task Learning with Neural Networks.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Hybrid Artificial Intelligent Systems}. 2022.\\
+    DOI: 10.1007/978-3-031-15471-3\_20\\
+    Core Rank: National
+    \item \textbf{Adaptive Graph Laplacian for Convex Multi-Task Learning SVM.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Hybrid Artificial Intelligent Systems}. 2021.\\
+    DOI: 10.1007/978-3-030-86271-8\_19\\
+    Core Rank: National
+    \item \textbf{Convex Graph Laplacian Multi-Task Learning SVM.}
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{International Conference on Artificial Neural Networks}. 2020.\\
+    DOI: 10.1007/978-3-030-61616-8\_12\\
+    Core Rank: A
+    \item \textbf{A Convex Formulation of SVM-based Multi-Task Learning.}\\
+    {Ruiz, C.}, Alaíz, C. \& Dorronsoro, J.. 
+    \emph{Hybrid Artificial Intelligent Systems}. 2019.\\
+    DOI: 10.1007/978-3-030-29859-3\_35\\
+    Core Rank: C
+    \item \textbf{Flexible Kernel Selection in Multitask
+    Support Vector Regression.}\\
+    Ruiz, C., Catalina, A., Alaíz, C. \& Dorronsoro, J.. 
+    \emph{International Joint Conference on Neural Networks}. 2019.\\
+    DOI: 10.1109/IJCNN.2019.8852297\\
+    Core Rank: A
+\end{enumerate}
+%

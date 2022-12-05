@@ -42,6 +42,9 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{textcomp}   % to use the permyriad symbol
+\usepackage{bibentry} 
+
+
 
 % mathtools
 \mathtoolsset{showonlyrefs}
@@ -140,7 +143,7 @@
 
 
 \newacronym{rkhs}{RKHS}{Reproducing Kernel Hilbert Space}
-\newacronym{rkhss}{RKHS's}{Reproducing Kernel Hilbert Spaces}
+\newacronym{rkhss}{RKHSs}{Reproducing Kernel Hilbert Spaces}
 
 \newacronym{mae}{MAE}{Mean Absolute Error}
 \newacronym{mse}{MSE}{Mean Squared Error}
@@ -548,11 +551,11 @@ Small.
 
 \appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
 
-\input{./Appendices/AppendixA}	% Multi-Task Datasets
+\input{./Appendices/AppendixA} % List os Publications
 
 \input{./Appendices/AppendixB} % Appendix for Chapter 4
 
-%\input{./Appendices/AppendixC} % Appendix for Chapter 5
+\input{./Appendices/AppendixC} % Multi-Task Datasets
 
 \addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
 \backmatter
