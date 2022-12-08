@@ -17,7 +17,7 @@
 \usepackage{psfrag}
 \usepackage{lettrine}
 \usepackage{lscape}
-\usepackage[]{algorithm2e}
+\usepackage[ruled]{algorithm2e}
 \usepackage{multirow}
 \usepackage{float}
 \usepackage{dsfont}
@@ -53,6 +53,9 @@
 \makeatletter
 \renewcommand{\@algocf@capt@plain}{above}% formerly {bottom}
 \makeatother
+%\SetAlFnt{\footnotesize}
+%\SetKwSty{\footnotesize}
+%\SetKwSty{\small}
 
 % % subcaption
 % \renewcommand\thesubfigure{(\alph{subfigure})}
@@ -62,8 +65,9 @@
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
 \SetCommentSty{mycommfont}
 
-\SetKwInput{KwInput}{Input}                % Set the Input
-\SetKwInput{KwOutput}{Output}              % set the Output
+\SetKwInput{KwInput}{\small{Input}}                % Set the Input
+\SetKwInput{KwOutput}{\small{Output}}              % set the Output
+\SetKwInput{KwData}{\small{Data}}              % set the Output
 
 %tikz
 \usetikzlibrary{arrows,positioning} 
@@ -138,6 +142,8 @@
 \newacronym{svms}{SVMs}{Support Vector Machines}
 \newacronym{nn}{NN}{Neural Network}
 \newacronym{nns}{NNs}{Neural Networks}
+\newacronym{dnn}{DNN}{Neural Network}
+\newacronym{dnns}{DNNs}{Deep Neural Networks}
 \newacronym{cv}{CV}{Cross Validation}
 \newacronym{vc}{VC}{Vapnik-Chervonenkis}
 
@@ -357,6 +363,7 @@
 %% ----------------------------------------------------------------
 \setlength{\headheight}{26pt}
 \begin{document}
+
 
 \frontmatter	  % Begin Roman style (i, ii, iii, iv...) page numbering
 

@@ -101,7 +101,7 @@ where $\mu$ is the hyperparameter to control the regularization of the common an
 Here, observe also that different transformations are used: the transformation $\phi(\cdot)$ corresponds to the common part of the model, while $\phi_r(\cdot)$ is task-specific.
 %
 This is a joint learning approach that is developed for the L1-\acrshort{svm}, to which the authors give the name of \emph{Regularized \acrshort{mtl}}, but we will refer to it as the {additive} \acrshort{mtl} approach.
-The influence of the hyperparameters $C$ and $\mu$ is not straightforward, and the behaviour of the solutions is asymptotical. For example, when $\mu \to \infty$, the common part $w$ disappears, and we end up with independent models for each task. Also, with $C$ and $\mu$ large enough, the result tendency is the contrary as it approaches a common model for all tasks.
+The influence of the hyperparameters $C$ and $\mu$ is not straightforward, and the behaviour of the solutions is asymptotical. For example, when $\mu \to \infty$, the common part $w$ disappears, and we end up with independent models for each task. Also, with $C$ large enough and $\mu \to 0$, the result tendency is the contrary as it approaches a common model for all tasks.
 % %
 % Observe that as $\frac{\mu_c}{\mu_s} \tendsto{}{\infty} $, we would have a common part ${w}$ that tends to zero, which would result in independent models for each task, i.e. ${w}_r \approx {v}_r$. On the contrary, when $\frac{\mu_c}{\mu_s} \tendsto{}{0} $, the task-specific parts tend to zero and every model is the common part, i.e. ${w}_r \approx {w}$.
 % There are two asymptotical behaviours: the first one tends to an \acrfull{itl} approach, while the second one tends to a \acrfull{ctl} one. The \acrshort{mtl} formulation is a strategy that lies between those two approaches, \acrshort{ctl} and \acrshort{itl}, combining them to achieve a more flexible model.
@@ -114,17 +114,17 @@ The influence of the hyperparameters $C$ and $\mu$ is not straightforward, and t
 %     {w}_r = \lambda {w} + (1 - \lambda) {v}_r,
 % \end{equation}
 % where $\lambda \in \left[0, 1\right]$ is a hyperparameter.
-To obtain a more interpretable formulation, here we propose to use our convex \acrshort{mtl} framework of~\eqref{eq:convexmtl_general} and define the common part as $g(\cdot) =  {w}^\intercal {\phi(\cdot)} + b$ and the task-specific parts as $g_r(\cdot) = {v_r}^\intercal {\phi_r(\cdot)} + d_r$, so the \acrshort{mtl} models are
+To obtain a more interpretable formulation, here we propose to use our convex \acrshort{mtl} framework of~\eqref{eq:convexmtl_general} and define the common part as $g(\cdot) =  \dotp{w}{\phi(\cdot)} + b$ and the task-specific parts as $g_r(\cdot) = \dotp{v_r}{\phi_r(\cdot)} + d_r$, so the \acrshort{mtl} models are
 \begin{equation}
     \nonumber
     \label{eq:convexmtl_modeldef}
-    h_r(\cdot) = \lambda_r \left\lbrace {w}^\intercal {\phi(\cdot)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r^\intercal {\phi_r(\cdot)} + d_r \right\rbrace ,
+    h_r(\cdot) = \lambda_r \left\lbrace \dotp{w}{\phi(\cdot)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{v_r}{\phi_r(\cdot)} + d_r \right\rbrace ,
 \end{equation}
 where $\lambda_r \in \left[0, 1\right]$ are hyperparameters, and the corresponding regularized risk is 
 \begin{equation}
     \nonumber
     \begin{aligned}
-        \emprisk ({w, v_1, \ldots, v_\ntasks}) = &C \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r \left\lbrace {w}^\intercal {\phi(x_i^r)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace {v}_r^\intercal {\phi_r(x_i^r)} + d_r \right\rbrace, y_i^r) \\ 
+        \emprisk ({w, v_1, \ldots, v_\ntasks}) = &C \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r \left\lbrace \dotp{w}{\phi(x_i^r)} + b \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{v_r}{\phi_r(x_i^r)} + d_r \right\rbrace, y_i^r) \\ 
         &\qquad + \norm{{w}}^2 + \sum_{r=1}^\ntasks \norm{{v}_r}^2 .
     \end{aligned}
 \end{equation}
@@ -134,9 +134,9 @@ Here, the interpretation is simpler. The model with $\lambda_r = 1$ for $r=1, \l
 % The convex formulation also defines an \acrshort{mtl} model that is between a \acrshort{ctl} approach and an \acrshort{itl} one, but it presents an advantage over the additive one: the values of $\lambda$ that recover the \acrshort{ctl} and \acrshort{itl} approaches are known, and these values are attainable, that is, it is not an asymptotical behaviour as in the additive formulation. 
 %
 
-Moreover, we show that the two formulations, the {additive} and {convex}, are equivalent within an L1-\acrshort{svm} setting.
+Moreover, we show that the two formulations, {additive} and {convex}, are equivalent within an L1-\acrshort{svm} setting.
 %
-Finally, we also present~\citet{RuizAD21} the extensions for L2 and LS-\acrshort{svm} setting, where we apply the convex \acrshort{mtl} formulation.
+Finally, we also present~\citet{RuizAD21} the extensions for the L2 and LS-\acrshort{svm}, where we apply the convex \acrshort{mtl} formulation.
 
 %\subsection{L1-SVM and Equivalence Results}\label{subsec:cvx_l1-svm}
 % The \acrfull{svm}, or L1-\acrshort{svm},~\citep{Vapnik00} is one of the most successful methods in \acrfull{ml}, since it provides a robust framework that offer good generalization properties. It is also the basis of the \acrshort{mtl} formulation in~\cite{EvgeniouP04}, where they present what we call the additive \acrshort{mtl} \acrshort{svm}, or, simply, the additive approach.
@@ -150,8 +150,8 @@ The {additive} \acrshort{mtl} primal problem formulation, presented in~\cite{Evg
 and extended for multiple kernel functions and task-specific biases in~\cite{CaiC12}, is the following one,
 \begin{equation}\label{eq:svmmtl_primal_add}
     \begin{aligned}
-    & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
-    & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{\mu}{2} {\norm{{w}}}^2} \\
+    & \argmin_{w, \fv{v}, \fv{b}, \xi}
+    & & {J({w}, \fv{v}, \fv{b}, \fv{\xi}) = C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{\mu}{2} {\norm{{w}}}^2} \\
     & \text{s.t.}
     & & y_{i}^r (\dotp{w}{\phi(x_{i}^r)} + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq p_{i}^r - \xi_{i}^r ,  \\
     & & & \xi_{i}^r \geq 0; \;  i=1 , \dotsc , m_r, \;  r= 1,\dotsc, T  . \\
@@ -159,8 +159,9 @@ and extended for multiple kernel functions and task-specific biases in~\cite{Cai
 \end{equation}
 Here, we are using the unified formulation for regression and classification where we use the sample 
 $$\sample = \set{(x_i^r, y_i^r, p_i^r), i=1, \ldots, {\npertask}_r, \; r=1, \ldots, \ntasks}. $$
-The problem~\eqref{eq:svmmtl_primal_add} is equivalent to a classification problem when we select $p_i^r=1$ and $y_i^r \in \set{-1, 1}$ as the corresponding labels for all $i=1, \ldots, \hat{\npertask}_r$, $r=1, \ldots, \ntasks$.
-Also, the problem~\eqref{eq:svmmtl_primal_add} is equivalent to a regression problem if for each task $r=1, \ldots, \ntasks$, we duplicate the number of instances  and select $y_i^r=1, p_i^r=-t_{i}^r - \epsilon$ for $i=1, \ldots, \npertask_r$ and $y_i^r=-1, p_i^r=-t_{i - \npertask_r}^r - \epsilon$ for $i=\npertask_r + 1, \ldots, 2\npertask_r$, where $t_{i}^r, i=1, \ldots, \npertask_r$ are the regression target values.
+Recall
+that, as explained in Section~\ref{sec:ch2_svms}, the problem~\eqref{eq:svmmtl_primal_add} is equivalent to a classification problem when we select $p_i^r=1$ and $y_i^r \in \set{-1, 1}$ as the corresponding labels for all $i=1, \ldots, \npertask_r$, $r=1, \ldots, \ntasks$.
+Also, the problem~\eqref{eq:svmmtl_primal_add} is equivalent to a regression problem if for each task $r=1, \ldots, \ntasks$, we duplicate the number of instances  and select $y_i^r=1, p_i^r=-t_{i}^r - \epsilon$ for $i=1, \ldots, \npertask_r$ and $y_i^r=-1, p_i^r=-t_{i - \npertask_r}^r - \epsilon$ for $i=\npertask_r + 1, \ldots, 2\npertask_r$, where $t_{i}^r$, $i=1, \ldots, \npertask_r$ are the regression target values.
 The prediction model is then 
 \begin{equation}
     \nonumber
@@ -175,20 +176,20 @@ for classification.
 Observe again that the transformation $\phi$ is used for the common part, while the transformation $\phi_r$ is task-specific.
 
 %
-In~\eqref{eq:svmmtl_primal_add} there are two kind of hyperparameters: $C$ and $\mu$, which, in combination, balance the different parts of the objective function. 
+In~\eqref{eq:svmmtl_primal_add} there are hyperparameters: $C$ and $\mu$, which, in combination, balance the different parts of the objective function. 
 %
-Hyperparameter $C$ plays the same role than in the standard L1-\acrshort{svm}: it balances the tradeoff between the loss incurred by the model, represented by the slack variables $\xi_i^r$, and the complexity of the models, represented by the norms $\norm{{w}}$ and $\norm{{v}_r}$. Large values of $C$ highly penalize the loss, so the resulting models are more complex because they have to adapt to the training sample distribution, but these models tend to overfit. Small values of $C$ indirectly penalize more the norms of $w$ and $v_r$, hence the resulting models are simpler but not so dependent on the training sample.
+The hyperparameter $C$ plays the same role that in the standard L1-\acrshort{svm}: it balances the trade-off between the loss incurred by the model, represented by the slack variables $\xi_i^r$, and its complexity, represented by the norms $\norm{{w}}$ and $\norm{{v}_r}$. Large values of $C$ highly penalize the loss, so the resulting models are more complex because they have to adapt to the training sample distribution, but these models tend to overfit. Small values of $C$ indirectly penalize more the norms of $w$ and $v_r$, hence the resulting models are simpler but not so dependent on the training sample.
 
 %
 The hyperparameter $\mu$, in combination with $C$, balances how common or specific the models are. 
 Large values of $\mu$ penalize the common part, resulting in more specific models; while small values of $\mu$, alongside small values of $C$, result in an objective function where the specific norms are the terms more strongly penalized, so the task-specific parts vanish and common models are promoted.
-We can distinguish the following cases:
+Hence, we can distinguish the following cases:
 \begin{itemize}
     \item Reduction to an \acrshort{itl} approach:
-    $$\mu \tendsto{}{\infty} \implies h_r(\cdot) \eqsim \dotp{{v}_r}{\phi_r(\cdot)} + b_r .$$
+    $$\mu \tendsto{}{\infty} \implies h_r(\cdot) \approx \dotp{{v}_r}{\phi_r(\cdot)} + b_r .$$
     That is, the models are learned independently because the common part vanishes.
     \item Reduction to a \acrshort{ctl} approach (with task-specific biases): 
-    $$C \tendsto{}{0}, \mu \tendsto{}{0} \implies h_r(\cdot) \eqsim \dotp{w}{\phi(\cdot)} + b_r .$$
+    $$C \tendsto{}{0}, \mu \tendsto{}{0} \implies h_r(\cdot) \approx \dotp{w}{\phi(\cdot)} + b_r .$$
     That is, the model is common for all tasks because the specific parts disappear.
     \item Pure \acrshort{mtl} approach:
     %$$ \mu_\text{inf} < \mu < \mu_\text{sup} \implies h_r(\cdot) =(\dotp{w}{\phi(\cdot)} ) + (\dotp{{v}_r}{\phi_r(\cdot)}) + b_r .$$
@@ -206,7 +207,12 @@ Observe that~\eqref{eq:svmmtl_primal_add} is a convex problem. As in the standar
         &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \beta_i^r \xi_i^r ,
     \end{aligned}
 \end{equation}
-where $\alpha_i^r, \beta_i^r \geq 0$ are the Lagrange multipliers. Here $\fv{\xi}$ represents the vector $$(\xi_1^1, \ldots, \xi_{m_1}^1, \ldots, \xi_1^\ntasks, \ldots, \xi_{m_\ntasks}^\ntasks)^\intercal$$ and we define $\fv{\alpha}$ and $\fv{\beta}$ analogously. For compactness we also use
+where $\alpha_i^r, \beta_i^r \geq 0$ are the Lagrange multipliers. Here we use the vectors $\fv{\alpha}$ and $\fv{\beta}$, defined as
+\begin{equation}
+    \nonumber
+    \fv{\alpha} = \left(\alpha_1^1, \ldots, \alpha_{m_1}^1, \ldots, \alpha_1^\ntasks, \ldots, \alpha_{m_\ntasks}^\ntasks\right)^\intercal
+\end{equation}
+and analogously for $\fv{\beta}$. For compactness, we also use
 $$ \fv{v} = (v_1^\intercal, \ldots, v_\ntasks^\intercal)^\intercal,\; \fv{b} = (b_1, \ldots, b_\ntasks).$$
 Recall that the \acrshort{kkt} conditions for convex differentiable problems, like this one, are those corresponding to the saddle point in the primal variables, namely
 \begin{align}
@@ -228,7 +234,7 @@ For this problem, the dual function is
 \begin{equation}\nonumber
     \begin{aligned}
          \Theta(\fv{\alpha}, \fv{\beta}) &=  \min_{{w}, \fv{v}, \fv{b}, \fv{\xi}} \lagr({w}, \fv{v}, \fv{b}, \fv{\xi}, \fv{\alpha}, \fv{\beta}) \\
-         &= \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{\fv{b}}. \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta}) .
+         &= \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{\fv{b}}, \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta}) .
     \end{aligned}    
 \end{equation}
 Here, we will use the strong duality theorem, which we have given in Theorem~\ref{th:strong_duality}. We can apply it since we have a convex differentiable objective function and affine constraints.
@@ -238,8 +244,8 @@ To define the dual problem we need the optimal primal variables, which we obtain
     \grad_{{w}} \lagr  = \fv{0}  &\implies \mu {{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = \fv{0} , \label{eq:common_repr_add} \\
     \grad_{{v}_r} \lagr  = \fv{0} &\implies {{v}_r} - \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = \fv{0} , \label{eq:specific_repr_add} \\
     % \grad_{b} \lagr  = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_add}  \\
-    \grad_{b_r} \lagr  = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_add} \\
-    \grad_{\xi_i^r} \lagr  = 0 &\implies C - {\alpha_i^r} - {\beta_i^r} = 0 .\label{eq:xi_feas_add}
+    \partial_{b_r} \lagr  = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_add} \\
+    \partial_{\xi_i^r} \lagr  = 0 &\implies C - {\alpha_i^r} - {\beta_i^r} = 0 .\label{eq:xi_feas_add}
 \end{align}
 % \begin{align}
 %     \grad_{{w}} \lagr \vert_{\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{d_1}, \ldots, \optim{b_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0  &\implies \mu \optim{{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = 0 \\
@@ -249,13 +255,13 @@ To define the dual problem we need the optimal primal variables, which we obtain
 %     \grad_{\xi_i^r} \lagr \vert_{\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{d_1}, \ldots, \optim{b_\ntasks}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0 &\implies C - \optim{\alpha_i^r} - \optim{\beta_i^r} = 0
 % \end{align}
 
-Using these results and substituting back in the Lagrangian we obtain
+Using these results and substituting back in the Lagrangian and rearranging the terms we obtain
 \begin{equation}\nonumber
     \begin{aligned}
-        &  \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b_1}, \ldots, \optim{b_\ntasks}, \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta}) \\
+        &  \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{\fv{b}}, \optim{\fv{\xi}}, \fv{\alpha}, \fv{\beta}) \\
         &\quad =  \frac{1}{2} \sum_{r= 1}^T{\norm{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}^2} + \frac{\mu}{2} {\norm{ \frac{1}{\mu}\sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}}^2 \\
-        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[ \left(\frac{1}{\mu} \sum_{s= 1}^T \sum_{j=1}^{m_s} {\alpha_j^s} \left\lbrace y_j^s \phi({x}_j^s) \right\rbrace \right) \cdot \phi({x}_{i}^r) \right]  \right\rbrace \\
-        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[  \left( \sum_{j=1}^{m_r} {\alpha_j^r} \left\lbrace y_j^r \phi_r({x}_j^r) \right\rbrace \right) \cdot \phi_r({x}_{i}^r)  \right]  \right\rbrace \\
+        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[ \dotp{\frac{1}{\mu} \sum_{s= 1}^T \sum_{j=1}^{m_s} {\alpha_j^s} \left\lbrace y_j^s \phi({x}_j^s) \right\rbrace }{\phi({x}_{i}^r)} \right]  \right\rbrace \\
+        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[  \dotp{\sum_{j=1}^{m_r} {\alpha_j^r} \left\lbrace y_j^r \phi_r({x}_j^r) \right\rbrace}{\phi_r({x}_{i}^r)}  \right]  \right\rbrace \\
         &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace ,
         % \\
         % &\quad =  \frac{1}{2} \sum_{r= 1}^T{\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
@@ -282,17 +288,17 @@ which is equivalent to
 Observe that $\fv{\beta}$ has disappeared from the Lagrangian, however, it plays a role in the feasibility of $\fv{\alpha}$; combining the condition~\eqref{eq:xi_feas_add} with $\alpha_i^r , \beta_i^r \geq 0$, we get that $0 \leq \alpha_i^r \leq C$.
 %   Dual
 Then, with this feasibility condition, the dual problem is 
-$$ \max_{0 \leq \fv{\alpha} \leq C} \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}),$$
+$$ \max_{0 \leq \fv{\alpha} \leq C} \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{\fv{b}}, \optim{\fv{\xi}}, \fv{\alpha}),$$
 but we will consider instead the equivalent formulation
 $\min_{0 \leq \fv{\alpha} \leq C} \Theta(\fv{\alpha})$ where 
-$$ \Theta(\fv{\alpha}) = - \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}). $$
+$$ \Theta(\fv{\alpha}) = - \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{\fv{b}}, \optim{\fv{\xi}}, \fv{\alpha}). $$
 Therefore, the dual problem is the following one:
 \begin{equation}\label{eq:svmmtl_dual_add}
     \begin{aligned}
     & \min_{\fv{\alpha}} & \Theta(\fv{\alpha}) &=  \frac{1}{2\mu} \dotp{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
     & & &\quad + \frac{1}{2} \sum_{r= 1}^T {\dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}}  - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r ,\\
     & \text{s.t.}
-    & & 0 \leq \alpha_i^r \leq C , \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks \\
+    & & 0 \leq \alpha_i^r \leq C , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks , \\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0,\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
@@ -306,7 +312,7 @@ Using the kernel trick, we can write the dual problem with a matrix formulation:
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
-Here $Q$ and $K$ are the common and specific kernel matrices, respectively.
+In this dual problem, $Q$ and $K$ are the common and specific kernel matrices, respectively.
 The matrix $Q$ is generated using the common kernel, defined as 
 \begin{equation}
     \nonumber
@@ -347,7 +353,7 @@ so the corresponding matrix is
     \underbrace{K_{1, 1}}_{m_1 \times m_1} & \underbrace{\fm{0}}_{m_1 \times m_2} & \underbrace{\fm{0}}_{m_1 \times m_3} & \cdots & \underbrace{\fm{0}}_{m_1 \times m_T} \\
     \underbrace{\fm{0}}_{m_2 \times m_1} & \underbrace{K_{2, 2}}_{m_2 \times m_2} & \underbrace{\fm{0}}_{m_2 \times m_1} & \cdots & \underbrace{\fm{0}}_{m_2 \times m_T} \\
     \vdots      & \vdots &\vdots    & \ddots & \vdots \\
-    \underbrace{\fm{0}}_{m_T \times m_1} & \underbrace{\fm{0}}_{m_T \times m_2} & \underbrace{\fm{0}}_{m_T \times m_3} & \cdots & \underbrace{K_{\ntasks, \ntasks}}_{m_\ntasks \times \ntasks}
+    \underbrace{\fm{0}}_{m_T \times m_1} & \underbrace{\fm{0}}_{m_T \times m_2} & \underbrace{\fm{0}}_{m_T \times m_3} & \cdots & \underbrace{K_{\ntasks, \ntasks}}_{m_\ntasks \times m_\ntasks}
     \end{pmatrix} ,
 \end{equation}
 where each task block $\fm{K}_{r, r}$ is defined as
@@ -373,17 +379,17 @@ $k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and $k_r(x, \tilde{x}) = \do
 The dual problem~\eqref{eq:svmmtl_dualvec_add} is very similar to the \acrshort{ctl} one but we have two major differences: the use of the multi-task kernel matrix $\widehat{\fm{Q}}$ and the multiple equality constraints. These constraints, which appear in~\eqref{eq:specific_eqconstr_add}, are consequence of the specific biases used in the primal problem~\eqref{eq:svmmtl_primal_add}. In~\cite{CaiC12} the authors develop a Generalized SMO algorithm to account for these multiple equality constraints.
 To get the optimal bias $b_r$, we use~\eqref{eq:dualgap_vanish} for the support vectors, that is where $\alpha_i^r \neq 0$ and, hence, $y_{i}^r (\dotp{w}{\phi(x_{i}^r)} + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) - p_{i}^r + \xi_{i}^r = 0$.
 
-Analyzing the hyperparameters influence in the dual problem, note that $C$ is an upper bound for the dual coefficients, as in the standard case, and the hyperparameter of interest for this \acrshort{mtl} formulation, which is $\mu$, scales the common matrix $\fm{Q}$. As with the primal formulation, we can define three different cases:
+Analyzing the hyperparameters influence in the dual problem, note that $C$ is an upper bound for the dual coefficients, as in the standard case, and the hyperparameter specific of this \acrshort{mtl} formulation, which is $\mu$, scales the common matrix $\fm{Q}$. As with the primal formulation, we can define three different cases:
 \begin{itemize}
     \item Reduction to an \acrshort{itl} approach:
-    $$\mu \tendsto{}{\infty} \implies  h_r(\cdot) \simeq \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace k_r(x_i^r, \cdot) \right\rbrace + b_r .$$
-    Thus, the kernel matrix is block-diagonal and optimizing the dual problem is equivalent to optimizing a specific dual problem for each task.
+    $$\mu \tendsto{}{\infty} \implies  h_r(\cdot) \approx  \frac{1}{\mu} \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r k_r(x_i^r, \cdot) + b_r .$$
+    Thus, the kernel matrix is $\hat{Q} \approx K$, a block-diagonal one, and optimizing the dual problem is equivalent to optimizing a specific dual problem for each task.
     \item Reduction to a \acrshort{ctl} approach (with task-specific biases): 
-    $$C \tendsto{}{0}, \mu \tendsto{}{0} \implies  h_r(\cdot) \simeq \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace k(x_i^r, \cdot) \right\rbrace + b_r.$$
-    This is the standard dual objective function for \acrshort{ctl}.
+    $$C \tendsto{}{0}, \mu \tendsto{}{0} \implies  h_r(\cdot) \approx \sum_{s= 1}^T \sum_{i=1}^{m_s} {\alpha_i^s} y_i^s k(x_i^s, \cdot) + b_r.$$
+    Here, the kernel matrix is $\hat{Q} \approx Q$; this is the standard matrix for \acrshort{ctl}.
     \item Pure \acrshort{mtl} approach:
-    $$ 0 < \mu < \infty \implies h_r(\cdot) = \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace \frac{1}{\mu} k(x_i^r, \cdot) + k_r(x_i^r, \cdot) \right\rbrace + b_r. $$
-    Here the kernel matrix combines the common and specific matrices.
+    $$ 0 < \mu < \infty \implies h_r(\cdot) =  \frac{1}{\mu} \sum_{s= 1}^T \sum_{i=1}^{m_s} \left\lbrace {\alpha_i^s} y_i^s  k(x_i^s, \cdot) \right\rbrace +  \sum_{j=1}^{\npertask_r} \left\lbrace {\alpha_j^s} y_j^s k_r(x_j^r, \cdot) \right\rbrace + b_r. $$
+    Here the kernel matrix combines the common and specific matrices, that is $\hat{Q} = (1 / \mu) Q + K$, where neither of the two terms is negligible.
 \end{itemize}
 
 
@@ -395,8 +401,8 @@ Analyzing the hyperparameters influence in the dual problem, note that $C$ is an
 %   Primal
 We present a convex formulation for the \acrshort{mtl} L1-\acrshort{svm}, which we have proposed in~\cite{RuizAD19}. This formulation offers a better interpretability because the influence of the common and task-specific parts is more clear. 
 %
-Here, for a clearer formulation, we will express the biases $b_r$ as the following convex combination:
-$$ b_r = \lambda b + (1 - \lambda) d_r .$$  
+Here, instead of the biases $b_r$ that we have used in the additive formulation, we will consider the following convex combination of biases:
+$$ \lambda b + (1 - \lambda) d_r .$$  
 %
 Then, the primal problem for the convex \acrshort{mtl} L1-\acrshort{svm} is
 \begin{equation}\label{eq:svmmtl_primal_convex}
@@ -427,7 +433,7 @@ In~\eqref{eq:svmmtl_primal_convex}, depending on the value of hyperparameters $C
 %
 \begin{itemize}
     \item Reduction to an \acrshort{itl} approach:
-    $$\lambda_r = 0 .\; r=1, \ldots, \ntasks \implies h_r(\cdot) = \dotp{{v}_r}{\phi_r(\cdot)} + d_r .$$
+    $$\lambda_r = 0 ,\; r=1, \ldots, \ntasks \implies h_r(\cdot) = \dotp{{v}_r}{\phi_r(\cdot)} + d_r .$$
     \item Reduction to a \acrshort{ctl} approach: 
     $$ \lambda_r = 1 ,\; r=1, \ldots, \ntasks \implies h_r(\cdot) = \dotp{w}{\phi(\cdot)} + b .$$
     \item Pure \acrshort{mtl} approach:
@@ -448,7 +454,7 @@ Observe that now the cases are not unbounded but have attainable values, 0 for \
 \end{equation}
 where $\alpha_i^r, \beta_i^r \geq 0$ are the Lagrange multipliers. Again, $\fv{\xi}$ represents the vector $$(\xi_1^1, \ldots, \xi_{m_1}^1, \ldots, \xi_1^\ntasks, \ldots, \xi_{m_\ntasks}^\ntasks)^\intercal$$ and analogously for $\fv{\alpha}$ and $\fv{\beta}$; we also use 
 $$ \fv{v} = (v_1^\intercal, \ldots, v_\ntasks^\intercal)^\intercal,\; \fv{d} = (d_1, \ldots, d_\ntasks).$$
-And again, we use the strong duality theorem, given in Theorem~\ref{th:strong_duality}, to get the solution.
+Again, we use the strong duality theorem, given in Theorem~\ref{th:strong_duality}, to get the solution.
 The dual objective function is defined as 
 \begin{equation}\nonumber
     \begin{aligned}
@@ -460,9 +466,9 @@ The gradients with respect to the primal variables are
 \begin{align}
     \grad_{{w}} \lagr  = \fv{0}  &\implies \optim{{w}} - \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = \fv{0} , \label{eq:common_repr_conv} \\
     \grad_{{v}_r} \lagr  = \fv{0} &\implies \optim{{v}_r} - (1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = \fv{0} , \label{eq:specific_repr_conv} \\
-    \grad_{b} \lagr  = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv}  \\
-    \grad_{{d}_r} \lagr  = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv} \\
-    \grad_{\xi_i^r} \lagr  = 0 &\implies C - {\alpha_i^r} - {\beta_i^r} = 0 . \label{eq:xi_feas_conv}
+    \partial_{b} \lagr  = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv}  \\
+    \partial_{{d}_r} \lagr  = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv} \\
+    \partial_{\xi_i^r} \lagr  = 0 &\implies C - {\alpha_i^r} - {\beta_i^r} = 0 . \label{eq:xi_feas_conv}
 \end{align}
 % \begin{align}
 %     \grad_{{w}} \lagr \vert_{\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0  &\implies \mu \optim{{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = 0 \\
@@ -485,32 +491,32 @@ Using these results and substituting back in the Lagrangian we obtain:
         % &\qquad - \dotp{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
         % &\qquad -  \sum_{r= 1}^T {\dotp{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
         % &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace \\
-        &\quad= - \frac{1}{2} \dotp{ \sum_{r= 1}^T  \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
-        &\qquad - \frac{1}{2} \sum_{r= 1}^T {(1-\lambda_r) \dotp{\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
+        &\quad= - \frac{1}{2} \dotp{ \sum_{r= 1}^T  \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r)}{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r)} \\
+        &\qquad - \frac{1}{2} \sum_{r= 1}^T {(1-\lambda_r) \dotp{\sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r)}{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r)}} \\
         &\qquad +  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r  p_{i}^r .
     \end{aligned}
 \end{equation}
 %   Dual
-As with the additive formulation, the $\beta_i^r$ multipliers disappear, and the dual problem is  $\min_{\fv{\alpha}} \Theta(\fv{\alpha})$ where 
+As with the additive formulation, the $\beta_i^r$ multipliers disappear, and the dual problem is  $\min_{\fv{\alpha}} \Theta(\fv{\alpha})$ with 
 $$ \Theta(\fv{\alpha}) = - \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}), $$
 where $\fv{\alpha}$ is feasible.
 Therefore, the dual problem corresponding to the convex \acrshort{mtl} problem~\eqref{eq:svmmtl_primal_convex} is the following one:
 \begin{equation}\label{eq:svmmtl_dual_conv}
     \begin{aligned}
-    & \min_{\fv{\alpha}} & \Theta(\fv{\alpha}) &=  \frac{1}{2} \dotp{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
-    & & &\quad + \frac{1}{2} \sum_{r= 1}^T {\dotp{(1 - \lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
+    & \min_{\fv{\alpha}} & \Theta(\fv{\alpha}) &=  \frac{1}{2} \dotp{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi({x}_i^r)}{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi({x}_i^r)} \\
+    & & &\quad + \frac{1}{2} \sum_{r= 1}^T {\dotp{(1 - \lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi_r({x}_i^r)}{(1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi_r({x}_i^r)}} \\
     & & &\quad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r   \\
     & \text{s.t.}
-    & & 0 \leq \alpha_i^r \leq C ,\; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks , \\
+    & & 0 \leq \alpha_i^r \leq C ,\; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks , \\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0 ,\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
 And the matrix formulation using the kernel matrices is
 \begin{equation}\label{eq:svmmtl_dualvec_conv}
     \begin{aligned}
-    & \min_{\alpha} && \Theta(\alpha) = \frac{1}{2} \fv{\alpha}^\intercal \left(\Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+    & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
     & \text{s.t.}
-    & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks ,\\
+    & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks ,\\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks , \\
     \end{aligned}
 \end{equation}
@@ -532,7 +538,7 @@ whose corresponding multi-task kernel function can be expressed as
 \end{equation}
 where again we are using the common kernel $k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and the task-specific kernels $k_r(x, \tilde{x}) = \dotp{\phi_r(x)}{\phi_r(\tilde{x})}$ for $r=1, \ldots, \ntasks$.
 Here, to get the biases $b$ and $d_r$, we use again the support vectors, with $\alpha_i^r \neq 0$; hence $$y_{i}^r (\lambda_r \dotp{w}{\phi(x_{i}^r)} + \lambda_r d + (1- \lambda_r) \dotp{v_r}{\phi_r(x_{i}^r)} + (1- \lambda_r) b_r) - p_{i}^r + \xi_{i}^r = 0 .$$
-However, we can only obtain the values for $\lambda_r b + (1 - \lambda_r) d_r$, so we can assume for $\lambda_r \neq 1$ that $b=0$ and solve for $d_r$, while for $\lambda_r = 1$ we solve for $b$.
+However, we can only obtain the values for $\lambda_r b + (1 - \lambda_r) d_r$; observe that this does not change the prediction. Therefore, we can assume for $\lambda_r \neq 1$ that $b=0$ and solve for $d_r$, while for $\lambda_r = 1$ we solve for $b$.
 % Then, we can define the kernel matrix as 
 % \begin{equation}
 %     \nonumber
@@ -550,14 +556,17 @@ This dual problem is very similar to the one shown in~\eqref{eq:svmmtl_dualvec_a
 Studying the influence of $\lambda_r$ hyperparameters in the dual problem we can describe the following cases:
 \begin{itemize}
     \item Reduction to an \acrshort{itl} approach:
-    $$\lambda_r = 0,\; r=1, \ldots, \ntasks  \implies  h_r(\hat{x}) = \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace k_r(x_i^r, \hat{x}) \right\rbrace  + d_r .$$
+    $$\lambda_r = 0,\; r=1, \ldots, \ntasks  \implies  h_r(\hat{x}) = \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r k_r(x_i^r, \hat{x})  + d_r .$$
+    Here, the kernel matrix is $\widehat{Q} = K$, a block diagonal matrix.
     \item Reduction to a \acrshort{ctl} approach: 
-    $$\lambda_r = 1,\; r=1, \ldots, \ntasks \implies  h_r(\hat{x}) = \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace k(x_i^r, \hat{x})  \right\rbrace + b .$$
+    $$\lambda_r = 1,\; r=1, \ldots, \ntasks \implies  h_r(\hat{x}) = \sum_{s= 1}^\ntasks \sum_{i=1}^{m_s} {\alpha_i^s} y_i^s k(x_i^s, \hat{x})  + b .$$
+    Thus, the kernel matrix is $\widehat{Q} = Q$, the one used in the standard \acrshort{ctl} approach.
     \item Pure \acrshort{mtl} approach:
     \begin{align*}
         &0 < \lambda_r < 1,\; r=1, \ldots, \ntasks \implies \\
-        &\quad h_r(\hat{x}) = \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \left\lbrace \lambda_r^2 k(x_i^r, \hat{x}) + (1 - \lambda_r)^2 k_r(x_i^r, \hat{x}) \right\rbrace + \lambda_r b + (1-\lambda_r)d_r.
+        &\quad h_r(\hat{x}) = \sum_{s=1}^T  \lambda_s^2 \sum_{i=1}^{m_s} \left\lbrace {\alpha_i^s} y_i^s k(x_i^s, \hat{x}) \right\rbrace + (1 - \lambda_r)^2 \sum_{i=1}^{m_s} \left\lbrace {\alpha_i^s} k_s(x_i^s, \hat{x})  \right\rbrace + \lambda_r b + (1-\lambda_r)d_r.
     \end{align*}
+    Here, as described above, the kernel matrix is $\widehat{\fm{Q}} = \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right)$ where none of the terms, either with $Q$ or $K$, are negligible.
 \end{itemize}
 As expected, the properties that are found in the primal formulation are also present in the dual one. All the values of $\lambda_r$ in the open interval $(0, 1)$ correspond to pure \acrshort{mtl} approaches while the extreme values $\lambda_r=1$ and $\lambda_r=0$ for all $r$ correspond to \acrshort{ctl} and \acrshort{itl} approaches, respectively.
 
@@ -622,7 +631,7 @@ Consider the dual problem of the convex formulation~\eqref{eq:svmmtl_dualvec_con
     \begin{aligned}
     & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\frac{\lambda^2}{(1 - \lambda)^2} \fm{Q} + \frac{(1 - \lambda)^2}{(1 - \lambda)^2} \fm{K} \right) \fv{\alpha} - \frac{1}{(1 - \lambda)^2} \fv{p} \fv{\alpha} \\
     & \text{s.t.}
-    & & 0 \leq \alpha_i^r \leq C_\text{conv} , \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks \\
+    & & 0 \leq \alpha_i^r \leq C_\text{conv} , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks \\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0 ,\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
@@ -632,7 +641,7 @@ $ \fv{\beta} = (1 - \lambda)^2 \fv{\alpha}$; then we obtain the problem
     \begin{aligned}
     & \min_{\fv{\beta}} && \Theta(\fv{\beta}) = \frac{1}{2} \frac{1}{(1 - \lambda)^2}\fv{\beta}^\intercal \left(\frac{\lambda^2}{(1 - \lambda)^2} \fm{Q} + \frac{(1 - \lambda)^2}{(1 - \lambda)^2} \fm{K} \right) \frac{1}{(1 - \lambda)^2} \fv{\beta} - \frac{1}{(1 - \lambda)^4} \fv{p}  \fv{\beta} \\
     & \text{s.t.}
-    & & 0 \leq \beta_i^r \leq (1 - \lambda)^2 C_\text{conv} , \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks ,\\
+    & & 0 \leq \beta_i^r \leq (1 - \lambda)^2 C_\text{conv} , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks ,\\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0 ,\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
@@ -642,7 +651,7 @@ If we consider again $\mu =(1 - \lambda)^2 / \lambda^2$ and $C_\text{add} = (1-\
     \begin{aligned}
     & \min_{\fv{\beta}} && \Theta(\fv{\beta}) = \frac{1}{2} \fv{\beta}^\intercal \left(\frac{1}{\mu} \fm{Q} + \fm{K} \right) \fv{\beta} - \fv{p}  \fv{\beta} \\
     & \text{s.t.}
-    & & 0 \leq \beta_i^r \leq  C_\text{add} , \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks \\
+    & & 0 \leq \beta_i^r \leq  C_\text{add} , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks \\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0 , \;  r=1, \ldots, \ntasks , \\
     \end{aligned}
 \end{equation}
@@ -660,18 +669,18 @@ When $\lambda=0$, we obtain an \acrshort{itl} approach, where an independent mod
 
 
 \subsection{Convex Multi-Task Learning L2-SVM}
-The L2-\acrshort{svm}~\citep{Burges98} is a variant of the standard \acrshort{svm} where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the $epsilon$-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are ignored is kept, but the errors which are larger than such margin are penalized using their squared value.
+The L2-\acrshort{svm}~\citep{Burges98} is a variant of the standard \acrshort{svm} where the hinge loss is replaced by the squared hinge loss in the case of a classification setting, and the $\epsilon$-insensitive loss by the corresponding squared version in the case of regression problems. In both settings a margin where the errors are ignored is kept, but the errors which are larger than such margin are penalized using their squared value.
 
 % Convex Approach
 %\paragraph*{{Convex} \acrshort{mtl} L2-\acrshort{svm}.\\}
 % Additive Approach
 %   Primal
 
-We propose a convex \acrshort{mtl} L2-\acrshort{svm}, which we presented in~\cite{RuizAD21}. To the best of our knowledge, this is the first combination-based \acrshort{mtl} approach for the L2-\acrshort{svm}. The primal problem is the following:
+We present a convex \acrshort{mtl} L2-\acrshort{svm}, which we proposed in~\cite{RuizAD21}. To the best of our knowledge, this is the first combination-based \acrshort{mtl} approach for the L2-\acrshort{svm}. The primal problem is the following:
 \begin{equation}\label{eq:svmmtl_primal_convex_l2}
     \begin{aligned}
     & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
-    & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r}^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
+    & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} ({\xi_{i}^r})^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
     & \text{s.t.}
     & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) \geq p_{i}^r - \xi_{i}^r ,  \\
     \end{aligned}
@@ -712,13 +721,13 @@ To find the solutions of problem~\eqref{eq:svmmtl_lagrangian_convex_l2}, we use 
          &= \lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}) .
     \end{aligned}    
 \end{equation}
-To obtain $\Theta(\fv{\alpha})$, we need the gradients with respect to the primal variables are
+To obtain $\Theta(\fv{\alpha})$, we need to compute the gradients with respect to the primal variables and make them zero:
 \begin{align}
     \grad_{{w}} \lagr = \fv{0}  &\implies \optim{{w}} - \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = \fv{0} , \label{eq:common_repr_conv_l2} \\
     \grad_{{v}_r} \lagr = \fv{0} &\implies \optim{{v}_r} - (1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = \fv{0} , \label{eq:specific_repr_conv_l2} \\
-    \grad_{b} \lagr = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv_l2}  \\
-    \grad_{{d}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv_l2} \\
-    \grad_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_conv_l2}
+    \partial_{b} \lagr = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv_l2}  \\
+    \partial_{{d}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv_l2} \\
+    \partial_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_conv_l2}
 \end{align}
 % \begin{align}
 %     \grad_{{w}} \lagr \vert_{\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \optim{\fv{\alpha}}, \optim{\fv{\beta}}} = 0  &\implies \mu \optim{{w}} - \sum_{r= 1}^T \sum_{i=1}^{m_r} \optim{\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = 0 \\
@@ -733,21 +742,22 @@ Using these results and substituting back in the Lagrangian we obtain
          &\lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}) \\
         &\quad= \frac{C}{2} \frac{1}{C^2} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  \\
         &\qquad +  \frac{1}{2} \sum_{r= 1}^T{\norm{ (1 - \lambda_r) \sum_{i=1}^{m_r}  {\alpha_i^r} - \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}^2} + \frac{1}{2} {\norm{\sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}}^2 \\
-        &\qquad - \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[ \left(\sum_{s= 1}^T \lambda_r \sum_{j=1}^{m_s} {\alpha_j^s} \left\lbrace y_j^s \phi({x}_j^s) \right\rbrace \right) \cdot \phi({x}_{i}^r) \right]  \right\rbrace \\
-        &\qquad -  \sum_{r= 1}^T (1-\lambda_r) \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r \left[  \left((1-\lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r} \left\lbrace y_j^r \phi_r({x}_j^r) \right\rbrace \right) \cdot \phi_r({x}_{i}^r)  \right]  \right\rbrace \\
-        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  ,\\
+        &\qquad - \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[ \left(\sum_{s= 1}^T \lambda_r \sum_{j=1}^{m_s} {\alpha_j^s}  y_j^s \phi({x}_j^s)  \right) \cdot \phi({x}_{i}^r) \right]   \\
+        &\qquad -  \sum_{r= 1}^T (1-\lambda_r) \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[  \left((1-\lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r}  y_j^r \phi_r({x}_j^r) \right) \cdot \phi_r({x}_{i}^r)  \right]  \\
+        &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r  - p_{i}^r  - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  ,\\
     \end{aligned}
 \end{equation}
 which can be shown to be equal to
 \begin{equation}\nonumber
     \begin{aligned}
+        &\lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}) \\
         % & \frac{1}{2} \sum_{r= 1}^T{\dotp{(1-\lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1-\lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}}  \\
         % &\qquad + \frac{1}{2} {\dotp{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}} \\
         % &\qquad - \dotp{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
         % &\qquad -  \sum_{r= 1}^T {\dotp{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
         % &\qquad - \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace - p_{i}^r  \right\rbrace  \\
-        &= - \frac{1}{2} \dotp{ \sum_{r= 1}^T  \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
-        &\qquad - \frac{1}{2} \sum_{r= 1}^T { \dotp{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
+        &= - \frac{1}{2} \dotp{ \sum_{r= 1}^T  \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r) }{ \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r) } \\
+        &\qquad - \frac{1}{2} \sum_{r= 1}^T { \dotp{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r) }{(1-\lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r) }} \\
         &\qquad - \frac{1}{2C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  +  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r  p_{i}^r .
     \end{aligned}
 \end{equation}
@@ -756,20 +766,20 @@ The corresponding dual problem can then be expressed as
 \begin{equation}\label{eq:svmmtl_dual_conv_l2}
     \begin{aligned}
     & \min_{\fv{\alpha}} & \Theta(\fv{\alpha}) &= \frac{1}{2} \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2 \\
-    & & &\quad+\frac{1}{2} \dotp{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace} \\
-    & & &\quad+  \frac{1}{2} \sum_{r= 1}^T {\dotp{(1 - \lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}{(1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}} \\
+    & & &\quad+\frac{1}{2} \dotp{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r) }{\sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi({x}_i^r) } \\
+    & & &\quad+  \frac{1}{2} \sum_{r= 1}^T {\dotp{(1 - \lambda_r)\sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r) }{(1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r}  y_i^r \phi_r({x}_i^r) }} \\
     & & &\quad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r \\
     & \text{s.t.}
     & & 0 \leq \alpha_i^r , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks ,\\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0,\;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
-Using the kernel trick, we can write the dual problem using a matrix formulation in the following way:
+Using the kernel trick, we can write the dual problem with a matrix formulation in the following way:
 \begin{equation}\label{eq:svmmtl_dualvec_conv_l2}
     \begin{aligned}
     & \min_{\alpha} && \Theta(\alpha) = \frac{1}{2} \fv{\alpha}^\intercal \left( \left\lbrace \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right\rbrace + \frac{1}{C} \fm{I} \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
     & \text{s.t.}
-    & & 0 \leq \alpha_i^r , \; i=1, \ldots, \npertask_r;\;\; r=1, \ldots, \ntasks, \\
+    & & 0 \leq \alpha_i^r , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks, \\
     & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0, \;  r=1, \ldots, \ntasks . \\
     \end{aligned}
 \end{equation}
@@ -779,7 +789,7 @@ As in the convex \acrshort{mtl} L1-\acrshort{svm}, we are using the matrix
 \end{equation} 
 and the $\nsamples \times \nsamples$ identity matrix $\fm{I}_{\nsamples}$.
 %
-Note that instead of having the box constraints for the dual coefficients $\alpha_i^r$ we add a diagonal term to the \acrshort{mtl} kernel matrix $\widehat{\fm{Q}}$, as defined in~\eqref{eq:conv_mtl_kernel_matrix}, so we use the matrix $\widehat{Q} + \frac{1}{C} \fm{I}_{\nsamples}$.
+Note that instead of having the upper bound for the dual coefficients $\alpha_i^r$ we add a diagonal term to the \acrshort{mtl} kernel matrix $\widehat{\fm{Q}}$, as defined in~\eqref{eq:conv_mtl_kernel_matrix}, so we use the matrix $\widehat{Q} + \frac{1}{C} \fm{I}_{\nsamples}$.
 Again, we use the support vectors, with $\alpha_i^r \neq 0$, to get the optimal biases. 
 The support vectors must satisfy the equation
 $$y_{i}^r (\lambda_r \dotp{w}{\phi(x_{i}^r)} + \lambda_r d + (1- \lambda_r) \dotp{v_r}{\phi_r(x_{i}^r)} + (1- \lambda_r) b_r) - p_{i}^r + \xi_{i}^r = 0,$$
@@ -796,14 +806,14 @@ A combination-based \acrshort{mtl} approach using the additive formulation was g
 %\paragraph*{{Convex} \acrshort{mtl} LS-\acrshort{svm}.\\}
 % Additive Approach
 %   Primal
-As with the L1-\acrshort{svm}, we propose an alternative convex formulation, which we presented in \cite{RuizAD21}.
+As with the L1-\acrshort{svm}, we present an alternative convex formulation, which we proposed in \cite{RuizAD21}.
 The primal problem for the convex \acrshort{mtl} LS-\acrshort{svm} is the following one:
 \begin{equation}\label{eq:svmmtl_primal_convex_ls}
     \begin{aligned}
     & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
     & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} \left({\xi_{i}^r}\right)^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
     & \text{s.t.}
-    & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r .  \\
+    & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r ,  \\
     \end{aligned}
 \end{equation}
 where $i=1, \ldots, \npertask_r$ and $r=1, \ldots, \ntasks$.
@@ -821,7 +831,7 @@ for regression and
 for classification.
 %
 
-As in the standard variant, the hyperparameter $C$ regulates the trade-off between the loss and the margin size, while $\lambda_r$, in the range $[0, 1]$, indicates how specific or common the model is. With $\lambda_1, \ldots, \lambda_\ntasks=0$, we have independent models for each task and for $\lambda_1, \ldots, \lambda_\ntasks=1$, we have a common model for all tasks with task-specific biases. 
+As in the standard variant, the hyperparameter $C$ regulates the trade-off between the loss and the margin size, while $\lambda_r$, in the range $[0, 1]$, indicates how specific or common the model is. With $\lambda_1, \ldots, \lambda_\ntasks=0$ we have independent models for each task and for $\lambda_1, \ldots, \lambda_\ntasks=1$ we have a common model for all tasks with task-specific biases. 
  
 
 
@@ -834,7 +844,8 @@ The Lagrangian of problem~\eqref{eq:svmmtl_primal_convex_ls} is
         &\quad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r \left\lbrace y_{i}^r  \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) - p_{i}^r + \xi_{i}^r  \right\rbrace ,
     \end{aligned}
 \end{equation}
-where $\alpha_i^r \in \reals$ are the Lagrange multipliers. Observe that, although the Lagrangian is identical to the one of the L2-\acrshort{svm}, the non-negativity condition is no longer required for the dual coefficients.  Again, $\fv{\xi}$ represents the vector $$(\xi_1^1, \ldots, \xi_{m_1}^1, \ldots, \xi_1^\ntasks, \ldots, \xi_{m_\ntasks}^\ntasks)^\intercal,$$ and analogously for $\fv{\alpha}$. The dual objective function is defined as 
+where $\alpha_i^r \in \reals$ are the Lagrange multipliers. Observe that, although the Lagrangian is identical to the one of the L2-\acrshort{svm}, the non-negativity condition is no longer required for the dual coefficients.  Again, $\fv{\xi}$ represents the vector of the slack variables, and $\fv{\alpha}$ that of the Lagrange multipliers.
+The dual objective function is defined as 
 \begin{equation}\nonumber
     \begin{aligned}
           \min_{{w}, \fv{v}, b, \fv{d}, \fv{\xi}} \lagr({w}, \fv{v}, b, \fv{d}, \fv{\xi}, \fv{\alpha})
@@ -843,11 +854,11 @@ where $\alpha_i^r \in \reals$ are the Lagrange multipliers. Observe that, althou
 \end{equation}
 The gradients with respect to the primal variables are
 \begin{align}
-    \grad_{{w}} \lagr = \fv{0}  &\implies \optim{{w}} - \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace = \fv{0} , \label{eq:common_repr_conv_ls} \\
-    \grad_{{v}_r} \lagr = \fv{0} &\implies \optim{{v}_r} - (1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi_r(x_i^r) \right\rbrace = \fv{0} , \label{eq:specific_repr_conv_ls} \\
-    \grad_{b} \lagr = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv_ls}  \\
-    \grad_{{d}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv_ls} \\
-    \grad_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_conv_ls}
+    \grad_{{w}} \lagr = \fv{0}  &\implies \optim{{w}} - \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi(x_i^r) = \fv{0} , \label{eq:common_repr_conv_ls} \\
+    \grad_{{v}_r} \lagr = \fv{0} &\implies \optim{{v}_r} - (1 - \lambda_r) \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r \phi_r(x_i^r) = \fv{0} , \label{eq:specific_repr_conv_ls} \\
+    \partial_{b} \lagr = 0  &\implies \sum_{r= 1}^T \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:specific_eqconstr_conv_ls}  \\
+    \partial_{{d}_r} \lagr = 0 &\implies \sum_{i=1}^{m_r} {\alpha_i^r} y_i^r = 0 , \label{eq:common_eqconstr_conv_ls} \\
+    \partial_{\xi_i^r} \lagr = 0 &\implies C \xi_i^r - {\alpha_i^r} = 0 . \label{eq:xi_feas_conv_ls}
 \end{align}
 By applying the strong duality theorem, it is necessary to maximize the dual problem to find a solution for the primal one. Since all $\alpha_i^r \in \reals$ are feasible and the Lagrangian is differentiable, to define the dual problem we can write
 \begin{equation}
@@ -858,7 +869,7 @@ and, using~\eqref{eq:common_repr_conv_ls} and~\eqref{eq:specific_repr_conv_ls} t
 \begin{equation}
     \nonumber
     \begin{aligned}
-        &y_{i}^r \left(\lambda_r \left\lbrace \left\langle\sum_{s= 1}^\ntasks \lambda_s \sum_{j=1}^{m_s} {\alpha_j^s} y_j^s \phi(x_j^s) , \phi(x_{i}^r) \right\rangle  \right\rbrace \right) \\
+        &y_{i}^r \left(\lambda_r \left\lbrace \left\langle\sum_{s= 1}^\ntasks \lambda_s \sum_{j=1}^{m_s} {\alpha_j^s} y_j^s \phi(x_j^s) , \phi(x_{i}^r) \right\rangle + b \right\rbrace \right) \\
         &\qquad+ y_{i}^r \left( (1 - \lambda_r) \left\lbrace \left\langle (1 - \lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r}  y_j^r \phi_r(x_j^r) , \phi_r(x_{i}^r) \right\rangle + d_r \right\rbrace  \right) = p_{i}^r - \frac{1}{C}\alpha_{i}^r  \\
     \end{aligned}
 \end{equation}
@@ -884,7 +895,7 @@ These equations, alongside those corresponding to the conditions~\eqref{eq:speci
     \begin{array}{c|c|c}
     0 & \fv{0}_\ntasks^\intercal &  \fv{y}^\intercal \Lambda \\
     \hline
-    \fv{0}_\ntasks & \fm{0}_{\ntasks \times \ntasks} & \fm{A}^\intercal \fm{y} (I_\nsamples - \Lambda)\\
+    \fv{0}_\ntasks & \fv{0}_{\ntasks \times \ntasks} & \fm{A}^\intercal \fm{y} (I_\nsamples - \Lambda)\\
     \hline
     \fv{y} & \fm{y} \fm{A} & \widehat{\fm{Q}} + \frac{1}{C} \fm{I}_\nsamples
     \end{array}
@@ -904,7 +915,7 @@ These equations, alongside those corresponding to the conditions~\eqref{eq:speci
     \end{pmatrix}, 
     \end{aligned}
 \end{equation}
-where $\fv{0}_\ntasks$ is the zero vector of length $\ntasks$, $\fm{0}_{\ntasks \times \ntasks}$ is the $\ntasks \times \ntasks$ zero matrix, $\Lambda$ is defined in~\eqref{eq:lambdamatrix_def}, and we use the matrices
+where $\fv{0}_\ntasks$ is the zero vector of length $\ntasks$, $\fv{0}_{\ntasks \times \ntasks}$ is the $\ntasks \times \ntasks$ zero matrix, $\Lambda$ is defined in~\eqref{eq:lambdamatrix_def}, and we use the matrices
 \begin{equation}
     \nonumber
     \underset{\ntasks \times N}{\fm{A}^\intercal} =
@@ -922,12 +933,12 @@ where $\fv{0}_\ntasks$ is the zero vector of length $\ntasks$, $\fm{0}_{\ntasks 
     \end{pmatrix} .
 \end{equation}
 Again, $\widehat{\fm{Q}}$ is the convex \acrshort{mtl} kernel matrix defined in~\eqref{eq:conv_mtl_kernel_matrix} and, as in the L2-\acrshort{svm}, a diagonal term $\frac{1}{C} \fm{I}_\nsamples$ is added.
-Observe that in~\eqref{eq:cvxmtl_ls_dual} the first equation is a linear combination of the rest, so it does not give any extra information. This is because, as in the previous cases, we cannot know the individual values of $b$ and $d_r$, but the values $\lambda_r b + (1 - \lambda_r) d_r$. As before, when $\lambda_r \neq 1$ we can assume that $b=0$ and solve for $d_r$, that is, removing the first equation from the system. 
+Observe that in~\eqref{eq:cvxmtl_ls_dual} the first equation is a linear combination of the rest, so it does not give any extra information. This is because, as in the previous cases, we cannot know the individual values of $b$ and $d_r$, but the values of the combination $\lambda_r b + (1 - \lambda_r) d_r$. As before, when $\lambda_r \neq 1$ we can assume that $b=0$ and solve for $d_r$, that is, removing the first equation from the system. 
 
 
 
 %   Discussion: Primal vs Dual
-In contrast to the L1 and L2-\acrshort{svm}, here, in the primal problem the inequalities are replaced by equalities, which remove the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
+In contrast to the L1 and L2-\acrshort{svm}, here, in the primal problem, the inequalities are replaced by equalities, which remove the bounds of the dual coefficients, thus leading to a problem that can be solved as a linear system of equations.
 
 
 
@@ -974,10 +985,10 @@ In contrast to the L1 and L2-\acrshort{svm}, here, in the primal problem the ine
 The convex \acrshort{mtl} formulation is easily applicable and interpretable, so it has good properties not only for kernel methods, but also for a broader class of learning models.
 However, although kernel methods have some very useful properties, they present some important limitations. The main one is the computation effort necessary to solve the optimization problems related with these methods, which grows in a superquadratic way with the number of patterns. This makes it unfeasible to use these models for very large datasets. Moreover, it is difficult to develop specific kernel methods for data where there is a spatial or temporal dependency, such as images.
 %
-Neural networks, however, are models that are well suited for this kind of challenges, and deep \acrshort{nns} have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for \acrshort{mtl} with neural networks.
+Neural networks, however, are models that are well suited for this kind of challenges, and \acrfull{dnns} have had a massive success in multiple applications. Moreover, they are very flexible models whose architecture can be adapted to fulfill different goals. In this section we show how to use our convex formulation for \acrshort{mtl} with \acrshort{nns}.
 
 %
-In particular, we can  Chapter~\ref{Chapter3} we have reviewed the taxonomy for \acrshort{mtl} methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
+In particular, in Chapter~\ref{Chapter3} we have reviewed the taxonomy for \acrshort{mtl} methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
 We also give in Section~\ref{sec:deep_mtl} some of the most relevant approaches to \acrshort{mtl} with \acrshort{nns}. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks, as shown in Figure~\ref{fig:hardsharing_nn}; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense; see~\cite{Long015a, YangH17a}.
 However, to the best of our knowledge, we proposed the first purely combination-based approach to \acrshort{mtl} with neural networks in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks, that we present next.
 
@@ -986,9 +997,9 @@ However, to the best of our knowledge, we proposed the first purely combination-
 \subsection{Model Definition}
 Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to model the common part 
 $$ g(\cdot; w, \Theta) = w^\intercal f(\cdot; \Theta) + b,$$
-and task-specific parts
+and the task-specific parts
 $$ g_r(\cdot; w_r, \Theta_r) =  w_r^\intercal f_r(\cdot; \Theta_r) + d_r.$$
-Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$, $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $d_r$ the output biases.
+Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$ and $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $d_r$ the output biases.
 Observe that the feature transformations $ f(\cdot; \Theta)$ and $f_r(\cdot; \Theta_r)$ are not fixed like the transformations $\phi(\cdot)$ and $\phi_r(\cdot)$ in the kernel methods; instead, here, they are automatically learned in the training process.
 The full \acrshort{mtl} models are then
 \begin{equation}
@@ -999,7 +1010,7 @@ The full \acrshort{mtl} models are then
     \end{aligned}    
 \end{equation}
 
-This formulation offers multiple combinations since we can model each common or independent function using different architectures for $f(\cdot; \Theta)$ or $f_r(\cdot; \Theta_r)$.
+This formulation offers a large flexibility since we can model each common or independent function using different architectures for $f(\cdot; \Theta)$ or $f_r(\cdot; \Theta_r)$.
 %
 For example, we can use a network with a larger number of parameters for the common part, since it will be fed with more data, and simpler networks for the task-specific parts.
 %
@@ -1010,7 +1021,7 @@ This combination of \acrshort{nns} can also be interpreted as an implementation 
 
 %
 %\subsection{Training Procedure}
-The regularized risk corresponding to the convex \acrshort{mtl} \acrshort{nns} is
+The regularized risk corresponding to the convex \acrshort{mtl} \acrshort{nn} is
 \begin{equation}
     \nonumber
     %\label{eq:regrisk_convex_nn}
@@ -1018,8 +1029,10 @@ The regularized risk corresponding to the convex \acrshort{mtl} \acrshort{nns} i
         \emprisk = \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \lossf(h_r(x_i^r), y_i^r) + \frac{\mu}{2} \left( \norm{w}^2 + \sum_{r=1}^\ntasks \norm{w_r}^2 + \Omega(\Theta) + \Omega(\Theta_r)\right) .
     \end{aligned}
 \end{equation}
-Here, $h_r$ is defined as in equation~\eqref{eq:convexmtl_nn}, and $\Omega(\Theta)$ and $\Omega(\Theta_r)$ represents the regularization of the set of hidden weights of the common and specific networks, such as the $L_2$ regularization for example.
-Given a loss function $\lossf(\hat{y}, y)$ and a pair $(x_i^t, y_i^t)$ from task $t$, we use the chain rule to compute the gradient of the loss function with respect to some parameters $\mathcal{P}$:
+Here, $h_r$ is defined as in equation~\eqref{eq:convexmtl_nn}, and $\Omega(\Theta)$ and $\Omega(\Theta_r)$ represents the regularization of the set of hidden weights of the common and specific networks, such as the $L_2$ regularization.
+
+
+Regarding the training, given a loss function $\lossf(\hat{y}, y)$ and a pair $(x_i^t, y_i^t)$ from task $t$, we use the chain rule to compute the gradient of the loss function with respect to some parameters $\mathcal{P}$:
 \begin{equation}
     \nonumber
     %\label{eq:gradient_p}
@@ -1032,13 +1045,13 @@ Then, the corresponding gradients of $h_t$ needed to compute the loss gradients 
 \begin{equation}\label{eq:gradients_losses} 
     \begin{aligned}       
         &\nabla_{w} h_t(x_i^t)  
-        = \lambda_t \lbrace f(x_i^t, \Theta) \rbrace ,
+        = \lambda_t  f(x_i^t, \Theta) ,
         &&\nabla_{\Theta} h_t(x_i^t)  
-        = \lambda_t \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace ; \\
+        = \lambda_t  w^\intercal \nabla_\Theta f(x_i^t, \Theta ; \\
         &\nabla_{w_t} h_t(x_i^t)  
-        = (1 - \lambda_t) \lbrace f_t(x_i^t, \Theta) \rbrace ,
+        = (1 - \lambda_t)  f_t(x_i^t, \Theta) ,
         &&\nabla_{\Theta_t} h_t(x_i^t)  
-        = (1 - \lambda_t) \lbrace  w^\intercal \nabla_{\Theta_t} f_t(x_i^t, \Theta_t)\rbrace ; \\
+        = (1 - \lambda_t)   w^\intercal \nabla_{\Theta_t} f_t(x_i^t, \Theta_t ; \\
         &\nabla_{w_r} h_t(x_i^t)  
         =  0 , 
         &&\nabla_{\Theta_r} h_t(x_i^t)  
@@ -1046,7 +1059,7 @@ Then, the corresponding gradients of $h_t$ needed to compute the loss gradients 
     \end{aligned}    
 \end{equation}
 Putting all together, the gradient of the loss with respect to, for example, $w$ is 
-$$  \nabla_w \lossf(h_t(x_i^t), y_i^t)  =\lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda \lbrace f(x_i^t, \Theta) \rbrace , $$
+$$  \nabla_w \lossf(h_t(x_i^t), y_i^t)  =\lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda  f(x_i^t, \Theta) , $$
 and the same for the rest of parameters.
 %
 Observe that the convex combination information is transferred in the backpropagation as the loss gradients with respect to the common parameters are scaled by $\lambda$, while those of the task-specific parameters are scaled by $(1 - \lambda)$.
@@ -1057,15 +1070,15 @@ During the backpropagation procedure, we only update the parameters that have be
 That is, given an example $(x_i^t, y_i^t)$, when using vanilla \acrfull{sgd} the update rules for the common network parameters would be
 \begin{equation}\label{eq:convexmtl_nn_commonupdate}
     \begin{aligned}
-        w^{\tau + 1} &\gets w^\tau - \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda_t \lbrace f(x_i^t, \Theta) \rbrace + \mu w^\tau \right], \\
-        \Theta^{\tau + 1} &\gets \Theta^\tau - \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda_t \lbrace w^\intercal \nabla_\Theta f(x_i^t, \Theta)\rbrace + \mu \lbrace \nabla_\Theta \Omega( \Theta)  \rbrace \right],
+        w^{\tau + 1} &\gets w^\tau - \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda_t  f(x_i^t, \Theta) + \mu w^\tau \right], \\
+        \Theta^{\tau + 1} &\gets \Theta^\tau - \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda_t  w^\intercal \nabla_\Theta f(x_i^t, \Theta + \mu  \nabla_\Theta \Omega( \Theta)  \right],
     \end{aligned}
 \end{equation}
 while the update rules for the $t$-th task network parameters would be
 \begin{equation}\label{eq:convexmtl_nn_specificupdate}
     \begin{aligned}
-        w_t^{\tau + 1} &\gets w_t^\tau - \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda_t) \lbrace f(x_i^t, \Theta) \rbrace + \mu w_t^\tau \right], \\
-        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau - \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda_t) \lbrace w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t)\rbrace + \mu \lbrace \nabla_{\Theta_t} \Omega( \Theta_t) \rbrace \right],
+        w_t^{\tau + 1} &\gets w_t^\tau - \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda_t)  f(x_i^t, \Theta) + \mu w_t^\tau \right], \\
+        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau - \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda_t)  w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t + \mu  \nabla_{\Theta_t} \Omega( \Theta_t) \right],
     \end{aligned}
 \end{equation}
 and the parameters from the rest of task-specific networks are not updated.
@@ -1084,6 +1097,7 @@ That is, no specific algorithm has to be developed for training the convex \acrs
 
 \subsection{Implementation Details}
 \begin{algorithm}[!t]
+    
     \caption{Forward pass for Convex \acrshort{mtl} neural network.}
     \label{alg:forward}
     \DontPrintSemicolon
@@ -1108,7 +1122,7 @@ In the forward pass of the network, the output for an example $x_i^r$ from task 
 In the training phase, in which minibatches are used, the full minibatch is passed through the common model, but the minibatch is task-partitioned, where each partition is passed through its corresponding specific module.
 By doing this, when using examples from the $r$-th task only the parameters corresponding to the common module and its corresponding specific one are updated.
 Moreover, as mentioned above, with the adequate forward pass, the \texttt{PyTorch} package automatically computes the scaled gradients in the training phase.
-Our implementation\footnote{https://github.com/carlosruizp/convexMTLPyTorch} is a general framework to combine in a convex manner any \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
+Our implementation\footnote{\url{https://github.com/carlosruizp/convexMTLPyTorch}} is a general framework to combine in a convex manner any \texttt{Pytorch} modules and select which ones should be used and updated in each training iteration, as well as using the corresponding modules for the prediction stage.
 
 
 {In Algorithm~\ref{alg:forward} we show the pseudocode of the forward pass of the convex \acrshort{mtl} neural network. Here, $g$ and $g_1, \ldots, g_\ntasks$ are the common and task-specific modules, whose outputs are combined. We do not show the backward pass because we rely on \texttt{PyTorch} automatic differentiation.}
@@ -1141,30 +1155,30 @@ A natural alternative to the convex \acrshort{mtl} formulation that we have deve
 These are models that combine a common and task-specific models that have been trained separately. Since both $g(\cdot)$ and $g_r(\cdot)$ are fixed functions, the training phase only involves the process of learning the parameters $\lambda_r, r=1, \ldots, \ntasks$. The goal is to select the parameters $\lambda_r \in [0, 1]$ that minimize the training error
 \begin{equation}
     \nonumber
-    \mathcal{E}(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) ,
+    \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) ,
 \end{equation}
 which depends on the choice of the loss function $\ell$. 
 In~\cite{RuizAD21} we consider the training error with four popular loss functions:
 \begin{itemize}
-    \item Hinge loss (classification)
+    \item Hinge loss (classification):
     \begin{equation}
         \label{eq:hingeloss_emprisk}
-        \mathcal{E}(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
+        \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
     \end{equation}
-    \item Squared hinge loss (classification)
+    \item Squared hinge loss (classification):
     \begin{equation}
         \label{eq:sqhingeloss_emprisk}
-        \mathcal{E}(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace}^2 .
+        \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace}^2 .
     \end{equation}
-    \item Absolute loss (regression)
+    \item Absolute loss (regression):
     \begin{equation}
         \label{eq:absloss_emprisk}
-        \mathcal{E}(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \abs{y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
+        \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \abs{y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
     \end{equation}
-    \item Squared loss (regression)
+    \item Squared loss (regression):
     \begin{equation}
         \label{eq:sqloss_emprisk}
-        \mathcal{E}(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \left( {y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} \right)^2 .
+        \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \left( {y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} \right)^2 .
     \end{equation}
 \end{itemize}
 % Here,
@@ -1223,12 +1237,12 @@ In the case of regression errors, that is, the absolute loss of~\eqref{eq:abslos
 with $u(\cdot)=\abs{\cdot}$ or $u=(\cdot)^2$ for the absolute and squared loss, respectively. Again, these terms can be expressed as 
 \begin{equation}
     \nonumber
-    u\left(\lambda_r \left\{ g(x_i^r) - g_r(x_i^r) \right\} +  g_r(x_i^r) - y_i^r \right) ,
+    u\left(\lambda_r \left\{ g(x_i^r) - g_r(x_i^r) \right\} +  g_r(x_i^r) - y_i^r \right) .
 \end{equation}
 Then, in both regression and classification settings, the error can be expressed as
 \begin{equation}
     \nonumber
-    \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r) .
+    \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r) ,
 \end{equation}
 where for the classification setting we use
 \begin{equation}
@@ -1277,7 +1291,7 @@ These functions, except for the squared loss, are not differentiable in their en
 To find the optimal parameters $\lambda_r^*$ we will consider the subdifferential of $\mathcal{J}(\lambda)$ in the elbows, that is, the set $$\partial \mathcal{J}(\lambda) = \{c \in \mathbb{R}, \mathcal{J}(z)-\mathcal{J}(\lambda) \leq c (z - \lambda), \;  \forall z \} .$$
 % Here $c_i^r, d_i^r$ are the variables described in~\eqref{eq:changevar_clas} when using the hinge or squared hinge loss, or those described in~\eqref{eq:changevar_reg} when using the absolute or squared loss.
 %
-Using Fermat's Theorem~\citep{BauschkeC11}, we have
+Recall that all our functions $\mathcal{J}(\lambda)$ are convex, so to get the minimum we can apply Fermat's Theorem~\citep{BauschkeC11}, namely
 \begin{equation}
     \nonumber
     \lambda^* = \argmin_{0 \leq \lambda \leq 1} \mathcal{J}(\lambda) \iff (0 \in \partial \mathcal{J}(\lambda^*) \text{ and } \lambda^* \in (0, 1) ) \text{ or } \lambda^*=0 \text{ or } \lambda^*=1 .
@@ -1377,7 +1391,7 @@ Observe that in each term of the sum the subdifferential is
 \end{equation}
 The elbows are obtained using the values $\frac{-d_i}{c_i}$, that can be clipped and sorted to get ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we present the following result to get the optimal $\lambda^*$.
-\begin{proposition}[Optimal $\lambda^*$ with absolute value loss]\label{prop:abs_neurocom2020}
+\begin{proposition}[Optimal $\lambda^*$ with Absolute Value Loss]\label{prop:abs_neurocom2020}
     In problem~\eqref{eq:opt_abs} $\lambda^*=0$ is optimal \emph{iff}
     \begin{equation}\nonumber
         - \sum_{i: \; 0 > \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i: \; 0 < \lambda_{(i)}} \abs{c_{(i)}} \leq 0.
@@ -1443,7 +1457,7 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
         \end{cases}
     \end{equation}
     That is, in these intervals containing one elbow  $\partial \mathcal{J}(\lambda)$ is continuous, non-decreasing, and the values of the derivative before and after such elbow are contained in the subdifferential at the elbow. Thus, it is sufficient to look for the optimal value at the elbows.
-    Then, using Fermat's Theorem, we want to find $\lambda^*$ such that $\partial \mathcal{J}(\lambda^*) = 0$. We have three possible scenarios:
+    Then, using Fermat's Theorem, we want to find $\lambda^*$ such that $0 \in \partial \mathcal{J}(\lambda^*)$. We have three possible scenarios:
     \begin{itemize}
         \item $\partial \mathcal{J}(0) \geq 0.$ 
         \\Since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 0$.
@@ -1509,9 +1523,9 @@ Observe that in each term of the sum the subdifferential is
     \end{cases}
     \end{aligned}
 \end{equation}
-That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be sorted to write as the elbows ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
+That is, the elbows are related to the values $\frac{-d_i}{c_i}$, that can be sorted as ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we present the following result to get the optimal $\lambda^*$.
-\begin{proposition}[Optimal $\lambda^*$ with hinge loss]\label{prop:hinge_neurocom2020}
+\begin{proposition}[Optimal $\lambda^*$ with Hinge Loss]\label{prop:hinge_neurocom2020}
     In~\eqref{eq:opt_hinge_l1}, $\lambda^*=0$ is optimal iff
     \begin{equation}
         \nonumber
@@ -1557,7 +1571,7 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
     Again, since all functions share the same domain, the gradient of the sum is the sum of the gradients, then, for $\lambda \neq \lambda_{(i)}$ for all $i=1,\ldots,\npertask$,
     \begin{equation}\nonumber
         \begin{aligned}
-            \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {c_{(i)}} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {c_{(i)}}  = \sum_{i: \; \lambda < \lambda_{(i)}} \mymin{0, c_{(i)}} + \sum_{i: \; \lambda > \lambda_{(i)}} \mymax{0, c_{(i)}}
+            \partial \mathcal{J}(\lambda) &=  \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda < \lambda_{(i)}}} {c_{(i)}} + \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; \lambda > \lambda_{(i)}}} {c_{(i)}}  = \sum_{i: \; \lambda < \lambda_{(i)}} \mymin{0, c_{(i)}} + \sum_{i: \; \lambda > \lambda_{(i)}} \mymax{0, c_{(i)}} .
         \end{aligned}        
     \end{equation}
     As before, we remark two facts: the value of $\partial \mathcal{J}(\lambda)$ is constant between elbows, and $\partial \mathcal{J}(\lambda)$ is a non-decreasing function.
@@ -1576,8 +1590,8 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
             s_{(k)} + \mymax{0, c_{(k)}},& \lambda > \lambda_{(k)} .
         \end{cases}
     \end{equation}
-    That is, in these intervals $\partial \mathcal{J}(\lambda)$ is continuous, non-decreasing, and the values of the derivative in the open intervals with one elbow are contained in the that elbow subdifferential, thus, it is sufficient to look for the optimal value at the elbows.
-    Then, using Fermat's Theorem, we want to find $\lambda^*$ such that $\partial \mathcal{J}(\lambda^*) = 0$. We have three possible scenarios:
+    That is, in these intervals $\partial \mathcal{J}(\lambda)$ is continuous, non-decreasing, and the values of the derivative in the open intervals with one elbow are contained in the that elbow subdifferential; thus, it is sufficient to look for the optimal value at the elbows.
+    Then, using Fermat's Theorem, we want to find $\lambda^*$ such that $0 \in \partial \mathcal{J}(\lambda^*)$. We have three possible scenarios:
     \begin{itemize}
         \item $\partial \mathcal{J}(0) \geq 0.$ 
         \\Since $\partial \mathcal{J}(\lambda)$ is non-decreasing, the optimal value in $[0, 1]$ is $\lambda^* = 0$.
@@ -1644,7 +1658,7 @@ In each term of the sum the subdifferential is
 \end{equation}
 The elbows are again related to the values $\frac{-d_i}{c_i}$, that can be sorted to write the elbows as ${\lambda}_{(1)} < \ldots < {\lambda}_{(m)}$.
 In~\citet[Proposition 2]{RuizAD21} we give the following result to get the optimal $\lambda^*$ when using the squared hinge loss.
-\begin{proposition}[Optimal $\lambda^*$ with squared hinge loss]\label{prop:sqhinge_neurocom2020}
+\begin{proposition}[Optimal $\lambda^*$ with Squared Hinge Loss]\label{prop:sqhinge_neurocom2020}
     In~\eqref{eq:opt_hinge_l2},
     $\lambda^*=0$ is optimal iff 
     \begin{equation}\nonumber
@@ -1699,7 +1713,8 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
     $$
     and also, the left limit is 
     \begin{align*}
-        \lim_{\lambda \to \lambda_{(k)}^{-}} \partial \mathcal{J}(\lambda) &= 
+        &\lim_{\lambda \to \lambda_{(k)}^{-}} \partial \mathcal{J}(\lambda) \\
+        &= 
         2c_{(k)} (\lambda c_{(k)} + d_{(k)})  + 
         \sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; \lambda_{(k)} < \lambda_{(i)}}} {2 c_{(i)} (\lambda c_{(i)} + d_{(i)})} + \sum_{\substack{i:\; 0 < c_{(i)} ,\\ \;\; \lambda_{(k)} > \lambda_{(i)}}} {2 c_{(i)} (\lambda c_{(i)} + d_{(i)})},
     \end{align*}
@@ -1757,14 +1772,14 @@ In this chapter, we have presented a convex formulation for \acrshort{mtl}, whic
 We present a proposition to show that a particular case of our formulation can be equivalent to the previous combination-based approach.
 
 %
-In Section~\ref{sec:convexmlt_kernel} we have also described in depth the convex \acrshort{mtl} formulation for kernel methods, concretely we present the convex \acrshort{mtl} L1, L2, and LS-\acrshort{svm}. For these models, we give their corresponding primal problems and develop the procedure needed to obtain the dual ones.
+In Section~\ref{sec:convexmlt_kernel} we have also described in depth the convex \acrshort{mtl} formulation for kernel methods, concretely we present the convex \acrshort{mtl} L1, L2, and LS-\acrshort{svm}. For these models, we give their corresponding primal problems and develop the dual ones.
 %
 
 Next, in Section~\ref{sec:convexmlt_network} we apply the convex \acrshort{mtl} strategy to \acrshort{nns}. Here, we also combine the outputs of a common and task-specific nets. The training procedure involves a joint optimization of all nets using backpropagation, which requires the gradient computation.
-We describe how the gradients can be obtained with this \acrshort{mtl} approach, but we give an implementation, using \texttt{PyTorch} where we do not need to explicitly compute the gradients, we rely on the automatic differentiation instead.
+We describe how the gradients can be obtained with this \acrshort{mtl} approach, but we give an implementation, using \texttt{PyTorch}, where we do not need to explicitly compute the gradients, we rely on the automatic differentiation instead.
 
 %
-One natural alternative for this \acrshort{mtl} formulation is to consider convex combinations of models that have been previously trained. We present this idea in Section~\ref{sec:optimal_comb}: we can take a common model fitted with the data from all tasks, and task-specific models trained only the data corresponding to their task, and apply a convex combination of them to define an \acrshort{mtl} model. It is necessary only to select the optimal convex combination parameters $\lambda_r \in [0, 1]$. We provide four propositions to find such parameters when using the absolute, squared, hinge and squared hinge losses.
+One natural alternative for this \acrshort{mtl} formulation is to consider convex combinations of models that have been previously trained. We present this idea in Section~\ref{sec:optimal_comb}: we can take a common model fitted with the data from all tasks, and task-specific models trained only with the data corresponding to their task, and apply a convex combination of them to define an \acrshort{mtl} model. It is necessary only to select the optimal convex combination parameters $\lambda_r \in [0, 1]$. We provide four propositions to find such parameters when using the absolute, squared, hinge and squared hinge losses.
 
 %
 In summary, we have proposed a novel convex formulation for \acrshort{mtl} and we have described it thoroughly, presenting several models that apply this strategy: L1, L2, LS-\acrshort{svm}, \acrshort{nns} and also the convex combination of pre-trained models.

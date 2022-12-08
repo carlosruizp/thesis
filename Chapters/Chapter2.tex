@@ -1424,7 +1424,7 @@ then, by finding its maximum, since $\Theta(\opt{\fv{\alpha}}, \opt{\fv{\beta}})
 
 
 
-\section{Support Vector Machines}
+\section{Support Vector Machines}\label{sec:ch2_svms}
 Vapnik presented the \acrshort{svm} as a model that considers only a particular kind of hypothesis, that which, in a binary classification context, leaves a maximum margin between the classes. The motivation behind this is to limit the capacity of the hypothesis space. To minimize the empirical risk with such set of hypotheses, we formulate an optimization problem, which can be solved using the tools that we have given in the previous section. The \acrshort{svm} has many interesting and useful properties; for example, the optimization problem is a convex one, so the solution is unique. Also, one of the most relevant characteristics is the possibility of transforming the data into a possibly infinite-dimensional Hilbert space using the kernel trick.
 In this section we will present the \acrshort{svm}, we will motivate it and give the definition for the linear formulation and its kernel extension. We will also explain \acrshort{svm} variants such as the L2 and LS-\acrshort{svm}.
 
