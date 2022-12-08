@@ -22,7 +22,7 @@ In this chapter we will present a convex formulation for combination-based \acrs
        = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) .
     \end{aligned}    
 \end{equation}
-Here, we use the hyperparameters $\lambda_r \in [0, 1]$ to combine in a convex way the common part $g(\cdot)$ and specific parts $g_r(\cdot)$. This general formulation is very flexible because we can use any family of functions to model $g(\cdot)$ or $g_r(\cdot)$. It is also easily interpretable, since $\lambda_r=1$ for all $r=1, \ldots, \ntasks$, results in a \acrfull{ctl} approach, while $\lambda_r=0$ leads to an \acrfull{itl} one. All the values $\lambda_r \in (0, 1)$ correspond to pure \acrshort{mtl} models, being closer to common model when $\lambda_r$ is close to $1$ and more specific when $\lambda_r$ is close to $0$.
+Here, we use the hyperparameters $\lambda_r \in [0, 1]$ to combine in a convex way the common part $g(\cdot)$ and specific parts $g_r(\cdot)$. This general formulation is very flexible because we can use any family of functions to model $g(\cdot)$ or $g_r(\cdot)$. It is also easily interpretable, since $\lambda_r=1$ for all $r=1, \ldots, \ntasks$, results in a \acrfull{ctl} approach, while $\lambda_r=0$ leads to an \acrfull{itl} one. All the values $\lambda_r \in (0, 1)$ correspond to pure \acrshort{mtl} models, being closer to a common model when $\lambda_r$ is close to $1$ and more specific when $\lambda_r$ is close to $0$.
 %
 Given an \acrshort{mtl} sample 
 $$\sample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\},$$
@@ -33,7 +33,8 @@ the \acrshort{mtl} regularized risk functional that corresponds to this convex f
     \emprisk ({g, g_1, \ldots, g_\ntasks}) = C\sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) + \Omega(g) + \sum_{r=1}^\ntasks \Omega_r(g_r) ,
 \end{equation}
 where $\Omega(g)$ and $\Omega_r(g_r)$ are the regularizers for the common and $r$-th task parts, respectively. Observe that, since the regularization is made independently for each part, no multi-task specific regularization scheme is needed. The task coupling is made directly in the definition of the model, which combines common and specific parts, and the risk $\emprisk$ is optimized jointly in all parts.
-This has some advantages, for example, no additional regularizations for coupling are needed, which usually are not convex, and there is no need to develop a new optimization procedure. In this chapter these characteristics will be presented in specific models using this convex \acrshort{mtl} formulation. In particular, we will propose convex \acrshort{mtl} formulations for kernel methods, such as the L1, L2 or LS-\acrfull{svm}, and also for \acrfull{nns}.
+%This has some advantages, for example, no additional regularizations for coupling are needed, which usually are not convex, and there is no need to develop a new optimization procedure. 
+In this chapter these characteristics will be presented in specific models using this convex \acrshort{mtl} formulation. In particular, we will propose convex \acrshort{mtl} formulations for kernel methods, particularly the L1, L2 or LS-\acrfull{svm}, and also for \acrfull{nns}.
 %
 
 Moreover, we also consider a natural alternative to convex \acrshort{mtl}, which is to combine independently-trained models. That is, given a common model $\opt{g}(\cdot)$ trained with data from all tasks, and task-specific models $\opt{g}_r(\cdot)$ trained with only the data corresponding to their task, we can minimize 
@@ -45,7 +46,7 @@ Moreover, we also consider a natural alternative to convex \acrshort{mtl}, which
 Here, the models $g^*$ and $g^*_1, \ldots, g^*_\ntasks$ are fixed, and the goal is to select the optimal parameters $\lambda^*_r$ that minimize the training risk.
 
 %
-The chapter is structured as follows, in Section~\ref{sec:convexmlt_kernel} we present the convex \acrshort{mtl} formulation for kernel methods, and in Section~\ref{sec:convexmlt_network} we do it for \acrshort{nns}.
+The chapter is structured as follows. In Section~\ref{sec:convexmlt_kernel} we present the convex \acrshort{mtl} formulation for kernel methods, and in Section~\ref{sec:convexmlt_network} we do it for \acrshort{nns}.
 Finally, in Section~\ref{sec:optimal_comb} we present the alternative method of combining pre-trained models in a convex manner, proposing methods to select the optimal combination parameter for different loss functions.
 %
 
@@ -82,7 +83,7 @@ These models embrace the \acrfull{srm} paradigm by limiting the capacity of the 
 
 % One of the first multi-task learning approach with kernel methods is Regularized \acrshort{mtl}
 \acrshort{mtl} with kernel methods requires imposing some kind of coupling between the models for each task in the learning process. The feature learning or feature sharing approach, which is usually adopted with neural networks, is not feasible when using kernel methods, since the (implicit) transformation functions $\phi$ used are not learned but fixed, and determined by the choice of the kernel function. Therefore, other strategies have to be developed. 
-One of the first approaches to \acrshort{mtl} with kernel methods was presented in~\cite{EvgeniouP04}, and later extended in~\citet{CaiC09, CaiC12}, where they use an L1-SVM formulation and the model for each task are defined as
+One of the first approaches to \acrshort{mtl} with kernel methods was presented in~\cite{EvgeniouP04}, and later extended in~\citet{CaiC09, CaiC12}, where they use an L1-SVM formulation and the model for each task is defined as
 \begin{equation}
     \nonumber
     {w}_r = {w} + {v}_r,
@@ -93,7 +94,7 @@ The regularized risk that is minimized is then
     \nonumber
     %\label{eq:additive_regrisk}
     \emprisk ({w, v_1, \ldots, v_\ntasks}) = C \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(
-        \dotp{w}{\phi({x}_i^r)} + \dotp{{v}_r^\intercal}{\phi_r({x}_i^r)} + b_r, y_i^r) + \mu \norm{{w}}^2 + \sum_{r=1}^\ntasks \norm{{v}_r}^2,
+        \dotp{w}{\phi({x}_i^r)} + \dotp{{v}_r}{\phi_r({x}_i^r)} + b_r, y_i^r) + \mu \norm{{w}}^2 + \sum_{r=1}^\ntasks \norm{{v}_r}^2,
 \end{equation}
 where $\mu$ is the hyperparameter to control the regularization of the common and specific parts, respectively. 
 %Here $\bsample$ is an \acrshort{mtl} sample defined as $$\bsample = \bigcup_{r=1}^\ntasks \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\}.$$

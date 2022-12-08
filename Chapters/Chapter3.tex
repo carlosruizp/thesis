@@ -26,7 +26,7 @@ This goal requires selecting which tasks should be learned together, that is, de
 On the early stages of \acrshort{mtl}~\citep{Caruana97,baxter2000model}, one motivation was data scarcity, since by combining different sources of information, this problem could be solved. Nowadays, in the age of ``big data'' this is not the main motivation, but other benefits can be extracted from \acrshort{mtl}, such as bias mitigation, domain adaptation or the avoidance of overfitting. 
 
 % Explanation of an \acrshort{mtl} problem, with its characteristics
-The concept of a \acrshort{mt} problem is not too precise because different definitions have been given in the literature. 
+The concept of an \acrshort{mt} problem is not too precise because different definitions have been given in the literature. 
 In this thesis, only supervised problems will be considered, so we will refer to them just as problems, and we will omit the discussion about unsupervised ones. 
 %In this section, we try to shed some light on this topic and give some definitions for \acrshort{mtl} problems.
 %
@@ -40,27 +40,27 @@ There are other heterogeneous definitions where each task can be sampled from a 
 
 Within the homogeneous \acrshort{mtl} problems we can consider the following cases, depending on the nature of each task and the task definition procedure:
 \begin{itemize}
-    \item Pure \acrshort{mt} Problems. These are problems where each task has been sampled from a possibly different distribution, so we have different samples $(X_r, Y_r)$. Here, we can find the following cases:
+    \item Pure \acrshort{mt} problems. these are problems where each task has been sampled from a possibly different distribution, so we have different samples $(X_r, Y_r)$. Here, we can find the following cases:
     \begin{itemize}
         \item \acrshort{mt} single regression: This is the case where each task is a regression problem with a single target, e.g. $\Yspace = \reals$. 
         \item \acrshort{mt} binary classification: This is the case where each task is a binary classification problem, e.g. $\Yspace = \set{0, 1}$. 
         \item \acrshort{mt} multi-target regression: This is the case where each task is a regression problem with multiple targets, e.g. $\Yspace = \reals^m$, where $m$ is the number of targets. 
         \item \acrshort{mt} multi-class classification: This is the case where each task is a multi-class classification problem, e.g. $\Yspace = \set{1, \ldots, C}$, where $C$ is the number of classes.
     \end{itemize}
-    \item Non-pure \acrshort{mt} Problems: These are problems that can be seen as \acrshort{mt} and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$. Examples of such problems are:
+    \item Non-pure \acrshort{mt} problems: these are problems that can be seen as \acrshort{mt} and be solved using \acrshort{mtl} strategies, but it is not the only way to solve them. The main difference is that although the target samples might be different across tasks, the set of features sampled is shared by all tasks, i.e. $(X_r, Y_r) = (X, Y_r)$. Examples of such problems are:
     \begin{itemize}
         \item multi-target regression: This is the case where an $m$-target regression problem is converted into a multi-task problem by replicating $m$ times the features $X$ and using one of the targets on each repetition, so we have $m$ single target regression problems, each considered a different task.
         \item multi-class classification: This is the case where a multi-class classification problem with $C$ classes is converted into a multi-task problem by replicating $C$ times the features $X$ and considering a one-vs-all scheme for each repetition, with a different positive class in each one, so we have $C$ binary classification problems, each considered a different task.
     \end{itemize}
 \end{itemize}
-In Table~\ref{tab:mtl_problems} we give some of the most popular \acrshort{mtl} problems, along with their characteristics and the papers that use them.
+In Table~\ref{tab:mtl_problems} we give some of the most popular \acrshort{mtl} problems, along with their characteristics and the main works that use them.
 
 % Algorithms design
 Even when we have an \acrshort{mt} problem with tasks that are related and, hence, could be beneficial in the learning process of the others, it is still necessary to design algorithms that can exploit this additional information. 
 % Taxonomy
 The first approaches~\citep{Caruana97} were focused on sharing a common representation, and, therefore, the models based on a \acrfull{nn} were the most commonly used. Other approaches with linear models present techniques based on matrix regularization, where some coupling between the parameters of each task is enforced. Kernel methods, however, are not as adaptable to the regularizers crafted for \acrshort{mtl}, so different techniques, typically based on combinations of common and specific parts, are used.
 % Theory
-Independently of the method considered to exploit the information of different tasks, the mechanisms of the advantage obtained by using \acrfull{mtl} have also been studied. These results show how incorporating different tasks can improve the generalization ability of the learning processes, and under what circumstances this is possible.
+Independently of the method considered to exploit the information of different tasks, the mechanisms of the advantage obtained by using \acrshort{mtl} have also been studied. These results show how incorporating different tasks can improve the generalization ability of the learning processes, and under what circumstances this is possible.
 
 % Chapter
 In this chapter, in Section~\ref{sec:ch3_mtl_theory}, we present the fundamentals of \acrshort{mtl} theory. We introduce the concept of \acrfull{ltl}, a notion of task relatedness, and review some of the most relevant theoretical works in this area. 
@@ -68,10 +68,10 @@ In this chapter, in Section~\ref{sec:ch3_mtl_theory}, we present the fundamental
 In Section~\ref{sec:ch3_overview} we present a survey with some of the most important \acrshort{mtl} approaches, and we also update the taxonomy presented in~\cite{ZhangY17aa} defining three main groups: 
 \begin{itemize}
     \item feature-based methods,
-    \item parameter-based methods,
-    \item and combination-based methods.
+    \item parameter-based methods, and
+    \item combination-based methods.
 \end{itemize}
-Given the importance of \acrfull{nns} and kernel methods, we also present specific surveys of the \acrshort{mtl} strategies for them in Section~\ref{sec:deep_mtl} and Section~\ref{sec:kernel_mtl}, respectively.
+Given the importance of \acrfull{nns} and kernel methods, we also present specific surveys of the \acrshort{mtl} strategies in Section~\ref{sec:deep_mtl} and Section~\ref{sec:kernel_mtl}, respectively.
 Finally, related to \acrshort{mtl} with kernel methods, specially the \acrfull{svm}, in Section~\ref{sec:ch3_lupi} we present the \acrfull{lupi} paradigm and connect it with the \acrshort{mtl} framework.
 %
 % Finally, in Section~\ref{sec:ch3_mtl_kernelmethods} we define the operator-valued kernels, typically used in \acrshort{mtl}, and show their connection with the kernels defined over the tensor product of spaces, leading to an easier formulation for a class of \acrshort{mtl} strategies using kernel methods.
@@ -91,18 +91,18 @@ Finally, related to \acrshort{mtl} with kernel methods, specially the \acrfull{s
 % TODO: Write intro paragraph for Section
 % The first theoretical work on \acrshort{mtl}... \acrshort{mtl} as a bias learning Problem
 To give an answer to how does \acrshort{mtl} obtain its leverage, we present some theoretical results that provide a better insight.
-Typically in \acrshort{ml} the goal is to find the candidate from a space of hypotheses that minimizes some risk. 
-This risk is the expectation of a loss function over the input space, that can differ depending on what kind of problem we are facing: regression or classification. This expectation is taken using an unknown probability distribution that expresses how the data points and targets are distributed in the joint space. 
+Typically, in \acrshort{ml} the goal is to find the candidate from a space of hypotheses that minimizes some risk. 
+This risk is the expectation of a loss function over the input space, that can differ depending on what kind of problem we are facing: regression or classification. This expectation is taken using an unknown probability distribution that expresses how the data points and targets are distributed in the joint space (the product of the input and output spaces). 
 Then, the best candidate can be selected according to different inductive principles, which define a method of approximating a global function from a training set.
 %
 % In classical statistics we have the Maximum Likelihood approach, where the goal is to estimate the density $\fun{x} = \cond{y}{x}$ and the hypothesis space is $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace \subset \reals^m}$. The learner select the parameter $\param$ that maximizes the likelihood of the data given the hypothesis.
 %
-The most common principle is \acrfull{erm}, where a training set is sampled from the unknown distribution, and the empirical risk corresponding to this sample is minimized as a proxy of the true expected risk. That is, we select the candidate, from the set of hypotheses, that achieves minimum risk in the training set. 
+The most common principle is \acrfull{erm}, described in Section~\ref{sec:risk_reg}, where a training set is sampled from the unknown distribution, and the empirical risk corresponding to this sample is minimized as a proxy of the true expected risk. That is, we select the candidate, from the set of hypotheses, that achieves minimum risk in the training set. 
 % Another more direct inductive principle is \acrfull{erm}, which is the most common one. In \acrshort{erm} the densities are ignored and an empirical error $\emprisk(\hyp{\cdot}{\param})$ is minimized as a proxy of the true expected error $\exprisk(\hyp{\cdot}{\param})$, which would result in a good generalization. 
 %
 Several models use the \acrshort{erm} principle to generalize from data such as the \acrshort{nn} or the \acrshort{svm}, each considering a different space of hypotheses from which to choose a candidate. 
 %These methods are designed to find a good hypothesis $\hyp{x}{\param}$ from a given space $\hypspace$. 
-The definition of such space determines the bias for these problems and its selection is crucial. If it does not contain any good hypothesis, the learner will not be able to learn.
+The definition of such space determines the bias for these models and its selection is crucial. If it does not contain any good hypothesis, the learner will not be able to learn.
 Also, if the hypothesis space is too large, the learning process will be more difficult.
 The best hypothesis space we can provide is the one containing only the optimal hypothesis, but this is equivalent to the original problem. In other words, in a single-task scenario there is no difference between learning the optimal hypothesis space (bias learning),
 %from a family of hypothesis spaces for the problem $\argmin_{\hypf \in \hypspace} \exprisk(\hyp{\cdot}{\param})$
@@ -110,7 +110,7 @@ and the ordinary learning of the optimal hypothesis function.
 %: we can consider the family of hypotheses $\hypspacef = \set{\set{\hyp{\cdot}{\alpha}}, \hyp{\cdot}{\alpha} \in \hypspace} $ and selecting the best single-element hypothesis space is equivalent to ordinary learning.
 %, that is using a minimization principle that ensures that $\hypf^* = \argmin_{\hypf \in \hypspace} \exprisk((\hyp{\cdot}{\param}))$.
 
-Instead of this single task scenario, we focus on the situation where we want to solve multiple related tasks, estimating multiple functions. When we have a fixed known number of scenarios, this is called \acrshort{mtl}, while the case where different unknown tasks can be sampled and the goal is to learn a good hypothesis space, it is called \acrshort{ltl}. In both cases, we need a hypothesis space that contains good solutions for the different tasks.
+Instead of this single task scenario, we focus on the situation where we want to solve multiple related tasks, estimating multiple functions. When we have a fixed known number of scenarios, this is called \acrshort{mtl}, while the case where different unknown tasks can be sampled and the goal is to learn a good hypothesis space is called \acrshort{ltl}. In both cases, we need a hypothesis space that contains good solutions for the different tasks.
 
 In this section we give an overview of some of the theoretical results that set the foundation of \acrshort{mtl} and help to understand the advantages it brings. We first review the work of~\citet{baxter2000model}, where \acrshort{mtl} is tackled from the more general view of~\acrshort{ltl}. After this, the more \acrshort{mtl}-focused works of~\citet{Ben-DavidB08} and~\citet{Ben-DavidS03} are discussed.
 %
@@ -119,10 +119,12 @@ These two works help to understand, from a theoretical point of view, how combin
 Finally, other important theoretical results on~\acrshort{mtl} are surveyed for completeness.
 \subsection{Multi-Task Learning and Learning to Learn} % Baxter
 %
-In~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about inductive bias learning or learning to learn, which can be seen as a generalization of strict \acrshort{mtl}. This is done by defining an environment of tasks and extending the work of~\cite{Vapnik00}, which defines the capacity of a space of hypothesis; in his work, Baxter defines the capacity of a family of spaces of hypothesis.
+As explained below, in~\cite{baxter2000model} an effort is made to define the concepts needed to construct the theory about bias learning or \acrshort{ltl}, which can be seen as a generalization of strict \acrshort{mtl}. 
+The problem of bias learning (or \acrshort{ltl}) consists on finding not only the hypothesis in some hypothesis family that minimizes an empirical risk, but also learning the best hypothesis space, which defines the bias of the problem, that can be taken for this purpose.
+Baxter defines an environment of tasks and extending the work of~\cite{Vapnik00}, which defines the capacity of a space of hypothesis; in his work, Baxter defines the capacity of a family of spaces of hypothesis.
 
 % Review of concepts for STL in Supervised Learning
-Before presenting the concepts defined for bias learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts.
+Before presenting the concepts defined for bias learning, and to establish an analogy to those of ordinary learning, we briefly review some statistical learning concepts, which have been presented in Chapter~\ref{Chapter2}.
 %\subsubsection*{Ordinary Learning}
 In the ordinary statistical learning scenario, the following elements are used:
 \begin{itemize}
@@ -142,11 +144,11 @@ Thus, a learner $\mathcal{A}$ maps the set of training samples to a set of hypot
     \mathcal{A} : {(\Xspace \times \Yspace)^\nsamples} \to \hypspace.
 \end{equation}
 Although $\emprisk$ is an unbiased estimator of $\exprisk$, it has been shown~\citep{Vapnik00} that this approach, despite being the most evident one, is not the best principle that can be followed.
-This has to do with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
+As described in Chapter~\ref{Chapter2}, this has to do with two facts: the first one is that the unbiased property is an asymptotical one, the second one has to do with overfitting.
 Vapnik answers to the question of what can be said about $\exprisk$ when $\hyp{\cdot}{\alpha^*}$ minimizes $\emprisk$, and, moreover, his results are valid also for small number of training samples $n$.
 More specifically, Vapnik sets the sufficient and necessary conditions for the consistency of an inductive learning process.
 % i.e. for $\emprisk(\hyp{\cdot}{\param}) \toprob \exprisk(\hyp{\cdot}{\param}) $ uniformly where $\toprob$ is convergence in probability.
- He also defines the capacity of a hypothesis space and use it to derive bounds on the rate of this convergence for any $\param \in \paramspace$ of
+ He also defines the capacity of a hypothesis space and use it to derive bounds on the rate of the convergence for any $\param \in \paramspace$ of
  \begin{equation}
     \nonumber
     \lim_{\nsamples \to \infty} P\left(\sup_{\hypf \in \hypspace} \left(\exprisk(\hypf) - \emprisk(\hypf) \right) > \epsilon \right) = 0.
@@ -156,27 +158,31 @@ This is the one-sided convergence, which is a necessary and sufficient condition
     \nonumber
     \inf_{\hypf \in \hypspace} \emprisk(\hypf) \xrightarrow[\nsamples \to \infty]{\distf} \inf_{\hypf \in \hypspace} \exprisk(\hypf) .
 \end{equation}
-Under some general conditions, as presented in~\eqref{eq:risk_bound_vc}, he proves that for $\delta > 0$, with probability $1- \delta$ we have that
+Under some general conditions, as presented in~\eqref{eq:risk_bound_vc}, he proves that for $\delta > 0$, with probability $1- \delta$, we have that
 \begin{equation}
     \label{eq:ordinary_generalization_bound}
-    \exprisk(\hypf) \leq \emprisk(\hypf) + B\left(\frac{\vcdim{\hypspace}}{\nsamples}\right)+ \sqrt{\frac{8}{\nsamples} \log \frac{4}{\delta}} ,
+    \exprisk(\hypf) \leq \emprisk(\hypf) + \sqrt{\frac{8}{\nsamples} \left(\vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right) + \log \frac{4}{\delta} \right)} .
 \end{equation}
+% \begin{equation}
+%     \label{eq:ordinary_generalization_bound}
+%     \exprisk(\hypf) \leq \emprisk(\hypf) + B\left(\frac{\vcdim{\hypspace}}{\nsamples}\right)+ \sqrt{\frac{8}{\nsamples} \log \frac{4}{\delta}} ,
+% \end{equation}
 for all $\hypf \in \hypspace$.
-Here $B$ is some non-decreasing function and $\vcdim{\hypspace}$ is a notion of the capacity of the space $\hypspace$, also named the \acrshort{vc}-dimension $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
+Observe that the right-most term is a non-decreasing function of $\vcdim{\hypspace}/\nsamples$, where $\vcdim{\hypspace}$ is the \acrshort{vc}-dimension of $\hypspace$. This means that the generalization ability of a learning process can be controlled in terms of two factors:
 \begin{itemize}
     \item The number of training samples $\nsamples$. A greater number of training samples ensures a better generalization of the learning process. This looks intuitive and could be already inferred from the asymptotical properties. 
-    \item The \acrshort{vc}-dimension $\vcdim{\hypspace}$ of the hypothesis space $\hypspace$, which is desirable to be small. This term is not intuitive and is the most important term in Vapnik's theory.
+    \item The \acrshort{vc}-dimension of the hypothesis space $\hypspace$, $\vcdim{\hypspace}$, which is desirable that it be small. This term is not intuitive and is the most important term in Vapnik's theory.
 \end{itemize}
-The \acrshort{vc}-dimension measures the capacity of a set of hypotheses $\hypspace$. 
-In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_{\vcdim{\hypspace}}$ that can be shattered (in two classes) by functions of this set. In the case of real functions, it is defined as the \acrshort{vc}-dimension of the following set of indicator functions $ I(x, \param, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
+Recall that the \acrshort{vc}-dimension measures the capacity of a set of hypotheses $\hypspace$. 
+In the case of a set of indicator functions, it is the maximum number of vectors $x_1, \ldots, x_{\vcdim{\hypspace}}$ that can be shattered (in two classes) by functions of this set, and in the case of real functions, it is defined as the \acrshort{vc}-dimension of the following set of indicator functions $ I(x, \param, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}} $.
 If the capacity of the set $\hypspace$ is too large, we may find a
 hypothesis $\hyp{x}{\opt{\param}}$ that minimizes $\emprisk$ but does not 
-generalize well and therefore, does not even remotely minimize $\exprisk$. This is the 
+generalize well and, therefore, does not even remotely minimize $\exprisk$. This is the 
 overfitting problem. 
 On the other side, if we use a too simple $\hypspace$, 
 with low capacity, we could be in a situation where there is not a good hypothesis $\hyp{x}{\param} \in \hypspace$, so the empirical risk $\inf_{\param \in \paramspace} \exprisk$ is too large. This is the underfitting problem.
 
-% The Structural Risk Minimization (\acrshort{srm}) as an inductive principle, proposed by Vapnik (as opposed to the \acrshort{erm}), tries to find a tradeoff between minimizing $\emprisk$ and minimizing $\vcdim{\hypspace}$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
+% The Structural Risk Minimization (\acrshort{srm}) as an inductive principle, proposed by Vapnik (as opposed to the \acrshort{erm}), tries to find a trade-off between minimizing $\emprisk$ and minimizing $\vcdim{\hypspace}$. The idea is to define an admissible structure, that is a sequence of hypothesis spaces:
 % $$ \mathcal{H}_1 \subset \mathcal{H}_2 \subset \ldots \subset \mathcal{H}_k \subset \ldots $$ 
 % where their \acrshort{vc}-dimensions are ordered:
 % $$ d_1 < d_2 < \ldots < d_k < \ldots$$
@@ -194,23 +200,23 @@ In ~\cite{baxter2000model} the goal is not to learn the optimal hypothesis $\hyp
 %
 Two main concepts are defined: the \emph{family of hypothesis spaces} and an \emph{environment} of related tasks. 
 For simplicity we write $\hypf(x)$ instead of $\hypf(x, \param)$ and $\hypf$ instead of $\hypf(\cdot, \param)$.
-Using these concepts, the bias learning problem has the following components:
+Using these concepts, the bias learning or \acrshort{ltl} problem has the following components:
 \begin{itemize}
     \item an \emph{input space} $\Xspace$ and an \emph{output space} $\Yspace$;
     \item an \emph{environment} $(\bprobspace, \bdistf)$ where $\bprobspace$ is a set of distributions $P$ defined over $\Xspace \times \Yspace$, and we can sample from $\bprobspace$ according to a distribution $\bdistf$;
     \item a \emph{loss function} $\loss{\cdot}{\cdot}:\Yspace \times \Yspace \to \reals$; and
     \item a \emph{family of hypothesis spaces} $\hypspacef = \set{\hypspace_\fparam, \fparam \in \fparamspace}$, where each element $\hypspace_\fparam$ is a set of hypotheses and $\fparamspace$ is a set of parameters.
 \end{itemize}
-As in ordinary learning, the goal is to minimize the expected risk, defined as
+As in ordinary learning, the goal is to minimize the \acrshort{ltl} expected risk, defined as
 \begin{equation}\label{eq:biaslearn_exprisk}
     \bexprisk(\hypspace_\fparam) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\fparam} \risk_P(\hypf) d\bdistf(P) = \int_{\bprobspace} \inf_{\hypf \in \hypspace_\fparam} \int_{\Xspace \times Y} \lossf(h(x), y) dP(x, y) d\bdistf(P) ,
 \end{equation}
 for all $\fparam \in \fparamspace$.
-Observe that this risk is not a function of a specific hypothesis but it depends on the selection of a whole hypothesis space $\hypspace_\fparam$.
+Observe that this risk is not a function of a specific hypothesis, but it depends on the selection of an entire hypothesis space $\hypspace_\fparam$.
 Again, we do not know $\bprobspace$ nor $\bdistf$, but we have a training set sampled from the environment $(\bprobspace, \bdistf)$, obtained in the following way:
 \begin{enumerate}
     \item Sample $T$ times from $\bdistf$ obtaining $P_1, \ldots, P_T \in \bprobspace$
-    \item For $r=1, \ldots, T$, sample $m_r$ pairs $\sample_r = \{(x_1^r, y_1^r), \ldots, (x_m^r, y_m^r)\}$ according to $P_r$, where $(x_i^r, y_i^r) \in X \times Y$.
+    \item For $r=1, \ldots, T$, sample $m_r$ pairs $\sample_r = \{(x_1^r, y_1^r), \ldots, (x_{\npertask_r}^r, y_{\npertask_r}^r)\}$ according to $P_r$, where $(x_i^r, y_i^r) \in X \times Y$.
 \end{enumerate}
 Although in a general \acrshort{mtl} problem each task can have a different number of patterns $m_r$, Baxter considers a sample $\bsample=\{(x_i^r, y_i^r), r=1, \ldots, \ntasks, \; i=1, \ldots, \npertask \}$, with $\npertask$ examples from the $\ntasks$ learning tasks, which can be expressed as
 \begin{equation}
@@ -223,11 +229,11 @@ Although in a general \acrshort{mtl} problem each task can have a different numb
     \end{pmatrix}
 \end{equation}
 and is named a $(\ntasks, \npertask)$-sample.
-Using $\bsample$ we can define the empirical loss as
+Using $\bsample$ we can define the \acrshort{ltl} empirical risk as
 \begin{equation}\label{eq:biaslearn_emprisk}
     \bemprisk(\hypspace_\fparam) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\fparam} \hat{\risk}_{\sample_r}(\hypf) = \sum_{r=1}^\ntasks \inf_{\hypf \in \hypspace_\fparam} \sum_{i=1}^m \lossf(\hypf(x_i^r), y_i^r),
 \end{equation}
-which is essentially an average of the empirical losses of each task. 
+which is essentially a sum of the empirical losses of each task. 
 Note, however, that in the case of the bias learner this estimate is biased, since $\risk_{P_r}(\hypf)$ does not coincide with $\hat{\risk}_{\sample_r}(\hypf)$. 
 %
 Moreover, we cannot ensure the convergence of the empirical risk to the expected risk using the Chernoff inequality~\citep{Chernoff52} as in the single-task case, so new results have to be developed to check this convergence.
@@ -243,7 +249,7 @@ To follow an analogous path to that of ordinary learning, the milestones in bias
 \begin{itemize}
     \item Checking the consistency of the bias learning methods, i.e. proving that $\bemprisk(\hypspace_\fparam)$ converges uniformly in probability to $\bexprisk(\hypspace_\fparam)$.
     \item Defining a notion of capacity for a hypothesis space families $\hypspacef$.
-    \item Finding a bound of $\bemprisk(\hypspace_\fparam) - \bexprisk(\hypspace_\fparam)$ for any $\fparam$ using the capacity of the hypothesis space family. If possible, finding also a bound for $\inf_{\fparam \in \fparamspace}\bemprisk(\hypspace_\fparam) - \inf_{\fparam \in \fparamspace} \bexprisk(\hypspace_\fparam)$.
+    \item Finding a bound of $\bemprisk(\hypspace_\fparam) - \bexprisk(\hypspace_\fparam)$ for any $\fparam$ using the capacity of a family of hypothesis spaces. If possible, finding also a bound for $\inf_{\fparam \in \fparamspace}\bemprisk(\hypspace_\fparam) - \inf_{\fparam \in \fparamspace} \bexprisk(\hypspace_\fparam)$.
 \end{itemize}
 To try to achieve these goals some previous definitions are needed. From this point, since any $\hypspace$ is defined by a $\fparam \in \fparamspace$, we omit $\fparam$ and write just $\hypspace$ for simplicity.
 %
@@ -251,30 +257,31 @@ To try to achieve these goals some previous definitions are needed. From this po
 
 \subsection{VC-Dimension for Multi-Task Learning}
 
-Two pseudo-metrics are defined in the work of~\citet{baxter2000model} in order to derive notions of \acrshort{mtl} capacities.
-Given a space $\Xspace$, a pseudo-metric of $\Xspace$ is a real-valued function $d: \Xspace \times \Xspace \to \reals_{\geq 0}$ such that 
+Two pseudometrics are defined in the work of~\citet{baxter2000model} in order to derive notions of \acrshort{mtl} capacities.
+Recall that given a space $\Xspace$, a pseudometric of $\Xspace$ is a real-valued function $d: \Xspace \times \Xspace \to \reals_{\geq 0}$ such that 
 \begin{itemize}
     \item $d(x, x) = 0$,
     \item $d(x, y) = d(y, x)$,
     \item $d(x, y) \leq d(x, z) + d(z, y)$.
 \end{itemize}
-However, unlike the case of metrics, when we use pseudo-metrics $d(x, y)  = 0$ does not imply $x=y$.
+Notice that, unlike the case of metrics, when we use pseudometrics $d(x, y)  = 0$ does not imply $x=y$.
 %\subsubsection*{bias learning: Capacities and Uniform Convergence}
+
 % Pseudo-metrics, Covering numbers and Capacities
-In first place, a \emph{sample-driven} pseudo-metric of $(\ntasks, 1)$-empirical risks is defined.
+Going back to the pseudometrics of~\citet{baxter2000model}, in first place a \emph{sample-driven} pseudometric of $(\ntasks, 1)$-empirical risks is defined.
 Consider a sequence of $\ntasks$ probabilities $\bprobseq = (P_1, \ldots, P_\ntasks)$ sampled from $\bprobspace$ according to the distribution $\bdistf$. 
-\begin{definition}[\emph{sample-driven} pseudometric]
+\begin{definition}[\emph{Sample-driven} Pseudometric]
     \label{def:sample_pseudometric}
     Given a $(\ntasks, 1)$-sample 
     $$\set{(x_1^1, y_1^1), (x_1^2, y_1^2), \ldots, (x_1^\ntasks, y_1^\ntasks) },$$
-    and consider the set of sequences of $\ntasks$ hypotheses 
-$$\hypspace^\ntasks = \set{ (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} ,$$
+    considering the set of sequences of $\ntasks$ hypotheses 
+$$\hypspace^\ntasks = \set{ h^\ntasks = (\hypf_1, \ldots, \hypf_\ntasks) , \hypf_1, \ldots, \hypf_\ntasks \in \hypspace} ;$$
  we can define then the set of $(\ntasks, 1)$-empirical risks, with one sample per task, as 
 $$
 \hypspace^\ntasks_\lossf = \set{ {\hypf}^\ntasks_\lossf(x_1^1, y_1^1, \ldots, x_1^\ntasks, y_1^\ntasks) = \sum_{r=1}^\ntasks \lossf(\hypf_r(x_1^r), y_1^r) ,\;  (\hypf_1, \ldots, \hypf_\ntasks) \in \hypspace^\ntasks} .
 $$
-Observe that in each element of ${h}^\ntasks_\lossf \in \hypspace^\ntasks_\lossf$ we use all the hypothesis from the same hypothesis space $\hypspace$.
-Combining the sets of risks for each hypothesis space we define $\bsetsample_\lossf = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks_\lossf$, and for any pair ${h}^\ntasks_\lossf, \widetilde{h^\ntasks_\lossf} \in \hypspacef_\lossf^\ntasks$, we define
+Observe that in each element ${h}^\ntasks_\lossf \in \hypspace^\ntasks_\lossf$ we use all the hypothesis $\hypf_1, \ldots, \hypf_\ntasks$ from the same hypothesis space $\hypspace$.
+Combining the sets of risks for each hypothesis space we define $\bsetsample_\lossf = \bigcup_{\hypspace \in \hypspacef} \hypspace^\ntasks_\lossf$, and for any pair ${h}^\ntasks_\lossf \in \hypspace^\ntasks_\lossf$ and  $\widetilde{h^\ntasks_\lossf} \in \widetilde{\hypspace}^\ntasks_\lossf$, we define
 \begin{equation}
     \nonumber
     \begin{aligned}
@@ -285,102 +292,119 @@ Combining the sets of risks for each hypothesis space we define $\bsetsample_\lo
 as a pseudometric in $\hypspacef_\lossf^\ntasks$.
 \end{definition}
 %
+That is, this \emph{sample-driven} pseudometric measures the expected difference between the $(\ntasks, 1)$-empirical risks obtained with $\hypspace$ and $\widetilde{\hypspace}$.
 
-Then, a \emph{distribution-driven} pseudo-metric is defined. 
-\begin{definition}[\emph{distribution-driven} pseudo-metric]
+Then, a \emph{distribution-driven} pseudometric is defined. 
+\begin{definition}[\emph{Distribution-Driven} Pseudometric]
     \label{def:dist_pseudometric}
-    Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the set of infimum expected risk for each $\hypspace$:
+    Given a distribution $P$ on $\Xspace \times \Yspace$. Consider the infimum expected risk for each $\hypspace$:
 \begin{equation}
     \nonumber
     \risk^*_\distf(\hypspace) = \inf_{\hypf \in \hypspace} \risk_P(\hypf).
 \end{equation}
-The family of such sets is defined as 
+The set of such values is denoted as 
 $\bsetdist_\lossf = \set{\risk^*_\distf(\hypspace), \hypspace \in \hypspacef}$.
-Then, for $\risk^*_\distf(\hypspace), \widetilde{\risk^*_\distf(\hypspace)} \in \hypspacef_\lossf^*$,
+Then, for $\risk^*_\distf(\hypspace), \risk^*_\distf(\widetilde{\hypspace}) \in \hypspacef_\lossf^*$,
 \begin{equation}
     \nonumber
-    \dist{\bdistf}(\risk^*_\distf(\hypspace), \widetilde{\risk^*_\distf(\hypspace)}) = \int_\bprobspace \abs{\risk^*_\distf(\hypspace) - \widetilde{\risk^*_\distf(\hypspace)}} d\bdistf(\distf)
+    \dist{\bdistf}(\risk^*_\distf(\hypspace), \risk^*_\distf(\widetilde{\hypspace})) = \int_\bprobspace \abs{\risk^*_\distf(\hypspace) - \risk^*_\distf(\widetilde{\hypspace})} d\bdistf(\distf)
 \end{equation}
 is a pseudometric in $\hypspacef_\lossf^*$.
 \end{definition}
-With these two pseudo-metrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. 
+With these two pseudometrics, two capacities for families of hypothesis spaces are defined. For that the definition of $\epsilon$-cover is needed. 
 Since we assume that the same loss function $\lossf$ is used for both definitions, we will rename the families $\hypspacef^*_\lossf, \hypspacef^\ntasks_\lossf$ as $\hypspacef^*, \hypspacef^\ntasks$.
 \begin{definition}[$\epsilon$-cover]
     \label{def:epsilon_cover}
-    Given a pseudo-metric $\dist{\Xspace}$ in a space $\Xspace$, 
-a set of $l$ elements $x_1, \ldots, x_l \in \Xspace$ is an $\epsilon$-cover of $\Xspace$ if 
+    Given a pseudometric $\dist{\Xspace}$ in a space $\Xspace$, 
+a set of $l$ elements $x_1, \ldots, x_L \in \Xspace$ is an $\epsilon$-cover of $\Xspace$ if 
 $ \forall x \in \Xspace$, $\dist{\Xspace}(x, x_i) \leq \epsilon $
-for some $i=1, \ldots, l$.
+for some $i=1, \ldots, L$.
 \end{definition}
 %
-Let $\mathcal{U}(\epsilon, \Xspace, \dist{\Xspace})$ denote the size of the smallest $\epsilon$-cover.
+Let $\mathcal{U}(\epsilon, \Xspace, \dist{\Xspace})$ denote the size $L$ of the smallest $\epsilon$-cover.
 Then, we can define the following capacities of a family space $\hypspacef$:
 \begin{itemize}
-    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} = \sup_{\bprobseq} \mathcal{U}(\epsilon, \hypspacef^\ntasks, \dist{\bprobseq})$.
-    \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} = \sup_Q \mathcal{U}(\epsilon, \bsetdist, \dist{\bdistf})$.
+    \item The \emph{sample-driven capacity} $\capacity{\epsilon}{\bsetsample} = \sup_{\bprobseq} \mathcal{U}(\epsilon, \hypspacef_\lossf^\ntasks, \dist{\bprobseq})$.
+    \item The \emph{distribution-driven capacity} $\capacity{\epsilon}{\bsetdist} = \sup_Q \mathcal{U}(\epsilon, \bsetdist_\lossf, \dist{\bdistf})$.
 \end{itemize}
 
 % Uniform Convergence for bias learners (Comparison with Vapnik)
-Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, given $\epsilon > 0$ and $0 < \eta < 1$, the bias expected risk is bounded as
+Using these capacities, the convergence (uniformly over all $\hypspace \in \hypspacef$) of bias learners can be proved~\cite[Theorem~2]{baxter2000model}. Moreover, given $\epsilon > 0$ and $0 < \eta < 1$, the \acrshort{ltl} expected risk $\bexprisk(\hypspace)$ can be bounded as
 \begin{equation}
     \nonumber
-    \bemprisk(\hypspace) \leq \bexprisk(\hypspace) + \epsilon
+    \bexprisk(\hypspace) \leq \bemprisk(\hypspace) + \epsilon
 \end{equation}
-with probability $1 - \eta$, given sufficiently large $\ntasks$ and $\npertask$, namely
+with probability $1 - \eta$, where $\bemprisk$ is the \acrshort{ltl} empirical risk, given sufficiently large $\ntasks$ and $\npertask$, namely
 \begin{equation}
     \nonumber
     \begin{aligned}
-        &\ntasks \geq \frac{288}{\epsilon^2} \log{\frac{8\capacity{\frac{\epsilon}{48}}{\bsetdist}}{\eta}} , \\
-        &\npertask \geq \max \left( \frac{288}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{48}}{\bsetsample}}{\eta} , \frac{18}{\epsilon^2}\right) . 
+        &\ntasks \geq \frac{288}{\epsilon^2} \log{\frac{8\capacity{\frac{\epsilon}{48}}{\bsetdist_\lossf}}{\eta}} , \\
+        &\npertask \geq \max \left( \frac{288}{\ntasks \epsilon^2} \log\frac{8\capacity{\frac{\epsilon}{48}}{\bsetsample_\lossf}}{\eta} , \frac{18}{\epsilon^2}\right) . 
     \end{aligned}
 \end{equation}
 % It should be noted that the bound for $\npertask$ is inversely proportional to $\ntasks$, that is, the more tasks we have, the less samples we need for each task. 
 Observe that the bound for $\ntasks$ depends on the \emph{distribution-driven} definition, while the one for $\npertask$ depends on the \emph{sample-driven} definition.
-Also, as intuitively expected, the bound for $\npertask$ is inversely proportional to $\ntasks$, so the more tasks there are, the less data is necessary in each task. 
+Also, as intuitively expected, the bound for $\npertask$ is essentially inversely proportional to $\ntasks$, so the more tasks there are, the less data is necessary in each task. 
 % \acrshort{mtl} (strictly speaking, with fixed tasks)
 %\subsubsection*{Multi-Task Learning as a special case of bias learning}
-The previous result is for pure bias learning or \acrshort{ltl}, where we have a $(\bprobspace, \bdistf)$-environment of tasks. In \acrshort{mtl}, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)^\npertask$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypothesis $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks),\; \hypf_1, \ldots, \hypf_\ntasks \in \hypspace $. Thus, the \acrshort{mt} expected risk is
+
+The previous result is for pure bias learning or \acrshort{ltl}, where we have a $(\bprobspace, \bdistf)$-environment of tasks. In \acrshort{mtl}, we have a fixed number of tasks $\ntasks$ and a fixed sequence of distributions $\bprobseq = (P_1, \ldots, P_\ntasks)$, where $P_i$ is a distribution over $(\Xspace \times \Yspace)$. The goal is not learning a hypothesis space $\hypspace$ but a sequence of hypotheses $$\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks),\; \hypf_1, \ldots, \hypf_\ntasks \in \hypspace .$$
+Thus, the \acrshort{mtl} expected risk is
 \begin{equation}\label{eq:mtlearn_exprisk}
     \risk_{\bprobseq}(\myvec{\hypf}) = \sum_{r=1}^\ntasks \risk_{P_r}(\hypf_r)  = \sum_{r=1}^\ntasks \int_{\Xspace \times Y} \lossf(\hypf_r(x), y) d{P_r}(x, y),
 \end{equation}
-and the empirical risk is defined as
+and the \acrshort{mtl} empirical risk is defined as
 \begin{equation}\label{eq:mtlearn_emprisk}
     \bemprisk(\myvec{\hypf}) = \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) = \sum_{r=1}^\ntasks \sum_{i=1}^m \lossf(\hypf_r(x_i^r), y_i^r).
 \end{equation}
 Again, for $\epsilon > 0$ and $0 < \eta < 1$, a similar result to that of bias learning is given for \acrshort{mtl}~\cite[Theorem~4]{baxter2000model}:
 \begin{equation}
     \nonumber
-    \bemprisk(\myvec{\hypf}) \leq \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon
+    \risk_{\bprobseq}(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon
 \end{equation}
 with probability $1 - \eta$ given that the number $\npertask$ of samples per task verifies
 \begin{equation}
     \nonumber
-    \npertask \geq \max \left( \frac{64}{\ntasks \epsilon^2} \log\frac{4\capacity{\frac{\epsilon}{16}}{\bsetsample}}{\eta} , \frac{16}{\epsilon^2}\right).
+    \npertask \geq \max \left( \frac{64}{\ntasks \epsilon^2} \log\frac{4\capacity{\frac{\epsilon}{16}}{\bsetsample_\lossf}}{\eta} , \frac{16}{\epsilon^2}\right).
 \end{equation}
-Observe that we do not need the \emph{distribution-driven} capacity in this case, just the \emph{sample-driven} capacity, that is the one bounding the number of samples per task.
+Observe that we do not need the \emph{distribution-driven} capacity in this case, just the \emph{sample-driven} capacity, that is, the one bounding the number of samples per task.
 
 % feature learning
 %\subsubsection*{feature learning}
 To see how these bounds can be helpful, consider the \acrshort{mtl} approach based on feature learning, where a common space of features is shared by all the tasks. The most popular example are \acrshort{nns}, where all the hidden layers can be seen as a feature learning engine that learns a mapping from the original space $\Xspace$ to a space with ``strong'' features $\Fspace$.
-In general, a set of ``strong'' feature maps is defined as $\mathcal{F} = \set{f, f: \Xspace \to \Fspace}$. Using these features, models defining functions $g \in \mathcal{G}$ (which are tipically simple) are built:
+In general, a set of ``strong'' feature maps is defined as $\mathcal{F} = \set{f: \Xspace \to \Fspace}$. Using these features, models defining functions $g \in \mathcal{G}$ (which are typically simple) are built:
 $\Xspace \to_f \Fspace \to_g \Yspace$.
 Thus, for each map $f$, the hypothesis space can be expressed as 
 $\hypspace_f = \set{h = g \circ f, g \in \mathcal{G}},$ and the family of hypothesis spaces is 
 $\hypspacef = \set{\hypspace_f, f \in \mathcal{F}}$.
-Now, the bias learning problem is the problem of finding a good mapping $f$.
+%
+With the above definitions, Baxter also considers the functions
+\begin{equation}
+    \nonumber
+    \begin{aligned}
+        g_\lossf:\; \Vspace \times \Yspace \to \reals, 
+    \end{aligned}
+\end{equation}
+such that $g_\lossf(f(x), y) = \lossf(g(f(x)), y)$, and the class of such functions is called $\mathcal{G}_\lossf$. The capacity of such space is defined as $\capacity{\epsilon}{\mathcal{G}_\lossf} = \sup_P \mathcal{U}(\epsilon, \mathcal{G}_\lossf, \dist{P})$.
+To define the capacity of $\mathcal{F}$, Baxter gives first the definition of the pseudo-metric 
+$$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} \sup_{g \in \mathcal{G}} \abs{\loss{g \circ f(x)}{y} - \loss{g \circ f'(x)}{y}} dP(x, y), $$
+which ``pulls back'' the metric on $\reals$ through $\mathcal{G}_\lossf$.
+Thus, the capacity of $\mathcal{F}$ is defined as 
+$\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) = \sup_P \mathcal{U}(\epsilon, \mathcal{F}, \dist{[P, \mathcal{G}_\lossf]})$, the size of the smallest $\epsilon$-cover of $\mathcal{F}$.
+
+Now, the bias learning problem is the problem of finding a good mapping $f$, that is, the selection of $f$ defines hypothesis space $\hypspace_f$.
 It is proved~\cite[Theorem~6]{baxter2000model} that in the feature learning case the capacities of $\hypspacef$ can be bounded by the capacities of $\mathcal{F}$ and $\mathcal{G}$ as
 \begin{align*}
-    \capacity{\epsilon}{\bsetsample} &\leq \capacity{\epsilon_1}{\mathcal{G}}^\ntasks \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
-    \capacity{\epsilon}{\bsetdist} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) ,
+    \capacity{\epsilon}{\bsetsample_\lossf} &\leq \capacity{\epsilon_1}{\mathcal{G}_\lossf}^\ntasks \capf_{\mathcal{G}_\lossf}(\epsilon_2, \mathcal{F}) , \\
+    \capacity{\epsilon}{\bsetdist_\lossf} &\leq \capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) ,
 \end{align*}
-with $\epsilon = \epsilon_1 + \epsilon_2 $. Here, $\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F})$ is defined as 
-$\capf_{\mathcal{G}_\lossf}(\epsilon, \mathcal{F}) = \sup_P \mathcal{N}(\epsilon, \mathcal{F}, \dist{[P, \mathcal{G}_\lossf]})$, where
-$$ \dist{[P, \mathcal{G}_\lossf]}(f, f') = \int_{\Xspace \times \Yspace} \sup_{g \in \mathcal{G}} \abs{\loss{g \circ f(x)}{y} - \loss{g \circ f'(x)}{y}} dP(x, y)$$
-is a pseudo-metric. Using these results alongside those presented for bias learning is useful to establish bounds for feature learning models like Neural Networks.
+with $\epsilon = \epsilon_1 + \epsilon_2 $. 
+This means that the sample-driven capacity depends both on the capacity of the feature mapping functions $f$ and the decision functions $g$; however, the distribution-driven capacity can be bounded just with the capacity of the space of the feature mapping functions. Thus, the capacity of the space corresponding to the full models $g \circ f$ can be splitted in two parts, one corresponding to the feature mapping and other to the decision functions.
+These results, alongside those presented for bias learning, is useful to establish concrete bounds for feature learning models like \acrshort{nns}.
 
 % Generalized VC-dim , Theorems 12, 13 and Corollary 13
 %\subsubsection*{Generalized \acrshort{vc}-Dimension for \acrshort{mtl}}
-The results presented until now rely on the development of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\bemprisk(\myvec{\hypf}) - \bexprisk(\myvec{\hypf})$, that is, the probability of deviations between the empirical and expected risks for a given hypothesis sequence. However, it would be more useful to find some result concerning the best empirical error and the {best expected error}.
+The results presented until now rely on the development of two capacities of a family of hypothesis spaces $\hypspacef$ to establish bounds in the difference $\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})$, that is, the probability of deviations between the \acrshort{mtl} empirical and expected risks for a given hypothesis sequence $\hypf$. However, it would be more useful to find some result concerning the best empirical error and the {best expected error}.
 To achieve this, a generalized \acrshort{vc}-dimension is developed in~\cite{baxter2000model} for \acrshort{mtl} with Boolean hypotheses, whose image is in $\set{0, 1}$.
 %
 \begin{definition}\label{def:gen_vcdim}
@@ -420,76 +444,76 @@ Also define
 \end{align}
 \end{definition}
 
-Then, it can be shown that
+Then, in~\citet{baxter2000model} is it shown that
 \begin{equation}
     \nonumber
     d_\hypspacef(\ntasks) \geq \max\left(\floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}}, \underline{d}(\hypspacef) \right) ,
 \end{equation}
-where it can be observed that 
+and also that 
 \begin{equation}
     \label{eq:genvc_inequalities}
     \overline{d}(\hypspacef) \geq  d_\hypspacef(\ntasks)\geq \underline{d}(\hypspacef).
 \end{equation}
-To illustrate how we get this result, we split the proof in three inequalities:
-    \begin{enumerate}
-        \item  $ d_\hypspacef(\ntasks) \geq \underline{d}(\hypspacef)$:  \\ 
-        Let $\hypspace^\text{max}$ be such that $\vcdim{\hypspace^\text{max}} = \underline{d}(\hypspacef) = \max_{\hypspace \in \hypspacef} \vcdim{\hypspace}$. 
-        %Then we can construct a ${\ntasks \times \underline{d}(\hypspacef)}$ matrix $\mymat{X}$ where each row can be shattered by $\hypspace^\text{max}$ and, thus,
-        %$ \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) \geq \ntasks  \underline{d}(\hypspacef)$. %\comm{(es esto verdad?)}
-        Then, for all $\ntasks, \npertask \geq 0$
-        \begin{equation}
-            \nonumber
-            \Pi_\hypspacef(\ntasks, \npertask) = \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef_{\vert \mymat{x}} } \geq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \set{\hypspace^\text{max}}_{\vert \mymat{x}} } =  \Pi_{ \set{\hypspace^\text{max}}}(\ntasks, \npertask) .
-        \end{equation}
-        Since $\set{m:  \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) = 2^{\ntasks \npertask}} \subset \set{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}}$,
-        \begin{equation}
-            \nonumber
-            d_\hypspacef(\ntasks) = \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \max_{m:  \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \underline{d}(\hypspacef) .
-        \end{equation}
-        %\comm{Esta primera desigualdad creo que no está bien}
-        \item $ d_\hypspacef(\ntasks) \geq \floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $: \\
-        If $\mathcal{X}^{\overline{d}(\hypspacef)}$ is shattered by $\bigcup_{\hypspace \in \hypspacef} \hypspace$, then the space of ${\ntasks \times \floor*{\frac{\overline{d}(\hypspacef)}{T}} }$ matrices $\mymat{x}$, $\mathcal{X}^{\ntasks \times \overline{d}(\hypspacef)}$, is shattered by $\bigcup_{\hypspace \in \hypspacef} \hypspace$  and therefore 
-        $ d_\hypspacef(\ntasks) = \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \floor*{\frac{\overline{d}(\hypspacef)}{T}}.$
+% To illustrate how we get this result, we split the proof in three inequalities:
+%     \begin{enumerate}
+%         \item  $ d_\hypspacef(\ntasks) \geq \underline{d}(\hypspacef)$:  \\ 
+%         Let $\hypspace^\text{max}$ be such that $\vcdim{\hypspace^\text{max}} = \underline{d}(\hypspacef) = \max_{\hypspace \in \hypspacef} \vcdim{\hypspace}$. 
+%         %Then we can construct a ${\ntasks \times \underline{d}(\hypspacef)}$ matrix $\mymat{X}$ where each row can be shattered by $\hypspace^\text{max}$ and, thus,
+%         %$ \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) \geq \ntasks  \underline{d}(\hypspacef)$. %\comm{(es esto verdad?)}
+%         Then, for all $\ntasks, \npertask \geq 0$
+%         \begin{equation}
+%             \nonumber
+%             \Pi_\hypspacef(\ntasks, \npertask) = \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef_{\vert \mymat{x}} } \geq \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \set{\hypspace^\text{max}}_{\vert \mymat{x}} } =  \Pi_{ \set{\hypspace^\text{max}}}(\ntasks, \npertask) .
+%         \end{equation}
+%         Since $\set{m:  \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) = 2^{\ntasks \npertask}} \subset \set{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}}$,
+%         \begin{equation}
+%             \nonumber
+%             d_\hypspacef(\ntasks) = \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \max_{m:  \Pi_{\left\lbrace \hypspace^\text{max} \right\rbrace}(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \underline{d}(\hypspacef) .
+%         \end{equation}
+%         %\comm{Esta primera desigualdad creo que no está bien}
+%         \item $ d_\hypspacef(\ntasks) \geq \floor*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $: \\
+%         If $\mathcal{X}^{\overline{d}(\hypspacef)}$ is shattered by $\bigcup_{\hypspace \in \hypspacef} \hypspace$, then the space of ${\ntasks \times \floor*{\frac{\overline{d}(\hypspacef)}{T}} }$ matrices $\mymat{x}$, $\mathcal{X}^{\ntasks \times \overline{d}(\hypspacef)}$, is shattered by $\bigcup_{\hypspace \in \hypspacef} \hypspace$  and therefore 
+%         $ d_\hypspacef(\ntasks) = \max_{m: \Pi_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m \geq \floor*{\frac{\overline{d}(\hypspacef)}{T}}.$
         
-        \item  $ d_\hypspacef(\ntasks) \leq \overline{d}(\hypspacef)$: \\
-        The space 
-        $\Xspace^{\ntasks \times d_\hypspacef(\ntasks)}$ is shattered by $\hypspacef$. 
-        Taking, without loss of generality, the first row of such matrices $X \in \Xspace^{\ntasks \times d_\hypspacef(\ntasks)}$; 
-        then, the space of sequences with length $d_\hypspacef(\ntasks)$ is shattered by $\bigcup_{\hypspace \in \hypspacef}$, and thus, $\overline{d}(\hypspacef) \geq d_\hypspacef(\ntasks)$.
-        % \begin{equation}
-        %     \nonumber
-        %     \hypspace^\cup_{\vert \mymat{x}} = \set{\begin{pmatrix}
-        %         \hypf_1{(x_1^1)} & \ldots & \hypf_\npertask{(x_\npertask^1)} \\
-        %         \vdots & \ddots & \vdots \\
-        %         \hypf_{(\ntasks-1)m+1}{(x_1^\ntasks)} & \ldots & \hypf_{\ntasks \npertask}{(x_\npertask^\ntasks)} \\
-        %     \end{pmatrix}, \hypf_1, \ldots, \hypf_\npertask, \ldots, \hypf_{\ntasks \npertask} \in \hypspace} ,
-        % \end{equation}
-        % then $\hypspace_{\vert \mymat{x}} \subset \hypspace^\cup_{\vert \mymat{x}}$, and consecuently, defining the corresponding family of such sets as
-        % \begin{equation}
-        %     \nonumber
-        %     \hypspacef^\cup_{\vert \mymat{x}} = \bigcup_{\hypspace \in \hypspacef}  \hypspace^\cup_{\vert \mymat{x}},
-        % \end{equation}
-        % we have that $\hypspacef_{\vert \mymat{x}} \subset \hypspacef^\cup_{\vert \mymat{x}}$.
-        % For each $\ntasks, \npertask \geq 0$ define also
-        % \begin{equation}
-        %     \nonumber
-        %     \Pi^\cup_\hypspacef(\ntasks, \npertask) = \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef^\cup_{\vert \mymat{x}} },
-        % \end{equation}
-        % and 
-        % \begin{align}
-        %     d^\cup_\hypspacef(\ntasks) &= \max_{m: \Pi^\cup_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m . \nonumber 
-        % \end{align}
-        % and then $\Pi^\cup_\hypspacef(\ntasks, \npertask) \geq \Pi_\hypspacef(\ntasks, \npertask)$ for all $T, m \geq 0$.
+%         \item  $ d_\hypspacef(\ntasks) \leq \overline{d}(\hypspacef)$: \\
+%         The space 
+%         $\Xspace^{\ntasks \times d_\hypspacef(\ntasks)}$ is shattered by $\hypspacef$. 
+%         Taking, without loss of generality, the first row of such matrices $X \in \Xspace^{\ntasks \times d_\hypspacef(\ntasks)}$; 
+%         then, the space of sequences with length $d_\hypspacef(\ntasks)$ is shattered by $\bigcup_{\hypspace \in \hypspacef}$, and thus, $\overline{d}(\hypspacef) \geq d_\hypspacef(\ntasks)$.
+%         % \begin{equation}
+%         %     \nonumber
+%         %     \hypspace^\cup_{\vert \mymat{x}} = \set{\begin{pmatrix}
+%         %         \hypf_1{(x_1^1)} & \ldots & \hypf_\npertask{(x_\npertask^1)} \\
+%         %         \vdots & \ddots & \vdots \\
+%         %         \hypf_{(\ntasks-1)m+1}{(x_1^\ntasks)} & \ldots & \hypf_{\ntasks \npertask}{(x_\npertask^\ntasks)} \\
+%         %     \end{pmatrix}, \hypf_1, \ldots, \hypf_\npertask, \ldots, \hypf_{\ntasks \npertask} \in \hypspace} ,
+%         % \end{equation}
+%         % then $\hypspace_{\vert \mymat{x}} \subset \hypspace^\cup_{\vert \mymat{x}}$, and consecuently, defining the corresponding family of such sets as
+%         % \begin{equation}
+%         %     \nonumber
+%         %     \hypspacef^\cup_{\vert \mymat{x}} = \bigcup_{\hypspace \in \hypspacef}  \hypspace^\cup_{\vert \mymat{x}},
+%         % \end{equation}
+%         % we have that $\hypspacef_{\vert \mymat{x}} \subset \hypspacef^\cup_{\vert \mymat{x}}$.
+%         % For each $\ntasks, \npertask \geq 0$ define also
+%         % \begin{equation}
+%         %     \nonumber
+%         %     \Pi^\cup_\hypspacef(\ntasks, \npertask) = \max_{\mymat{x} \in \Xspace^{\ntasks \times \npertask}} \cardinal{ \hypspacef^\cup_{\vert \mymat{x}} },
+%         % \end{equation}
+%         % and 
+%         % \begin{align}
+%         %     d^\cup_\hypspacef(\ntasks) &= \max_{m: \Pi^\cup_\hypspacef(\ntasks, \npertask) = 2^{\ntasks \npertask}} m . \nonumber 
+%         % \end{align}
+%         % and then $\Pi^\cup_\hypspacef(\ntasks, \npertask) \geq \Pi_\hypspacef(\ntasks, \npertask)$ for all $T, m \geq 0$.
 
-        % We prove the stronger result $ d_\hypspacef(\ntasks) \leq \ceil*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $. Suppose that $ d_\hypspacef(\ntasks) > \ceil*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $, then there exists a $\ntasks \times d_\hypspacef(\ntasks)$ matrix that is shattered by $\hypspacef^1$, then, $\vcdim{\hypspacef^1} \geq \ntasks  d_\hypspacef(\ntasks) > \overline{d}(\hypspacef)$, which is a contradiction.
+%         % We prove the stronger result $ d_\hypspacef(\ntasks) \leq \ceil*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $. Suppose that $ d_\hypspacef(\ntasks) > \ceil*{\frac{\overline{d}(\hypspacef)}{\ntasks}} $, then there exists a $\ntasks \times d_\hypspacef(\ntasks)$ matrix that is shattered by $\hypspacef^1$, then, $\vcdim{\hypspacef^1} \geq \ntasks  d_\hypspacef(\ntasks) > \overline{d}(\hypspacef)$, which is a contradiction.
 
-    \end{enumerate}
+%     \end{enumerate}
 
 
 % Look at Ben-David version
 Now we can state the relevant result expressed in~\citet[Corollary~13]{baxter2000model}.
 \begin{theorem}\label{th:baxter_vcdim}
-    Given a sequence $\bprobseq = (P_1, \ldots, P_\ntasks)$ on $(\Xspace \times \set{0, 1})^\ntasks$, and a sample $\bsample$ from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of Boolean hypothesis $\hypf_i \in \hypspace$. Then for every $\epsilon > 0$ and $0 < \nu < 1$
+    Let $\bprobseq = (P_1, \ldots, P_\ntasks)$ be a sequence on $(\Xspace \times \set{0, 1})^\ntasks$, and a let $\bsample$ be a sample from this distribution. Consider also a sequence $\myvec{\hypf} = (\hypf_1, \ldots, \hypf_\ntasks)$ of Boolean hypothesis $\hypf_i \in \hypspace$. Then for every $\epsilon > 0$ and $0 < \nu < 1$
 % \begin{equation}
 %     \nonumber
 %     \bexprisk(\myvec{\hypf}) \leq \bemprisk(\myvec{\hypf}) + \epsilon,
@@ -504,8 +528,8 @@ with probability $1 - \eta$ given that the number of samples per task verifies
     \npertask \geq \frac{88}{\epsilon^2} \left[2 d_\hypspacef(\ntasks) \log \frac{22}{\epsilon} + \frac{1}{\ntasks}\log\frac{4}{\eta} \right] .
 \end{equation}
 \end{theorem}
-Here, since $d_\hypspacef(\ntasks) \geq d_\hypspacef(\ntasks+1)$, it is easy to see that as the number of task $\ntasks$ increases, the number of examples needed per task can decrease. 
-Moreover, as shown in~\cite[Theorem~14]{baxter2000model}, if this bound on $\npertask$ is not fulfilled, then, for any $\epsilon > 0$, we can always find a sequence of distributions $\bprobseq$ such that
+Here, since $d_\hypspacef(\ntasks) \geq d_\hypspacef(\ntasks+1)$, it is easy to see that as the number of tasks $\ntasks$ increases, the number of examples needed per task can decrease. 
+Moreover, as shown in~\citet[Theorem~14]{baxter2000model}, if this bound on $\npertask$ is not fulfilled, then, for any $\epsilon > 0$, we can always find a sequence of distributions $\bprobseq$ such that
 \begin{equation}
     \nonumber
     \inf_{\hypf \in \hypspace} \bemprisk(\myvec{\hypf}) > \inf_{\hypf \in \hypspace} \risk_{\bprobseq}(\myvec{\hypf}) + \epsilon .
@@ -525,16 +549,16 @@ With these results we can see that the condition~\eqref{eq:bound_npertask_genvcd
 % Baxter gives the foundation for a theoretical work of a framework where the tasks share a common learning bias...
 Using the work of~\cite{baxter2000model} as the foundation, several important notions and results are presented in~\cite{Ben-DavidB08} for Boolean hypothesis functions defined over $\Xspace \times \set{0, 1}$.
 % task relatedness
-One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned, that is the hypothesis of all tasks are elements of the same hypothesis space $\hypspace$, and the bias learning consists on selecting the best $\hypspace$ from a family of hypothesis spaces $\hypspacef$. In~\cite{Ben-DavidB08}, nevertheless, a precise mathematical definition for task relatedness is given.
+One of the main contributions of this work is a notion of task relatedness. In~\cite{baxter2000model} the tasks are related by sharing a common inductive bias that can be learned, that is, the hypothesis of all tasks are elements of the same hypothesis space $\hypspace$, and the bias learning consists on selecting the best $\hypspace$ from a family of hypothesis spaces $\hypspacef$. In~\cite{Ben-DavidB08}, nevertheless, a precise mathematical definition for task relatedness is given.
 % task individual risks
 The other important contribution is the focus on the individual risk of each task. In~\cite{baxter2000model} all the results are given for the \acrshort{mt} empirical and expected risks, which are an average of the risks of each task. However, bounding this average does not establish a sharp bound of the risk of each particular task. This is specially relevant if we are in a transfer learning scenario, where there is a target task that we want to solve and the remaining tasks can be seen as an aid to improve the performance in the target.
 
 % F-related tasks
 %\subsubsection*{A Notion of Task Relatedness: $\frelset$-Related Tasks}
-The main concept for the theory developed in~\cite{Ben-DavidB08} is a set $\frelset$ of transformations $\frelf: \Xspace \to \Xspace$ that somehow connect the distributions of different tasks. We say that a set of tasks with distributions $P_1, \ldots, P_\ntasks$ are $\frelset$-related if there exists a probability distribution $\distf$ over $\Xspace \times \set{0, 1}$ such that for each task there exists some $\frelf_i \in \frelset$ that verifies $P_i = \frelf_i(\distf)$.
+The main concept for the theory developed in~\cite{Ben-DavidB08} is a set $\frelset$ of transformations $\frelf: \Xspace \to \Xspace$ that somehow connect the distributions of different tasks. We say that a set of tasks with distributions $P_1, \ldots, P_\ntasks$ are $\frelset$-related if there exists a probability distribution $\distf$ over $\Xspace \times \set{0, 1}$ such that for each task there exists some $\frelf_i \in \frelset$ that verifies $P_i = \frelf_i[\distf]$.
 
 \begin{definition}[$\frelset$-related task]\label{def:frel_tasks}
-    Consider a measurable space $(\Xspace, \mathcal{A})$ and the corresponding measurable product space $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, where $\powerset{\Omega}$ is the powerset of set $\Omega$. Consider a probability distribution $P$ over this product space and a function $\frelf: \Xspace \to \Xspace$, then we define the distribution $\frel{P}$ such that for any $S \in \mathcal{A}$,
+    Consider a measurable space $(\Xspace, \mathcal{A})$ and the corresponding measurable product space $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, where $\powerset{\Omega}$ is the powerset of set $\Omega$. Consider a probability distribution $P$ over this product space and a function $\frelf: \Xspace \to \Xspace$, then we define the distribution $\frel{P}$ such that for any $S \in \mathcal{A} \times \powerset{\set{0, 1}}$,
     $$ \frel{P}(S) = P(\set{(f(x), b), (x, b) \in S }).$$
     %
     Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$ that is a group under function composition, and let $P_1, P_2$ be distributions over $(\Xspace \times \set{0, 1}, \mathcal{A} \times \powerset{\set{0, 1}})$, then the distributions $P_1, P_2$ are $\frelset$-related if $\frel{P_1}= P_2$ or $\frel{P_2} = P_1$ for some $\frelf \in \frelset$.
@@ -561,7 +585,7 @@ Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tas
     \item Select the best hypothesis class $\equivclass{\hypf^\frelset} \in \hypspace_\frelset$:
     \begin{equation}
         \label{eq:first_stage}
-        \equivclass{\hypf^\frelset} = \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) ,
+        \equivclass{\hypf^\frelset} = \min_{\equivclass{\hypf} \in \hypspace_\frelset} \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) .
     \end{equation}
     \item Select the best hypothesis $h^\diamond$ for the target task (without loss of generality, consider that the target task is the first one):
     \begin{equation}
@@ -570,7 +594,12 @@ Consider the samples $\sample_1, \ldots, \sample_\ntasks$ from $T$ different tas
     \end{equation}
 \end{enumerate}
 
-For example, consider the handwritten digits recognition problem; we might integrate $T$ different datasets designed in different conditions. Each dataset has been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generates a different bias for the dataset. However, there exists a probability for ``pure'' digits, e.g., the pixels of digit one have a higher probability of being black around a line in the middle of the picture than in the sides. This ``pure'' probability distribution $P_0$ and all the distributions $P_1, \ldots, P_T$ from which our datasets have been sampled might be $\frelset$-related among them and with $P$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, that is the step 1 above, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
+For example, consider the handwritten digits recognition problem; we might integrate $T$ different datasets designed in different conditions. Each dataset has been created using certain conditions of light and some specific scanner for getting the images. Even different pens or pencils might be influential in the stroke of the numbers. All these conditions are the $\frelset$ transformations, and each $\frelf \in \frelset$ generates a different bias for the dataset. However, there exists a probability for ``pure'' digits, e.g., the pixels of digit one have a higher probability of being black around a line in the middle of the picture than in the sides. This ``pure'' probability distribution $P$ and all the distributions $P_1, \ldots, P_T$, from which our datasets have been sampled might be $\frelset$-related among them and with $P$. If we first determine the $\frelset$-equivalent class of hypothesis $\equivclass{\hypf}$ suited for digit recognition in the first stage, that is the step 1 above, then it will be easier to select $\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}$ for each dataset in the second one.
+
+%
+With this \acrshort{mt} \acrshort{erm} the transfer learning between tasks can be found in the selection of the hypothesis class $\equivclass{\hypf^\frelset}$; this is a bias learning problem where a hypothesis space that is optimal for all tasks, $\equivclass{\hypf^\frelset}$, is selected in the first stage. Next, from this space the hypothesis optimal for the target task is taken.
+%
+We will see below how this strategy can improve the learning process; in short, with \acrshort{mt} \acrshort{erm} the bound for the difference between the expected and empirical risks can be tighter than that obtained with standard \acrshort{erm}. 
 
 
 % Results for F-related tasks (Theorems 2, 3)
@@ -579,7 +608,7 @@ For example, consider the handwritten digits recognition problem; we might integ
 % Relation with Baxter work
 The results of Theorem~\ref{th:baxter_vcdim} can be applied to the hypothesis quotient space of equivalent classes $\hypspace_\frelset$. However, we first need the following result.
 %
-Let $P_1, P_2$ be $\frelset$-related distributions, then it can be proved~\cite[Lemma~2]{Ben-DavidB08} that
+Let $P_1, P_2$ be $\frelset$-related distributions; then, for any hypothesis space $\hypspace$, it can be proved~\cite[Lemma~2]{Ben-DavidB08} that
 \begin{equation}
     \label{eq:ben-david_lemma2}
     \inf_{\hypf \in \hypspace} \risk_{P_1}(\hypf) = \inf_{\hypf \in \hypspace} \risk_{P_2}(\hypf).
@@ -588,7 +617,7 @@ This indicates that the the expected risk is invariant under transformations of 
 Now, one of the main results in~\citet[Theorem~2]{baxter2000model} can be given.
 \begin{theorem}\label{th:ben-david_th2}
     Let $\frelset$ be a set of transformations $\frelf: \Xspace \to \Xspace$ that is a group under function composition. Let $\hypspace$ be a hypothesis space so that $\frelset$ acts as a group over $\hypspace$, and consider the quotient space $\hypspace_\frelset = \set{\equivclass{\hypf}, \hypf \in \hypspace}$.
-    Consider $\bprobseq = (P_1, \ldots, P_\ntasks)$ a sequence of $\frelset$-related distributions over $\Xspace \times \set{0, 1}$, and $\bsample = (\sample_1, \ldots, \sample_\ntasks)$ the corresponding sequence of samples  where $\sample_i$ is sampled using $P_i$, then for every $\equivclass{\hypf} \in \hypspace_\frelset$ and $\epsilon> 0$ and $0 < \eta < 1$, 
+    Consider $\bprobseq = (P_1, \ldots, P_\ntasks)$ a sequence of $\frelset$-related distributions over $\Xspace \times \set{0, 1}$, and $\bsample = (\sample_1, \ldots, \sample_\ntasks)$ the corresponding sequence of samples  where $\sample_i$ is sampled using $P_i$. Then for every $\equivclass{\hypf} \in \hypspace_\frelset$ and $\epsilon> 0$ and $0 < \eta < 1$, 
     \begin{equation}
         \nonumber
         \abs{\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) - \inf_{\hypf' \in \equivclass{\hypf}}\risk_{P_1}(\hypf')}  \leq \epsilon
@@ -603,10 +632,9 @@ Now, one of the main results in~\citet[Theorem~2]{baxter2000model} can be given.
 Note that, in contrast to Theorem~\ref{th:baxter_vcdim}, this result bounds the expected risk of a single task, not the average risk. This is the consequence of applying Theorem~\ref{th:baxter_vcdim} and replacing the average empirical error using the result from~\eqref{eq:ben-david_lemma2} for $\frelset$-related tasks.
 Also observe that here the hypothesis space family used is the quotient space $\hypspace_\frelset$, and the \acrshort{vc}-dimension of such family, namely $d_{\hypspace_\frelset}(\ntasks)$, is used.
 %
-Using this result, a bound for learners using the \acrshort{mt} \acrshort{erm} principle is given~\cite[Theorem~3]{Ben-DavidB08}
+Using this result, a bound for learners using the \acrshort{mt} \acrshort{erm} principle is given~\cite[Theorem~3]{Ben-DavidB08}. 
 \begin{theorem}\label{th:ben-david_th3}
-    Consider $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequence of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Consider $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$.
-    Let $h^\diamond$ be the hypothesis selected using the \acrshort{mt} \acrshort{erm} principle. Then, for every $\epsilon_1, \epsilon_2 > 0$ and $0 < \eta < 1$:
+    Define $\frelset$ and $\hypspace$ as in the previous theorem. Consider also the previous sequence of distributions $(P_1, \ldots, P_\ntasks)$ and corresponding samples $(\sample_1, \ldots, \sample_\ntasks)$. Let $\underline{d}(\hypspace_\frelset) = \max_{\hypf \in \hypspace} \vcdim{\equivclass{\hypf}}$, and $h^\diamond$ be the hypothesis selected using the \acrshort{mt} \acrshort{erm} principle. Then, for every $\epsilon_1, \epsilon_2 > 0$ and $0 < \eta < 1$:
     \begin{equation}
         \nonumber
         {\hat{\risk}_{\sample_1}(\hypf^\diamond)  \leq \inf_{\hypf' \in \hypspace}\risk_{P_1}(\hypf')} + 2(\epsilon_1 + \epsilon_2)
@@ -636,7 +664,7 @@ According to Theorem~\ref{th:ben-david_th2}, with probability greater than $1 - 
     \nonumber
     {\inf_{\hypf' \in \equivclass{\hypf^\frelset}}\risk_{P_1}(\hypf')} \leq \inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^\frelset}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r)  + \epsilon_1,
 \end{equation}
-and also,
+and also applying Theorem~\ref{th:ben-david_th2}, with probability greater than $1 - \eta/2$,
 \begin{equation}
     \nonumber
     {\inf_{\hypf_1, \ldots, \hypf_\ntasks \in \equivclass{\hypf^*}} \frac{1}{\ntasks} \sum_{r=1}^\ntasks \hat{\risk}_{\sample_r}(\hypf_r) \leq \inf_{\hypf' \in \equivclass{\hypf^*}}\risk_{P_1}(\hypf')}  + \epsilon_1.
@@ -682,18 +710,19 @@ That is, with the inequality~\eqref{eq:ineq_relatedtasks}, we can bound $m_1$ as
 %
 
 The advantage of using multiple tasks is then illustrated in this bound, and it will be defined by the gap between $\vcdim{\hypspace}$ and $\underline{d}(\hypspace_\frelset)$. 
-Observe that using standard \acrshort{erm} with no information about the tasks relations, a learner would have to select the hipothesis from the entire space $\hypspace$, however, in this \acrshort{mt} \acrshort{erm} we restrict our search to the space $\equivclass{\hypf^\frelset}$.
+Observe that using standard \acrshort{erm} with no information about the tasks relations, a learner would have to select the hipothesis from the entire space $\hypspace$; however, in this \acrshort{mt} \acrshort{erm} we restrict our search to the space $\equivclass{\hypf^\frelset}$.
 If $\underline{d}(\hypspace_\frelset)$ is smaller than $\vcdim{\hypspace}$, the number of samples needed to solve the target task will also be smaller.
 % Also, the sample complexity of the rest of tasks is given by $d_{\hypspace_\frelset}(\ntasks)$.
 
 That is, \acrshort{mtl} allows to select a subset of hypotheses from which a learner can use the \acrshort{erm} principle. In this stage, the sample complexity is controlled by the generalized \acrshort{vc}-dimension of the set of equivalent classes of hypotheses. Once the best equivalent class has been selected, 
-the \acrshort{vc}-dimension of this subset, compared to the \acrshort{vc}-dimension of the whole set of hypotheses, is what marks the difference between single task and \acrshort{mtl}.
+the \acrshort{vc}-dimension of this subset, compared to the \acrshort{vc}-dimension of the entire set of hypotheses, is what marks the difference between single task and \acrshort{mtl}.
 
 % Analysis of generalized VCdim
 %\subsubsection*{Analysis of generalized \acrshort{vc}-dimension with $\frelset$-related tasks}
-As we have seen in Theorem~\ref{th:ben-david_th3}, the definitions $\vcdim{\hypspace}, \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$, defined in Definition~\ref{def:gen_vcdim}, are crucial for stating the advantage of \acrshort{mtl} over \acrshort{stl}. 
+As we have seen in Theorem~\ref{th:ben-david_th3}, the definitions $\vcdim{\hypspace},\; \underline{d}(\hypspace_\frelset)$ and $d_{\hypspace_\frelset}(\ntasks)$, given in Definition~\ref{def:gen_vcdim}, are crucial for stating the advantage of \acrshort{mtl} over \acrshort{stl}. 
 To understand better how these concepts interact, Ben-David \emph{et al.} gave some theoretical results.
-Recall that, given a hypothesis space $\hypspace$, we have defined $\hypspace_\frelset$ as the family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$, then
+Recall that, given a hypothesis space $\hypspace$, we have defined $\hypspace_\frelset$ as the family of hypothesis spaces composed by the hypothesis spaces $\equivclass{\hypf}, \hypf \in \hypspace$.
+That is, our hypothesis space family is now $\hypspacef = \hypspace_\frelset$, and the elements of this family are the hypothesis spaces $\hypspace = \equivclass{\hypf}$. Therefore, the definitions of Theorem~\ref{th:ben-david_th3} can be expressed in this case as:
 \begin{align*}
     \nonumber
     d_{\hypspace_\frelset}(\ntasks) &= \max_{\set{\npertask ,\Pi_{\hypspace_\frelset} = 2^{\ntasks \npertask}} } \npertask, \\
@@ -705,7 +734,7 @@ Using the result from~\eqref{eq:genvc_inequalities} we observe that
     \nonumber
     \underline{d}(\hypspace_\frelset) \leq d_{\hypspace_\frelset}(\ntasks) \leq \vcdim{\hypspace} .
 \end{equation}
-That is, the best we can hope when bounding $m_r$ as presented in~\eqref{eq:ben-david_th3_ineq2} of Theorem~\ref{th:ben-david_th3} is $\underline{d}(\hypspace_\frelset) = d_{\hypspace_\frelset}(\ntasks)$. 
+That is, the best we can hope when bounding $m_r$ as given in~\eqref{eq:ben-david_th3_ineq2} of Theorem~\ref{th:ben-david_th3} is $\underline{d}(\hypspace_\frelset) = d_{\hypspace_\frelset}(\ntasks)$. 
 Ben-David \emph{et al.} presented evidence that, with some restrictions on $\hypspace$, this lower bound can be achieved~\cite[Theorem~4]{Ben-DavidB08}.
 \begin{theorem}
     If the support of $\hypf$ is bounded, i.e. $ \cardinal{\set{x \in \Xspace,  \hypf(x) = 1}} < M$, for all $\hypf \in \hypspace$, then there exists $\ntasks_0$ such that for all $\ntasks>\ntasks_0$
@@ -724,38 +753,38 @@ The following result~\cite[Theorem~6]{Ben-DavidB08} shows this.
         d_{\hypspace_\frelset}(\ntasks) \leq 2 \log(\cardinal{\frelset}) .
     \end{equation}
 \end{theorem}
-This inequality indicates that, given a finite set of transformations $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore, the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the \acrshort{mt} bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$, is a better one in these cases. 
+This inequality indicates that, given a finite set of transformations $\frelset$, there are scenarios when $\vcdim{\hypspace}$ is arbitrarily large but $d_{\hypspace_\frelset}(\ntasks)$ is bounded, and therefore the right-hand side of inequality~\eqref{eq:ben-david_th3_ineq2} is also bounded. That is, the \acrshort{mt} bound, which substitutes $\vcdim{\hypspace}$ by $d_{\hypspace_\frelset}(\ntasks)$, is a better one in these cases. 
 
 % \subsubsection*{Conclusion}
 % \comm{TODO?}
 
 
-\subsection{Other Results for Multi-Task Learning}
-%\comm{TODO: Completar después de escribir capítulo 2. Usar discusión de cotas en Maurer \emph{et al.} 2016 para estructurar la subsección.}
-The work of~\cite{baxter2000model} set the foundations for the theoretical analysis of \acrshort{mtl} and \acrshort{ltl}. 
-In this work, an \acrshort{mtl} extension to the \acrshort{vc}-dimension is given, and it is used to develop some results bounding the difference between the \acrshort{mt} empirical and expected risks,
-\begin{equation}
-    \nonumber
-    \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})} ,
-\end{equation}
-for any sequence of hypothesis $\myvec{\hypf} \in \hypspace^\ntasks$, see Theorem~\ref{th:baxter_vcdim}. This is a necessary condition for the consistency of \acrshort{mt} Learners, but not a sufficient one.
-Then, Ben-David \emph{et al.} define a notion of task relatedness~\citep{Ben-DavidS03,Ben-DavidB08}, see Definition~\ref{def:frel_tasks}. Using this notion and building an appropiate hypothesis space $\hypspace = \equivclass{h}$, they bound the \emph{excess risk} of an Empirical \acrshort{mt} Learner, that is, the difference between the best empirical risk, achieved by such Learner, and the best possible expected risk (Theorem~\ref{th:ben-david_th3}):
-\begin{equation}
-    \nonumber
-    \abs{\inf_{\myvec{\hypf} \in \hypspace^\ntasks} \risk_{\bprobseq}(\myvec{\hypf}) - \inf_{\myvec{\hypf} \in \hypspace^\ntasks} \bemprisk(\myvec{\hypf})} .
-\end{equation}
-Moreover, using the task relatedness definition, not only the \acrshort{mt} average excess risk is bounded, but the individual excess risk of each task (Theorem~\ref{th:ben-david_th6}).
+% \subsection{Other Results for Multi-Task Learning}
+% %\comm{TODO: Completar después de escribir capítulo 2. Usar discusión de cotas en Maurer \emph{et al.} 2016 para estructurar la subsección.}
+% The work of~\cite{baxter2000model} set the foundations for the theoretical analysis of \acrshort{mtl} and \acrshort{ltl}. 
+% In this work, an \acrshort{mtl} extension to the \acrshort{vc}-dimension is given, and it is used to develop some results bounding the difference between the \acrshort{mt} empirical and expected risks,
+% \begin{equation}
+%     \nonumber
+%     \abs{\risk_{\bprobseq}(\myvec{\hypf}) - \bemprisk(\myvec{\hypf})} ,
+% \end{equation}
+% for any sequence of hypothesis $\myvec{\hypf} \in \hypspace^\ntasks$, see Theorem~\ref{th:baxter_vcdim}. This is a necessary condition for the consistency of \acrshort{mt} Learners, but not a sufficient one.
+% Then, Ben-David \emph{et al.} define a notion of task relatedness~\citep{Ben-DavidS03,Ben-DavidB08}, see Definition~\ref{def:frel_tasks}. Using this notion and building an appropiate hypothesis space $\hypspace = \equivclass{h}$, they bound the \emph{excess risk} of an Empirical \acrshort{mt} Learner, that is, the difference between the best empirical risk, achieved by such Learner, and the best possible expected risk (Theorem~\ref{th:ben-david_th3}):
+% \begin{equation}
+%     \nonumber
+%     \abs{\inf_{\myvec{\hypf} \in \hypspace^\ntasks} \risk_{\bprobseq}(\myvec{\hypf}) - \inf_{\myvec{\hypf} \in \hypspace^\ntasks} \bemprisk(\myvec{\hypf})} .
+% \end{equation}
+% Moreover, using the task relatedness definition, not only the \acrshort{mt} average excess risk is bounded, but the individual excess risk of each task (Theorem~\ref{th:ben-david_th6}).
 
-%
-The works discussed until this point use the \acrshort{vc}-dimension, and the corresponding extensions to the \acrshort{mtl} framework expressed in Definition~\ref{def:gen_vcdim}, to bound the differences between empirical and expected risks.
-%
-However, in~\cite{AndoZ05}, the authors rely on another notion  of complexity, the Rademacher Complexity~\citep{BartlettM02}, which measures how well a family of hypothesis can approximate random noise. The Rademacher complexity, unlike the \acrshort{vc}-dimension, is distribution-dependent. That is, the \acrshort{vc}-dimension only uses properties of the hypothesis space $\hypspace$, while the Rademacher complexity also depends on the data distribution $\distf$. 
-%In first place, they use two pseudo-metrics different to those of Definitions~\ref{def:sample_pseudometric} or~\ref{def:dist_pseudometric} and they define the corresponding covering numbers. Then they bound the covering numbers of the set of hypotheses used in~\eqref{eq:mtl_struct_learn} using the Rademacher complexity of those sets of functions. 
-%However, this bounds are also dependent on the feature dimension, which make them unfeasible for kernel extensions.
-%To control the complexity or \acrshort{vc}-dimension of the hypothesis space regularization is used, so bounds for regularized methods are also of interest.
-Other theoretical works obtain bounds for linear feature extractor methods for \acrshort{mtl}, such as~\cite{CavallantiCG10,Maurer06, Maurer06rad}.
-In the more general case of \acrshort{ltl}, some improved bounds are found for specific cases like the trace norm regularized \acrshort{mtl} models~\citep{MaurerPR13}.
-Then, in~\cite{MaurerPR16} bounds for a wide class of \acrshort{mtl} models based on feature learning are given, in both an \acrshort{mtl} and an \acrshort{ltl} setting. These bounds are not dependent on the data dimensions, as other bounds for linear models, and use an approach based on empirical process theory instead of the generalized \acrshort{vc}-dimension to derive them.
+% %
+% The works discussed until this point use the \acrshort{vc}-dimension, and the corresponding extensions to the \acrshort{mtl} framework expressed in Definition~\ref{def:gen_vcdim}, to bound the differences between empirical and expected risks.
+% %
+% However, in~\cite{AndoZ05}, the authors rely on another notion  of complexity, the Rademacher Complexity~\citep{BartlettM02}, which measures how well a family of hypothesis can approximate random noise. The Rademacher complexity, unlike the \acrshort{vc}-dimension, is distribution-dependent. That is, the \acrshort{vc}-dimension only uses properties of the hypothesis space $\hypspace$, while the Rademacher complexity also depends on the data distribution $\distf$. 
+% %In first place, they use two pseudometrics different to those of Definitions~\ref{def:sample_pseudometric} or~\ref{def:dist_pseudometric} and they define the corresponding covering numbers. Then they bound the covering numbers of the set of hypotheses used in~\eqref{eq:mtl_struct_learn} using the Rademacher complexity of those sets of functions. 
+% %However, this bounds are also dependent on the feature dimension, which make them unfeasible for kernel extensions.
+% %To control the complexity or \acrshort{vc}-dimension of the hypothesis space regularization is used, so bounds for regularized methods are also of interest.
+% Other theoretical works obtain bounds for linear feature extractor methods for \acrshort{mtl}, such as~\cite{CavallantiCG10,Maurer06, Maurer06rad}.
+% In the more general case of \acrshort{ltl}, some improved bounds are found for specific cases like the trace norm regularized \acrshort{mtl} models~\citep{MaurerPR13}.
+% Then, in~\cite{MaurerPR16} bounds for a wide class of \acrshort{mtl} models based on feature learning are given, in both an \acrshort{mtl} and an \acrshort{ltl} setting. These bounds are not dependent on the data dimensions, as other bounds for linear models, and use an approach based on empirical process theory instead of the generalized \acrshort{vc}-dimension to derive them.
 
 
 
@@ -779,7 +808,7 @@ Then, in~\cite{MaurerPR16} bounds for a wide class of \acrshort{mtl} models base
 The theory of \acrshort{mtl} serves as motivation and gives some clues on how to use the data of different, related tasks to improve the learning process. However, it is necessary to design specific algorithms that implement mechanisms to exploit the information of multiple tasks.
 In this section a general overview of \acrshort{mtl} methods will be given, categorizing some of the most relevant approaches. 
 %
-Recall that an \acrshort{mtl} sample is
+Recall that in this work we define an \acrshort{mtl} sample as
 $$ \set{(x_i^r, y_i^r) \in \Xspace \times \Yspace; i=1,\ldots, m_r; r=1,\ldots, \ntasks},$$
 where $\ntasks$ is the number of tasks and $m_r$ is the number of examples in task $r$.
 The goal is to find task-specialized hypotheses $h_r$ such that the regularized risk 
@@ -790,18 +819,18 @@ The goal is to find task-specialized hypotheses $h_r$ such that the regularized 
 is minimized, where $\Omega$ is some regularizer of the hypotheses. 
 We propose a taxonomy for \acrshort{mtl} algorithms, which enforce a coupling between tasks, with three main groups: feature-based, parameter-based and combination-based strategies. 
 The feature-based approaches define the hypotheses $h_r$ as the composition of a common feature-building function $f$ and task-specific functions $g_r$, i.e., $h_r(x_i^r) = g_r \circ f(x_i^r)$, where $f$ and $g_r$ can be defined in multiple ways.
-The parameter-based approach is based on enforcing the coupling through the regularization of the parameters of linear models, which are built over some non-learnable features, i.e. $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$.
+The parameter-based approaches consider enforcing the coupling through the regularization of the parameters of linear models, which are built over some non-learnable features, i.e. $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$.
 Finally, the combination based approach uses the combination of a common part and task specific parts, i.e. $h_r(x_i^r) = g(x_i^r) + g_r(x_i^r)$, where $g$ and $g_r$ can be modeled in multiple ways.
 In this section we develop a subsection for each one of these approaches.
 %
-Although most \acrshort{mtl} strategies used in deep learning can be categorized as feature-based, and most kernel methods use parameter-based or combination-based strategies, given the relevance of these models, \acrshort{mtl} with neural networks and \acrshort{mtl} with kernel methods will be treated separately in their specific subsections. 
+Although most \acrshort{mtl} strategies used in deep learning can be categorized as feature-based, and most kernel methods use parameter-based or combination-based strategies, given the relevance of these frameworks, \acrshort{mtl} with neural networks and \acrshort{mtl} with kernel methods will be treated separately in their specific subsections. 
 
 \subsection{Feature-based Multi-Task Learning}\label{subsec:featbased_mtl}
 % feature learning or
 %   Feature transformation (relacion con Deep Learning)
-The feature-based methods try to find a set of features that are useful for all tasks.
+As explained above, the feature-based methods try to find a set of features that are useful for all tasks.
 To do that, a shared feature-building function $f$ is considered, and the hypotheses are then $h_r(x_i^r) = g_r \circ f(x_i^r)$.
-Two main approaches are taken: feature learning, which tries to learn new features from the original ones, and feature-selection, which selects a subset of the original features.
+Two main approaches are taken: feature learning, which tries to learn new features from the original ones, and feature selection, which selects a subset of the original features.
 
 
 
@@ -814,7 +843,7 @@ This is the idea behind the \acrshort{mt} \acrshort{nn} first given in~\cite{Car
 With linear or kernel models, unlike the case with \acrshort{nns}, the function $f$ is modeled as linear combinations of fixed features defined by $\phi$, for example, $f(x_i^r) = (u_1^\intercal \phi(x_i^r), \ldots, u_k^\intercal \phi(x_i^r))$ for some $k \in \naturals_{> 0} $, where $\phi$ is the implicit transformation, which is the identity in the case of linear models. Then, for $r=1, \ldots, \ntasks$, $h_r(x_i^r) = a_r^\intercal  (U^\intercal \phi(x_i^r)) ,$
 where $a_r \in \reals^k$ are the parameters of the linear models $g_r$.
 Observe that, in the linear case, we can describe these models as $h_r(x_i^r) = w_r^\intercal  x_i^r ,$
-with $w_r = \fm{U} a_r$ where $\fm{U} = (u_1, \ldots, u_k)$. 
+with $w_r = \fm{U} a_r$ and $\fm{U} = (u_1, \ldots, u_k)$. 
 % Caruana R. Multitask learning. 1997 (multi-task feedforward NN)
 % \acrshort{mt} feature learning 2006
 % Convex multi-task feature learning 2008^
@@ -916,29 +945,32 @@ It is easy to see that problem~\eqref{eq:convmtl_feat_learning} is a particular 
 In~\cite{Maurer09} some bounds on the excess risks are given for this \acrshort{mt} feature learning method.
 
 %  Learning multiple tasks using manifold regularization. Agarwal
-Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assuming that the task parameters $w_r$ lie in a linear subspace, i.e. $w_r = \fm{U} a_r$, the authors generalize this idea by assuming that the parameter $w_r$ lies in a manifold $\mathcal{M}$. The resultant optimization problem to train the model is
+Another relevant extension is shown in~\cite{AgarwalDG10}, where instead of assuming that the task parameters $w_r$ lie in a linear subspace, i.e. $w_r = \fm{U} a_r$, the authors generalize this idea by assuming that the parameters $w_r$ lie in a manifold $\mathcal{M}$. The resultant optimization problem to train the model is
 \begin{equation}
     \label{eq:mtl_feat_learning_manifold}   
     \begin{aligned}
-        &\argmin_{\mymat{w}, \mathcal{M}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r} + b_r) + \lambda \sum_{r=1}^\ntasks \mathcal{P}_\mathcal{M}(w_r) ,
+        &\argmin_{\mymat{w}, \mathcal{M}, \myvec{b}}  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \mathcal{P}_\mathcal{M}(w_r) ,
     \end{aligned}
 \end{equation}
 where $\mathcal{P}_\mathcal{M}(w_r)$ represents the distance between $w_r$ and its projection on the manifold $\mathcal{M}$. 
-Observe that if we use the definition $w_r = U a_r$ as in~\eqref{eq:mtl_feat_learning}, the manifold corresponding to the linear subspace $\Span(u_1, \ldots, u_k)$ would be at zero distance to $w_r$ for all $r=1, \ldots, \ntasks$.
+Observe that if we use the definition $w_r = U a_r$ as in~\eqref{eq:mtl_feat_learning}, the manifold corresponding to the linear subspace $\Span(u_1, \ldots, u_k)$ would be at zero distance to $w_r$ for all $r=1, \ldots, \ntasks$. Thus, in~\eqref{eq:mtl_feat_learning} we have a hard constraint with a linear manifold and in~\eqref{eq:mtl_feat_learning_manifold} we use a soft constaint with a non-linear manifold.
 Again, an approximation of~\eqref{eq:mtl_feat_learning_manifold} is considered to obtain a convex problem, and it is solved with a two-step optimization algorithm.
 
 % Sparse coding and \acrshort{mtl}. 
 % K-Dimensional Coding Schemes in Hilbert Spaces
 % Sparse coding for multitask and transfer learning Maurer 2013
 % Learning task grouping and overlap in \acrshort{mtl}.
-Other distinct, relevant approach for feature learning is the one described in~\cite{MaurerPR13}, where a sparse-coding method~\citep{MaurerP10} is applied for \acrshort{mtl}. Recall that we use $\dimx$ for the dimension of the orirginal feature space, then the problem presented by Maurer \emph{et al.} is
+Other distinct, relevant approach for feature learning is the one described in~\cite{MaurerPR13}, where a sparse-coding method~\citep{MaurerP10} is applied for \acrshort{mtl}. Recall that we use $\dimx$ for the dimension of the original feature space; then the problem presented by Maurer \emph{et al.} is
     \begin{equation}
         \label{eq:mtl_sparse_coding}
         \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, \infty} +\mu \norm{\mymat{a}}_{1, \infty} .
     \end{equation}
-Here, $\mathcal{D}_k$ is the set of $k$-dimensional dictionaries and every $\mymat{d} \in \mathcal{D}_k$ is a linear map $\mymat{D}: \reals^\dimx \to \rkhs$ for some \acrshort{rkhs} $\rkhs$; in the linear case, where $\rkhs = \reals^d$, the set $\mathcal{D}_k$ is the set of matrices $\reals^{d \times k}$, such that 
+Here, $\mathcal{D}_k$ is a set of $k$-dimensional dictionaries and every $\mymat{d} \in \mathcal{D}_k$ is a linear map $\mymat{D}: \reals^\dimx \to \rkhs$ for some \acrshort{rkhs} $\rkhs$; in the linear case, where $\rkhs = \reals^d$, the set $\mathcal{D}_k$ is the set of matrices $\reals^{d \times k}$, such that 
 $$\underset{d \times T}{\mymat{w}} = \underset{d \times k}{\mymat{D}} \; \underset{k \times T}{\mymat{a}} .$$
-Although~\eqref{eq:mtl_feat_learning} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k$ columns of bounded norm and $k > d$. Also, in problem~\eqref{eq:mtl_feat_learning} non-linear features can be used while problem~\eqref{eq:mtl_sparse_coding} is linear.
+Although~\eqref{eq:mtl_feat_learning} and~\eqref{eq:mtl_sparse_coding} share a similar form, there are crucial differences. The matrix $\mymat{u}$ in~\eqref{eq:mtl_feat_learning} is an orthogonal square matrix, while the matrix $\mymat{d}$ of~\eqref{eq:mtl_sparse_coding} is overcomplete with $k$ columns 
+%of bounded norm
+and $k > d$. 
+Also, in problem~\eqref{eq:mtl_feat_learning} non-linear features can be used, as we will see later when we review \acrshort{mtl} with kernel methods, while problem~\eqref{eq:mtl_sparse_coding} is linear.
 %
 A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{KumarD12} where the idea is the same but the regularizers are the $L_{2, 2}$ (Frobenius) norm for $\mymat{d}$ and the $L_{1, 1}$ norm for $\mymat{a}$:
 \begin{equation}
@@ -954,7 +986,7 @@ The feature selection approaches are also driven by learning a good set of featu
 
 % G. Obozinski, B. Taskar, and M. Jordan, “Multi-task feature selection,” (2006)
 % H. Liu, M. Palatucci, and J. Zhang, “Blockwise coordinate descent  procedures for the multi-task lasso, with applications to neural semantic basis discovery,” in ICML, 2009.
-Most works on \acrshort{mt} Feature Selection use an $L_{p, q}$ regularization of the weights matrix $\mymat{w}$. The first work using this idea is~\cite{obozinski2006multi}, where the authors solve the problem
+Most works on \acrshort{mt} Feature Selection use an $L_{p, q}$ regularization of the weight matrix $\mymat{w}$. The first work using this idea is~\cite{obozinski2006multi}, where the authors solve the problem
 \begin{equation}
     \label{eq:mtl_feat_selection}   
     \begin{aligned}
@@ -964,10 +996,10 @@ Most works on \acrshort{mt} Feature Selection use an $L_{p, q}$ regularization o
 where the $L_{2, 1}$ regularization enforces row sparsity and forces different tasks to share a subset of features by pushing some rows ${w}^i$, which are the weights corresponding to the $i$-th feature, towards zero. In~\cite{LiuPZ09} $L_{\infty, 1}$ regularization is used for the same goal. 
 Then, in~\cite{GongYZ12} this idea is generalized with a capped-$L_{p, 1}$ penalty of $\mymat{W}$, which is defined as
 $ \sum_{i=1}^d \min(\theta, \norm{{w}^i}_p).$
-That is, the parameter $\theta$ enables a more flexible regularization: with small values of $\theta$ the smallest rows of $\fm{W}$ are pushed towards zero since the rows with norms larger than $\theta$ do not dominate the sum. When $\theta$ grows to infinity, this penalty will converge to the standard $L_{p, 1}$ norm.
+That is, the parameter $\theta$ enables a more flexible regularization: with small values of $\theta$, the smallest rows of $\fm{W}$ are pushed towards zero since the rows with norms larger than $\theta$ do not dominate the sum. When $\theta$ grows to infinity, this penalty will converge to the standard $L_{p, 1}$ norm.
 
 %
-In~\cite{LozanoS12} a multi-level lasso selection is presented where the main idea is to decompose each $w_r^i$, that is the $i$-th feature of the $r$-th task, as 
+In~\cite{LozanoS12} a multi-level lasso selection is presented, where the main idea is to decompose each $w_r^i$, that is the $i$-th feature of the $r$-th task, as 
 $w_r^i = \theta^i a_r^i$ 
 and then, using the matrix $\fm{\Theta} = \Diag \left( \theta^1, \ldots, \theta^\dimx \right)$, they define the problem
 \begin{equation}
@@ -977,7 +1009,7 @@ and then, using the matrix $\fm{\Theta} = \Diag \left( \theta^1, \ldots, \theta^
     \end{aligned}
 \end{equation}
 By doing this, the features $i$ such that $\theta^i = 0$ are discarded for all tasks, but the rest may be shared among tasks or not, depending on the values of $a_r^i$.
-Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl_sparse_coding} with $\fm{d}$, the ``feature building'' matrix, being limited to a diagonal matrix since it is acting here as a selection matrix: $${w}_r^\intercal  {x}_i^r = \sum_{i=1}^k a_r^i \left({\theta}_i  {x}_i^r \right) .$$
+Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl_sparse_coding} but with $\fm{d}$, the ``feature building'' matrix, being limited to a diagonal matrix since it is acting here as a selection matrix: $${w}_r^\intercal  {x}_i^r = \sum_{i=1}^k a_r^i \left({\theta}_i  {x}_i^r \right) .$$
 
 % Bayesian approaches
 % 15. Zhang Y, Yeung DY and Xu Q. Probabilistic multi-task feature selection. In:
@@ -988,13 +1020,13 @@ Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl
 % 17. Hern ́andez-Lobato D, Hern ́andez-Lobato JM and Ghahramani Z. A probabilis-
 % tic model for dirty multi-task feature selection. In: Proceedings of the 32nd
 % International Conference on Machine Learning. 2015, 1073–82.
-The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance; and in~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
+The feature selection methods based on $L_{p, 1}$ regularization are shown to be equivalent to a Bayesian approximation with a generalized Gaussian prior in~\cite{ZhangYX10}. Moreover, this approach also allows to find the relationship among tasks and to identify outliers. In~\cite{Hernandez-LobatoH13} a horseshoe prior is used instead to learn feature covariance, and in~\cite{Hernandez-Lobato15} this prior is also used to identify outlier tasks.
 
 
 \subsection{Parameter-based Multi-Task Learning}
-The parameter-based approaches, instead of trying to find a good shared feature space, enforce the coupling through the regularization of the parameters of linear models $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$, where $\phi$ is a fixed, non-learnable transformation. Since we have one vector $w_r$ for each task, we can consider the matrix $\fm{W} = (w_1 \ldots w_\ntasks)$.
+The parameter-based approaches, instead of trying to find a good shared feature space, enforce the coupling through the regularization of the parameters of linear models $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$, where $\phi$ is a fixed, non-learnable transformation. Since we have one vector $w_r$ for each task, we can consider the matrix $\fm{W}$ whose columns are $w_r$ for $r=1, \ldots, \ntasks$.
 % The parameter-based \acrshort{mtl} does not focus on shared sets of features across tasks, instead other types of dependencies among the task like the task-parameters $w_r$, are taken into account. 
-Some approaches rely on the assumption that the \acrshort{mt} weight matrix $\mymat{w}$ has a low-rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the summation of multiple matrices. We summarize each approach below.
+Some approaches rely on the assumption that the \acrshort{mt} weight matrix $\mymat{w}$ has a low-rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the sum of multiple matrices. We summarize each approach below.
 
 \subsubsection{Low-rank approaches}
 % Low-rank
@@ -1012,15 +1044,16 @@ $$ w_r = u_r + \mymat{\Theta}^\intercal v_r,$$
 where $\mymat{\Theta} \in \reals^{k \times \dimx}$ spans a shared low dimensional space, that is $\mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k$ with $k < \dimx$, and $d$ is the dimension of the data. Under this consideration, to train the model it is necessary to solve the problem
 \begin{equation}
     \label{eq:mtl_struct_learn}
-    \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta}^\intercal v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k .
+    \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{u}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r + \mymat{\Theta}^\intercal v_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{u_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k ,
 \end{equation}
+where $\fv{u}^\intercal = (u_1^\intercal, \ldots, u_\ntasks^\intercal)$ and analogously for $\fv{v}$.
 Observe that this problem shares some similarities with~\eqref{eq:mtl_feat_learning}. However, this is a more flexible approach, since the vectors $u_r$ allow for deviations of the task parameters from the shared subspace.
 Problem~\eqref{eq:mtl_struct_learn} can be reformulated as
 \begin{equation}
     \label{eq:mtl_struct_learn_ref}
-    \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k ,
+    \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal = \mymat{i}_k .
 \end{equation}
-where $\fv{u}^\intercal = (v_1^\intercal, \ldots, v_\ntasks^\intercal)$ and analogously for $\fv{v}$. Here the terms $\norm{w_r - \mymat{\Theta}^\intercal v_r}^2$ enforce the similarity across tasks by bringing them closer to the shared subspace. 
+Here the terms $\norm{w_r - \mymat{\Theta}^\intercal v_r}^2$ enforce the similarity across tasks by bringing them closer to the shared subspace. 
 Problem~\eqref{eq:mtl_struct_learn_ref} is solved using a two-step optimization, iterating between minimizing in $\{\mymat{\Theta}, \myvec{v}\}$ and minimizing in $\myvec{w}$. 
 %The authors solve this problem by performing an iterated alternating procedure: optimizing $(\Theta, \fv{v})$ and fixing $u$, or viceversa, until convergence.
 In~\cite{ChenTLY09} the following extension is proposed:
@@ -1028,25 +1061,27 @@ In~\cite{ChenTLY09} the following extension is proposed:
     \label{eq:mtl_struct_learn_frob}
     \argmin_{\mymat{\Theta} \in \reals^{k \times \dimx}, \myvec{w}, \myvec{v}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \sum_{r=1}^\ntasks \norm{w_r - \mymat{\Theta}^\intercal v_r}^2 + \mu \sum_{r=1}^\ntasks \norm{w_r}^2 \text{ s.t. } \mymat{\Theta} \mymat{\Theta}^\intercal  = \mymat{i}_k .
 \end{equation}
-Moreover it is shown that~\eqref{eq:mtl_struct_learn_frob}, when relaxing the orthogonality constraint, can be expressed as a convex minimization problem.
+Moreover, it is shown that~\eqref{eq:mtl_struct_learn_frob}, when relaxing the orthogonality constraint, can be expressed as a convex minimization problem.
 %
 
-A different approach relies on the use of the trace norm of the matrix $\mymat{w}$. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ are the eigenvalues of $\mymat{w}$, and thus, forcing $\mymat{w}$ to be low-rank.
+A different approach relies on the use of the trace norm of the matrix $\mymat{w}$. This norm penalizes $\sum_{i=1}^d {\lambda_i(\mymat{w})}^2$, where $\lambda_i(\mymat{w})$ are the eigenvalues of $\mymat{w}$, and thus, indirectly forcing $\mymat{w}$ to be low-rank.
 In the work of~\cite{PongTJY10}, new formulations for problems with this trace norm penalty and a primal--dual method for solving the problem are developed.
 A modification of the trace norm can be found in~\cite{HanZ16}, where a capped-trace norm is defined as $\sum_{i=1}^d \min(\theta, {\lambda_i(\mymat{w})}^2)$. This capped norm, like the capped-$L_{p}$ norm, can enforce a lower rank matrix for small $\theta$ and also converges to the trace norm for large enough $\theta$. 
 
 
 \subsubsection{Task-Relation Learning approaches}
 % Task relation learning
-In other approaches, like the feature learning or the low-rank ones, the assumption is that all task parameters share the same subspace, which may be detrimental when there exists a negative or neutral transfer. The task-relation learning approach aims to find the pairwise dependencies among tasks and to possibly model positive, neutral and negative transfers between them.
+In other approaches, like the feature learning or the low-rank ones, the assumption is that all task parameters share the same subspace, which may be detrimental when there exists a negative or neutral transfer between tasks. The task-relation learning approach aims to find the pairwise dependencies among tasks and to possibly model positive, neutral and negative transfers between them.
 
 % GP approach
 % Multi-task Gaussian Process Prediction. Bonilla. 2007
 % A Convex Formulation for Learning Task Relationships in \acrshort{mtl} 2010
 % A regularization approach to learning task relationships in multitask learning 2013
-One of the first works with the goal of explicitly modelling the pairwise task-relations is~\cite{BonillaCW07}, where a \acrshort{mt} \acrfull{gp} formulation is presented. Assuming a Gaussian noise model 
+One of the first works with the goal of explicitly modelling the pairwise task-relations is~\cite{BonillaCW07}, where an \acrshort{mt} \acrfull{gp} formulation is presented. 
+Since the Bayesian formulations are not the main focus of this work, we will just present a general idea of how these are used in the \acrshort{mtl} framework.
+In one of the first works of Bayesian \acrshort{mtl}, assuming a Gaussian noise model 
 $y_i^r \sim \normal{f_r(x_i^r), \sigma_r^2}$, 
-Bonilla \emph{et al.} place a GP prior over the latent functions ${f}_r$ to induce correlation among tasks:
+Bonilla \emph{et al.} place a \acrshort{gp} prior over the latent functions ${f}_r$ to induce correlation among tasks:
 \begin{equation}\label{eq:mtl_gpprior}
     \fv{f} \sim \normal{\fv{0}_{d \ntasks}, \mymat{K}^f \otimes K_\theta^\Xspace} ,
 \end{equation}
@@ -1080,7 +1115,7 @@ To overcome this disadvantage, in~\cite{ZhangY10,ZhangY13a}, using the idea of t
     \nonumber
     \mymat{W} \sim \left(\prod_{r=1}^\ntasks \normal{\myvec{0}_d, \sigma_r^2 I_d}  \right) \multinormal{\mymat{0}_{d \times m}, \mymat{i}_d \otimes \mymat{\Omega}}
 \end{equation}
-where $\multinormal{\mymat{M}, \mymat{A} \otimes \mymat{B}}$ denotes the matrix-variate normal distribution with mean $\mymat{M}$, row covariance matrix $\mymat{a}$ and column covariance matrix $\mymat{b}$. It is shown that the problem of selecting the maximum a posteriori estimation of $\mymat{w}$ and the maximum likelihood estimations of $\mymat{\Omega}$ and biases $b_r$, $r=1, \ldots, \ntasks$, is a regularized minimization problem that, when relaxing the restrictions on $\Omega$, can be expressed as
+where $\multinormal{\mymat{M}, \mymat{A} \otimes \mymat{B}}$ denotes the matrix-variate normal distribution with mean $\mymat{M}$, row covariance matrix $\mymat{a}$ and column covariance matrix $\mymat{b}$. Thus, in this case the feature covariance matrix is the identity matrix, while the task-covariance matrix is given by $\fm{Omega}$. It is shown that the problem of selecting the maximum a posteriori estimation of $\mymat{w}$ and the maximum likelihood estimations of $\mymat{\Omega}$ and biases $b_r$, $r=1, \ldots, \ntasks$, is a regularized minimization problem that, when relaxing the restrictions on $\Omega$, can be expressed as
 % \begin{equation}
 %     \label{eq:mtl_relation_learn_trace}
 %     \argmin_{\mymat{\Omega} \in \reals^{d \times \ntasks}, \mymat{w}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \Tr\left({\mymat{w} \mymat{w}^\intercal}\right) + \mu \Tr \left(\mymat{w} \mymat{\Omega}^{-1} \mymat{w}^\intercal \right)\text{ s.t. } \mymat{\mymat{\Omega}} \succeq 0, \Tr\mymat{\Omega} = 1 .
@@ -1093,12 +1128,13 @@ where $\multinormal{\mymat{M}, \mymat{A} \otimes \mymat{B}}$ denotes the matrix-
     \end{aligned}    
 \end{equation}
 %This is a convex formulation and a two-step procedure is developed to find the solution. 
+Since these are kernel methods, we will come back to them later when we review the \acrshort{mtl} methods with kernels.
 
 % Laplacian approach
 % Learning the Graph of Relations Among Multiple Tasks. 2013
 % Learning Output Kernels for Multi-TaskProblems. 2013
 % Convex learning of multiple tasks and their structure 2015
-Other approaches like~\cite{argyriou2013learning} reach a similar problem from other perspective. Argyriou \emph{et al.} assume a representation of the structure of the tasks as a graph; then adding the graph Laplacian $\fm{L}$ in the optimization problem can incorporate the knowledge about the task structure, as shown in~\cite{EvgeniouMP05}:
+Other approaches like~\cite{argyriou2013learning} reach a similar problem from other perspectives. Argyriou \emph{et al.} assume a representation of the structure of the tasks as a graph; then adding the graph Laplacian $\fm{L}$ to the optimization problem can incorporate the knowledge about the task structure, as shown in~\cite{EvgeniouMP05}:
 \begin{equation}
     \label{eq:mtl_laplacian}
     \begin{aligned}
@@ -1107,7 +1143,7 @@ Other approaches like~\cite{argyriou2013learning} reach a similar problem from o
     \end{aligned}    
 \end{equation}
 where $\mu$ is a tuning parameter.
-Here the regularization can be also written using the adjacency matrix $\mymat{A}$ as
+Here the regularization can be also written using the adjacency matrix $\mymat{A}$ of the graph as
 \begin{equation}
     \nonumber
     \sum_{r,s=1}^\ntasks \left(\mymat{L}\right)_{rs} \dotp{w_r}{w_s} = \sum_{r,s=1}^\ntasks \left(\mymat{A}\right)_{rs} \norm{w_r - w_s}^2 .
@@ -1124,7 +1160,7 @@ In~\cite{argyriou2013learning} they want to learn a matrix $\mymat{L}$ that is a
         &\text{ s.t. } \mymat{0} \preceq L,\; \left(\mymat{L}+ \lambda \mymat{I} \right)_\text{off} \leq 0, \; \left(\mymat{L}+ \lambda \mymat{I} \right)^{-1} \myvec{1}_\nsamples = \frac{1}{\lambda} \myvec{1}_\nsamples ,
     \end{aligned}
 \end{equation}
-where $\mymat{A}_\text{off}$ denotes the off diagonal entries of $\mymat{A}$ and $\fv{1}_\nsamples$ is the vector of $\nsamples$ ones. The restrictions of problem~\eqref{eq:mtl_laplacian_dual} are to ensure that $\mymat{L}$ is a valid graph Laplacian: it is positive definite, with non-positive terms outside of the diagonal and the rows add up to $1$; and the trace term in the objective function is to force $\mymat{L}$ to be low-rank, so it is easier to find clusters of tasks. The objective function is not jointly convex but is convex in each $\myvec{\param}$ and $\mymat{L}$ when we fix the other. For the step to optimize the Laplacian matrix the authors develop an algorithm involving several projection steps using proximal operators.
+where $\mymat{A}_\text{off}$ denotes the off diagonal entries of $\mymat{A}$ and $\fv{1}_\nsamples$ is the vector of $\nsamples$ ones. The restrictions of problem~\eqref{eq:mtl_laplacian_dual} are to ensure that $\mymat{L}$ is a valid graph Laplacian: it is positive definite, with non-positive terms outside of the diagonal and the rows add up to $1$, and the trace term in the objective function is to force $\mymat{L}$ to be low-rank, so it is easier to find clusters of tasks. The objective function is not jointly convex but is convex in $\myvec{\param}$ and $\mymat{L}$ when we fix the other. For the step to optimize the Laplacian matrix the authors develop an algorithm involving several projection steps using proximal operators.
 %
 Another work focused on learning the task-relations is~\cite{Dinuzzo13}, where the approach is a learning problem in an RKHS of vector-valued functions $g: \Xspace \to \reals^\ntasks$, and the associated reproducing kernel is
 \begin{equation*}
@@ -1149,33 +1185,39 @@ The task clustering approaches try to find $C$ clusters or groups among the orig
 % Convex \acrshort{mtl} by Clustering. 2015
 The first clustering approach~\citep{ThrunO96} divides the optimization process in two separate steps: independently learning the task-parameters and jointly learning the clusters of tasks.
 %It assumes that the models involves $f(x)$ needs a definition of distance, e.g. kernel methods, such that
-Using models that involve distances among points, e.g. kernel methods, they define for each task $r=1, \ldots, \ntasks$, the distance
+Using models that involve distances among points, e.g. kernel methods, they define for each task $r=1, \ldots, \ntasks$ the distance
 $$ \text{dist}_{\fv{\omega}_r}(x, x') = \sqrt{\sum_{i=1}^\dimx \omega_r^i \left( x^i - x'^i \right)^2}. $$
 That is, $\myvec{\omega}_r$ parametrizes a distance with a different weight for each feature.
-Then, for each task an optimal weights vector $\myvec{\omega}_r^*$ is computed minimizing the distance between examples of the same class and maximizing the distance among different classes, that is $\opt{\omega}_r = \argmin_{\omega_r} A_r(\fv{\omega}_r)$ with
+Then, for each task an optimal weights vector $\myvec{\omega}_r^*$ is computed minimizing the distance between examples of the same class and maximizing the distance among different classes, that is $\opt{\fv{\omega}}_r = \argmin_{\fv{\omega}_r} A_r(\fv{\omega}_r)$ with
 \begin{equation}
     \nonumber
-    A_r(\fv{\omega}_r) = \sum_{s=1}^\ntasks \delta_{r, s} \sum_{i=1}^{\npertask_r} \sum_{j=1}^{\npertask_s} (y_i^r  y_j^s)  \text{dist}_{\fv{\omega}_r}(x_i^r, x_j^r),
+    A_r(\fv{\omega}_r) = \sum_{i=1}^{\npertask_r} (y_i^r  y_i^r)  \text{dist}_{\fv{\omega}_r}(x_i^r, x_i^r),
 \end{equation}
-where $y_i^r \in \set{-1, 1}$ is the class of pattern $x_i^r$, and $\delta_{rs}$ is $1$ if $r=s$ and $-1$ otherwise.
+where $y_i^r \in \set{-1, 1}$ is the class of pattern $x_i^r$.
 After the computation of the optimal parameters $\fv{\omega}_r^*$, the empirical loss on task $r$ of a model fitted on data of task $r$ using a distance parametrized by $\fv{\omega}_s^*$ is defined as $e_{rs}$. Then, the goal is to find clusters $B_\kappa$ with $\kappa=1, \ldots, \nclusters$, minimizing
 \begin{equation}
     \nonumber
-    J(\nclusters) = \sum_{\kappa = 1}^\nclusters \sum_{r \in B_\kappa} \frac{1}{\abs{B_r}} \sum_{s \in B_\kappa} e_{rs} ,
+    J(\nclusters) = \sum_{\kappa = 1}^\nclusters \sum_{r \in B_\kappa} \frac{1}{\abs{B_r}} \sum_{s \in B_\kappa} e_{rs} 
 \end{equation}
-where the number of clusters $\nclusters$ with minimum $J(\nclusters)$ is selected. That is, the clusters are selected using the results of independently trained tasks but using distances whose parameters are optimal for other tasks; then the transfer is done through the parameters $\fv{\omega}_r$.
+where the number of clusters $\nclusters \leq \ntasks$ must be selected beforehand. That is, the clusters are selected using the results of independently trained tasks but using distances chosen to be optimal for other tasks.
+After grouping the tasks the clusters, all the tasks in the same cluster are fitted together using a distance parametrized by
+\begin{equation}
+    \nonumber
+    \fv{\omega}_{B_\kappa} = \argmin_{\fv{\omega}} \sum_{r \in B_\kappa} A_r(\omega),
+\end{equation}
+which is optimal for the entire cluster.
 %
 % A different approach is the Bayesian proposal of~\cite{BakkerH03} where a \acrshort{mt} Neural Network~\cite{Caruana97} with one shared hidden layer is used. The task-dependent parameters can be modeled together using a prior that is a mixture of $\nclusters$ Gaussians $\myvec{a}_r \sim \sum_{\kappa = 1}^\nclusters \alpha_\kappa \normal{\myvec{\mu}_\kappa, \mymat{\Sigma}_\kappa}$; and by learning the variables $\alpha_i$ using Bayesian inference, the tasks can be clustered. In this model, unlike in~\cite{ThrunO96} the clusters and task parameters are jointly learned.
 %
 
-Some proposals have also been made using regularization approaches. In~\cite{JacobBV08}, a problem based on~\cite{EvgeniouP04} is proposed. Considering the $\ntasks \times \ntasks$ constant matrix $\mymat{U} = \frac{1}{\ntasks} \fv{1} \fv{1}^\intercal$, $\mymat{E}$ the $\ntasks \times \nclusters$ cluster assignment binary matrix, and defining the adjacency matrix $M = E (E^\intercal E)^{-1} E^\intercal$, the problem is
+Taking a different perspective, some proposals have also been made using regularization approaches. In~\cite{JacobBV08}, a problem based on~\cite{EvgeniouP04} is proposed. Considering the $\ntasks \times \ntasks$ constant matrix $\mymat{R} = \frac{1}{\ntasks} \fv{1} \fv{1}^\intercal$, $\mymat{E}$ the $\ntasks \times \nclusters$ cluster assignment binary matrix, and defining the adjacency matrix $M = E (E^\intercal E)^{-1} E^\intercal$, the problem is
 \begin{equation}
     \label{eq:mtl_clustered}
     \begin{aligned}
         &\argmin_{\mymat{w}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda (\mu_\text{m} \Omega_\text{m}(\mymat{w}) + \mu_\text{b} \Omega_\text{b}(\mymat{w}) + \mu_\text{w} \Omega_\text{w}(\mymat{w})) ,
     \end{aligned}    
 \end{equation}
-where $\Omega_\text{m} = \Tr\left( \mymat{W} \mymat{U} \mymat{W}^\intercal \right)$ is the mean regularization, $\Omega_\text{b} = \Tr\left( \mymat{W} (\mymat{M} - \mymat{U}) \mymat{W}^\intercal \right)$ is the inter-cluster variance regularization and $\Omega_\text{w} = \Tr\left( \mymat{W} (\mymat{I} - \mymat{M}) \mymat{W}^\intercal \right)$ is the intra-cluster variance regularization.
+where $\Omega_\text{m} = \Tr\left( \mymat{W} \mymat{R} \mymat{W}^\intercal \right)$ is the mean regularization, $\Omega_\text{b} = \Tr\left( \mymat{W} (\mymat{M} - \mymat{R}) \mymat{W}^\intercal \right)$ is the inter-cluster variance regularization and $\Omega_\text{w} = \Tr\left( \mymat{W} (\mymat{I} - \mymat{M}) \mymat{W}^\intercal \right)$ is the intra-cluster variance regularization.
 This problem cannot be solved using the results of~\cite{EvgeniouMP05} because the regularization used is not convex, so a convex relaxation is needed.
 %
 
@@ -1201,7 +1243,7 @@ Another approximation to clusterized \acrshort{mtl} is provided in~\cite{Crammer
 First $\nclusters$ single task models $f_\kappa$ are fitted using the pooled data from tasks in cluster $\kappa$.
 Secondly each task $r$ is assigned to the cluster $\kappa$ whose function $f_\kappa$ obtains the lowest error in task $r$.
 %
-The proposal of~\cite{BarzilaiC15} takes the idea of the cluster assignation step from~\cite{CrammerM12} and is also inspired by the sparse coding work of~\cite{KumarD12}. In this work the weights matrix is $\mymat{w} = \mymat{D} \mymat{G}$, where $\mymat{D} \in \reals^{\dimx \times \nclusters}$ contains as columns the hypotheses for each cluster and $\mymat{G} \in \reals^{\nclusters \times \ntasks}$ is the task assignment matrix, that is, ${G}_{\kappa r} \in \set{0, 1}$ and $\norm{\fm{g}_r}^2 = 1$. The corresponding optimization problem is
+The proposal of~\cite{BarzilaiC15} takes the idea of the cluster assignation step from~\cite{CrammerM12} and is also inspired by the sparse coding work of~\cite{KumarD12}. In this work the weight matrix is $\mymat{w} = \mymat{D} \mymat{G}$, where $\mymat{D} \in \reals^{\dimx \times \nclusters}$ contains as columns the hypotheses for each cluster and $\mymat{G} \in \reals^{\nclusters \times \ntasks}$ is the task assignment matrix, that is, ${G}_{\kappa r} \in \set{0, 1}$ and $\norm{\fm{g}_r}^2 = 1$, where $G_r$ is the $r$-th column of matrix $G$. The corresponding optimization problem is
 \begin{equation}
     \label{eq:mtl_clustering_convex}
     \begin{aligned}
@@ -1212,7 +1254,7 @@ The proposal of~\cite{BarzilaiC15} takes the idea of the cluster assignation ste
 where the constraints on ${\fm{g}}_{\kappa r}$ have been relaxed to be in the $[0,1]$ interval in order to make problem~\eqref{eq:mtl_clustering_convex} convex. Observe that~\eqref{eq:mtl_clustering_convex} is similar to~\eqref{eq:mtl_go} but different restrictions are used to ensure that $\mymat{G}$ can be seen as a clustering assignment matrix.
 
 \subsubsection{Decomposition Approaches}
-The decomposition approaches consider that the assumption that task parameters reside in the same subspace, or that the parameter matrix $\mymat{w}$, composed by each task parameters $w_r$ as its columns, is low-rank, is too restrictive for real world scenarios. The idea is then to decompose the parameter matrix in the sum of two matrices, i.e. $\mymat{W} = \mymat{U} + \mymat{V}$, where usually $\mymat{U}$  captures the shared properties of the tasks and $V$ accounts for the information that cannot be shared among tasks.
+The decomposition approaches consider too restrictive for real world scenarios the assumption that task parameters reside in the same subspace, or that the parameter matrix $\mymat{w}$, composed by each task parameters $w_r$ as its columns, is low-rank. The idea is then to decompose the parameter matrix in the sum of two matrices, i.e. $\mymat{W} = \mymat{U} + \mymat{V}$, where usually $\mymat{U}$  captures the shared properties of the tasks and $V$ accounts for the information that cannot be shared among tasks.
 These models also receive the name of \emph{dirty models} because they assume that the data is \emph{dirty} and cannot be constrained to rigid subspaces.
 % A Dirty Model for \acrshort{mtl}. 2010
 % Learning incoherent sparse and low-rank patterns from multiple tasks. 2010
@@ -1229,10 +1271,10 @@ The optimization problem is
 where $g(\mymat{U})$ and $h(\mymat{V})$ are different regularizers for $\mymat{U}$ and $\mymat{V}$, respectively.
 In~\cite{JalaliRSR10} the authors use $g(\mymat{U}) = \norm{\mymat{U}}_{1, \infty}$ to enforce block-sparsity and $h(\mymat{V}) = \norm{\mymat{V}}_{1, 1}$ to enforce element-sparsity. 
 In~\cite{ChenLY10} $g(\mymat{U}) = \norm{\mymat{U}}_{*}$ is used to enforce low-rank while maintaining $h(\mymat{V}) = \norm{\mymat{V}}_{1, 1}$. 
-In~\cite{ChenZY11} both regularizers seek properties shared among all tasks, $g(\mymat{U}) = \norm{\mymat{U}}_{*}$ to enforce a low-rank and $h(\mymat{V}) = \norm{\mymat{V}}_{1, 2}$ for row-sparsity.
+In~\cite{ChenZY11} both regularizers seek properties shared among all tasks, namely $g(\mymat{U}) = \norm{\mymat{U}}_{*}$ to enforce a low-rank and $h(\mymat{V}) = \norm{\mymat{V}}_{1, 2}$ for row-sparsity.
 In~\cite{GongYZ12rmfl} they propose $g(\mymat{U}) = \norm{\mymat{U}}_{1, 2}$ to enforce row-sparsity, i.e., the tasks share a common subspace; and $h(\mymat{V}) = \norm{\mymat{V}^\intercal}_{1, 2}$ which penalizes the orthogonal parts to the common subspace of task-parameter; the authors affirm that it penalizes outlier tasks.
 
-Other approaches generalize the decomposition method by assuming that the parameter matrix can be expressed as $\mymat{W} = \sum_{l=1}^L \mymat{W}_l$; then, the problem to solve has the form
+Other approaches generalize the decomposition method by assuming that the parameter matrix can be expressed as the sum of $L$ matrices, that is, $\mymat{W} = \sum_{l=1}^L \mymat{W}_l$; then, the problem to solve has the form
 \begin{equation}
     \label{eq:mtl_decomposition_gen}
     \argmin_{\mymat{W}_1, \ldots, \mymat{W}_L \in \reals^{\dimx \times \ntasks}} 
@@ -1314,7 +1356,7 @@ Multiple extensions of the work of~\cite{EvgeniouP04} have been presented: in~\c
 %
 % Evgeniou, T., Micchelli, C. A., and Pontil, M. (2005).  Learning multiple tasks with kernel methods.
 % \acrshort{mtl} \acrshort{svm} and Generalized SMO
-However, in this work we are interested mainly in two extensions: one is the work of~\cite{EvgeniouMP05} and the other is developed in~\cite{LiangC08} and in~\cite{CaiC09}; both will be described in detail in Chapter~\ref{Chapter4}.
+However, in this work we are interested mainly in two extensions: one is the work of~\cite{EvgeniouMP05} and the other is developed in~\cite{LiangC08} and in~\cite{CaiC09}; both will be described in detail in Chapters~\ref{Chapter4} and~\ref{Chapter5}.
 %Using the unified formulation we can express the more general primal problem as
 % \begin{equation}
 %     \nonumber
@@ -1327,21 +1369,23 @@ However, in this work we are interested mainly in two extensions: one is the wor
 %         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r.
 %     \end{aligned}
 % \end{equation}
-The original problem presented in~\citet{EvgeniouP04} is
+The original problem presented in~\citet{EvgeniouP04}, which is linear, is
 \begin{equation}
     \label{eq:mtl_combination_primal}
     \begin{aligned}
         &\argmin_{w, \mymat{V}} C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w + v_r}{x_i^r}) + \frac{\mu}{2}  \norm{w}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{v_r}^2 ,
     \end{aligned}    
 \end{equation}
-where $\mu$ is a tradeoff parameter to leverage the common and task-specific information.
+where $\mu$ is a trade-off parameter to leverage the common and task-specific information, and $C$ is the hyperparameter to control the relevance of the error term against the regularization terms.
 %
 When the dual problem of~\eqref{eq:mtl_combination_primal} is obtained, the result is a problem where the kernel encodes this combination of common and shared parts; that is, the kernel function is
 \begin{equation}
     \nonumber
     k(x_i^r, x_j^s) = \frac{1}{\mu} \dotp{x_i^r}{x_j^s} +  \delta_{rs} \dotp{x_i^r}{x_j^s} ,
 \end{equation}
-where $\delta_{rs}$ is $1$ if $r=s$ and $0$ otherwise, so it encodes the specific part of the model. This is equivalent to a feature extension strategy, like the domain adaptation scheme proposed in~\cite{Daume07} with only target and source domains, but that can be easily adapted to \acrshort{mtl}.
+where $\delta_{rs}$ is $1$ if $r=s$ and $0$ otherwise, so it encodes the specific part of the model. 
+Observe that both the common and task-specific parts are linear.
+This is equivalent to a feature extension strategy, like the domain adaptation scheme proposed in~\cite{Daume07} with only target and source domains, but that can be easily adapted to \acrshort{mtl}.
 
 % Eigenfunction-Based Multitask Learning in a Reproducing Kernel Hilbert Space ?
 
@@ -1361,13 +1405,13 @@ The hard sharing approach is the most common one, and it consists in sharing bet
 % Soft parameter sharing
 The soft sharing approach to \acrshort{mtl} tries to tackle these problems with different strategies.
 % Linear algorithms for online multitask classification 2010
-In~\cite{CavallantiCG10} the authors propose to learn one perceptron for each task and the update of each perceptron is determined by an interaction matrix $A$. Given a pair $(x_i^s, y_i^s)$, the weights of task $r$ are updated when a mistake is committed on task $s$ and the update is scaled according to the position $r, s$ of matrix $\fm{A}^{-1}$:
+In~\cite{CavallantiCG10} the authors propose to learn one perceptron for each task and the update of each perceptron is determined by an interaction matrix $A$. Given a pair $(x_i^s, y_i^s)$, the weights of task $r$ are updated when a mistake is committed on task $s$ and the update is scaled according to the position $r, s$ of the matrix $\fm{A}^{-1}$:
 \begin{equation}
     \label{eq:cavallanti_update}
     w_r(\tau+1) = w_r(\tau) - \nu y_i^s A^{-1}_{rs} x_i^s ,
 \end{equation}
 where $w_r$ are the parameters of the perceptron corresponding to task $r$. 
-This approach only uses perceptrons, so its expressive power is quite limited. Also, the matrix $A$ has to be defined a priori and is not learned from the data.
+This approach only uses perceptrons, so its expressive power is quite limited. Also, the matrix $A$ has to be defined \emph{a priori} and is not learned from the data.
 %
 In~\cite{Long015a} they propose a model to overcome these limitations. They use a multi-task architecture for computer vision with multiple shared layers and multiple task-specific layers. Moreover, they use a Bayesian approach to learn the task relationships. They place a tensor prior over the network parameters such that in each specific layer $l$, there are $\ntasks$ matrices $W^l_r$ for $r=1, \ldots, \ntasks$, and if we denote as $\mathcal{W}^l$ the vector (tensor) of such matrices, then 
 $$\mathcal{W}^l \sim \tensornormal{0, \Sigma_1, \Sigma_2, \Sigma_3},$$
@@ -1378,7 +1422,7 @@ $$ \mymat{W}_r^l(\tau + 1) = \mymat{W}_r^l(\tau) - \nu \left( \diffp{\lossf(f_r(
 where $\lossf$ is the loss function, we can observe some similarities with the update~\eqref{eq:cavallanti_update}, where the inverse of the Kronecker product of covariances models how each task affects the others.
 Although this approach learns the matrix relations, the architecture is still restrictive since it assumes that all tasks can be modelled using the same network architecture.
 % cross-stitch networks for \acrshort{mtl} 2016
-In~\cite{MisraSGH16} they propose a strategy named ``Cross-stitch'' networks which uses one network for each task, but these networks are connected using a linear combination of the outputs of every layer, including the hidden ones. Consider an illustrative example with an \acrshort{mtl} network with tasks $1$ and $2$, if $h^l_1$, $h^l_2$ are the output values of the $l$-th layers of the networks of tasks $1$ and $2$, these values are combined as
+In~\cite{MisraSGH16} they propose a strategy named ``Cross-stitch'' networks which uses one network for each task, but these networks are connected using a linear combination of the outputs of every layer, including the hidden ones. Consider an illustrative example with an \acrshort{mtl} network with tasks $1$ and $2$; if $h^l_1$, $h^l_2$ are the output values of the $l$-th layers of the networks of tasks $1$ and $2$, these values are combined as
 \begin{equation}
     \label{eq:cross-stich_comb}
     \begin{bmatrix}
@@ -1406,31 +1450,31 @@ If $\fm{A}^l = \fm{I}_{2 \times 2}$ in all layers this is equivalent to two inde
 % sluice-networks 2017
 % Latent \acrshort{mt} Architecture Learning 2019
 This strategy is extended in~\cite{RuderBAS17}, where the authors include two modifications: the parameters of each network are divided in two spaces, each expecting to capture different properties of the data, and there are learnable skip-connections for each task.
-The first modification consists on using two spaces for each task, which implies that the number of parameters is doubled, that is, independently from the number of tasks, in each task-specific network and in each layer $l$ there are two outputs for each task: $h_{r, a}^l, h_{r, b}^l$, each obtained with a different parameter matrix $\fm{W}^l_{r, a}, \fm{W}^l_{r, b}$, both with the same dimensions.
+The first modification uses two spaces for each task, which implies that the number of parameters is doubled, that is, independently from the number of tasks, in each task-specific network and in each layer $l$ there are two outputs for each task: $h_{r, a}^l, h_{r, b}^l$, each obtained with a different parameter matrix $\fm{W}^l_{r, a}, \fm{W}^l_{r, b}$, both with the same dimensions.
 Then, in the illustrative case of two tasks, as the combination shown in~\eqref{eq:cross-stich_comb}, $\fm{A}$ is a $4 \times 4$ matrix, because each $\alpha_{i, j}^l$ is a $2 \times 2$ matrix for $i, j \in \set{1, 2}$. The matrix $\fm{A}$ not only determines how the tasks are related but how each space of each task is related with the rest.
 To enforce that each space captures different properties, they use the regularizers
 \begin{equation}
     \nonumber
     \norm{(\fm{W}^l_{r, a})^\intercal \fm{W}^l_{r, b}}^2_{2, 2},
 \end{equation}
-where the $L_{2, 2}$ (Frobenius) norm is used, so the parameters matrices $\fm{W}^l_{r, a}$ and $\fm{W}^l_{r, b}$ span orthogonal spaces.
+where the $L_{2, 2}$ norm is used, so the parameters matrices $\fm{W}^l_{r, a}$ and $\fm{W}^l_{r, b}$ span orthogonal spaces; observe that this regularization forces the inner products $\dotp{(\fm{W}^l_{r, a})_i}{(\fm{W}^l_{r, b})_j}$ to go towards zero, with $(\fm{W}^l_{r, a})_i$ being the $i$-th column of the matrix $(\fm{W}^l_{r, a})$.
 Particular values of the matrices $A^l$ can result in a combination-based approach where there is a shared common model and task-specific ones.
 The skip-connections are reflected in a final layer in each network that receives as input the linear combination of the activation values $h^l_{r, 1}$ and $h^l_{r, 2}$ for every layer $l$. This linear combination uses learnable parameters $\beta_r$ for each task.
 
 % Deep multi-task representation learning: A tensor factorisation approach 2017
 Other approaches consider tensor-based methods instead of the ``cross-stitch'' networks to learn the parameters of each task-oriented network and the degree of sharing between tasks from the data.
 In~\cite{YangH17}, the authors propose a tensor-generative strategy to model the parameters of each layer. If $\fm{W}^l_r$ is the $d^l_1 \times d^l_2$ parameter matrix for task $r$ in layer $l$, in each layer we can consider the collection of such matrices as a $d^l_1 \times d^l_2 \times \ntasks$ tensor $\mathcal{W}^l$.
-We can build these tensors from other pieces in different ways; for example consider a $d^l_1 \times d^l_2 \times K$ tensor $\mathcal{L}$, that is, a collection of $K$ matrices of dimension $d^l_1 \times d^l_2$. Now, consider the $K \times \ntasks$ matrix $S$, then
+We can build these tensors from other pieces in different ways; for example consider a $d^l_1 \times d^l_2 \times K$ tensor $\mathcal{L}$, that is, a collection of $K$ matrices of dimension $d^l_1 \times d^l_2$; we denote each of these matrices as $L_{:, :, \kappa}$ for $\kappa = 1, \ldots, K$. Here $:$ denote that we select all elements in a given dimension, for example, if $A$ is a matrix, $A_{:, j}$ is used for all the rows and $j$-th column.
+Now, consider $T$ different linear combinations of such collection of $K$ matrices, expressed as the columns of a $K \times \ntasks$ matrix $S$, then each matrix $\fm{W}^l_r$ for $r=1, \ldots, \ntasks$, can be expressed as
 \begin{equation}
     \nonumber
-    W^l_r = \mathcal{W}_{:, :, r} = \sum_{\kappa=1}^K \mathcal{L}_{:, :, \kappa} S_{\kappa, r} ,
+    W^l_r = \mathcal{W}_{:, :, r} = \sum_{\kappa=1}^K \mathcal{L}_{:, :, \kappa} S_{\kappa, r} .
 \end{equation}
-where $:$ denote that we select all elements in a given dimension, for example, if $A$ is a matrix, $A_{:, j}$ is used for all the rows and $j$-th column. 
-That is, all task parameter matrices $W^l_r$ are linear combinations of the  matrices collected in $\mathcal{L}$. 
-Observe that this is a generalization of the sparse coding scheme presented in~\cite{Daume09} and shown in equation~\eqref{eq:mtl_sparse_coding}.
+Thus, all task parameter matrices $W^l_r$ are linear combinations of the  matrices collected in $\mathcal{L}$. 
+Observe that this is a generalization of the sparse coding scheme presented in~\cite{Daume09} and shown in~\eqref{eq:mtl_sparse_coding}.
 Since all the strategies to build $\mathcal{W}$ from other pieces are based on tensor products, the entire process is differentiable and all those pieces can be learned with gradient descent.
 % Trace norm regularised deep \acrshort{mtl} 2017
-The other tensor-based proposal is presented in~\cite{YangH17a} where, instead of a tensor-building approach, they consider the tensors $\mathcal{W}^l$ as the collection of matrices $\fm{W}_r^l$ and use tensor-trace norms to enforce the coupling between different tasks.
+Another tensor-based proposal is presented in~\cite{YangH17a} where, instead of a tensor-building approach, they consider the tensors $\mathcal{W}^l$ as the collection of matrices $\fm{W}_r^l$ and use tensor-trace norms to enforce the coupling between different tasks.
 % such as
 % \begin{equation}
 %     \nonumber
@@ -1441,19 +1485,19 @@ This approach  can be categorized as low-rank, that is, a parameter-based approa
 
 % adashare 2020
 All the previous approaches consider the same architecture for every task. Although the skip-connections can alleviate this, the sharing of information is still made in a layer-wise manner.
-In~\cite{SunPFS20} they propose a single network with $L$ layers and with skip-connections between all layers, so each task can use a specific policy. That is, task $1$ can use the first, third and fourth layer while task $2$ might use the second and fourth only. In this example, the first and third are specific for task $1$, the second layer is specific for task $2$ while the fourth is a shared layer.
-In general, there is a binary $L \times \ntasks$ policy matrix $U$ with the $\ntasks$ policies that determines which layers are used for each task. The problem is then a bi-level optimization
+In~\cite{SunPFS20} they propose a single network with $L$ layers and with skip-connections between all layers, so each task can use a specific policy. That is, task $1$ can use the first, third and fourth layers while task $2$ might use the second and fourth only. In this example, the first and third are specific for task $1$, the second layer is specific for task $2$ while the fourth is a shared layer.
+In general, there is a binary $L \times \ntasks$ policy matrix $\fm{B}$ with the $\ntasks$ policies that determines which layers are used for each task. The problem is then a bi-level optimization
 \begin{equation}
     \nonumber
-    \min_{\fm{U}} \min_{\fm{W}_1, \ldots, \fm{W}_L} \lossf(\fm{U}, \fm{W}_1, \ldots, \fm{W}_L) .
+    \min_{\fm{B}} \min_{\fm{W}_1, \ldots, \fm{W}_L} \lossf(\fm{B}, \fm{W}_1, \ldots, \fm{W}_L) .
 \end{equation}
-The optimization with respect to the network parameters is done using back-propagation, while the optimization with respect to $\fm{U}$ uses a specific algorithm.
+The optimization with respect to the network parameters is done using back-propagation, while the optimization with respect to $\fm{B}$ uses a specific algorithm.
 
 
 \section{Multi-Task Learning with Kernel Methods}\label{sec:kernel_mtl}
 Kernel methods are central in \acrshort{ml}, as they have been successful in many areas, and their principal appeal is that the original features are implicitly transformed to a kernel space, possibly infinite-dimensional, where the problems of classification or regression are usually easier to solve.
 %
-Unlike deep learning models, the kernel features used are not learnable, but are implicitly defined a priori by the kernel function chosen, such as Gaussian, polynomial or Matérn kernels. 
+Unlike deep learning models, the kernel features used are not learnable, but are implicitly defined \emph{a priori} by the kernel function chosen, such as Gaussian, polynomial or Matérn kernels. 
 %
 Also, operating in a general \acrshort{rkhs} $\rkhs$, where there exists a kernel function such that 
 \begin{equation}
@@ -1472,7 +1516,7 @@ Instead, other proposals have been made; in this subsection we review the most r
     % Multi-task Gaussian Process Prediction 2007 (GP)
 
     % A Convex Formulation for Learning Task Relationships in \acrshort{mtl} 2010 (GP)
-    The task relation learning, a parameter-based approach, is a common one in \acrshort{mtl} with kernel methods, with a special focus on \acrshort{gps}. Using a \acrshort{gp} formulation, the coupling between tasks is enforced using the covariance matrix, usually defining a prior as the one in~\eqref{eq:mtl_gpprior}, with an inter-task covariance matrix and a covariance matrix among patterns;
+    The task relation learning, a parameter-based approach, is a common one in \acrshort{mtl} with kernel methods, with a special focus on \acrshort{gps}, as we have seen in Section~\ref{sec:ch3_overview}. Using a \acrshort{gp} formulation, the coupling between tasks is enforced using the covariance matrix, usually defining a prior as the one in~\eqref{eq:mtl_gpprior}, with an inter-task covariance matrix and a covariance matrix among patterns;
     then, different strategies to learn the task-covariance matrix are proposed as in~\cite{LawrenceP04, BonillaCW07}. 
 
 % Trace-Norm
@@ -1480,7 +1524,7 @@ Instead, other proposals have been made; in this subsection we review the most r
     % Convex multi-task feature learning 2008 (feature-based Trace)
 
     % Learning with Whom to Share in Multi-task feature learning 2011 (Convex multi-task feature learning + Clustering)
-    A feature-based strategy was also presented in~\cite{ArgyriouEP08}, where the linear optimization problem is given in~\eqref{eq:mtl_feat_learning}, and the kernel extension is 
+    A feature-based strategy was also presented in~\cite{ArgyriouEP08}, where each task parameter $w_r$ is expressed as $w_r = \fm{U} a_r$, that is, $\fm{U}$ contains the elements that will be combined linearly, according to the weights $a_r$, to form the parameters $w_r$. In the linear case, the optimization problem is given in~\eqref{eq:mtl_feat_learning}, and the kernel extension is the following one: 
     \begin{equation}
         \label{eq:mtl_feat_learning_kernel}
         \argmin_{\mymat{u} \in \mathcal{L}(\hilbertspace, \reals^d), \mymat{a} \in \reals^{d \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\mymat{u} a_r}{\phi(x_i^r)}) + \lambda \norm{\mymat{a}}_{2, 1}^2 \text{ s.t. } \mymat{u}^\intercal \mymat{u} = \mymat{i}_d ,
@@ -1498,7 +1542,7 @@ Instead, other proposals have been made; in this subsection we review the most r
     The authors also develop an algorithm to solve problem~\eqref{eq:mtl_feat_learning_tracenorm_kernel} using this result, where they use an alternating optimization procedure.
     This method, however, is computationally challenging, because it requires finding an orthonormal basis of the $\nsamples \times \nsamples$ kernel matrix, with $\nsamples = \sum_{r=1}^\ntasks \npertask_r$; then, at each iteration of the alternating minimization, a full optimization problem has to be solved. That is, if we use an \acrshort{svm} as our base model for classification, by selecting the hinge loss as the loss function, at each iteration we have a cost $O(\nsamples^{2})$.
     %
-    A clusterized extension, with similar computational limitations, is proposed in~\cite{KangGS11}. We can observe this optimization problem for clusterized \acrshort{mtl} in~\eqref{eq:mtl_clustered_featlearn}.
+    A clusterized extension, with similar computational limitations, is proposed in~\cite{KangGS11}, whose corresponding optimization problem we have given in~\eqref{eq:mtl_clustered_featlearn}.
 
     
 
@@ -1522,14 +1566,14 @@ Using kernel models the multi-output regularized risk is
     \label{eq:regrisk_multioutput}
     \sum_{i=1}^{\nsamples} \lossf(\fm{w}^\intercal {\phi({x}_i)}+ \fv{b}, \fv{y}_i) + \mu \Omega(\fm{w}) ,
 \end{equation}
-where $\fm{W}$ is the matrix with $\ntasks$ columns, one for each task, and $\fv{b}$ is the vector of corresponding biases. 
+where $\fm{W}$ is a matrix with $\ntasks$ columns, one for each task, and $\fv{b}$ is the vector of corresponding biases. 
 Finally, $\Omega$ is a regularizer for matrix $\fm{w}$ that can enforce different behaviours; for example the trace norm regularizer is used for enforcing a low-rank matrix.
-A commonly used loss function $\ell$ for this  is 
-$$ \lossf(\fm{w}^\intercal {\phi({x}_i)}+ \fv{b}, \fv{y}_i) = \norm{\fm{w}^\intercal {\phi({x}_i)}+ \fv{b} - \fv{y}_i}_2^2$$
+A commonly used loss function $\ell$ for this approach in regression problems is 
+$$ \lossf(\fm{w}^\intercal {\phi({x}_i)}+ \fv{b}, \fv{y}_i) = \norm{\fm{w}^\intercal {\phi({x}_i)}+ \fv{b} - \fv{y}_i}_2^2 .$$
 In~\cite{MicchelliP04,MicchelliP05}, the authors develop the theory for operator-valued kernels, that are the kernel functions corresponding to vector-valued functions.
 They propose an extension of the representer theorem for operator-valued kernels when a Tikhonov regularization for vector-valued functions is used.
 Although these are interesting results, they do not provide explicit algorithms to learn such functions. 
-Moreover, \acrshort{mtl} is not that well suited for this formulation, since the targets or labels are not necessarily a vector, that is, for each data $x_i^r$ there is a single scalar $y_i^r$. Then, the \acrshort{mt} regularized risk using this formulation has to be expressed as
+Moreover, \acrshort{mtl} is not that well suited for this formulation, since the targets or labels are not necessarily a vector; that is, for each data $x_i^r$ there is a single scalar $y_i^r$. Then, the \acrshort{mt} regularized risk using this formulation has to be expressed as
 \begin{equation}
     \label{eq:regrisk_multioutput_mtl}
     \sum_{i=1}^{\nsamples} \lossf(\fm{A} \odot (\fm{w}^\intercal {\phi({x}_i)}+ \fv{b}), \fv{y}_i) + \mu \Omega(\fm{w}) ,
@@ -1543,7 +1587,7 @@ where $\fm{A}$ is a binary matrix with the same sparsity pattern that $\fm{Y}$ h
     % Learning multiple tasks with kernel methods 2005 (RMTL Tikhonov)
 
     % Cai and Cherkassky
-Other strategy that seems better suited for kernel methods is a combination-based one, first presented in~\cite{EvgeniouP04}, as can be seen in~\eqref{eq:mtl_combination_primal}, and then extended in~\cite{CaiC09,CaiC12}. The kernelized optimization problem is
+Other strategy that seems better suited for kernel methods is a combination-based one, first presented in~\cite{EvgeniouP04}, as can be seen in~\eqref{eq:mtl_combination_primal} for the linear case, and then extended in~\cite{CaiC09,CaiC12}. The kernelized optimization problem is
 \begin{equation}
     \label{eq:mtl_combination_primal_kernel}
     \begin{aligned}
@@ -1557,7 +1601,7 @@ Similary to the representer theorem, it can be shown that
     w = \sum_{s=1}^\ntasks \sum_{i=1}^{m_s} \alpha_i^s \phi(x_i^s),\; v_r = \sum_{i=1}^{m_r} \alpha_i^r \phi_r(x_i^r) ,
 \end{equation}
 where the dual coefficients $\alpha_i^r$ are shared, so $w$ is a combination of all inputs from all tasks, while the specific parts $v_r$ are only dependent on samples from the corresponding task. The fact that different spaces can be used for the common and specific parts make this formulation very flexible.
-This approach has a strong motivation given its connection with the \acrfull{lupi} paradigm, which we describe in Section~\ref{sec:ch3_lupi}.
+This approach has a strong motivation given its connection with the \acrfull{lupi} paradigm, which we later describe in Section~\ref{sec:ch3_lupi}.
 
 
 
@@ -1577,7 +1621,7 @@ Consider $\fv{w} = \Vector{(\fm{w})}$ for the vectorized matrix $\fm{W}$, i.e. t
         & \sum_{r=1}^{\ntasks} \sum_{i=1}^\npertask \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \mu \fv{w}^\intercal (\fm{E} \otimes \fm{I}) \fv{w} ,\\
     \end{aligned}
 \end{equation}
-where $\fm{E}$ is a $\ntasks \times \ntasks$ matrix, its solution can be expressed as  
+where $\fm{E}$ is a $\ntasks \times \ntasks$ matrix and $\otimes$ is the Kronecker product between matrices. The solution to this problem can be expressed as  
 \begin{equation}
     \nonumber
     \fv{w} = \sum_{r=1}^\ntasks \sum_{i=1}^\npertask \alpha_i^r B_r x_i^r ,
@@ -1610,12 +1654,12 @@ where $\Theta$ is the inter-task relationship matrix, and they propose different
 
 
 
-\section{Learning Under Privileged Information and Multi-Task Learning}\label{sec:ch3_lupi}
+\section{Learning Using Privileged Information and Multi-Task Learning}\label{sec:ch3_lupi}
 Another important motivation for \acrshort{mtl} can be found in the \acrfull{lupi} paradigm of~\cite{VapnikI15a}.
 % The classical learning paradigm tries to minimize the expected risk by minimizing the empirical risk...
 The standard \acrshort{ml} paradigm tries to find the hypothesis $\hypf$ from a set of hypotheses $\hypspace$ that minimizes the expected risk $\emprisk$ given a set of training samples.
 % Vapnik gives develops the theory of Statisical Learning Theory and it seems complete
-Vapnik is one of the main contributors to the theory of statistical learning, see~\cite{Vapnik00}. Within this theory several important results are provided: necessary and sufficient conditions for the consistency of learning processes and bounds for the rate of convergence, which use the notion of \acrshort{vc}-dimension. A new inductive principle, Structural Risk Minimization (\acrshort{srm}), and an algorithm, Support Vector Machine (\acrshort{svm}), that makes use of this notion to improve the learning process are given.
+Vapnik is one of the main contributors to the theory of statistical learning, see~\cite{Vapnik00}. Within this theory several important results are provided: necessary and sufficient conditions for the consistency of learning processes and bounds for the rate of convergence. Some of these results, which use the notion of \acrshort{vc}-dimension, have been presented in Section~\ref{sec:learning_theory}. A new inductive principle, Structural Risk Minimization (\acrshort{srm}), and an algorithm, Support Vector Machine (\acrshort{svm}), that make use of this notion to improve the learning process are given, as explained in Chapter~\ref{Chapter2}.
 
 % However, machines need many examples to learn. What is lacking?
 % An Intelligent Teacher is important in human learning, providing additional information: examples, metaphors...
@@ -1627,8 +1671,8 @@ This Teacher shares important knowledge by providing metaphors, examples or clar
 
 \subsection{Privileged Information and Convergence Rates}
 % How can that additional information be incorporated in Machine Learning?
-The additional knowledge provided by the Teacher is the Privileged Information that is available only during the training stage.
-To incorporate the concept of Intelligent Teacher in the Machine Learning framework, Vapnik introduces the paradigm of Learning Under Privileged Information (\acrshort{lupi}).
+The additional knowledge provided by the Teacher is the Privileged Information, that is available only during the training stage.
+To incorporate the concept of Intelligent Teacher in the Machine Learning framework, Vapnik introduces the paradigm of \acrshort{lupi}.
 % LUPI
 % Definition and notation
 In this paradigm, given a set of i.i.d. triplets
@@ -1636,9 +1680,9 @@ $$ z = \set{(x_1, x^*_1, y_1), \ldots, (x_\nsamples,x^*_\nsamples, y_\nsamples)}
 generated according to an unknown distribution $P(x, x^*, y)$, the goal is to find the hypothesis $\hyp{x}{\param^*}$ from a set of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
 $$ \exprisk = \int \loss{\hyp{x}{\param}}{y} d\distf(x, y). $$
 
-Note that the goal is the same that in the standard paradigm; however with the \acrshort{lupi} approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide an information $x_i^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ``intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
+Note that the goal is the same that in the standard paradigm; however, with the \acrshort{lupi} approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide an information $x_i^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ``intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
 % Examples
-To understand better this paradigm consider the following example.
+To understand better this paradigm consider the following example given in~\cite{VapnikI15a}.
 % Example of doctor: images and commentaries
  The goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ``There is an area of unusual concentration of cells of Type A.'' or ``There is an aggressive proliferation of cells of Type B''. These commentaries are the elements $x^*$ of a certain space $X^*$ and the Teacher also chooses the probability $\cond{x^*}{x}$, which defines when to express this additional information.
 % \\
@@ -1650,36 +1694,37 @@ In the standard learning paradigm, how well the expected risk $\exprisk$ can be 
 In the case of classification, where $\Yspace = \set{-1, 1}$, and the loss $\lossf(\hyp{x}{\param}, y) = \ind_{y \hyp{x}{\param} \leq 0}$, the risks can be expressed as
 \begin{align*}
     \nonumber
-    \exprisk (\param) &= \int \ind_{y \hyp{x}{\param} \leq 0} d\distf(x, y) =  P(y \hyp{x}{\param} \leq 0) ,\\
-    \emprisk(\hyp{\cdot}{\param}) &= \sum_{i=1}^\nsamples \ind_{y_i \hyp{x_i}{\param} \leq 0} = \nu(\param).
+    \exprisk (\param) &= \int \ind_{y \hyp{x}{\param} \leq 0} d\distf(x, y),\\
+    \empriskn(\param) &= \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ind_{y_i \hyp{x_i}{\param} \leq 0}.
 \end{align*}
-In~\cite[Theorem~6.8]{vapnik1982estimation}, the following bound for the rate of convergence is given with probability $1 - \eta$:
+Therefore, in the case of the classification, with the loss $\lossf(\hyp{x}{\param}, y) = \ind_{y \hyp{x}{\param} \leq 0}$, we can interpret the expected risk $\exprisk (\param)$ as the probability of error, and the empirical risk $\emprisk(\param)$ as the frequency of errors in the training sample.
+Consider now the rule $\hypf(x, \param_\nsamples)$ that minimizes the frequency of errors, that is, $\param_\nsamples = \argmin_{\param \in \paramspace} \empriskn(\param)$; then, in~\citet[Theorem~6.8]{vapnik1982estimation}, the following bound for the rate of convergence is given with probability $1 - \eta$:
 \begin{equation}
     \nonumber
-    P(y \hyp{x}{\param} \leq 0) \leq \nu(\param) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} \sqrt{\nu(\param) \frac{\nsamples}{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}} } .
+    \exprisk(\param_\nsamples) \leq \empriskn(\param_\nsamples) + \frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\left(\frac{\eta}{12}\right)}{\nsamples} \left(1 + \sqrt{\nu(\param) \frac{\nsamples}{\vc \left(\log\left(\frac{2\nsamples}{\vc} \right) + 1\right) - \log\left(\frac{\eta}{12}\right)}} \right) .
 \end{equation}
 That is, the bound is controlled by the ratio $\vc/\nsamples$, where $\vc$ is the $\vcdim{\hypspace}$. If this \acrshort{vc}-dimension is finite, the bound goes to zero as $\nsamples$ grows.
 However, two different cases can be considered:
 % Convergence of separable hypothesis
 \begin{itemize}
-    \item \textbf{Separable case:} the training data can be classified in two groups without errors. That is, there exists $\param_\nsamples \in \paramspace$ such that $y_i \hyp{x_i}{\param_\nsamples} > 0$ for $i = 1, \ldots, \nsamples$, and thus $\nu(\param_\nsamples) = 0$.
+    \item \textbf{Separable case:} the training data can be classified in two groups without errors. That is, there exists $\param_\nsamples \in \paramspace$ such that $y_i \hyp{x_i}{\param_\nsamples} > 0$ for $i = 1, \ldots, \nsamples$, and thus $\empriskn(\param_\nsamples) = 0$.
     In this case, the following bound for the rate of converge holds
     \begin{equation}
         \nonumber
-        P(y \hyp{x}{\param_\nsamples} \leq 0) \leq \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } .
+        \exprisk(\param_\nsamples) \leq \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } .
     \end{equation}
     \item \textbf{Non-Separable case:} the training data cannot be classified in two groups without errors. That is, for all $\param \in \paramspace$, there exists $i \in \set{1, \ldots, \nsamples}$, such that $y_i \hyp{x_i}{\param} \leq 0$, and thus $\nu(\param) > 0$.
     In this case, the following bound for the rate of converge holds
     \begin{equation}
-        \nonumber
-        P(y \hyp{x}{\param} \leq 0) \leq \nu(\param) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
+        \label{eq:nonsep_bound}
+        \exprisk(\param_\nsamples) \leq \empriskn(\param_\nsamples) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
     \end{equation}
 \end{itemize}
-Note that there is an important difference here in the rate of convergence. The separable case has a convergence rate of $\vc/\nsamples$, while the non-separable case has a rate of $\sqrt{\vc/\nsamples}$. Vapnik \emph{et al.} try to address the question of why there exists such difference.
+Note that there is an important difference here in the rate of convergence. The separable case has a convergence rate with an order of magnitude $\vc/\nsamples$, while the non-separable case has a rate with an order of magnitude $\sqrt{\vc/\nsamples}$. Vapnik \emph{et al.} try to address the question of why there exists such difference.
 
 % Oracle \acrshort{svm}: separable
-\subsection{From Oracle \acrshort{svm} to \acrshort{svm}+}
-Vapnik \emph{et al.} illustrate the difference in convergence rates between the separable and non-separable cases by looking at the \acrshort{svm}. In the separable case, one has to minimize the functional 
+\subsection{From Oracle SVM to SVM+}
+Vapnik \emph{et al.} illustrate the difference in convergence rates between the separable and non-separable cases by looking at the \acrshort{svm}. Recall that in the separable case, one has to minimize the functional 
 $$J(\hplane) = \norm{\hplane}^2$$
 subject to the constraints
 $$y_i \left( \dotp{\hplane}{x_i} + \bias \right) \geq 1.$$
@@ -1693,67 +1738,71 @@ The authors wonder what would happen if the parameters $\xi_1, \ldots, \xi_\nsam
 In~\cite{VapnikI15a} an \emph{Oracle} \acrshort{svm} is considered. Here, the learner (Student) is supplied with a set of triplets
 \begin{equation}
     \nonumber
-    (x_1, \xi_1^0, y_1), \ldots, (x_\nsamples, \xi_\nsamples^0, y_\nsamples)
+    (x_1, \opt{\xi}_1, y_1), \ldots, (x_\nsamples, \opt{\xi}_\nsamples, y_\nsamples)
 \end{equation}
-where $\xi^0_1, \ldots, \xi^0_\nsamples$ are the slack variables for the best decision rule:
+where $\opt{\xi}_1, \ldots, \opt{\xi}_\nsamples$ are the slack variables for the best decision rule:
 \begin{equation}
     \nonumber
-    \xi_i^0 = \max \left(0, 1 - \hyp{x}{\param_0}  \right), \; \forall i = 1, \ldots, \nsamples ,
+    \opt{\xi}_i = \max \left(0, 1 - \hyp{x}{\opt{\param}}  \right), \; \forall i = 1, \ldots, \nsamples ,
 \end{equation}
-where $\param_0 = \arginf_{\param \in \paramspace} \exprisk(\hyp{\cdot}{\param}) $.
+where $\opt{\param} = \arginf_{\param \in \paramspace} \exprisk(\hyp{\cdot}{\param}) $.
 An \emph{Oracle} \acrshort{svm} has to minimize the functional
 $$J(\hplane) = \norm{\hplane}^2$$
 subject to the constraints
-$$y_i \left( \dotp{\hplane}{x_i} + \bias \right) \geq 1 - \xi_i^0 .$$
-Since the slack variables $\xi_i^0$ are known in advance, it can be shown~\citep{VapnikV09} that for the \emph{Oracle} \acrshort{svm} the following bound holds
+$$y_i \left( \dotp{\hplane}{x_i} + \bias \right) \geq 1 - \opt{\xi}_i .$$
+Since the slack variables $\opt{\xi}_i$ are known in advance, it can be shown~\citep{VapnikV09} that for the \emph{Oracle} \acrshort{svm} the following bound holds
 \begin{equation}
     \nonumber
-    P(y \hyp{x}{\param_\nsamples} \leq 0) \leq P(1 - \xi^0 \leq 0) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } ,
+    \exprisk(\param_\nsamples) \leq P(1 - \opt{\xi} < 0) + \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } ,
 \end{equation}
-where $P(1 - \xi^0 \leq 0)$ is the probability error of the hypothesis $\hyp{x}{\param_0}$.
-That is, when the privileged information encoded in $\xi^0$ is available, we recover the rate $\vc/\nsamples$.
+That is, when the privileged information encoded in $\opt{\xi}$ is available, we can recover the rate with an order of magnitude $\vc/\nsamples$.
 
 % Intelligent Teacher: separable but we need to control two models
 %\subsection{From Oracle to Intelligent Teacher}
 The \emph{Oracle} \acrshort{svm} is a theoretical construct, but we can approximate it by modelling the slack variables with the information provided by the Teacher in the \acrshort{lupi} paradigm.
-That is, the Teacher defines a space $\Xspace^*$ and a set of functions $\set{f^*(x^*, \param^*) , \param^* \in \paramspace^*}$, then models the slack variables as
+That is, the Teacher defines a space $\priv{\Xspace}$ and a set of functions $\set{\priv{f}(\priv{x}, \priv{\param}) , \priv{\param} \in \priv{\paramspace}}$, then models the slack variables as
 \begin{equation}
     \nonumber
-    \xi^* = f^*(x^*, \param^*) .
+    \priv{\xi} = \priv{f}(\priv{x}, \priv{\param}) .
 \end{equation}
-From the pairs sampled from some unknown distribution, the Teacher also defines the probability $\cond{x^*}{x}$ to provide the triplets
+From the pairs sampled from some unknown distribution, the Teacher also defines the probability $\cond{\priv{x}}{x}$ to provide the triplets
 \begin{equation}
     \nonumber
-    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) .
+    (x_1, \priv{x}_1, y_1), \ldots, (x_\nsamples, \priv{x}_\nsamples, y_\nsamples) .
 \end{equation}
 Then, we can consider the problem where the goal is to minimize
-$$ J(\param, \param^*) = \sum_{i=1}^\nsamples \max(0, f^*(x_i^*, \param^*)) $$
+$$ J(\param, \priv{\param}) = \sum_{i=1}^\nsamples \max(0, \priv{f}(\priv{x}_i, \priv{\param})) $$
 subject to the constraints
-$$ y_i \hyp{x_i}{\param} \geq 1 - f^*(x_i^*, \param^*).$$
-Let $f(x^*, \param^*_\nsamples),\; h(x, \param_\nsamples)$ be the solutions that minimize this empirical risk; then, in~\citet[Proposition~2]{VapnikV09} the following results for the convergence bound are given:
+$$ y_i \hyp{x_i}{\param} \geq - \priv{f}(\priv{x}_i, \priv{\param}).$$
+Here we are not considering a margin in the contraints, that is, the margin is $0$.
+Now, let $f(\priv{x}, \priv{\param}_\nsamples),\; h(x, \param_\nsamples)$ be the solutions that minimize this empirical risk; then, in~\citet[Proposition~2]{VapnikV09} the following results for the convergence bound are given:
 \begin{equation}
-    \nonumber
-    P(\hyp{x}{\param_\nsamples} y \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\frac{(\vc + \vc^*) \log\left(\frac{2\nsamples}{(\vc + \vc^*)} \right) - \log\eta}{\nsamples} } ,
+    \label{eq:lupi_bound}
+    \exprisk(\nsamples) \leq P(\priv{f}(\priv{x}, \priv{\param}_\nsamples) \geq 0) + \bigO{\frac{(\vc + \priv{\vc}) \log\left(\frac{2\nsamples}{(\vc + \priv{\vc})} \right) - \log\eta}{\nsamples} } ,
 \end{equation}
-where $d^*$ is the \acrshort{vc}-dimension of the space of hypothesis $\set{f(x, \param^*) \in \paramspace^*}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the $P(1 - f^*(x^*, \param^*_\nsamples) \leq 0)$. Although this probability is unknown,  we can control it. Let $\param^*_0$ be the parameter minimizing the expected risk
-\begin{equation}
-    \nonumber
-    \param^*_0 = \arginf_{\param^* \in \paramspace^*} \int_{\Xspace^*} \max(0, f^*(x^*, \param^*)- 1) dP(x^*) ,
-\end{equation}
-and $\param^*_\nsamples$ the one minimizing the empirical risk,
-\begin{equation}
-    \nonumber
-    \param^*_\nsamples = \arginf_{\param^* \in \paramspace^*} \sum_{i=1}^\nsamples \max(0, f^*(x^*_i, \param^*)- 1) .
-\end{equation}
-Consider $\set{f^*(x^*, \param^*), \param^* \in \paramspace^*}$ such that $f^*(x^*, \alpha^*), \param^* \in \paramspace^*$ is bounded, then 
-$$\set{\max(0, f^*(x^*, \param^*)- 1), \param^* \in \paramspace^*}$$
- is a set of totally bounded non-negative functions, for which we can prove the standard bound~\citep{Vapnik00},
-\begin{equation}
-    \nonumber
-    P(1 - f^*(x^*, \param^*_0) \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\sqrt{\frac{\vc^* \log\left(\frac{2\nsamples}{\vc^*} \right) - \log\eta}{\nsamples}} } ,
-\end{equation}
-with probability $1 - 2\eta$.
-That is, to have a rate of $\vc/\nsamples$ for $\param_\nsamples$, we need to estimate $\param^*_\nsamples$, which has a rate of $\sqrt{\vc^*/\nsamples}$. However, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a lower capacity, and thus, since $d^*$ is smaller, the convergence will be faster in this space.
+where $\priv{d}$ is the \acrshort{vc}-dimension of the space of hypothesis $\set{f(\priv{x}, \priv{\param}) \in \priv{\paramspace}}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the rate of convergence of $P(\priv{f}(\priv{x}, \priv{\param}_\nsamples) \geq 0)$ to $P(\priv{f}(\priv{x}, \priv{\param}_0) \geq 0)$. For this, we can use the standard rate for non-separable problems, i.e. $\sqrt{\priv{\vc}/\nsamples}$.
+% Let $\param^*_0$ be the parameter minimizing the expected risk
+% \begin{equation}
+%     \nonumber
+%     \param^*_0 = \arginf_{\param^* \in \paramspace^*} \int_{\Xspace^*} \max(0, f^*(x^*, \param^*)- 1) dP(x^*) ,
+% \end{equation}
+% and $\param^*_\nsamples$ the one minimizing the empirical risk,
+% \begin{equation}
+%     \nonumber
+%     \param^*_\nsamples = \arginf_{\param^* \in \paramspace^*} \sum_{i=1}^\nsamples \max(0, f^*(x^*_i, \param^*)- 1) .
+% \end{equation}
+% Consider $\set{f^*(x^*, \param^*), \param^* \in \paramspace^*}$ such that $f^*(x^*, \alpha^*), \param^* \in \paramspace^*$ is bounded, then 
+% $$\set{\max(0, f^*(x^*, \param^*)- 1), \param^* \in \paramspace^*}$$
+%  is a set of totally bounded non-negative functions, for which we can prove the standard bound~\citep{Vapnik00},
+% \begin{equation}
+%     \nonumber
+%     P(1 - f^*(x^*, \param^*_0) \leq 0) \leq P(1 - f^*(x^*, \param^*_\nsamples) \leq 0) + \bigO{\sqrt{\frac{\vc^* \log\left(\frac{2\nsamples}{\vc^*} \right) - \log\eta}{\nsamples}} } ,
+% \end{equation}
+% with probability $1 - 2\eta$.
+
+We can now observe the differences between the standard bound for non-separable problems, given in~\eqref{eq:nonsep_bound}, and the bound~\eqref{eq:lupi_bound} obtained with the \acrshort{lupi} paradigm; looking at the second terms we see that we have replaced the order of magnitude $\sqrt{\vc/d}$ by ${\vc + \vc^*/d}$, which was our goal. However, the price that we have paid for this is that we have also replaced the empirical risk $\empriskn(\param_\nsamples)$, which is a known quantity, by a probability $P(f^*(x^*, \param^*_\nsamples))$ that we also need to bound. 
+%
+Nevertheless, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a lower capacity, and thus, since $\priv{d}$ is smaller, the convergence will be faster in this space.
 
 %\subsection{\acrshort{svm}+ }
 Vapnik describes an extension of the \acrshort{svm} that embodies the \acrshort{lupi} paradigm~\citep{VapnikV09,VapnikI15a}: the \acrshort{svm}+. Given a set of triplets
@@ -1774,15 +1823,17 @@ The minimization problem is the following:
     \end{aligned}
 \end{equation}
 Here $\phi$ and $\phi^*$ are two transformations that can be different.
-However, note that problem~\eqref{eq:svmplus_original} is not convex due to the positive part $\pospart{\cdot}$ term in the objective function. Vapnik \emph{et al.} propose a relaxation of this problem to obtain a convex one. The idea is to model the slack variables $\xi$ as
-$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right] + \zeta(x^*, y) ,$$
+%However, note that problem~\eqref{eq:svmplus_original} is not convex due to the positive part $\pospart{\cdot}$ term in the objective function. 
+Next, to replace the positive part in the con $\pospart{\cdot}$ in the constraints,
+Vapnik \emph{et al.} propose a relaxation of this problem where the idea is to model the slack variables $\xi$ as
+$$ \xi(x^*, y) = y (w^* \phi^*(x^*) + b^*) + \zeta(x^*, y) ,$$
 where $\zeta(x^*, y) \geq 0$.
 The minimization problem is then
 \begin{equation}
     \label{eq:svmplus_delta_primal}
     \begin{aligned}
         & \argmin_{w, w^*, b, b^*, \zeta_i}
-        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + C \Delta \sum_{i=1}^\nsamples \zeta_i \\
+        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + \hat{C} \sum_{i=1}^\nsamples \zeta_i \\
         & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
         & \text{s.t.}
         & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \right] ,\\
@@ -1791,15 +1842,15 @@ The minimization problem is then
         & \text{for } & & i=1, \ldots, \nsamples,
     \end{aligned}
 \end{equation}
-where $C$ and $\Delta$ are hyperparameters.
-Problem~\eqref{eq:svmplus_delta_primal} is convex and the corresponding dual problem is
+where $C$ and $\hat{C}$ are hyperparameters.
+Problem~\eqref{eq:svmplus_delta_primal} is convex and, as shown in~\cite{VapnikI15a}, the corresponding dual problem can be expressed as
 \begin{equation}\label{eq:svmplus_delta_dual}
     \begin{aligned}
         & \argmin_{\alpha_i, \delta_i} 
         & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(x^*_i, x^*_j)  - \sum_{i=1}^\nsamples \alpha_i \\
         & \text{s.t.}
         & & 0 \leq \delta_i \leq C  \\
-        & & & 0 \leq \alpha_i \leq C \Delta + \delta_i, \\
+        & & & 0 \leq \alpha_i \leq \hat{C} + \delta_i, \\
         & & & \sum_{i=1}^{\nsamples}{\delta_i y_i} = 0, \; 
         \sum_{i=1}^{\nsamples}{\alpha_i y_i} = 0, \\
         & \text{for } & & i=1, \ldots, \nsamples,
@@ -1814,7 +1865,9 @@ We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the \acrshort{lupi}
 % Liang and Cherkassky
 In~\cite{LiangC08} the connection between \acrshort{svm}+ and \acrshort{mtl} \acrshort{svm} is discussed. 
 % Definition
-The \acrshort{mtl} \acrshort{svm} proposed in~\cite{LiangC08} is an \acrshort{mtl} model based on the \acrshort{svm}. It solves the primal problem
+The \acrshort{mtl} \acrshort{svm} proposed in~\cite{LiangC08} is an \acrshort{mtl} model based on the \acrshort{svm}.
+%
+It solves the primal problem
 \begin{equation}
     \label{eq:mtlsvm_primal}
     \begin{aligned}
@@ -1830,12 +1883,12 @@ Here, a combination of a common model for all tasks
 $$ \dotp{w}{\phi(x_{i})} + b $$
 and a task-specific model
 $$ \dotp{v_r}{\phi_r(x_{i}^r)} + b_r $$
-is used, where the common transformation $\phi$ and the task-independent ones $\phi_r$ can be different 
+is used, where the common transformation $\phi$ and the task-independent ones $\phi_r$ can be different.
 The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
 \begin{equation}\label{eq:mtlsvm_dual}
     \begin{aligned}
         & \argmin_{\alpha_i} 
-        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \sum_{i, j=1}^{\npertask_r, \npertask_s} y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r=1}^\ntasks  \sum_{i, j=1}^{\npertask_r} y_i^r y_j^s \alpha_i^r \alpha_j^r k_r(x^r_i, x^r_j) \\
+        & & \frac{1}{2} \sum_{r, s=1}^\ntasks \delta_{rs} \sum_{i, j=1}^{\npertask_r, \npertask_s} y_i^r y_j^s \alpha_i^r \alpha_j^s k(x_i^r, x_j^s) + \frac{1}{2 \mu} \sum_{r,s=1}^\ntasks  \sum_{i, j=1}^{\npertask_r, \npertask_s}  y_i^r y_j^s \alpha_i^r \alpha_j^r k_r(x^r_i, x^r_j) \\
         & & & \qquad - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r \\
         & \text{s.t.}
         & & 0 \leq \alpha_i^r \leq C ,\\
@@ -1843,11 +1896,13 @@ The dual problem corresponding to~\eqref{eq:mtlsvm_primal} is
         & \text{for } & & r=1, \ldots, \ntasks; \; i=1, \ldots, \npertask_r ,
         \end{aligned}
 \end{equation}
-where $\delta_{rs}$ is the Dirac's delta.
+where $\delta_{rs} = 1$ only if $r=s$ and $\delta_{rs} = 0$ otherwise.
+Later, in Chapter~\ref{Chapter4} we will describe with more detail this \acrshort{mtl} \acrshort{svm}, and we will explain our proposed modification of it.
+
 % Similarities and differences
-In~\cite{LiangC08} some similarities between \acrshort{mtl} \acrshort{svm} and \acrshort{svm}+ are pointed out. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve \acrshort{mtl} problems, where different tasks are incorporated and multiple correcting spaces are defined using the transformations $\phi_r$.
+The connection between the \acrshort{mtl} \acrshort{svm} and the \acrshort{svm}+ is not trivial, but we can observe that there exist similarities, some of which are pointed out in~\cite{LiangC08}. Problem~\eqref{eq:mtlsvm_primal} can be regarded as an adaptation of~\eqref{eq:svmplus_delta_primal} to solve \acrshort{mtl} problems, where different tasks are incorporated and multiple correcting spaces are defined using the transformations $\phi_r$.
 If we consider the problem~\eqref{eq:mtlsvm_primal} with a single task, it is a modification of the \acrshort{svm}+ problem~\eqref{eq:svmplus_delta_primal} where the slack variables are modeled as
-$$ \xi(x, y) = y (w^* \phi^*(x) + b^*)  .$$
+$$ \xi(x, y) = y (v_r \phi_r(x) + b_r)  .$$
 That is, it is a relaxation of the original problem~\eqref{eq:svmplus_delta_primal}, where the second constraint to model the positive part of the slack variables disappears.
 This relaxation gives place to some important differences between both models. Since the auxiliary primal variables $\zeta_i$ are no longer required, this is reflected in a simpler dual form~\eqref{eq:mtlsvm_dual}, where only $\nsamples$ dual variables have to be estimated, instead of the $2\nsamples$ dual variables of~\eqref{eq:svmplus_delta_dual}.
 The \acrshort{mt} part in~\eqref{eq:mtlsvm_dual} resides in the $\delta_{rs}$ function, which makes the correction of similarity only possible between elements of the same task.
@@ -1920,21 +1975,32 @@ It is still a work in progress to study the rate of convergence of \acrshort{mtl
 
 \section{Conclusions}\label{sec:conclusions_ch3}
 
-In this chapter, we covered some of the most relevant works in \acrshort{mtl}.
-We have started with the theoretical motivation behind \acrshort{mtl}. Then, we have surveyed previous works in \acrshort{mtl} and establish categories, which help us understand the background in this field.
-
+In this Chapter we have introduced the concept of \acrshort{mtl}, we try to motivate it, present its advantages and describe multiple ways of implementing it.
+%We have started with the theoretical motivation behind \acrshort{mtl}. Then, we have surveyed previous works in \acrshort{mtl} and established categories, which help us understand the background in this field.
 %
-In Section~\ref{sec:ch3_mtl_theory} we have presented the work of~\citep{baxter2000model}, which sets the foundation for \acrshort{mtl} and \acrshort{ltl} theory, establishing bounds for the excess risk, that is, the difference between the best empirical and best expected error. These bounds are later extended in several works, from which we highlight the work of~\citet{Ben-DavidS03}, that defines a definition for related tasks and use it to derive new bounds.
+In Section~\ref{sec:ch3_mtl_theory} we have presented some of the foundational works on the theory of \acrshort{mtl}. First, we describe the work of~\citep{baxter2000model}, which sets the foundation for \acrshort{mtl} and \acrshort{ltl} theory, establishing necessary conditions for the consistency of \acrshort{mtl}. Following the work of Vapnik \emph{et al.}, reviewed in Chapter~\ref{Chapter2}, this is done by bounding the expected \acrshort{mtl} risk in terms of the empirical risk and using concepts related with the capacity of function spaces. 
+%
+Next, we present the work of~\citet{Ben-DavidS03}, which gives a definition for related tasks. Combining this task relatedness concept with the results from~\citet{baxter2000model}, the authors derive new bounds for the expected \acrshort{mtl} risk. The work of Ben-David \emph{et al.} is particularly useful when there is a target task and the rest are auxiliary ones.
 %
 
-Moreover, in Section~\ref{sec:ch3_overview} we have reviewed multiple approaches for \acrshort{mtl} and categorize them in three main groups: feature-based, parameter-based and combination-based methods.
+After the description of the theoretical works, in Section~\ref{sec:ch3_overview} we have reviewed multiple approaches for \acrshort{mtl} and categorize them in three main groups: feature-based, parameter-based and combination-based methods.
 The feature-based methods are more common in linear models or \acrshort{nns}, the parameter-based ones typically use linear models as well, and the combination-based, which is the less common one, can be used also with kernel methods.
 
-\acrshort{nns} and kernel methods are two of the most successful models in the two last decades, so they receive each their own analysis.
+To complete this review, we consider a particular analysis of \acrshort{mtl} with \acrshort{nns} and kernel methods, which are two of the most successful models in the two last decades.
 In Section~\ref{sec:deep_mtl}, a survey of the \acrshort{mtl} methods based on \acrshort{nns} has been given, where it can be observed that they are mainly focused on finding a shared representation beneficial to all tasks. In Chapter~\ref{Chapter4} we will present an alternative combination-based \acrshort{mtl} method with \acrshort{nns}.
 Also, an overview of \acrshort{mtl} with kernel methods is given in Section~\ref{sec:kernel_mtl}, where there are fewer works than for \acrshort{nns} or linear models, especially for \acrshort{svms}. 
-In the next chapters we try to cover this gap, presenting novel methods for \acrshort{mtl} with \acrshort{svms}. 
 Other important theoretical motivation for \acrshort{mtl} that we have presented is its connection with the \acrshort{lupi} paradigm, presented in Section~\ref{sec:ch3_lupi}.
 %
+A kernel method that is central in this work is the \acrshort{mtl} \acrshort{svm}, which combines a common and task-specific parts, and we also present in Section~\ref{sec:ch3_lupi} its connection with the \acrshort{lupi} paradigm.
+%
+
+In summary, in this chapter, we have covered some of the most relevant works in \acrshort{mtl}. We have observed that there are some theoretical reasons that support the \acrshort{mtl}, and we have reviewed multiple approaches that apply it. 
+We remark two facts from this survey. First, although there are many \acrshort{mtl} strategies, few of them are applicable for kernel methods. Also, most approaches using \acrshort{nns} are based on a feature-based strategy, but we have seen that there are other two main groups: parameter-based and combination-based.
+%
+In the next chapters we try to cover these gaps. In Chapters~\ref{Chapter4} and~\ref{Chapter5} we describe novel approaches for \acrshort{mtl} using kernel methods, particularly for the L1, L2, and LS-\acrshort{svm}.
+%
+In Chapter~\ref{Chapter5} we present a \acrshort{gl} approach, where different task-specific parts, possibly in an infinite-dimensional kernel space, are coupled together using a specific graph regularizer.
+%
+Also, in Chapter~\ref{Chapter4} we present a convex formulation for combination-based \acrshort{mtl}, which is not only valid for kernel methods, but also for \acrshort{nns}.
 
 % Finally, a discussion about operator-valued kernels, and kernels of tensor product of spaces, which are equivalent under some conditions, has been given in Section~\ref{sec:ch3_mtl_kernelmethods}. The kernels defined as product of two kernels in a tensor product space will be useful for a particular approach to \acrshort{mtl}, the graph Laplacian approach, that will be presented in Chapter~\ref{Chapter5}.

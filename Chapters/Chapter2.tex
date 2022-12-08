@@ -318,7 +318,7 @@ Therefore, we have seen that there is a one-to-one correspondence between positi
 
 
 
-\section{Risk and Regularization}
+\section{Risk and Regularization}\label{sec:risk_reg}
 To automatize the learning process, which is the goal of \acrshort{ml}, it is necessary to define a criterion to measure the performance of the model functions $f: \Xspace \to \Yspace$ estimated from the data.
 At each particular sample $(x_i, y_i)$ we can give a metric of how close we are to our desired goal; this is the selected loss function. If we have a classification problem, we may want to minimize the number of incorrectly classified patterns, but this quantity is not continuous and not easy to work with. In regression problems, we would like to minimize the distance between the regression function and the training target values, but there are also multiple ways to define this distance. 
 %
@@ -664,7 +664,7 @@ This is a relevant result because it gives an explicit form for the minimizer of
 
 
 
-\section{Learning Theory}
+\section{Learning Theory}\label{sec:learning_theory}
 % Introducción de Vapnik?
 % 
 %
@@ -675,7 +675,7 @@ This is a relevant result because it gives an explicit form for the minimizer of
 % classification problem: logistic regression
 
 % joint formulation for both 
-The question of what learning is and when it takes place has frequently been proposed in computer science or even philosophy, but it is difficult to formalize it in order to provide some meaningful answers. Vapnik and Chervonenkis, two of the founders of statistical learning theory, expressed this question in terms of how well we minimize the expected risk when we focus on minimizing the empirical risk.
+The question of what learning is and when it takes place has frequently been proposed in computer science or even philosophy, but it is difficult to formalize it in order to provide meaningful answers. Vapnik and Chervonenkis, two of the founders of statistical learning theory, expressed this question in terms of how well we minimize the expected risk when we focus on minimizing the empirical risk.
 %
 They developed a theory to give specific conditions, necessary and sufficient, for when does minimizing the empirical risk lead to a small expected risk, and also how can we expect this to happen.
 
@@ -920,6 +920,8 @@ Therefore, we can combine~\eqref{eq:risk_bound_ent} with the inequalities in~\eq
     \label{eq:risk_bound_vc}
     \exprisk(\hypf) \leq \emprisk(\hypf) + \sqrt{\frac{8}{\nsamples} \left(\vcdim{\hypspace} \left(\log\left(\frac{\nsamples}{\vcdim{\hypspace}}\right) + 1 \right) + \log \frac{4}{\delta} \right)} .
 \end{equation}
+%
+We have defined the \acrshort{vc}-dimension of a family of binary functions as the maximum number of points that can be shattered by such family. However, this is a definition that is valid for classification problems only. For real functions, which are applied in regression, the \acrshort{vc}-dimension is defined as the \acrshort{vc}-dimension of the set of indicator functions $ I(x, \param, \beta) = \myvec{1}_{\{\hyp{x}{\param} - \beta\}}$~\citep{vapnik1982estimation}.
 
 \subsection{Structural Learning}
 % Structural learning (SRM)
