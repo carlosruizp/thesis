@@ -1676,15 +1676,15 @@ To incorporate the concept of Intelligent Teacher in the Machine Learning framew
 % LUPI
 % Definition and notation
 In this paradigm, given a set of i.i.d. triplets
-$$ z = \set{(x_1, x^*_1, y_1), \ldots, (x_\nsamples,x^*_\nsamples, y_\nsamples)}, \; x \in \Xspace, x^* \in \Xspace^*, y \in \Yspace $$
-generated according to an unknown distribution $P(x, x^*, y)$, the goal is to find the hypothesis $\hyp{x}{\param^*}$ from a set of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
+$$ z = \set{(x_1, \priv{x}_1, y_1), \ldots, (x_\nsamples,\priv{x}_\nsamples, y_\nsamples)}, \; x \in \Xspace, \priv{x} \in \priv{\Xspace}, y \in \Yspace $$
+generated according to an unknown distribution $P(x, \priv{x}, y)$, the goal is to find the hypothesis $\hyp{x}{\opt{\param}}$ from a set of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
 $$ \exprisk = \int \loss{\hyp{x}{\param}}{y} d\distf(x, y). $$
 
-Note that the goal is the same that in the standard paradigm; however, with the \acrshort{lupi} approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $x^*$ of a space $\Xspace^*$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide an information $x_i^* \in \Xspace^*$ given some probability $\cond{x^*}{x}$. That is, the ``intelligence'' of the Teacher is defined by the choice of the space $\Xspace^*$ and the conditional probability $\cond{x^*}{x}$. 
+Note that the goal is the same that in the standard paradigm; however, with the \acrshort{lupi} approach we are provided additional information, which is available only during the training stage. This additional information is encoded in the elements $\priv{x}$ of a space $\priv{\Xspace}$, which is different from $\Xspace$. The goal of the Teacher is, given a pair $(x_i, y_i)$, to provide an information $x_i^* \in \priv{\Xspace}$ given some probability $\cond{\priv{x}}{x}$. That is, the ``intelligence'' of the Teacher is defined by the choice of the space $\priv{\Xspace}$ and the conditional probability $\cond{\priv{x}}{x}$. 
 % Examples
 To understand better this paradigm consider the following example given in~\cite{VapnikI15a}.
 % Example of doctor: images and commentaries
- The goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ``There is an area of unusual concentration of cells of Type A.'' or ``There is an aggressive proliferation of cells of Type B''. These commentaries are the elements $x^*$ of a certain space $X^*$ and the Teacher also chooses the probability $\cond{x^*}{x}$, which defines when to express this additional information.
+ The goal is to find a decision rule that classifies biopsy images into cancer or non-cancer. Here, $\Xspace$ is the space of images, i.e. the matrix of pixels, for example $[0, 1]^{64 \times 64}$. The label space is $\Yspace = \set{0, 1}$. An Intelligent Teacher might provide a student of medicine with commentaries about the images, for example: ``There is an area of unusual concentration of cells of Type A.'' or ``There is an aggressive proliferation of cells of Type B''. These commentaries are the elements $\priv{x}$ of a certain space $\priv{\Xspace}$ and the Teacher also chooses the probability $\cond{\priv{x}}{x}$, which defines when to express this additional information.
 % \\
 % % Example of high quality and low quality images
 % \textbf{Example 2.} Consider the \comm{TODO} 
@@ -1700,8 +1700,8 @@ In the case of classification, where $\Yspace = \set{-1, 1}$, and the loss $\los
 Therefore, in the case of the classification, with the loss $\lossf(\hyp{x}{\param}, y) = \ind_{y \hyp{x}{\param} \leq 0}$, we can interpret the expected risk $\exprisk (\param)$ as the probability of error, and the empirical risk $\emprisk(\param)$ as the frequency of errors in the training sample.
 Consider now the rule $\hypf(x, \param_\nsamples)$ that minimizes the frequency of errors, that is, $\param_\nsamples = \argmin_{\param \in \paramspace} \empriskn(\param)$; then, in~\citet[Theorem~6.8]{vapnik1982estimation}, the following bound for the rate of convergence is given with probability $1 - \eta$:
 \begin{equation}
-    \nonumber
-    \exprisk(\param_\nsamples) \leq \empriskn(\param_\nsamples) + \frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\left(\frac{\eta}{12}\right)}{\nsamples} \left(1 + \sqrt{\nu(\param) \frac{\nsamples}{\vc \left(\log\left(\frac{2\nsamples}{\vc} \right) + 1\right) - \log\left(\frac{\eta}{12}\right)}} \right) .
+    \label{eq:fullvc_bound}
+    \exprisk(\param_\nsamples) \leq \empriskn(\param_\nsamples) + \frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\left(\frac{\eta}{12}\right)}{\nsamples} \left(1 + \sqrt{ \frac{\empriskn(\param_\nsamples) \nsamples}{\vc \left(\log\left(\frac{2\nsamples}{\vc} \right) + 1\right) - \log\left(\frac{\eta}{12}\right)}} \right) .
 \end{equation}
 That is, the bound is controlled by the ratio $\vc/\nsamples$, where $\vc$ is the $\vcdim{\hypspace}$. If this \acrshort{vc}-dimension is finite, the bound goes to zero as $\nsamples$ grows.
 However, two different cases can be considered:
@@ -1713,12 +1713,13 @@ However, two different cases can be considered:
         \nonumber
         \exprisk(\param_\nsamples) \leq \bigO{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples} } .
     \end{equation}
-    \item \textbf{Non-Separable case:} the training data cannot be classified in two groups without errors. That is, for all $\param \in \paramspace$, there exists $i \in \set{1, \ldots, \nsamples}$, such that $y_i \hyp{x_i}{\param} \leq 0$, and thus $\nu(\param) > 0$.
-    In this case, the following bound for the rate of converge holds
+    \item \textbf{Non-Separable case:} the training data cannot be classified in two groups without errors. That is, for all $\param \in \paramspace$, there exists $i \in \set{1, \ldots, \nsamples}$, such that $y_i \hyp{x_i}{\param} \leq 0$, and thus $\empriskn(\param_\nsamples)$.
+    Observe in~\eqref{eq:fullvc_bound} that in this case we have one term that depends essentially $\vc/\nsamples$ and other on $\sqrt{\vc/\nsamples}$. Given a finite $\vc$, as $\nsamples$ grows, the term depending on $\sqrt{\vc/\nsamples}$ will go to zero at a lower rate than that depending on $\vc/\nsamples$; thus, the following bound for the rate of converge holds
     \begin{equation}
         \label{eq:nonsep_bound}
         \exprisk(\param_\nsamples) \leq \empriskn(\param_\nsamples) + \bigO{\sqrt{\frac{\vc \log\left(\frac{2\nsamples}{\vc} \right) - \log\eta}{\nsamples}} } .
     \end{equation}
+    
 \end{itemize}
 Note that there is an important difference here in the rate of convergence. The separable case has a convergence rate with an order of magnitude $\vc/\nsamples$, while the non-separable case has a rate with an order of magnitude $\sqrt{\vc/\nsamples}$. Vapnik \emph{et al.} try to address the question of why there exists such difference.
 
@@ -1780,7 +1781,7 @@ Now, let $f(\priv{x}, \priv{\param}_\nsamples),\; h(x, \param_\nsamples)$ be the
     \label{eq:lupi_bound}
     \exprisk(\nsamples) \leq P(\priv{f}(\priv{x}, \priv{\param}_\nsamples) \geq 0) + \bigO{\frac{(\vc + \priv{\vc}) \log\left(\frac{2\nsamples}{(\vc + \priv{\vc})} \right) - \log\eta}{\nsamples} } ,
 \end{equation}
-where $\priv{d}$ is the \acrshort{vc}-dimension of the space of hypothesis $\set{f(\priv{x}, \priv{\param}) \in \priv{\paramspace}}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the rate of convergence of $P(\priv{f}(\priv{x}, \priv{\param}_\nsamples) \geq 0)$ to $P(\priv{f}(\priv{x}, \priv{\param}_0) \geq 0)$. For this, we can use the standard rate for non-separable problems, i.e. $\sqrt{\priv{\vc}/\nsamples}$.
+where $\priv{d}$ is the \acrshort{vc}-dimension of the space of hypothesis $\set{f(\priv{x}, \priv{\param}) \in \priv{\paramspace}}$. This result shows that, to maintain the best convergence rate $\vc/\nsamples$, we need to estimate the rate of convergence of $P(\priv{f}(\priv{x}, \priv{\param}_\nsamples) \geq 0)$, where we can use the standard rate for non-separable problems, i.e. $\sqrt{\priv{\vc}/\nsamples}$.
 % Let $\param^*_0$ be the parameter minimizing the expected risk
 % \begin{equation}
 %     \nonumber
@@ -1800,44 +1801,44 @@ where $\priv{d}$ is the \acrshort{vc}-dimension of the space of hypothesis $\set
 % \end{equation}
 % with probability $1 - 2\eta$.
 
-We can now observe the differences between the standard bound for non-separable problems, given in~\eqref{eq:nonsep_bound}, and the bound~\eqref{eq:lupi_bound} obtained with the \acrshort{lupi} paradigm; looking at the second terms we see that we have replaced the order of magnitude $\sqrt{\vc/d}$ by ${\vc + \vc^*/d}$, which was our goal. However, the price that we have paid for this is that we have also replaced the empirical risk $\empriskn(\param_\nsamples)$, which is a known quantity, by a probability $P(f^*(x^*, \param^*_\nsamples))$ that we also need to bound. 
+We can now observe the differences between the standard bound for non-separable problems, given in~\eqref{eq:nonsep_bound}, and the bound~\eqref{eq:lupi_bound} obtained with the \acrshort{lupi} paradigm; looking at the second terms we see that we have replaced the order of magnitude $\sqrt{\vc/\nsamples}$ by ${\vc + \priv{\vc}/\nsamples}$, which was our goal. However, the price that we have paid for this is that we have also replaced the empirical risk $\empriskn(\param_\nsamples)$, which is a known quantity, by a probability $P(\priv{f}(\priv{x}, \priv{\param}_\nsamples))$, which converges at a rate $\sqrt{\priv{\vc}/\nsamples}$. 
 %
-Nevertheless, observe that $\Xspace^*$ is the space suggested by the Teacher, which hopefully has a lower capacity, and thus, since $\priv{d}$ is smaller, the convergence will be faster in this space.
+Nevertheless, observe that $\priv{\Xspace}$ is the space suggested by the Teacher, which hopefully has a lower capacity, and thus, since $\priv{d}$ is smaller, the convergence will be faster in this space.
 
 %\subsection{\acrshort{svm}+ }
 Vapnik describes an extension of the \acrshort{svm} that embodies the \acrshort{lupi} paradigm~\citep{VapnikV09,VapnikI15a}: the \acrshort{svm}+. Given a set of triplets
 \begin{equation}
     \nonumber
-    (x_1, x^*_1, y_1), \ldots, (x_\nsamples, x^*_\nsamples, y_\nsamples) ,
+    (x_1, \priv{x}_1, y_1), \ldots, (x_\nsamples, \priv{x}_\nsamples, y_\nsamples) ,
 \end{equation}
-the idea is to model the slack variables of the standard \acrshort{svm} using the elements $x^* \in \Xspace^*$ as
-$$ \xi(x^*, y) = \left[y (w^* \phi^*(x^*) + b^*) \right]_+  = \max\left( y (w^* \phi^*(x^*) + b^*), 0  \right).$$
+the idea is to model the slack variables of the standard \acrshort{svm} using the elements $\priv{x} \in \priv{\Xspace}$ as
+$$ \xi(\priv{x}, y) = \left[y (\priv{w} \priv{\phi}(\priv{x}) + \priv{b}) \right]_+  = \max\left( y (\priv{w} \priv{\phi}(\priv{x}) + \priv{b}), 0  \right).$$
 The minimization problem is the following:
 \begin{equation}
     \label{eq:svmplus_original}
     \begin{aligned}
-        & \argmin_{w, w^*, b, b^*}
-        & &  C \sum_{i=1}^\nsamples \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right]_+ + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
+        & \argmin_{w, \priv{w}, b, \priv{b}}
+        & &  C \sum_{i=1}^\nsamples \left[y_i (\dotp{\priv{w}}{\priv{\phi}(x_i^*)} + \priv{b}) \right]_+ + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{\priv{w}}{\priv{w}} \\
         & \text{s.t.}
-        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) \right]_+ .
+        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{\priv{w}}{\priv{\phi}(\priv{x}_i)} + \priv{b}) \right]_+ .
     \end{aligned}
 \end{equation}
-Here $\phi$ and $\phi^*$ are two transformations that can be different.
+Here $\phi$ and $\priv{\phi}$ are two transformations that can be different.
 %However, note that problem~\eqref{eq:svmplus_original} is not convex due to the positive part $\pospart{\cdot}$ term in the objective function. 
 Next, to replace the positive part in the con $\pospart{\cdot}$ in the constraints,
 Vapnik \emph{et al.} propose a relaxation of this problem where the idea is to model the slack variables $\xi$ as
-$$ \xi(x^*, y) = y (w^* \phi^*(x^*) + b^*) + \zeta(x^*, y) ,$$
-where $\zeta(x^*, y) \geq 0$.
+$$ \xi(\priv{x}, y) = y (\priv{w} \priv{\phi}(\priv{x}) + \priv{b}) + \zeta(\priv{x}, y) ,$$
+where $\zeta(\priv{x}, y) \geq 0$.
 The minimization problem is then
 \begin{equation}
     \label{eq:svmplus_delta_primal}
     \begin{aligned}
-        & \argmin_{w, w^*, b, b^*, \zeta_i}
-        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{w^*}{\phi^*(x_i^*)} + b^*) \right] + \zeta_i \right) + \hat{C} \sum_{i=1}^\nsamples \zeta_i \\
-        & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{w^*}{w^*} \\
+        & \argmin_{w, \priv{w}, b, \priv{b}, \zeta_i}
+        & &  C \sum_{i=1}^\nsamples \left( \left[y_i (\dotp{\priv{w}}{\priv{\phi}(x_i^*)} + \priv{b}) \right] + \zeta_i \right) + \hat{C} \sum_{i=1}^\nsamples \zeta_i \\
+        & & &\qquad + \frac{1}{2} \dotp{w}{w} + \frac{\mu}{2} \dotp{\priv{w}}{\priv{w}} \\
         & \text{s.t.}
-        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \right] ,\\
-        & & &y_i (\dotp{w^*}{\phi^*(x^*_i)} + b^*) + \zeta_i \geq 0 ,\\
+        & & y_{i} ( \dotp{w}{\phi(x_{i})} + b) \geq 1 - \left[y_i (\dotp{\priv{w}}{\priv{\phi}(\priv{x}_i)} + \priv{b}) + \zeta_i \right] ,\\
+        & & &y_i (\dotp{\priv{w}}{\priv{\phi}(\priv{x}_i)} + \priv{b}) + \zeta_i \geq 0 ,\\
         & & &\zeta_i \geq 0, \\
         & \text{for } & & i=1, \ldots, \nsamples,
     \end{aligned}
@@ -1847,7 +1848,7 @@ Problem~\eqref{eq:svmplus_delta_primal} is convex and, as shown in~\cite{VapnikI
 \begin{equation}\label{eq:svmplus_delta_dual}
     \begin{aligned}
         & \argmin_{\alpha_i, \delta_i} 
-        & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(x^*_i, x^*_j)  - \sum_{i=1}^\nsamples \alpha_i \\
+        & & \frac{1}{2} \sum_{i, j=1}^\nsamples y_i y_j \alpha_i \alpha_j k(x_i, x_j) +\frac{1}{2 \mu} \sum_{i, j=1}^\nsamples y_i y_j (\alpha_i - \delta_i) (\alpha_j - \delta_i) k^*(\priv{x}_i, \priv{x}_j)  - \sum_{i=1}^\nsamples \alpha_i \\
         & \text{s.t.}
         & & 0 \leq \delta_i \leq C  \\
         & & & 0 \leq \alpha_i \leq \hat{C} + \delta_i, \\
@@ -1857,8 +1858,8 @@ Problem~\eqref{eq:svmplus_delta_primal} is convex and, as shown in~\cite{VapnikI
         \end{aligned}
 \end{equation}
 where we use the kernel functions
-$$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(x^*_i, x^*_j) = \dotp{\phi^*(x^*_i)}{\phi^*(x^*_j)}.$$ 
-We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the \acrshort{lupi} paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\Xspace^*$. For that reason, $\Xspace$ and $\Xspace^*$ are named Decision Space and Correction Space, respectively.
+$$k(x_i, x_j) = \dotp{\phi(x_i)}{\phi(x_j)}, \; k^*(\priv{x}_i, \priv{x}_j) = \dotp{\priv{\phi}(\priv{x}_i)}{\priv{\phi}(\priv{x}_j)}.$$ 
+We can observe in Problem~\eqref{eq:svmplus_delta_dual} that the \acrshort{lupi} paradigm exerts a similarity control, correcting the similarity in space $\Xspace$ with the similarity in the privileged space $\priv{\Xspace}$. For that reason, $\Xspace$ and $\priv{\Xspace}$ are named Decision Space and Correction Space, respectively.
 
 
 \subsection{Connection between \acrshort{svm}+ and \acrshort{mtl}}
