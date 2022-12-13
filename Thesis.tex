@@ -38,13 +38,13 @@
 \usepackage{graphics}      % scalebox
 \usepackage{longtable}      % multi-page tables
 \usepackage{tikz}
-\usepackage{glossaries}
+\usepackage[automake,toc]{glossaries}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{textcomp}   % to use the permyriad symbol
 \usepackage{bibentry} 
 
-
+\makeglossaries
 
 % mathtools
 \mathtoolsset{showonlyrefs}
@@ -371,7 +371,7 @@
 \title  {Advanced Kernel Methods for Multi-Task Learning}
 %\title  {\uppercase{Prediction Based on Averages over Automatically Induced Learners: Ensemble Methods and Bayesian Techniques}}
 \authors  {\texorpdfstring
-            {\href{http://arantxa.ii.uam.es/~egarrido/}{Carlos Ruiz Pastor}}
+            {{Carlos Ruiz Pastor}}
             {Carlos Ruiz Pastor}
           }
 \addresses  {\groupname\\\deptname\\\univname}  
@@ -449,7 +449,45 @@ Aristotle.
 \addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
 
 \small{
-.
+% ml es importante 
+% mtl intenta juntar varias tareas como los humanos
+Machine Learning (ML), which tries to automatize the process of learning, has a great influence in our current society.
+The ML algorithms try to infer general patterns from data, which can then be applicable to unseen data. 
+%Gathering data, with the ML algorithms it is possible to inductively infer general patterns. 
+These algorithms, such as the Support Vector Machine (SVM) or Neural Network (NN), are present in many daily situations and have strongly impacted multiple areas such as engineering or advertising, among many others.
+Multi-Task Learning (MTL) is a field of ML that considers learning different tasks jointly to improve the learning process. This is the natural way of learning for humans: we do not learn each task in an isolated manner, but there exist tasks are better learned together. The goal in MTL is developing strategies to mimic this behaviour, where learning different tasks jointly offers an advantage.
+
+
+This thesis begins with a presentation of some basic concepts and definitions that we will use in the rest of this work.
+% first, a brief description of some of the basic concepts and definitions that we will use
+
+After that, a theoretical motivation for MTL is given, and some of the most relevant works on MTL are reviewed. A taxonomy for these methods is proposed, where three categories are considered: feature-based, parameter-based and combination-based strategies. Different ML algorithms, depending on their characteristics, can adopt more easily one of these strategies. The feature-based strategies are more natural for NNs, while the kernel methods, such as the SVM, present a more rigid framework, and the combination-based strategies are better suited for them.
+% After that, the motivation of mtl is given
+% and a thorough review of related work is given with a categorization
+
+Considering the combination-based strategies, a new convex formulation is proposed: in each task we consider a convex combination of a common and task-specific part as the model. This formulation offers some nice properties, such as better interpretability of the models, or the possibility to dismiss the common or task-specific parts with a particular choice of the hyperparameters.
+This approach is applied to kernel methods, in particular, the L1, L2 and LS-SVM with this convex MTL formulation are proposed, and the solutions for the corresponding training problems can be obtained with standard SVM solvers.
+One natural alternative, which considers the convex combination of pre-trained common and task-specific models, is also described.
+In multiple experiments it is observed that the kernel methods with a convex MTL formulation obtains results better than those considering just a common model, task-specific ones or the convex combination of pre-trained models.
+As a real world application, the prediction of solar and wind energy is presented using these models, where our proposal outperforms or ties with the competition, which consider either a common model or task-specific ones.
+
+%
+Following this formulation, a MTL proposal for NNs is made, where a convex combination of a common and a task-specific networks is used. These models can also be trained with standard optimization techniques for NNs.
+In experiments with four image datasets, it is shown that the results of this proposal are better than using standard approaches, such as sharing the weights in the hidden layers.
+
+% Considering an alternative combination-based approach, a new convex form ... is proposed
+% It is applied to kernel methods
+% and to NN
+% As a real work application, it is shown (energy)...
+
+% Another strategy, based on a gl approach is proposed.
+Another approach with Graph Laplacian regularization, which we categorize as a parameter-based strategy is proposed. Here, considering a GL regularization, where the tasks are interpreted as nodes in a graph, the pairwise distances between the task models are penalized. Here, the adjacency matrix of the graph defines the weights for the distances. A new formulation to apply this regularization in kernel spaces is developed, and the GL approach is applied to the L1, L2 and LS-SVM. 
+It is exemplified with experiments also that this approach can obtain competitive results. 
+%
+Moreover, an algorithm to automatically learn the adjacency matrix from the data is proposed. Examples of the advantages of taking this approach are given using experiments with synthetic and real data.
+
+The thesis ends with some general conclusions and presents ideas for future research. 
+%
 }
 
 }
@@ -492,40 +530,26 @@ Small.
 \tableofcontents  % Write out the Table of Contents
 
 %% ----------------------------------------------------------------
-%\lhead{\emph{List of Figures}}  % Set the left side page header to "List if Figures"
-%\listoffigures  % Write out the List of Figures
+\lhead{\emph{List of Figures}}  % Set the left side page header to "List if Figures"
+\listoffigures  % Write out the List of Figures
 
 %% ----------------------------------------------------------------
-%\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
-%\listoftables  % Write out the List of Tables
+\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
+\listoftables  % Write out the List of Tables
 
 %% ----------------------------------------------------------------
 %\setstretch{1.5}  % Set the line spacing to 1.5, this makes the following tables easier to read
 \clearpage  % Start a new page
-\lhead{\emph{Abbreviations}}  % Set the left side page header to "Abbreviations"
-\listofsymbols{ll}{  % Include a list of Abbreviations (a table of two columns)
+%\lhead{\emph{Acronyms}}  % Set the left side page header to "Abbreviations"
+%\listofsymbols{\printglossary[type=\acronymtype]}
+\printglossary[type=\acronymtype,nonumberlist,title=Abbreviations]
 
-% \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
-\textbf{ADF} & \textbf{A}ssumed \textbf{D}ensity \textbf{F}iltering \\
-\textbf{AF} & \textbf{A}cquisition \textbf{F}unction \\
-\textbf{BO} & \textbf{B}ayesian \textbf{O}ptimization  \\
-\textbf{DGP} & \textbf{D}eep \textbf{G}aussian \textbf{P}rocess \\
-\textbf{EI} & \textbf{E}xpected \textbf{I}mprovement \\
-\textbf{EP} & \textbf{E}xpectation \textbf{P}ropagation \\
-\textbf{GP} & \textbf{G}aussian \textbf{P}rocess \\
-\textbf{KL} & \textbf{K}ullback  \textbf{L}iebler \\
-\textbf{MCMC} & \textbf{M}arkov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\
-\textbf{PPESMOC} & \textbf{P}arallel \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch for \textbf{M}ultiobjective \textbf{O}ptimization with \\ & \textbf{C}onstraints\\
-\textbf{PES} & \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch \\
-\textbf{PESMOC} & \textbf{P}redictive \textbf{E}ntropy \textbf{S}earch for \textbf{M}ultiobjective \textbf{O}ptimization with \textbf{C}onstraints\\
-\textbf{RS} & \textbf{R}andom \textbf{S}earch \\
-\textbf{UCB} & \textbf{U}pper \textbf{C}onfidence \textbf{B}ound \\
-}
-
+\clearpage
 %\setstretch{1.3}  % Return the line spacing back to 1.3
 
 \pagestyle{empty}  % Page style needs to be empty for this page
 \dedicatory{To my family}
+
 
 %\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
 \addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
@@ -539,7 +563,7 @@ Small.
 % Include the chapters of the thesis, as separate files
 % Just uncomment the lines as you write the chapters
 
-\include{./Chapters/Intro} % Introduction
+%\include{./Chapters/Intro} % Introduction
 
 \include{./Chapters/Chapter2} % Foundations and Concepts
 
@@ -551,7 +575,7 @@ Small.
 
 \include{./Chapters/Chapter6} % Experiments
 
-%\iclude{./Chapters/Chapter8} % Conclusions and Future Work
+\include{./Chapters/Conclusions} % Conclusions and Future Work
 
 %% ----------------------------------------------------------------
 % Now begin the Appendices, including them as separate files

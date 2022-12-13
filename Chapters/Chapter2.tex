@@ -6,7 +6,6 @@
 \emph{Foundations and Concepts}} % Write in your own chapter title to set the page header
 
 {\bf \small{
-This chapter presents some general and basic concepts that we will use in the rest of this work.
 }}
 
 
@@ -25,12 +24,20 @@ This chapter presents some general and basic concepts that we will use in the re
 % kernel methods advantages, theory, convexity; disadvantes: scalability
 
 % neural networks advantages: scalability, flexibility; disadvantages: lack of theory
+This chapter presents some concepts and definitions that we will use in the rest of this work.
+First, in Section~\ref{sec:ch2_kernels} we introduce the kernel functions, the kernel trick and the \acrfull{rkhs}.
+Next, in Section~\ref{sec:risk_reg} we define loss function, empirical and expected risks. Here, we also describe the concept of regularization, which is present in the definition of regularized risk. In this context we also present the Representer Theorem, which gives a closed form solution of regularized risk problems when using kernels.
+
+Related to the concept of regularization, we give in Section~\ref{sec:learning_theory} a brief introduction to learning theory, where we present the \acrfull{vc}-dimension.
+Then, in Section~\ref{sec:ch2_opt} we present the optimization theory, and we give the definitions and results used to obtain the solutions of optimization problems. Here we define the primal and dual problems, and the relation between them.
+In particular, we are interested on finding the solutions of the optimization problem related to the training of the \acrfull{svm}. In Section~\ref{sec:ch2_svms} we present the \acrshort{svm}, describing the primal and dual formulations. 
+Finally, in Section~\ref{sec:svm_variants} we describe two popular \acrshort{svm} variants, the L2 and LS-\acrshort{svm}.
 
 
 
 \section{Kernels and Implicit Features}\label{sec:ch2_kernels}
 % los kernels son centrales en ML
-Kernels are central in \acrshort{ml}, and some of the most successful methods use them, such as \acrshort{svms} or \acrshort{gps}.
+Kernels are central in \acrfull{ml}, and some of the most successful methods use them, such as \acrshort{svms} or \acrfull{gps}.
 The main advantage of using kernels, as we will see, is that we can send our data to a high, even infinite, dimensional space, where the problems of interest, regression or classification, are expected to be easier. Moreover, this transformation is made implicitly by exploiting the reproducing property of the kernels. This is named the kernel trick, which we will explain more carefully later in this section.
 
 % están relacionados con la VC dimension porque nos permiten  
@@ -51,21 +58,7 @@ As said, by using kernels, we change our feature space, from a finite-dimensiona
     \label{fig:iris}
 \end{figure}
 
-\begin{figure}[t!]
-    \centering
-    \subfloat[][Cubic regression problem. The underlying function, $f(x) = x^3$ is shown in orange, and the target values are the dots in blue.]{%    
-    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_problem.pdf}
-    \label{fig:cubicreg_example}}\quad%
-    \subfloat[][Predictions with a linear feature space, including only $x$. The real function $f(x)=x^3$ is shown in orange and the predictions are the blue dots.]{%
-    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_linearsol.pdf}
-    \label{fig:cubicreg_linearsol}}\quad
-    \subfloat[][Predictions with an extended feature space, including $x, x^2$ and $x^3$. The real function $f(x)=x^3$ is shown in orange and the predictions are the blue dots.]{%
-    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_cubicsol.pdf}
-    \label{fig:cubicreg_cubicsol}}
-    \\
-    \caption{Cubic regression problem example and two regression functions: one linear and one cubic.}
-    \label{fig:cubicreg}
-\end{figure}
+
 
 In \acrshort{ml} the choice of the feature space is crucial. If it is too small or too poor, it is not possible to find a good solution to our problem.
 Consider the classification setting; here, when the feature space is low-dimensional, the classes are more overlapped and finding a decision boundary is more challenging. 
@@ -86,6 +79,7 @@ However, if we enlarge the feature space using the transformation $\phi(\cdot)$ 
 \end{equation}
 then a linear regression model in this new space can find a good approximation, as the one shown in Figure~\ref{fig:cubicreg_cubicsol}.
 %
+
 
 This kind of results is one of the motivations for using kernels. 
 As we will see later, linear models, such as Linear Regression or \acrshort{svms}, have a dual formulation, which does not depend directly on the features $x_i$, but on the inner products $\dotp{x_i}{x_j}$.
@@ -109,6 +103,23 @@ Now, we can observe the following fact:
     \end{aligned}
 \end{equation}
 where $\dotp{\cdot}{\cdot}$ indicates the inner product.
+%
+\begin{figure}[t!]
+    \centering
+    \subfloat[][Cubic regression problem. The underlying function, $f(x) = x^3$ is shown in orange, and the target values are the dots in blue.]{%    
+    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_problem.pdf}
+    \label{fig:cubicreg_example}}\quad%
+    \subfloat[][Predictions with a linear feature space, including only $x$. The real function $f(x)=x^3$ is shown in orange and the predictions are the blue dots.]{%
+    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_linearsol.pdf}
+    \label{fig:cubicreg_linearsol}}\quad
+    \subfloat[][Predictions with an extended feature space, including $x, x^2$ and $x^3$. The real function $f(x)=x^3$ is shown in orange and the predictions are the blue dots.]{%
+    \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_cubicsol.pdf}
+    \label{fig:cubicreg_cubicsol}}
+    \\
+    \caption{Cubic regression problem example and two regression functions: one linear and one cubic.}
+    \label{fig:cubicreg}
+\end{figure}
+%
 Therefore, if we have a model that depends on the inner products of the data in our feature space $x, y \in \Xspace$, and we define these inner products as $k(x, y) = (x^\intercal y + c)^2$, we are implicitly enlarging the feature space with the transformation $\psi$, defined as
 \begin{equation}
     \begin{aligned}
@@ -2127,10 +2138,13 @@ Next, in Section~\ref{sec:risk_reg}, we have given some of the most common loss 
 Also, we have presented the concept of regularization and regularized risk, which, in the case of kernel methods, has a closed form solution.
 %
 To motivate the regularization risk, and to better understand the differences between empirical and expected risks, we have introduced in Section~\ref{sec:learning_theory} the learning theory. Here, we have described how, by minimizing the empirical risk, we can expect to approximate a function that minimizes the expected risk. For these results, the \acrshort{vc}-dimension is defined, which measures the capacity of a space of functions. Thus, as a simplification, the smaller the \acrshort{vc}-dimension is, the better the function minimizing the empirical risk generalizes to other samples.
+These concepts will be important for our discussion of \acrfull{mtl} advantages in Chapter~\ref{Chapter3}.
 
 %
 To solve the regularized risk minimization problems, we have presented the optimization theory in Section~\ref{sec:ch2_opt}, where we have described the concept of duality. In particular, given a convex objective function with affine constraints, there exists a unique solution, which we can obtain by solving the corresponding dual problem.
 %
-The optimization problem related to the training of the \acrshort{svm} is one of such cases, as we have seen in Section~\ref{sec:ch2_svms}. Here, we have shown how in this particular case we get the dual problem, and we have also analyzed the properties of the final model.
+The optimization problem related to the training of the \acrshort{svm} (also called L1-\acrshort{svm}) is one of such cases, as we have seen in Section~\ref{sec:ch2_svms}. Here, we have shown how in this particular case we get the dual problem, and we have also analyzed the properties of the final model.
 %
 Finally, in Section~\ref{sec:svm_variants}, we have presented two relevant variants of the standard \acrshort{svm}, the L2 and LS-\acrshort{svm}.
+%
+In Chapters~\ref{Chapter4} and~\ref{Chapter5} we will present \acrshort{mtl} models based on the L1, L2 and LS-\acrshort{svm}, where we will apply the optimization results given in this chapter.

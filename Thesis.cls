@@ -140,6 +140,7 @@
    \let\\\space
 }
 \newcommand*{\supervisor}[1]{\def\supname{#1}}
+%\newcommand*{\cosupervisor}[1]{\def\supname{#1}}
 \newcommand*{\examiner}[1]{\def\examname{#1}}
 \newcommand*{\degree}[1]{\def\degreename{#1}}
 \newcommand*{\authors}[1]{\def\authornames{#1}}
@@ -154,7 +155,9 @@
 \newcommand*{\FACULTY}[1]{\def\FACNAME{#1}}
 \newcommand*{\subject}[1]{\def\subjectname{#1}}
 \newcommand*{\keywords}[1]{\def\keywordnames{#1}}
-\supervisor  {Jos\'{e} R. Dorronsoro Ibero}
+\supervisor{Jos\'{e} R. Dorronsoro Ibero and Carlos M. Ala\'{i}z Gud\'{i}n}
+%\supervisor{Carlos M. Ala\'{i}z Gud\'{i}n}
+
 \examiner    {}
 \degree      {}
 \authors     {}
@@ -261,7 +264,7 @@
   \global\let\@thanks\@empty
   \global\let\@author\@empty
   \global\let\@date\@empty
-  \global\let\@title\@empty
+  %\global\let\@title\@empty
   \global\let\title\relax
   \global\let\author\relax
   \global\let\date\relax
@@ -285,10 +288,10 @@
 %    \bigskip
 %    {\normalsize Doctor of Philosophy\par}
 %    \bigskip
-%    {\normalsize\bf \@title \par}
-%    \medskip
-%    {\normalsize by \authornames \par}
-%    \bigskip
+   {\normalsize\bf \@title \par}
+   \medskip
+   {\normalsize by \authornames \par}
+   \bigskip
   \end{center}
 }
 {
@@ -356,17 +359,26 @@
     \cleardoublepage
 }\end{spacing}
 }
-\newcommand\listsymbolname{Abbreviations}
+\newcommand\listsymbolname{Acronyms}
 \usepackage{longtable}
-\newcommand\listofsymbols[2]{
+\newcommand\listofsymbols[1]{
 \btypeout{\listsymbolname}
 \addtotoc{\listsymbolname}
     \chapter*{\listsymbolname
       \@mkboth{
           \MakeUppercase\listsymbolname}{\MakeUppercase\listsymbolname}}
-\begin{longtable}[c]{#1}#2\end{longtable}\par
+          #1\par
     \cleardoublepage
 }
+% \newcommand\listofsymbols[2]{
+% \btypeout{\listsymbolname}
+% \addtotoc{\listsymbolname}
+%     \chapter*{\listsymbolname
+%       \@mkboth{
+%           \MakeUppercase\listsymbolname}{\MakeUppercase\listsymbolname}}
+% \begin{longtable}[c]{#1}#2\end{longtable}\par
+%     \cleardoublepage
+% }
 \newcommand\listconstants{Physical Constants}
 \usepackage{longtable}
 \newcommand\listofconstants[2]{
