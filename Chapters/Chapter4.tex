@@ -742,8 +742,8 @@ Using these results and substituting back in the Lagrangian we obtain
          &\lagr(\optim{{w}}, \optim{\fv{v}}, \optim{b}, \optim{\fv{d}}, \optim{\fv{\xi}}, \fv{\alpha}) \\
         &\quad= \frac{C}{2} \frac{1}{C^2} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  \\
         &\qquad +  \frac{1}{2} \sum_{r= 1}^T{\norm{ (1 - \lambda_r) \sum_{i=1}^{m_r}  {\alpha_i^r} - \left\lbrace y_i^r \phi_r({x}_i^r) \right\rbrace}^2} + \frac{1}{2} {\norm{\sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi({x}_i^r) \right\rbrace}}^2 \\
-        &\qquad - \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[ \left(\sum_{s= 1}^T \lambda_r \sum_{j=1}^{m_s} {\alpha_j^s}  y_j^s \phi({x}_j^s)  \right) \cdot \phi({x}_{i}^r) \right]   \\
-        &\qquad -  \sum_{r= 1}^T (1-\lambda_r) \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[  \left((1-\lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r}  y_j^r \phi_r({x}_j^r) \right) \cdot \phi_r({x}_{i}^r)  \right]  \\
+        &\qquad - \sum_{r= 1}^T \lambda_r \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[ \dotp{\left(\sum_{s= 1}^T \lambda_r \sum_{j=1}^{m_s} {\alpha_j^s}  y_j^s \phi({x}_j^s)  \right)}{\phi({x}_{i}^r)} \right]   \\
+        &\qquad -  \sum_{r= 1}^T (1-\lambda_r) \sum_{i=1}^{m_r} \alpha_i^r  y_{i}^r \left[ \dotp{\left((1-\lambda_r) \sum_{j=1}^{m_r} {\alpha_j^r}  y_j^r \phi_r({x}_j^r) \right)}{\phi_r({x}_{i}^r)}  \right]  \\
         &\qquad -  \sum_{r= 1}^T \sum_{i=1}^{m_r} \alpha_i^r  - p_{i}^r  - \frac{1}{C} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} (\alpha_i^r)^2  ,\\
     \end{aligned}
 \end{equation}
@@ -996,9 +996,9 @@ However, to the best of our knowledge, we proposed the first purely combination-
 
 \subsection{Model Definition}
 Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to model the common part 
-$$ g(\cdot; w, \Theta) = w^\intercal f(\cdot; \Theta) + b,$$
+$$ g(\cdot; w, \Theta) = \dotp{w}{f(\cdot; \Theta)} + b,$$
 and the task-specific parts
-$$ g_r(\cdot; w_r, \Theta_r) =  w_r^\intercal f_r(\cdot; \Theta_r) + d_r.$$
+$$ g_r(\cdot; w_r, \Theta_r) =  \dotp{w_r}{f_r(\cdot; \Theta_r)} + d_r.$$
 Here $\Theta$ and $\Theta_r$ are the sets of hidden weights, $w$ and $w_r$ are the output weights of the common and specific networks, respectively, and $b$ and $d_r$ the output biases.
 Observe that the feature transformations $ f(\cdot; \Theta)$ and $f_r(\cdot; \Theta_r)$ are not fixed like the transformations $\phi(\cdot)$ and $\phi_r(\cdot)$ in the kernel methods; instead, here, they are automatically learned in the training process.
 The full \acrshort{mtl} models are then
@@ -1006,7 +1006,7 @@ The full \acrshort{mtl} models are then
     \label{eq:convexmtl_nn}
     \begin{aligned}
         h_r(\cdot) &= \lambda_r g(\cdot; w, \Theta) + (1 - \lambda_r) g_r(\cdot; w_r, \Theta_r)
-       \\&= \lambda_r \lbrace w^\intercal f(\cdot; \Theta) + b \rbrace + (1 - \lambda_r) \lbrace w_r^\intercal f_r(\cdot; \Theta_r) + d_r \rbrace.
+       \\&= \lambda_r \lbrace \dotp{w}{f(\cdot; \Theta)} + b \rbrace + (1 - \lambda_r) \lbrace \dotp{w_r}{f_r(\cdot; \Theta_r)} + d_r \rbrace.
     \end{aligned}    
 \end{equation}
 
@@ -1047,11 +1047,11 @@ Then, the corresponding gradients of $h_t$ needed to compute the loss gradients 
         &\nabla_{w} h_t(x_i^t)  
         = \lambda_t  f(x_i^t, \Theta) ,
         &&\nabla_{\Theta} h_t(x_i^t)  
-        = \lambda_t  w^\intercal \nabla_\Theta f(x_i^t, \Theta ; \\
+        = \lambda_t  \dotp{w}{\nabla_\Theta f(x_i^t, \Theta)} ; \\
         &\nabla_{w_t} h_t(x_i^t)  
         = (1 - \lambda_t)  f_t(x_i^t, \Theta) ,
         &&\nabla_{\Theta_t} h_t(x_i^t)  
-        = (1 - \lambda_t)   w^\intercal \nabla_{\Theta_t} f_t(x_i^t, \Theta_t ; \\
+        = (1 - \lambda_t)   \dotp{w}{\nabla_{\Theta_t} f_t(x_i^t, \Theta_t)} ; \\
         &\nabla_{w_r} h_t(x_i^t)  
         =  0 , 
         &&\nabla_{\Theta_r} h_t(x_i^t)  
@@ -1071,14 +1071,14 @@ That is, given an example $(x_i^t, y_i^t)$, when using vanilla \acrfull{sgd} the
 \begin{equation}\label{eq:convexmtl_nn_commonupdate}
     \begin{aligned}
         w^{\tau + 1} &\gets w^\tau - \eta \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} \lambda_t  f(x_i^t, \Theta) + \mu w^\tau \right], \\
-        \Theta^{\tau + 1} &\gets \Theta^\tau - \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda_t  w^\intercal \nabla_\Theta f(x_i^t, \Theta + \mu  \nabla_\Theta \Omega( \Theta)  \right],
+        \Theta^{\tau + 1} &\gets \Theta^\tau - \eta \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  \lambda_t  \dotp{w}{\nabla_\Theta f(x_i^t, \Theta)} + \mu  \nabla_\Theta \Omega( \Theta)  \right],
     \end{aligned}
 \end{equation}
 while the update rules for the $t$-th task network parameters would be
 \begin{equation}\label{eq:convexmtl_nn_specificupdate}
     \begin{aligned}
         w_t^{\tau + 1} &\gets w_t^\tau - \eta_t \left[  \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)} (1 - \lambda_t)  f(x_i^t, \Theta) + \mu w_t^\tau \right], \\
-        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau - \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda_t)  w^\intercal \nabla_{\Theta_t} f(x_i^t, \Theta_t + \mu  \nabla_{\Theta_t} \Omega( \Theta_t) \right],
+        \Theta_t^{\tau + 1} &\gets \Theta_t^\tau - \eta_t \left[ \frac{\partial}{\partial \hat{y}_i^t}  \lossf(\hat{y}_i^t, y_i^t) \vert_{\hat{y}_i^t = h_t(x_i^t)}  (1 - \lambda_t)  \dotp{w}{\nabla_{\Theta_t} f(x_i^t, \Theta_t)} + \mu  \nabla_{\Theta_t} \Omega( \Theta_t) \right],
     \end{aligned}
 \end{equation}
 and the parameters from the rest of task-specific networks are not updated.

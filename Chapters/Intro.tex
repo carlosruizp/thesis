@@ -4,46 +4,66 @@
 \label{Chapter1}
 \lhead{Chapter \ref{Chapter1}. \emph{Introduction}} % Write in your own chapter title to set the page header
 
-{\bf \small{
-We begin this manuscript...
-}}
+% {\bf \small{
+% We begin this manuscript...
+% }}
+%We begin this manuscript presenting our contributions and 
 
+\section{Contributions}
+In this section we detail the contributions of this thesis. The publications corresponding to these contributions can be found on Appendix~\ref{AppendixA}.
+\begin{itemize}
+    \item The first contribution is a survey of \acrfull{mtl} methods, where we propose an updated taxonomy to classify the \acrshort{mtl} approaches in three groups: feature-based, parameter-based and combination-based strategies. In this survey, we describe some of the most relevant works and establish connections between different approaches. Moreover, we provide a discussion of what \acrfull{ml} methods are more suitable for each strategy.
+    \item One of the main contributions of this thesis is the convex \acrshort{mtl} formulation. This is a general formulation that considers a convex combination of common and task-specific parts, which are trained jointly, as the \acrshort{mtl} models. In particular, we develop this formulation with the L1, L2 and LS-\acrfull{svm}. This is a modification that extends previous works of \acrshort{mtl} with the \acrshort{svm}. Here, we present a more general and interpretable formulation, and extend it to the L2 and LS-\acrshort{svm} variants. We provide multiple experiments to show the benefits of this formulation.
+    \item Considering the convex \acrshort{mtl} formulation, we propose a model based on \acrfull{nns} that adopts this approach. We consider the convex combination of common and task-specific networks, where the optimization is done jointly. We show that this \acrshort{mtl} obtains an advantage in four image datasets.
+    \item Another contribution is the development of a formulation of \acrshort{mtl} kernels based on the tensor product of \acrfull{rkhss}. Here, the kernel is result of multiplying the similarity between tasks, which can be encoded in a matrix, and the feature similarity, which is expressed by a standard kernel.% tensor-based formulation
+    \item Applying the tensor product formulation, we develop an \acrshort{mtl} approach based on a \acrfull{gl} regularization for kernel methods, in particular the L1, L2 and LS-\acrshort{svm}. In this formulation, the tasks are seen as nodes in a graph, and the distances between each pair of task models is penalized. The adjacency matrix indicates the weight of each pairwise distance. It is exemplified with real experiments that our \acrshort{gl} models are competitive.
+    \item Taking the \acrshort{gl} approach, we define an algorithm to automatically learn the adjacency matrix, which illustrates the task structure, from the data. This is done in an iterated manner, where both the task models and the adjacency matrix are optimized in a loop. Multiple synthetic and real experiments show how this adaptive approach can obtain leverage over other models.
+\end{itemize}
 
-\section{Introduction}
 
 % \section{Publications}
 
 % This section presents, in chronological order, the work published during the doctoral period in which this thesis was written. We also include other research work related to this thesis, but not directly included on it. Finally, this document includes content that has not been published yet and is under revision.
 
 
-
-\subsection*{Related Work}
-
+% \subsection*{Related Work}
 
 
-\subsection*{Work In Progress}
 
+% \subsection*{Work In Progress}
 
-\section{Summary by Chapters}\label{sumchap}
+\section{Structure}
 
-In this section\dots
+In this section we present a brief summary of the chapters in this thesis.
+
+% In this section\dots
 \begin{description}
 
-\item [{Chapter \ref{Chapter2}}] provides an introduction to GPs and the expectation propagation algorithm. Both are necessary concepts for the BO methods that we will describe in the following chapters. This chapter reviews the fundamentals of GPs and why they are so interesting for BO. More concretely, we review the most popular kernels, the analysis of the posterior and predictive distribution and how to tune the hyper-parameters of GPs: whether by maximizing the marginal likelihood or by generating samples from the hyper-parameter posterior distribution. Other alternative probabilistic surrogate models are also described briefly. Some of the proposed approaches of this thesis are extensions of an acquisition function called predictive entropy search, that is based on the expectation propagation approximate inference technique. That is why we provide in this chapter an explanation of the expectation propagation algorithm.
+\item [{Chapter \ref{Chapter1}}] is the present chapter, where the contributions of this thesis are detailed. The structure of this document is also presented.
 
-\item [{Chapter \ref{Chapter3}}] introduces the basics of BO and information theory. BO works with probabilistic models such as GPs and with acquisition functions such as predictive entropy search, that uses information theory. Having studied GPs in Chapter \ref{Chapter2}, BO can be now understood and it is described in detail. This chapter will also describe the most popular acquisition functions, how information theory can be applied in BO and why BO is useful for the hyper-parameter tuning of machine learning algorithms.
+\item [{Chapter \ref{Chapter2}}] presents the basic concepts related to \acrshort{ml} such as kernel functions, loss functions, empirical and expected risks, and regularization. The learning theory and optimization theory are also briefly introduced, where the notions that will be applied in the rest of this work are defined. This chapter also describes the standard \acrshort{svm}, the L1-\acrshort{svm}, and its variants L2 and LS-\acrshort{svm}.
 
-\item [{ Chapter \ref{Chapter4}}] describes an information-theoretical mechanism that generalizes BO to simultaneously optimize multiple objectives under the presence of several constraints. This algorithm is called predictive entropy search for multi-objective BO with constraints (PESMOC) and it is an extension of the predictive entropy search acquisition function that is described in Chapter \ref{Chapter3}. The chapter compares the empirical performance of PESMOC with respect to a state-of-the-art approach to constrained multi-objective optimization based on the expected improvement acquisition function. It is also compared with a random search through a set of synthetic, benchmark and real experiments. 
+\item [{Chapter \ref{Chapter3}}] motivates \acrshort{mtl} with a theoretical discussion of the advantages that it can offer. Moreover, it gives an overview of some of the most relevant works in this field, introducing a taxonomy to classify the \acrshort{mtl} methods in three groups: feature-based, parameter-based and combination-based. This chapter also presents short reviews of \acrshort{mtl} approaches specific for kernel methods and for neural networks. An introduction to the \acrfull{lupi} paradigm, which has a connection with the work developed in this thesis, is also given. This chapter presents the main motivation for this work, exhibiting the possible gaps in \acrshort{mtl} according to our taxonomy.
 
-\item [{ Chapter \ref{Chapter5}}] addresses the problem that faces BO when not only one but multiple input points can be evaluated in parallel that has been described in Section \ref{sec_complex}. This chapter introduces an extension of PESMOC called parallel PESMOC (PPESMOC) that adapts to the parallel scenario. PPESMOC builds an acquisition function that assigns a value for each batch of points of the input space. The maximum of this acquisition function corresponds to the set of points that maximizes the expected reduction in the entropy of the Pareto set in each evaluation. Naive adaptations of PESMOC and the method based on expected improvement for the parallel scenario are used as a baseline to compare their performance with PPESMOC. Synthetic, benchmark and real experiments show how PPESMOC obtains an advantage in most of the considered scenarios. All the mentioned approaches are described in detail in this chapter. 
 
-\item [{ Chapter \ref{Chapter6}}] addresses a transformation that enables standard GPs to deliver better results in problems that contain integer-valued and categorical variables. We can apply BO to problems where we need to optimize functions that contain integer-valued and categorical variables with more guarantees of obtaining a solution with low regret. A critical advantage of this transformation, with respect to other approaches, is that it is compatible with any acquisition function. This transformation makes the uncertainty given by the GPs in certain areas of the space flat. As a consequence, the acquisition function can also be flat in these zones. This phenomenom raises an issue with the optimization of the acquisition function, that must consider the flatness of these areas. We use a one exchange neighbourhood approach to optimize the resultant acquisition function. We test our approach in synthetic and real problems, where we add empirical evidence of the performance of our proposed transformation. 
+%introduces the basics of BO and information theory. BO works with probabilistic models such as GPs and with acquisition functions such as predictive entropy search, that uses information theory. Having studied GPs in Chapter \ref{Chapter2}, BO can be now understood and it is described in detail. This chapter will also describe the most popular acquisition functions, how information theory can be applied in BO and why BO is useful for the hyper-parameter tuning of machine learning algorithms.
 
-\item[{Chapter \ref{Chapter7}}] shows a real problem where BO has been applied with success. In this problem, BO has been used to obtain the optimal parameters of a hybrid Grouping Genetic Algorithm for attribute selection. This genetic algorithm is combined with an Extreme Learning Machine (GGA-ELM) approach for prediction of ocean wave features. Concretely, the significant wave height and the wave energy flux at a goal marine structure facility on the Western Coast of the USA is predicted. This chapter illustrates the experiments where it is shown that BO improves the performance of the GGA-ELM approach. Most importantly, it also outperforms a random search of the hyper-parameter space and the human expert criterion. 
+\item [{ Chapter \ref{Chapter4}}] describes a general \acrshort{mtl} formulation that considers the convex combination of a common and task-specific parts as model. This formulation is called convex \acrshort{mtl}. In this chapter, the convex \acrshort{mtl} formulation is applied to kernel methods, in particular to the L1, L2 and LS-\acrshort{svm}, and also to \acrshort{nns}. Moreover, an alternative that considers the convex combination of pre-trained common and task-specific models is given, and the selection of the optimal combination parameters is described for this case.
 
-\item [{Chapter \ref{Chapter8}}] provides a summary of the work done in this thesis. We include the conclusions retrieved by the multiple research lines covered in the chapters. We also illustrate lines for future research.
+%describes an information-theoretical mechanism that generalizes BO to simultaneously optimize multiple objectives under the presence of several constraints. This algorithm is called predictive entropy search for multi-objective BO with constraints (PESMOC) and it is an extension of the predictive entropy search acquisition function that is described in Chapter \ref{Chapter3}. The chapter compares the empirical performance of PESMOC with respect to a state-of-the-art approach to constrained multi-objective optimization based on the expected improvement acquisition function. It is also compared with a random search through a set of synthetic, benchmark and real experiments. 
+
+\item [{ Chapter \ref{Chapter5}}] presents an \acrshort{mtl} proposal for kernel methods based on a \acrfull{gl} regularization. This strategy interprets the tasks as nodes in a graph, and the distance between each pair of task models is penalized, as indicated by the corresponding adjacency matrix. Moreover, a formulation based on tensor products of \acrfull{rkhss} is given, which is then applied to describe the \acrshort{gl} approach for the L1, L2 and LS-\acrshort{svm}. Also, an algorithm to automatically learn the adjacency matrix from the data is depicted, this is the adaptive \acrshort{gl}. 
+
+%addresses the problem that faces BO when not only one but multiple input points can be evaluated in parallel that has been described in Section \ref{sec_complex}. This chapter introduces an extension of PESMOC called parallel PESMOC (PPESMOC) that adapts to the parallel scenario. PPESMOC builds an acquisition function that assigns a value for each batch of points of the input space. The maximum of this acquisition function corresponds to the set of points that maximizes the expected reduction in the entropy of the Pareto set in each evaluation. Naive adaptations of PESMOC and the method based on expected improvement for the parallel scenario are used as a baseline to compare their performance with PPESMOC. Synthetic, benchmark and real experiments show how PPESMOC obtains an advantage in most of the considered scenarios. All the mentioned approaches are described in detail in this chapter. 
+
+\item [{ Chapter \ref{Chapter6}}] illustrates the results that we have obtained for the different proposals developed in this thesis. It presents the results for the convex \acrshort{mtl} formulation, where a single common model, task-specific models and the convex combination of these previous pre-trained models are considered as baselines. It is shown in multiple real-world problems that our proposal obtains an advantage in most of the considered scenarios. As an application of this approach, we highlight the prediction of solar and wind energy, where the convex \acrshort{mtl} kernel models outperform the competition. The good performance of the convex \acrshort{mtl} with \acrshort{nns} is also exemplified with four image datasets. Regarding the \acrshort{gl} approaches, this chapter also provides multiple synthetic and real experiments showing how adopting the fixed \acrshort{gl} and adaptive \acrshort{gl} can leverage the models to get better results.
+
+% addresses a transformation that enables standard GPs to deliver better results in problems that contain integer-valued and categorical variables. We can apply BO to problems where we need to optimize functions that contain integer-valued and categorical variables with more guarantees of obtaining a solution with low regret. A critical advantage of this transformation, with respect to other approaches, is that it is compatible with any acquisition function. This transformation makes the uncertainty given by the GPs in certain areas of the space flat. As a consequence, the acquisition function can also be flat in these zones. This phenomenom raises an issue with the optimization of the acquisition function, that must consider the flatness of these areas. We use a one exchange neighbourhood approach to optimize the resultant acquisition function. We test our approach in synthetic and real problems, where we add empirical evidence of the performance of our proposed transformation. 
+
+
+\item [{Chapter \ref{ChapterConclusions}}] provides a summary of the work developed for this thesis. We include the conclusions drawn from the different proposals and results presented. We also illustrate possible future lines for further research.
 
 \end{description}
 
-\section{Definitions and Notation}
+% \section{Definitions and Notation}
 

@@ -819,7 +819,7 @@ The goal is to find task-specialized hypotheses $h_r$ such that the regularized 
 is minimized, where $\Omega$ is some regularizer of the hypotheses. 
 We propose a taxonomy for \acrshort{mtl} algorithms, which enforce a coupling between tasks, with three main groups: feature-based, parameter-based and combination-based strategies. 
 The feature-based approaches define the hypotheses $h_r$ as the composition of a common feature-building function $f$ and task-specific functions $g_r$, i.e., $h_r(x_i^r) = g_r \circ f(x_i^r)$, where $f$ and $g_r$ can be defined in multiple ways.
-The parameter-based approaches consider enforcing the coupling through the regularization of the parameters of linear models, which are built over some non-learnable features, i.e. $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$.
+The parameter-based approaches consider enforcing the coupling through the regularization of the parameters of linear models, which are built over some non-learnable features, i.e. $h_r(x_i^r) = \dotp{w_r}{\phi(x_i^r)}$.
 Finally, the combination based approach uses the combination of a common part and task specific parts, i.e. $h_r(x_i^r) = g(x_i^r) + g_r(x_i^r)$, where $g$ and $g_r$ can be modeled in multiple ways.
 In this section we develop a subsection for each one of these approaches.
 %
@@ -836,13 +836,13 @@ Two main approaches are taken: feature learning, which tries to learn new featur
 
 \subsubsection{Feature Learning}
 
-In the feature learning approach, the feature-building function $f$ can be modeled in different ways. With neural networks, $f$ can be modeled using shared layers of a neural network, while $g_r$ is the linear model corresponding to the output layer, that is $h_r(x_i^r) = w_r^\intercal f(x_i^r, \Theta) + b_r$ where $\Theta$ are the parameters of the hidden layers and $w_r, b_r$ are the parameters of the output layer. 
+In the feature learning approach, the feature-building function $f$ can be modeled in different ways. With neural networks, $f$ can be modeled using shared layers of a neural network, while $g_r$ is the linear model corresponding to the output layer, that is $h_r(x_i^r) = \dotp{w_r}{f(x_i^r, \Theta)} + b_r$ where $\Theta$ are the parameters of the hidden layers and $w_r, b_r$ are the parameters of the output layer. 
 This is the idea behind the \acrshort{mt} \acrshort{nn} first given in~\cite{Caruana97}, which will be described in Section~\ref{sec:deep_mtl}.
 %
 
-With linear or kernel models, unlike the case with \acrshort{nns}, the function $f$ is modeled as linear combinations of fixed features defined by $\phi$, for example, $f(x_i^r) = (u_1^\intercal \phi(x_i^r), \ldots, u_k^\intercal \phi(x_i^r))$ for some $k \in \naturals_{> 0} $, where $\phi$ is the implicit transformation, which is the identity in the case of linear models. Then, for $r=1, \ldots, \ntasks$, $h_r(x_i^r) = a_r^\intercal  (U^\intercal \phi(x_i^r)) ,$
+With linear or kernel models, unlike the case with \acrshort{nns}, the function $f$ is modeled as linear combinations of fixed features defined by $\phi$, for example, $$f(x_i^r) = (\dotp{u_1}{\phi(x_i^r)}, \ldots, \dotp{u_k}{\phi(x_i^r)})$$ for some $k \in \naturals_{> 0} $, where $\phi$ is the implicit transformation, which is the identity in the case of linear models. Then, for $r=1, \ldots, \ntasks$, $h_r(x_i^r) = \dotp{a_r}{(U^\intercal \phi(x_i^r))} ,$
 where $a_r \in \reals^k$ are the parameters of the linear models $g_r$.
-Observe that, in the linear case, we can describe these models as $h_r(x_i^r) = w_r^\intercal  x_i^r ,$
+Observe that, in the linear case, we can describe these models as $h_r(x_i^r) = \dotp{w_r}{x_i^r} ,$
 with $w_r = \fm{U} a_r$ and $\fm{U} = (u_1, \ldots, u_k)$. 
 % Caruana R. Multitask learning. 1997 (multi-task feedforward NN)
 % \acrshort{mt} feature learning 2006
@@ -977,7 +977,7 @@ A problem very similar to~\eqref{eq:mtl_sparse_coding} is presented in~\cite{Kum
     \label{eq:mtl_go}
     \argmin_{\mymat{d} \in \mathcal{D}_k, \mymat{a} \in \reals^{k \times \ntasks}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{D a_r}{x_i^r}) + \lambda \norm{\mymat{d}}_{2, 2} +\mu \norm{\mymat{a}}_{1, 1} .
 \end{equation}
-Here, we can interpret this model as a linear sparse combination, encoded in $\fm{a}$, of some features encoded in $\fm{D}$: ${w}_r^\intercal {x}_i^r = \sum_{\kappa=1}^k a_r^\kappa \left({D}_\kappa^\intercal {x}_i^r \right)$.
+Here, we can interpret this model as a linear sparse combination, encoded in $\fm{a}$, of some features encoded in $\fm{D}$: $$\dotp{{w}_r}{{x}_i^r} = \dotp{D a_r}{x_i^r} = \dotp{\sum_{\kappa=1}^k a_r^\kappa {D}_\kappa}{{x}_i^r} = \sum_{\kappa=1}^k a_r^\kappa \dotp{{D}_\kappa}{x_i^r} .$$
 Unlike the \acrshort{mt} feature learning approach of Argyriou \emph{et al.}, this sparse coding formulation is only presented in the linear setting.
 
 \subsubsection{Feature Selection approaches}
@@ -999,8 +999,8 @@ $ \sum_{i=1}^d \min(\theta, \norm{{w}^i}_p).$
 That is, the parameter $\theta$ enables a more flexible regularization: with small values of $\theta$, the smallest rows of $\fm{W}$ are pushed towards zero since the rows with norms larger than $\theta$ do not dominate the sum. When $\theta$ grows to infinity, this penalty will converge to the standard $L_{p, 1}$ norm.
 
 %
-In~\cite{LozanoS12} a multi-level lasso selection is presented, where the main idea is to decompose each $w_r^i$, that is the $i$-th feature of the $r$-th task, as 
-$w_r^i = \theta^i a_r^i$ 
+In~\cite{LozanoS12} a multi-level lasso selection is presented, where the main idea is to decompose each $w_r^j$, that is the $j$-th feature of the $r$-th task, as 
+$w_r^j = \theta^j a_r^j$ 
 and then, using the matrix $\fm{\Theta} = \Diag \left( \theta^1, \ldots, \theta^\dimx \right)$, they define the problem
 \begin{equation}
     \label{eq:mtl_multilevel_lasso}   
@@ -1009,7 +1009,7 @@ and then, using the matrix $\fm{\Theta} = \Diag \left( \theta^1, \ldots, \theta^
     \end{aligned}
 \end{equation}
 By doing this, the features $i$ such that $\theta^i = 0$ are discarded for all tasks, but the rest may be shared among tasks or not, depending on the values of $a_r^i$.
-Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl_sparse_coding} but with $\fm{d}$, the ``feature building'' matrix, being limited to a diagonal matrix since it is acting here as a selection matrix: $${w}_r^\intercal  {x}_i^r = \sum_{i=1}^k a_r^i \left({\theta}_i  {x}_i^r \right) .$$
+Observe that this is similar to the sparse coding problem shown in~\eqref{eq:mtl_sparse_coding} but with $\fm{d}$, the ``feature building'' matrix, being limited to a diagonal matrix since it is acting here as a selection matrix: $$\dotp{w_r}{{x}_i^r} = \dotp{\fm{\Theta} a_r}{{x}_i^r} = \dotp{a_r}{\fm{\Theta} {x}_i^r} = \sum_{j=1}^\dimx a_r^j \theta^j (x_i^r)^j.$$
 
 % Bayesian approaches
 % 15. Zhang Y, Yeung DY and Xu Q. Probabilistic multi-task feature selection. In:
@@ -1024,7 +1024,7 @@ The feature selection methods based on $L_{p, 1}$ regularization are shown to be
 
 
 \subsection{Parameter-based Multi-Task Learning}
-The parameter-based approaches, instead of trying to find a good shared feature space, enforce the coupling through the regularization of the parameters of linear models $h_r(x_i^r) = w_r^\intercal \phi(x_i^r)$, where $\phi$ is a fixed, non-learnable transformation. Since we have one vector $w_r$ for each task, we can consider the matrix $\fm{W}$ whose columns are $w_r$ for $r=1, \ldots, \ntasks$.
+The parameter-based approaches, instead of trying to find a good shared feature space, enforce the coupling through the regularization of the parameters of linear models $h_r(x_i^r) = \dotp{w_r}{\phi(x_i^r)}$, where $\phi$ is a fixed, non-learnable transformation. Since we have one vector $w_r$ for each task, we can consider the matrix $\fm{W}$ whose columns are $w_r$ for $r=1, \ldots, \ntasks$.
 % The parameter-based \acrshort{mtl} does not focus on shared sets of features across tasks, instead other types of dependencies among the task like the task-parameters $w_r$, are taken into account. 
 Some approaches rely on the assumption that the \acrshort{mt} weight matrix $\mymat{w}$ has a low-rank, others try to learn the pairwise task relations or to cluster the tasks. A different approach is the decomposition one, where the assumption is that the matrix $\mymat{w}$ can be expressed as the sum of multiple matrices. We summarize each approach below.
 

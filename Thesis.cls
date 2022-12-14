@@ -419,7 +419,7 @@
 \addtotoc{Resumen}
 \thispagestyle{plain}
   \null\vfil
-\begin{center}{ \huge{\textit{Resumen}} \par } 
+\begin{center}{ \huge{\textit{Resumen}} \par }
     \bigskip
 \end{center}
 {\normalsize #1}
