@@ -21,7 +21,7 @@ In this work we have developed novel \acrshort{mtl} strategies for kernel method
 
 
 %
-First, we have described a convex combination approach in Chapter~\ref{Chapter4}. One of the main challenges of combination-based strategies is selecting the optimal hyperparameters for our models, where it is necessary to select the weight of the common and task-specific part in each model. In particular, we propose a convex formulation, where the combination parameters $\lambda_r \in [0, 1]$ are task-specific, have a clear interpretation and can recover the trivial \acrshort{ctl} and \acrshort{itl} cases.
+First, we have described a convex combination approach in Chapter~\ref{Chapter4}. One of the main challenges of combination-based strategies is selecting the optimal hyperparameters for our models, where it is necessary to select the weight of the common and task-specific parts in each model. In particular, we propose a convex formulation, where the combination parameters $\lambda_r \in [0, 1]$ are task-specific, have a clear interpretation and can recover the trivial \acrshort{ctl} and \acrshort{itl} cases.
 %
 For a deeper understanding, we have developed this convex combination approach for three \acrshort{svm} variants: L1, L2 and LS-\acrshort{svm}; we have also discussed its properties both in the dual and primal formulations.
 %
@@ -48,11 +48,11 @@ Additionally, we have combined the \acrshort{gl} approach with the convex formul
 The results of our experiments in Chapter~\ref{Chapter6} have shown that this convex \acrshort{gl} strategy is an interesting alternative to the plain convex formulation, each capturing different properties of the problems. We have observed that the choice of the best strategy depends on the characteristics of each problem.
 
 As we have explained, the \acrshort{gl} models strongly depend on the selection of an adjacency matrix, so, in Chapter~\ref{Chapter5}, we have developed an algorithm to automatically learn this matrix from the data.
-We have provided multiple experimental results in Chapter~\ref{Chapter6} that show how this approach enables us to learn the task relations and, in consequence, improve obtain better models.
+We have provided multiple experimental results in Chapter~\ref{Chapter6} that show how this approach enables us to learn the task relations and, in consequence, obtain better models.
 
 
 \section{Future Work}
-Our proposed methods show how we can adapt different \acrshort{mtl} strategies principally to kernel methods, but also to other model such as \acrshort{nns}. 
+Our proposed methods show how we can adapt different \acrshort{mtl} strategies principally to kernel methods, but also to other models such as \acrshort{nns}. 
 In this work, we have proposed a general convex formulation for \acrshort{mtl}, which we apply on kernel methods and \acrshort{nns}. Also, we have presented a \acrshort{gl} approach that we have applied to the L1, L2 and LS-\acrshort{svm}.
 %
 These proposals offer the possibility of new extensions, and they also bring challenges for which we can develop novel solutions. Precisely, to conclude this work, we describe some of the ideas that can be studied as future work.
@@ -66,7 +66,7 @@ In the case of kernel hyperparameters, such as the kernel width in the Gaussian 
 % convex hyperpar selection + extconvex
 In our proposal, the convex \acrshort{mtl} formulation, the selection of the convex combination parameters is particularly relevant. One approximation is to act with them as with the rest of hyperparameters and rely on general strategies (such as Bayesian Optimization), but we can also develop specific methods that learn these parameters from data, similarly to what we have done with the adjacency matrix of the \acrshort{gl} proposal.
 % convex hyperpar selection with NN
-Furthermore, in the case of the convex \acrshort{mtl} \acrshort{nn} it is not necessary to develop any novel algorithm, we can treat these convex combination hyperparameters as parameters of the network and optimize them using standard gradient descent techniques.
+Furthermore, in the case of the convex \acrshort{mtl} \acrshort{nn} it is not necessary to develop any novel algorithm; we can treat these convex combination hyperparameters as parameters of the network and optimize them using standard gradient descent techniques.
 
 % gl with nn
 Shifting our attention to the \acrshort{gl} approaches, a possible extension of our work would be to consider applying the \acrshort{gl} regularization to \acrshort{nns}.
