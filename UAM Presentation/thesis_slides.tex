@@ -1,0 +1,359 @@
+\documentclass{beamer}
+\usepackage{amsfonts,amsmath,oldgerm}
+\usepackage{siunitx}       % typesetting values with units
+
+\usetheme{sintef}
+
+\newcommand{\testcolor}[1]{\colorbox{#1}{\textcolor{#1}{test}}~\texttt{#1}}
+
+
+% My definitions
+
+  % Math Operators
+  \DeclareMathOperator*{\argmin}{arg\min}
+  \DeclareMathOperator*{\argmax}{arg\max}
+  \DeclareMathOperator*{\arginf}{arg\inf}
+  \DeclareMathOperator*{\argsup}{arg\sup}
+  \DeclareMathOperator{\Tr}{tr}
+  \DeclareMathOperator{\Span}{span}
+  \DeclareMathOperator{\Diag}{diag}
+  \DeclareMathOperator{\rank}{rank}
+  \DeclareMathOperator{\sign}{sign}
+  \DeclareMathOperator{\expect}{E}
+  \DeclareMathOperator{\VCdim}{VCdim}
+  
+  \DeclareMathOperator{\mn}{\mathcal{M_N}}
+  \DeclareMathOperator{\tn}{\mathcal{T_N}}
+  
+  
+  
+  \DeclareMathOperator{\Ima}{Im}
+  \DeclareMathOperator{\Ker}{Ker}
+  \DeclareMathOperator{\Vector}{vec}
+  
+%   \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+%   \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+%   \DeclarePairedDelimiter\equivclass{\lbrack}{\rbrack}
+  
+  
+  
+  \newcommand{\comm}[1]{{\color{red} #1}}
+  
+  \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+  \newcommand{\abs}[1]{\left|#1\right|}
+  \newcommand{\mymax}[1]{\max\left(#1\right)}
+  \newcommand{\mymin}[1]{\min\left(#1\right)}
+  \newcommand{\pospart}[1]{\left[#1\right]_{+}}
+  \newcommand{\epsins}[1]{\left[#1\right]_{\epsilon}}
+  
+  \newcommand{\set}[1]{\left\{#1\right\}}
+  \newcommand{\cardinal}[1]{\left|#1\right|}
+  \newcommand{\defeq}{\vcentcolon=}
+  \newcommand{\hypf}{h}
+  \newcommand{\hypfun}[1]{\hypf\left(#1\right)}
+  \newcommand{\hyp}[2]{\hypf\left(#1, #2\right)}
+  \newcommand{\fun}[1]{f\left(#1\right)}
+  \newcommand{\den}[1]{p\left( #1 \right)}
+  \newcommand{\opt}[1]{{#1}^*}
+  \newcommand{\cond}[2]{P\left( #1 \;\middle\vert\; #2 \right)}
+  \newcommand{\normal}[1]{N \left(#1\right)}
+  \newcommand{\multinormal}[1]{\mn \left(#1\right)}
+  \newcommand{\tensornormal}[1]{\tn \left(#1\right)}
+  \newcommand{\tendsto}[2]{\xrightarrow[#1]{} #2}
+  \newcommand{\diffp}[2]{\frac{\partial #1}{\partial #2}}
+  \newcommand{\optim}[1]{{#1}^*}
+  \newcommand{\priv}[1]{{#1}^{\diamond}}
+  
+  \newcommand{\adj}[1]{{#1}^{\#}}
+  
+  
+  \newcommand{\crefrangeconjunction}{--}
+  \newcommand{\svset}{\mathcal{I}}
+  
+  
+  
+  
+  \newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
+  \newcommand{\mymat}[1]{\upper{#1}}
+  \newcommand{\myvec}[1]{\bm{#1}}
+  \newcommand{\fv}[1]{\myvec{#1}}
+  \newcommand{\fm}[1]{\mymat{#1}}
+  \newcommand{\frow}[1]{\fv{#1}}
+  \newcommand{\vect}[1]{\bm{\text{vect}}\left(#1\right)}
+  
+  \newcommand{\trace}[1]{\Tr{\left(#1\right)}}
+  \newcommand{\dotp}[2]{\bm{\left\langle} #1, #2 \bm{\right\rangle}}
+  \newcommand{\ydotp}[2]{\left[ #1, #2 \right]_\mathcal{Y}}
+  
+  \newcommand{\ind}{\bm{1}}
+  
+  \newcommand{\domain}{\mathcal{D}}
+  \newcommand{\cvxset}{X}
+  \newcommand{\vecspace}{\reals^\dimx}
+  
+  \newcommand{\nsamples}{n}
+  \newcommand{\dimx}{d}
+  \newcommand{\vcdim}[1]{\VCdim\left(#1\right)}
+  \newcommand{\vc}{d}
+  \newcommand{\hplane}{w}
+  \newcommand{\bias}{b}
+  
+  \newcommand{\ntasks}{T}
+  \newcommand{\nclusters}{C}
+  
+  \newcommand{\npertask}{m}
+  \newcommand{\idotsn}{i=1, \ldots, \nsamples}
+  \newcommand{\hypspace}{\mathcal{H}}
+  \newcommand{\hypspacef}{\mathbb{H}}
+  \newcommand{\reals}{\mathbb{R}}
+  \newcommand{\naturals}{\mathbb{N}}
+  \newcommand{\param}{\alpha}
+  \newcommand{\paramspace}{A}
+  \newcommand{\fparam}{\beta}
+  \newcommand{\fparamspace}{B}
+  \newcommand{\hilbertspace}{\mathcal{H}}
+  \newcommand{\lagr}{\mathcal{L}}
+  \newcommand{\grad}{\nabla}
+  
+  
+  
+  \newcommand{\lossf}{\ell}
+  \newcommand{\loss}[2]{\lossf\left( #1, #2\right)}
+  
+  \newcommand{\distf}{P}
+  \newcommand{\sample}{D}
+  \newcommand{\samplen}{D_{\nsamples}}
+  
+  \newcommand{\err}{e}
+  \newcommand{\risk}{R}
+  \newcommand{\emprisk}{\hat{\risk}_{\sample}}
+  \newcommand{\empriskn}{\hat{\risk}_{\samplen}}
+  
+  \newcommand{\regrisk}{\hat{\risk}_{\sample, \lambda}}
+  \newcommand{\exprisk}{\risk_\distf}
+  \newcommand{\hypemp}{\opt{\hypf}_\nsamples}
+  \newcommand{\hypexp}{\opt{\hypf}_\distf}
+  
+  % bias learning
+  
+  \newcommand{\bprobspace}{\mathcal{P}}
+  \newcommand{\bdistf}{Q}
+  \newcommand{\bprobseq}{\bm{P}}
+  \newcommand{\bsample}{\bm{\sample}}
+  \newcommand{\bemprisk}{\hat{\risk}_{\bsample}}
+  \newcommand{\bexprisk}{\risk_\bdistf}
+  \newcommand{\bsetsample}{\hypspacef^{\ntasks}}
+  \newcommand{\bsetdist}{\hypspacef^{*}}
+  \newcommand{\capf}{C}
+  \newcommand{\capacity}[2]{\capf\left(#1, #2\right)}
+  \newcommand{\dist}[1]{d_{#1}}
+  
+  \newcommand{\bigO}[1]{O\left( #1 \right)}
+  
+  \newcommand{\Xspace}{\mathcal{X}}
+  \newcommand{\Tspace}{\mathcal{T}}
+  \newcommand{\Yspace}{\mathcal{Y}}
+  \newcommand{\Fspace}{\mathcal{V}}
+  \newcommand{\Vspace}{\mathcal{V}}
+  
+  
+  \newcommand{\toprob}{\xrightarrow{P}}
+  
+  \newcommand{\powerset}[1]{\wp\left( #1 \right)}
+  
+  \newcommand{\frelf}{f}
+  \newcommand{\frel}[1]{\frelf\left[ #1 \right]}
+  \newcommand{\frelset}{\mathcal{F}}
+  
+  \newcommand{\rkhs}{\mathcal{H}}
+  
+  \newcommand{\E}{\mathrm{E}}
+  \newcommand{\Var}{\mathrm{Var}}
+  \newcommand{\Cov}{\mathrm{Cov}}
+  
+  
+  % Tables
+  \newcommand{\fcode}[1]{\texttt{#1}}
+  \newcommand{\fheadmulti}[2]{\multicolumn{#1}{c}{\boldmath\textbf{#2}}}
+  \newcommand{\fhead}[1]{\fheadmulti{1}{#1}}
+  \newcommand{\fmax}[1]{{\num[detect-weight=true,math-rm=\mathbf]{#1}}}
+  \newcommand{\fmaxn}[1]{\textbf{#1}}
+  \newcommand{\fdata}[1]{\textsf{#1}}
+  \newcommand{\fmod}[1]{\textsf{#1}}
+  \newcommand{\ftt}[1]{\text{#1}}
+  
+  % energies
+  \newcommand{\fmodt}[2]{\fmod{(#1)}\_\fmod{#2}}
+  
+  % Units
+  \DeclareSIUnit\utc{UTC}
+  \newcommand{\utc}[1]{\SI[parse-numbers=false]{#1}{\utc}}
+  \newcommand{\mwh}[1]{\SI{#1}{\mega{\watt\hour}}}
+  \newcommand{\mw}[1]{\SI{#1}{\mega\watt}}
+  \newcommand{\mwhu}{\si{\mega{\watt\hour}}}
+  \newcommand{\mwhusq}{\si{\mega{\watt\hour}\squared}}
+  
+  \newcommand{\km}[1]{\SI{#1}{\kilo\metre}}
+
+
+
+
+\usefonttheme[onlymath]{serif}
+
+\titlebackground*{assets/uambackground}
+
+\newcommand{\hrefcol}[2]{\textcolor{cyan}{\href{#1}{#2}}}
+
+\title{Advanced Kernel Methods for
+Multi-Task Learning}
+\subtitle{Tesis dirigida por José Dorronsoro y Carlos Alaíz}
+%\course{Tesis dirigida por José Dorronsoro y Carlos Alaíz}
+\author{\href{mailto:carlos.ruizp@uam.es}{Carlos Ruiz Pastor}}
+%\IDnumber{1234567}
+
+\begin{document}
+\maketitle
+
+\begin{frame}
+
+Acknowledgements 1
+
+\vspace{\baselineskip}
+
+Acknowledgements 2
+
+\end{frame}
+
+
+\begin{frame}{Outline}{}
+      \tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+% Qué es ML
+\begin{frame}
+      {Introduction to Machine Learning}
+
+      \begin{itemize}
+            \item Machine Learning tries to automatize the learning process
+            \item In the supervised setting we have:
+            \begin{itemize}
+                  \item An input space $\Xspace$,
+                  \item an output space $\Yspace$,
+                  \item and the (unknown) probability $P(x, y)$ over $\Xspace \times \Yspace$
+            \end{itemize} 
+            \item Given a function $f: \Xspace \to \Yspace$, we define the loss function:
+            \begin{equation}
+                  \begin{aligned}
+              \nonumber
+              \lossf:\; &\Yspace \times \Yspace &\to &&[0, \infty) \\
+              &(y, f(x)) &\to  && \lossf(y, f(x)) ,
+          \end{aligned}
+          \end{equation}
+          such that $\lossf(y, y) = 0$ for all $y \in \Yspace$
+            
+      \end{itemize}
+      
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Loss Functions}
+
+      \begin{itemize}
+            \item In classification, with the class labels $y_i \in \set{-1, 1}$, we can use:
+            \begin{equation}
+                  \label{eq:hinge_def}
+                  \lossf(y, f(x)) = \pospart{1 - yf(x)} = 
+                  \begin{cases}
+                      0, & y f(x) \geq 1 ,\\
+                      1 - y f(x), & y f(x) < 1 .
+                  \end{cases}
+            \end{equation}
+            \item 
+      \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      {Expected Risk}
+      \begin{itemize}
+            \item Given a space of hypothesis $\hypspace = \set{\hyp{\cdot}{\param}, \param \in \paramspace}$
+            \item Definition: Expected Risk
+            \begin{equation}
+                  \nonumber
+                  \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y)
+            \end{equation}
+            \item Our goal is to find 
+            \begin{equation}
+                  \nonumber
+                  \opt{\param} = \argmin_{\param \in \paramspace} \left\{ \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y) \right\} ,
+              \end{equation}
+            however the distribution $\distf(x, y)$ is unknown
+      \end{itemize}
+      
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Empirical Risk}
+
+      \begin{itemize}
+            \item Instead, we have a set of $\nsamples$ instances sampled from $\distf(x,y)$:
+            \begin{equation}
+                  \nonumber
+                  \samplen = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+              \end{equation}
+            \item Definition: Empirical Risk
+            $$ \empriskn(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) $$
+            \item Instead of the Expected Risk, we minimize this empirical risk:
+            \begin{equation}
+                  \nonumber
+                  \argmin_{\param \in \paramspace} \left\{ \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) \right\}
+              \end{equation}
+      \end{itemize}
+
+\end{frame}
+
+
+
+\subsection{Multi-Task Learning}
+
+\begin{frame}
+      \frametitle{Multi-Task Learning}
+
+      
+
+\end{frame}
+
+\subsection{Support Vector Machines}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Convex Formulation for Multi-Task Learning}
+\subsection{Convex Multi-Task Learning with Kernel Methods}
+
+\subsection{Convex Multi-Task Learning with Neural Networks}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adaptive Graph Laplacian for Multi-Task Learning}
+\subsection{Graph Laplacian Multi-Task Learning with Kernels}
+
+\subsection{Adaptive Graph Laplacian Algorithm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiments}
+
+\section{Summary}
+
+\begin{frame}
+\frametitle{Good Luck!}
+\begin{itemize}
+\item Enough for an introduction! You should know enough by now
+\end{itemize}
+\end{frame}
+
+\backmatter
+\end{document}

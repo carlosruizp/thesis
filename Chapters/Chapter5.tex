@@ -769,7 +769,7 @@ First, observe that we can express the Laplacian regularization as
 \end{equation}
 Here, only the distance between model parameters is penalized, and in the extreme case where all the tasks can use the same model, i.e. $w_r = w$, the regularization for such model $w$ would be $0$.
 This regularization can be combined with the individual model regularizers for each task.
-To illustrate this, we first consider a linear L1-SVM, whose primal problem, using the unified formulation for regression and classification, is
+To illustrate this, we first consider a linear L1-\acrshort{svm}, whose primal problem, using the unified formulation for regression and classification, is
 \begin{equation}\label{eq:linear_gl_primal}
     \begin{aligned}
          & \min_{\fv{w}, \fv{b}, \fv{\xi}}
@@ -1287,7 +1287,7 @@ The extension to the kernel case requires using a different formulation of~\eqre
     \end{aligned}
 \end{equation}
 %
-Although the result from Lemma~\ref{lemma:regproblems_kernel_convex} can be applied for this problem, for illustration purposes we will develop the entire procedure for this L1-SVM case.
+Although the result from Lemma~\ref{lemma:regproblems_kernel_convex} can be applied for this problem, for illustration purposes we will develop the entire procedure for this L1-\acrshort{svm} case.
 %
 The Lagrangian corresponding to~\eqref{eq:primal_cvxgl_l1_kernel} is
 \begin{equation}\label{eq:lagr_cvxgl_l1_kernel}
@@ -1374,7 +1374,7 @@ so the entire matrix $\bar{Q}$ is defined as
 
 \subsection{Convex Graph Laplacian L2-SVM}
 %\paragraph*{Convex Graph Laplacian L2-SVM.\\}
-The primal problem for convex \acrshort{gl} \acrshort{mtl} based on the linear L2-SVM, with the unifying formulation for regression and classification, is
+The primal problem for convex \acrshort{gl} \acrshort{mtl} based on the linear L2-\acrshort{svm}, with the unifying formulation for regression and classification, is
 \begin{equation}\label{eq:primal_cvxgl_l2_linear}
     \begin{aligned}
          & \min_{\substack{v_1, \ldots, v_\ntasks ;                                                                                                                                                                                                                                                                                          \\ \substack{b_1, \ldots, b_\ntasks } ; \\ \substack{\fv{\xi}}, w; }}
@@ -1434,7 +1434,7 @@ which is equal to
         % &\quad -\frac{1}{2} \sum_{r,s=1}^\ntasks \lambda_r \lambda_s \sum_{i, j=1}^{\npertask_r, \npertask_s} \alpha_j^s \alpha_i^r y_j^s y_i^r \dotp{\phi(x_j^s)}{\phi(x_i^r)} - \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \alpha_i^r p_i^r .
     \end{aligned}
 \end{equation}
-Thus, alongside~\eqref{eq:specific_eqconstr_cvxgl_l2}, the dual problem for the L2-SVM based formulation is
+Thus, alongside~\eqref{eq:specific_eqconstr_cvxgl_l2}, the dual problem for the L2-\acrshort{svm} based formulation is
 \begin{equation}\label{eq:dual_cvxgl_l2_kernel}
     \begin{aligned}
          & \min_{\fv{\alpha}}
@@ -1452,8 +1452,8 @@ Again, we end up with the kernel matrix $\bar{Q}$ as defined in~\eqref{eq:dual_c
 
 \subsection{Convex Graph Laplacian LS-SVM}
 %\paragraph*{Convex Graph Laplacian LS-SVM.\\}
-Recall that in the LS-SVM~\citep{SuykensV99} the inequalities in the constraints are substituted for equalities, which lead to a simpler dual solution.
-The primal problem for the convex \acrshort{gl} approach, based on the linear LS-SVM is the following one:
+Recall that in the LS-\acrshort{svm}~\citep{SuykensV99} the inequalities in the constraints are substituted for equalities, which lead to a simpler dual solution.
+The primal problem for the convex \acrshort{gl} approach, based on the linear LS-\acrshort{svm} is the following one:
 \begin{equation}\label{eq:primal_cvxgl_ls_linear}
     \begin{aligned}
          & \min_{\fv{v}, \fv{b}, \fv{\xi}, w}
@@ -1462,7 +1462,7 @@ The primal problem for the convex \acrshort{gl} approach, based on the linear LS
          &                                             & y_i^r (\lambda_r (\dotp{w}{{x}_i^r}) + (1 - \lambda_r) (\dotp{{v}_r}{{x}_i^r}) + b_r) = p_i^r - \xi_i^r  .
     \end{aligned}
 \end{equation}
-Here, we are using the unifying formulation for the LS-SVM. Problem~\eqref{eq:primal_cvxgl_ls_linear} is equivalent to the classification problem when $p_i^r=1$ and $y_i^r \in \set{-1, 1}$ are the class labels ; and it is equivalent to the regression problem when $y_i^r=1$ and $p_i^r$ are the target values, for all $i=1, \ldots, \npertask_r$ and $r=1, \ldots, \ntasks$.
+Here, we are using the unifying formulation for the LS-\acrshort{svm}. Problem~\eqref{eq:primal_cvxgl_ls_linear} is equivalent to the classification problem when $p_i^r=1$ and $y_i^r \in \set{-1, 1}$ are the class labels ; and it is equivalent to the regression problem when $y_i^r=1$ and $p_i^r$ are the target values, for all $i=1, \ldots, \npertask_r$ and $r=1, \ldots, \ntasks$.
 %
 We can extend this problem to the non-linear case using the tensor product formulation, which is then expressed as:
 \begin{equation}\label{eq:primal_cvxgl_ls_kernel}
@@ -1481,7 +1481,7 @@ The Lagrangian corresponding to this optimization problem is
         \\ &\quad  - \sum_{r=1}^T \sum_{i=1}^{\npertask_r}{ \alpha_i^r [y_{i}^r (\lambda_r \dotp{w}{\phi(x_i^r)} + (1 - \lambda_r) (\dotp{\fv{v}}{e_r \otimes \psi({x}_i^r)}) + b_r) - p_{i}^r + \xi_{i}^r]   } ,
     \end{aligned}
 \end{equation}
-where now, unlike in the L1 and L2-SVM cases, there are no restrictions for the Lagrange multipliers $\alpha_i^r$.
+where now, unlike in the L1 and L2-\acrshort{svm} cases, there are no restrictions for the Lagrange multipliers $\alpha_i^r$.
 The KKT conditions for this problem are then
 \begin{align}
     \grad_{{w}} \lagr = \fv{0}        & \implies \optim{{w}} = \sum_{r= 1}^\ntasks \lambda_r \sum_{i=1}^{m_r} {\alpha_i^r} \left\lbrace y_i^r \phi(x_i^r) \right\rbrace , \label{eq:common_repr_cvxgl_ls}                                                           \\
@@ -1631,7 +1631,7 @@ More concretely, in the first step, we fix the matrix $A$ and find the optimal t
          &                             &                                                                                                                                                      & \quad + \frac{\nu}{2} \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks (A)_{rs} \norm{{v}_r - v_{s}}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{{v}_r}^2 + \frac{1}{2}\norm{{w}}^2  .
     \end{aligned}
 \end{equation}
-To solve this problem, its corresponding dual problem is actually minimized, and optimal dual coefficients $\fv{\alpha}^*$ are obtained. In the case of the L1-SVM-based model, the problem~\eqref{eq:dual_cvxgl_l1_kernel} is used, while for the L2, and LS-SVM variants, we have~\eqref{eq:dual_cvxgl_l2_kernel} and~\eqref{eq:dual_cvxgl_ls_kernel}, respectively.
+To solve this problem, its corresponding dual problem is actually minimized, and optimal dual coefficients $\fv{\alpha}^*$ are obtained. In the case of the L1-\acrshort{svm}-based model, the problem~\eqref{eq:dual_cvxgl_l1_kernel} is used, while for the L2, and LS-\acrshort{svm} variants, we have~\eqref{eq:dual_cvxgl_l2_kernel} and~\eqref{eq:dual_cvxgl_ls_kernel}, respectively.
 %
 
 In the second step, we fix $w, \fv{v}, \fv{b}$ and find the optimal matrix $A$ that is the solution to the problem
@@ -1770,7 +1770,7 @@ To study the computational cost of our algorithm we consider the cost of each st
 
 In step 0, the inverse of the $\ntasks \times \ntasks$ Laplacian matrix, which is used in the first and second steps, has a cost of $C_0 = O(\ntasks^3)$.
 %
-Step 1, where the dual problem is solved, has the standard cost corresponding to these SVM variants, which all have a complexity $C_1 = O(\nsamples^{2+\epsilon})$ with $O(\nsamples^2) \leq C_1$.
+Step 1, where the dual problem is solved, has the standard cost corresponding to these \acrshort{svm} variants, which all have a complexity $C_1 = O(\nsamples^{2+\epsilon})$ with $O(\nsamples^2) \leq C_1$.
 %
 The step 2, the distance computations, involves the inner products $\dotp{v_r}{v_s}$ shown in~\eqref{eq:dot_computation_matrix} for $r,s=1, \ldots, \ntasks$, each with a cost $\nsamples_{\text{sv}}^2$ with $\nsamples_{\text{sv}}$ being the number of support vectors; then, the complexity of the second step is $C_2 = O(\ntasks^2 \nsamples_\text{sv}^2)$.
 %

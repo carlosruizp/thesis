@@ -1,0 +1,287 @@
+\begin{figure}[t!]
+    \centering
+    \begin{tikzpicture}
+
+        % Input Layer
+        \foreach \i in {1,...,\inputnum}
+        {
+            \node[circle, 
+                minimum size = \minnodesize,
+                fill=orange!30] (Input_common-\i) at (0,-\i- \hiddennum) {};
+        }
+
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=purple!30] (Pred1) at (8,-1.2 * \hiddennum) {};
+
+        \node[circle, 
+        minimum size = \minnodesize,
+        fill=purple!30] (Pred2) at (8,-2.2 * \hiddennum) {};
+
+        \draw[->, shorten <=1pt] (Pred1) -- ++(1,0)
+            node[right]{$h_1(\fv{x})$};
+
+        \draw[->, shorten <=1pt] (Pred2) -- ++(1,0)
+        node[right]{$h_2(\fv{x})$};
+
+        %%%%%%%%%%%%%%%%%%%% Specific NN 1 %%%%%%%%%%%%%%%%%%%%%%%%%%
+    %     % Input Layer
+    % \foreach \i in {1,...,\inputnum}
+    % {
+    %     \node[circle, 
+    %         minimum size = \minnodesize,
+    %         fill=orange!30] (Input_sp1-\i) at (0,-\i) {};
+    % }
+     
+    
+    % Hidden Layer 1
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=teal!50,
+            yshift=(\hiddennum-\inputnum)*5 mm
+        ] (Hidden1_sp1-\i) at (2,-\i) {};
+    }
+    
+    % Hidden Layer 2
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=teal!50,
+            yshift=(\hiddennum-\inputnum)*5 mm
+        ] (Hidden2_sp1-\i) at (4,-\i) {};
+    }
+     
+    % Output Layer
+    \foreach \i in {1,...,1}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=black!50,
+            yshift=(1-\inputnum)*5 mm
+        ] (Output_sp1-\i) at (6,-\i) {$g_1(\fv{x})$};
+    }
+     
+    % Connect neurons In-Hidden
+    \foreach \i in {1,...,\inputnum}
+    {
+        \foreach \j in {1,...,\hiddennum}
+        {
+            \draw[->, shorten >=1pt,blue!80!black, dashed] (Input_common-\i) -- (Hidden1_sp1-\j);   
+        }
+    }
+
+
+    % Connect neurons Hidden-Hidden
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \foreach \j in {1,...,\hiddennum}
+        {
+            \draw[->, shorten >=1pt,blue!80!black, dashed] (Hidden1_sp1-\i) -- (Hidden2_sp1-\j);   
+        }
+    }
+     
+    % Connect neurons Hidden-Out
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \foreach \j in {1,...,1}
+        {
+            \draw[->, shorten >=1pt,blue!80!black, dashed] (Hidden2_sp1-\i) -- (Output_sp1-\j);
+        }
+    }
+     
+    % % Inputs
+    % \foreach \i in {1,...,\inputnum}
+    % {            
+    %     \draw[<-, shorten <=1pt] (Input_sp1-\i) -- ++(-1,0)
+    %         node[left]{$x_{\i}$};
+    % }
+     
+    % Outputs
+    % \foreach \i in {1,...,1}
+    % {            
+    %     \draw[->, shorten <=1pt] (Output_sp1-\i) -- ++(2,0)
+    %         node[right]{$g_1(x)$};
+    % }
+
+    \draw[->, ultra thick] (Output_sp1-1) -- (Pred1) node [midway, fill=white] {$1 - \lambda$};
+
+    
+    
+    \draw[thick]     ($(Hidden1_sp1-1.north west)+(-0.5,0.15)$) rectangle ($(Output_sp1-1.south east)+(0.3,-0.45)$);
+    
+    
+    %%%%%%%%%%%%%%%%%% Common NN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+     
+    
+    % Hidden Layer 1
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=teal!50,
+            yshift=(\hiddennum-\inputnum)*5 mm
+        ] (Hidden1_common-\i) at (2,-\i- \hiddennum) {};
+    }
+    
+    % Hidden Layer 2
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=teal!50,
+            yshift=(\hiddennum-\inputnum)*5 mm
+        ] (Hidden2_common-\i) at (4,-\i- \hiddennum) {};
+    }
+     
+    % Output Layer
+    \foreach \i in {1,...,1}
+    {
+        \node[circle, 
+            minimum size = \minnodesize,
+            fill=black!50,
+            yshift=(1-\inputnum)*5 mm
+        ] (Output_common-\i) at (6,-\i- \hiddennum) {$g(\fv{x})$};
+    }
+     
+    % Connect neurons In-Hidden
+    \foreach \i in {1,...,\inputnum}
+    {
+        \foreach \j in {1,...,\hiddennum}
+        {
+            \draw[->, shorten >=1pt,red!80!black, densely dashdotted] (Input_common-\i) -- (Hidden1_common-\j);   
+        }
+    }
+
+    % Connect neurons In-Hidden
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \foreach \j in {1,...,\hiddennum}
+        {
+            \draw[->, shorten >=1pt,red!80!black, densely dashdotted] (Hidden1_common-\i) -- (Hidden2_common-\j);   
+        }
+    }
+     
+    % Connect neurons Hidden-Out
+    \foreach \i in {1,...,\hiddennum}
+    {
+        \foreach \j in {1,...,1}
+        {
+            \draw[->, shorten >=1pt,red!80!black, densely dashdotted] (Hidden2_common-\i) -- (Output_common-\j);
+        }
+    }
+     
+    % Inputs
+    \foreach \i in {1,...,\inputnum}
+    {            
+        \draw[<-, shorten <=1pt] (Input_common-\i) -- ++(-1,0)
+            node[left]{};
+    }
+     
+    % % Outputs
+    % \foreach \i in {1,...,1}
+    % {            
+    %     \draw[->, shorten <=1pt] (Output_common-\i) -- ++(2,0)
+    %         node[right]{$g(x)$};
+    % }
+
+    \draw[->, ultra thick] (Output_common-1) -- (Pred1) node [midway, fill=white] {$\lambda$};
+    \draw[->, ultra thick] (Output_common-1) -- (Pred2) node [midway, fill=white] {$\lambda$};
+
+
+    \draw[thick,blue,dotted]     ($(Hidden1_common-1.north west)+(-0.5,0.15)$) rectangle ($(Output_common-1.south east)+(0.3,-0.45)$);
+
+    %%%%%%%%%%%%%%%%%%%% Specific NN 2 %%%%%%%%%%%%%%%%%%%%%%%%%%
+        % % Input Layer
+        % \foreach \i in {1,...,\inputnum}
+        % {
+        %     \node[circle, 
+        %         minimum size = \minnodesize,
+        %         fill=orange!30] (Input_sp2-\i) at (0,-\i- 2*\hiddennum) {};
+        % }
+         
+        
+        % Hidden Layer 1
+        \foreach \i in {1,...,\hiddennum}
+        {
+            \node[circle, 
+                minimum size = \minnodesize,
+                fill=teal!50,
+                yshift=(\hiddennum-\inputnum)*5 mm
+            ] (Hidden1_sp2-\i) at (2,-\i- 2*\hiddennum) {};
+        }
+        
+        % Hidden Layer 2
+        \foreach \i in {1,...,\hiddennum}
+        {
+            \node[circle, 
+                minimum size = \minnodesize,
+                fill=teal!50,
+                yshift=(\hiddennum-\inputnum)*5 mm
+            ] (Hidden2_sp2-\i) at (4,-\i- 2*\hiddennum) {};
+        }
+         
+        % Output Layer
+        \foreach \i in {1,...,1}
+        {
+            \node[circle, 
+                minimum size = \minnodesize,
+                fill=black!50,
+                yshift=(1-\inputnum)*5 mm
+            ] (Output_sp2-\i) at (6,-\i- 2*\hiddennum) {$g_2(\fv{x})$};
+        }
+         
+        % Connect neurons In-Hidden
+        \foreach \i in {1,...,\inputnum}
+        {
+            \foreach \j in {1,...,\hiddennum}
+            {
+                \draw[->, shorten >=1pt] (Input_common-\i) -- (Hidden1_sp2-\j);   
+            }
+        }
+    
+        % Connect neurons In-Hidden
+        \foreach \i in {1,...,\hiddennum}
+        {
+            \foreach \j in {1,...,\hiddennum}
+            {
+                \draw[->, shorten >=1pt] (Hidden1_sp2-\i) -- (Hidden2_sp2-\j);   
+            }
+        }
+         
+        % Connect neurons Hidden-Out
+        \foreach \i in {1,...,\hiddennum}
+        {
+            \foreach \j in {1,...,1}
+            {
+                \draw[->, shorten >=1pt] (Hidden2_sp2-\i) -- (Output_sp2-\j);
+            }
+        }
+         
+        % % Inputs
+        % \foreach \i in {1,...,\inputnum}
+        % {            
+        %     \draw[<-, shorten <=1pt] (Input_sp2-\i) -- ++(-1,0)
+        %         node[left]{$x_{\i}$};
+        % }
+         
+        % Outputs
+        % \foreach \i in {1,...,1}
+        % {            
+        %     \draw[->, shorten <=1pt] (Output_sp2-\i) -- ++(2,0)
+        %         node[right]{$g_2(x)$};
+        % }
+
+        \draw  [->, ultra thick] (Output_sp2-1) -- (Pred2) node [midway, fill=white] {$1 - \lambda$};
+         
+        \draw[thick]     ($(Hidden1_sp2-1.north west)+(-0.5,0.15)$) rectangle ($(Output_sp2-1.south east)+(0.3,-0.45)$);
+
+    \end{tikzpicture}
+    \caption{Ejemplo de formulación convexa con redes neuronales para dos tareas.
+	}
+    \label{fig:convexmtl_nn}
+\end{figure}

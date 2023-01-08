@@ -177,7 +177,7 @@ Then, the $r$-th task consists in estimating $m_r$ and $n_r$ from the data. To d
 
 Combining all tasks, there are $120$ data points, $30$ for each task, that we split randomly in a task-stratified way: two thirds, i.e. $80$ points, are used for training, and the rest are used for testing purposes. In this division, the task size proportions are kept constant, that is $1/4$ for each task, in both the train and test sets. 
 %
-With this synthetic problem, we train four convex \acrshort{mtl} models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding equivalent additive \acrshort{mtl} models, in which we set $\mu = (1 - \lambda)/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
+With this synthetic problem, we train four convex \acrshort{mtl} models corresponding to values of $\lambda \in \set{0.2, 0.4, 0.6, 0.8}$; and we also train the corresponding equivalent additive \acrshort{mtl} models, in which we set $\mu = (1 - \lambda)^2/\lambda^2$ and $C_\text{add} = (1 - \lambda)^2 C_\text{conv}$, as shown in Proposition~\ref{prop:add_conv_equiv}.
 %
 
 Our first goal is to compare the influence of $\mu$ with that of $\lambda$ in the final models that are obtained. To do that, we need $C$ to be small enough so that the regularization and, therefore, $\mu$ are relevant; the value $C_{\text{conv}} = 10^{-2}$ is found to be useful. We also consider linear kernels, so we can obtain the primal coefficients, that is, the slopes, and compare those obtained using the additive and convex formulations. In Figure~\ref{fig:synthetic_comparison}, we show the estimated slopes for each of the $\lambda$ values considered with a different color. In the $x$ axis we represent the slopes estimated using the convex approach and in the $y$ axis those estimated with the additive one. There are four dots of each color, corresponding to each of the tasks considered in our synthetic problem. We can observe that all dots lie in the diagonal line corresponding to the identity function, as we expected from the equivalence result from Proposition~\ref{prop:add_conv_equiv}.
@@ -192,7 +192,7 @@ However, two facts are noticeable. The first one is the range of the hyperparame
 
 
 
-\subsection{Performance of Convex \acrshort{mtl} and Optimal Convex Combination}
+\subsection{Performance of Convex MTL and Optimal Convex Combination}
 
 To test the performance of the convex \acrshort{mtl} formulation, in~\citet{RuizAD19} we also conduct experiments with real problems, which we later extend in~\citet{RuizAD21}. 
 To test our proposal we apply it to three \acrshort{svm} variants: L1, L2 and LS-\acrshort{svm}. For each variant, we compare the \acrshort{ctl} and \acrshort{itl} approaches with our convex \acrshort{mtl} formulation. To do this, we use fourteen different problems, six regression ones and eight classification ones.
@@ -212,7 +212,7 @@ Using {LX} such that it can stand for {L1}, {L2} or {LS}, we consider the follow
 We describe next the regression and classification problems.
 We use a total of six regression problems:
 \begin{itemize}
-    \item \fdata{majorca} and \fdata{tenerife}: The goal is to predict the photovoltaic energy production in Majorca and Tenerife, respectively. The tasks are defined as the energy prediction at each of the $14$ hours with sunlight (we remove the night hours).
+    \item \fdata{majorca} and \fdata{tenerife}: The goal is to predict the photovoltaic energy production in Majorca and Tenerife, respectively. The tasks are defined as the energy prediction at each of the $14$ hours with sunlight (we remove the night hours). In Section~\ref{sec:convexmlt_renewable} we will describe these problems with more detail.
     \item \fdata{boston}\footnote{\url{https://www.kaggle.com/datasets/schirmerchad/bostonhoustingmlnd}}: This is the Boston housing problem, where the goal is to predict house prices, and the tasks are defined as the predictions in different areas of the city. In this problem we define two tasks: the houses that are next to the river and those that are not. 
     \item \fdata{california}\footnote{\url{https://www.kaggle.com/datasets/camnugent/california-housing-prices}}: This is the housing problem in California, where the goal is also to predict house prices. Here the tasks correspond to four different areas of California, according to their distance to the sea.
     \item \fdata{abalone}\footnote{\url{https://archive.ics.uci.edu/ml/datasets/abalone}}: The goal is to predict the number of rings of a species of marine molluscs. The tasks are male, female or infant specimens.
@@ -628,19 +628,21 @@ The convex \acrshort{mtl} approaches get the best 18 F1 scores out of 24 and the
 A transition towards renewable energies is taking place, with particular interest for solar and wind generation, which implies a demand for accurate energy production forecasts to be made for the transmission system operators, wind and solar farm managers and market agents. These forecasts can be made at different time horizons: very short (up to one hour), short (up to a few hours), or medium-long (one or more days ahead).
 In~\citet{ruiz2020_energies} we presented an application of our convex \acrshort{mtl} techniques to renewable energies forecast, in particular we focus on the hourly, day-ahead prediction, that is, the prediction of tomorrow, of each hour, is given today.
 
-Machine Learning (\acrshort{ml}), like in other forecasting scenarios, has an increasing presence in energy prediction approaches. 
-The use of ML models requires choosing the predictive features, which depend on the time horizon of interest. 
+\acrfull{ml}, like in other forecasting scenarios, has an increasing presence in energy prediction approaches. 
+\acrshort{mtl} can also be useful for renewable power prediction, see for example~\citet{Dorado-MorenoNG20}, where they consider multiple power plants simultaneously.
+%
+In any case, the use of \acrshort{ml} models requires choosing the predictive features, which depend on the time horizon of interest. 
 For short-term forecast, past values of energy production and real time meteorological data can be used; however, for longer horizons the most common features are those from \acrfull{nwps}, that can be provided by entities such as the \acrfull{ecmwf}, which is the one used in this work.
-For the hourly day-ahead predictions of interest here, we use the \acrshort{ecmwf} forecasts of the ECMWF run at \utc{00} in a given day to predict the hourly energy productions the day after. That is, using the \acrshort{ecmwf} generated at \utc{00}, the energy predictions are given for each hour from {24}h to {47}h.
+For the hourly day-ahead predictions of interest here, we use the forecasts of the \acrshort{ecmwf} run at \utc{00} in a given day to predict the hourly energy productions the day after. That is, using the \acrshort{ecmwf} generated at \utc{00}, the energy predictions are given for each hour from {24}h to {47}h.
 
-After the selection of predictive features, the ML method better suited for the problem at hand has to be selected. Also, each method has a set of hyperparameters that influence its behaviour and have to be adjusted in each occasion.
+After the selection of predictive features, the \acrshort{ml} method better suited for the problem at hand has to be selected. Also, each method has a set of hyperparameters that influence its behaviour and have to be adjusted in each occasion.
 %In the case of interest here, there are two possibilities: using local models for single installations or global models for multiple installations within a geographic area.
 
-% Many ML approaches have been proposed for energy forecasting. 
+% Many \acrshort{ml} approaches have been proposed for energy forecasting. 
 % In the case of wind energy, prediction see, for example, the reviews of wind energy predictions of~\citep{giebel_soa,pinson2013,colak} or the application of concrete models to specific time-horizons~\citet{heinermann,zhu_genton}.
 % For solar energy, we can see the surveys of~\citep{Antonanzas2016,Inman2013,Wan2015}, and a good reference for many aspects of photovoltaic energy can be found in~\cite{SEK}.
 
-Anyway, any ML approach has to deal with the changing behaviour of a wind or solar farm, which can be altered substantially according to different conditions or time.
+Anyway, any \acrshort{ml} approach has to deal with the changing behaviour of a wind or solar farm, which can be altered substantially according to different conditions or time.
 In the \acrfull{pv} energy production this is obvious, since different times of the day, from sunrise to sunset, have very different behaviours, but there are also seasonal effects that affect the energy generation in the solar farms.
 For wind energy, it is more difficult to define the variables that determine different scenarios. 
 The wind velocity forecast is the most relevant variable for energy generation, but it is important to take into account the power curve of wind turbines, which has three different response zones: one for low speed and near zero production, an intermediate one with power growing with wind velocity and one with~maximum constant power up to the cut-off speed.
@@ -685,11 +687,11 @@ For example, if we consider the wind velocity to define three tasks, we study th
 We will represent the task definition applied with the nomenclature \fmodt{taskDef}{modelName}, where \fmod{taskDef} is a name for the task definition and \fmod{modelName} is the name of the model.
 
 %
-We consider three different models based on the standard Gaussian kernel SVR:
+Using the nomenclature already presented, we consider three different models based the L1-SVR with Gaussian kernel, which, for convenience of the reader, we describe again:
 \begin{itemize}
-    \item \fmod{CTL}: a \acrshort{ctl} model, that is, a single SVR for all tasks. Its set of hyperparameters is $\set{C, \gamma, \epsilon}$, where $C$ is the regularization trade-off parameter, $\gamma$ is the kernel width, and $\epsilon$ the width of the error insensitive area.
-    \item \fmod{ITL}: an \acrshort{itl} model, that is, an independent SVR for each task, each with its hyperparameters: $\set{C_r, \gamma_r, \epsilon_r}$ for $r=1, \ldots, \ntasks$.
-    \item \fmod{MTL}: a convex \acrshort{mtl} model, as shown in Section~\ref{sec:convexmlt_kernel}, whose corresponding set of hyperparameters is in principle $\set{C, \epsilon, \gamma, \gamma_1, \ldots, \gamma_\ntasks, \lambda_1, \ldots, \lambda_\ntasks}$, where $\gamma$ is the kernel width of the common part and $\gamma_r$ the one of the $r$-th specific part; also, $\lambda_r$ is the convex combination parameter corresponding to the $r$-th task.
+    \item \fmod{CTL-L1}: a \acrshort{ctl} model, that is, a single SVR for all tasks. Its set of hyperparameters is $\set{C, \gamma, \epsilon}$, where $C$ is the regularization trade-off parameter, $\gamma$ is the kernel width, and $\epsilon$ the width of the error insensitive area.
+    \item \fmod{ITL-L1}: an \acrshort{itl} model, that is, an independent SVR for each task, each with its hyperparameters: $\set{C_r, \gamma_r, \epsilon_r}$ for $r=1, \ldots, \ntasks$.
+    \item \fmod{MTL-L1}: a convex \acrshort{mtl} model, as shown in Section~\ref{sec:convexmlt_kernel}, whose corresponding set of hyperparameters is in principle $\set{C, \epsilon, \gamma, \gamma_1, \ldots, \gamma_\ntasks, \lambda_1, \ldots, \lambda_\ntasks}$, where $\gamma$ is the kernel width of the common part and $\gamma_r$ the one of the $r$-th specific part; also, $\lambda_r$ is the convex combination parameter corresponding to the $r$-th task.
 \end{itemize}
 %
 Although the \acrshort{ctl} approach does not use the tasks information, the \acrshort{itl} and \acrshort{mtl} models depend on the task definition that we use. For instance, prediction at different hours can define different tasks, where one possible value is (\fmod{hour}=14) or (\fmod{hour}=12). The models using this task definition will be named \fmodt{hour}{ITL} and \fmodt{hour}{MTL}. 
@@ -699,10 +701,11 @@ We will name \fmod{(taskDef1,...,taskDefM)} the combination of task definitions 
 The models using this combination will be named \fmodt{hour, season}{ITL} and \fmodt{hour, season}{MTL}.
 
 %
-As explained in Section~\ref{sec:convexmtlsvm_exp}, the cost of selecting the optimal hyperparameters scales exponentially with their number, so it is not feasible to use a \acrshort{cv} grid search, for example, if we have more than $3$ hyperparameters.
+As explained in Section~\ref{sec:convexmtlsvm_exp}, we make two adjustements for the hyperparameter selection.
+%, the cost of selecting the optimal hyperparameters scales exponentially with their number, so it is not feasible to use a \acrshort{cv} grid search, for example, if we have more than $3$ hyperparameters.
 %
-In the \fmod{CTL} and \fmod{ITL} it is not a problem, since we have $3$ hyperparameters per model: the single common \acrshort{svr}, and each one of the task-independent \acrshort{svr}s, respectively. We apply then a \acrshort{cv} grid search, with the train and validation sets described above.
-However, to find the hyperparameters of \fmod{MTL} we have to make some adjustments, as discussed in Section~\ref{sec:convexmtlsvm_exp}. 
+%In the \fmod{CTL} and \fmod{ITL} it is not a problem, since we have $3$ hyperparameters per model: the single common \acrshort{svr}, and each one of the task-independent \acrshort{svr}s, respectively. We apply then a \acrshort{cv} grid search, with the train and validation sets described above.
+%However, to find the hyperparameters of \fmod{MTL} we have to make some adjustments, as discussed in Section~\ref{sec:convexmtlsvm_exp}. 
 %
 First, we apply a convex \acrshort{mtl} formulation with a single $\lambda$ parameter, common to all tasks.
 %
@@ -715,18 +718,18 @@ We use the \acrshort{mae} as the validation metric, because it is the most natur
 %
 The complete procedure to get the final scores is:
 \begin{enumerate}
-    \item \textbf{Scale the target and normalize the features.} We scale the target values to $[0, 1]$ and we normalize each feature, so it has $0$ mean and a standard deviation of $1$. This is done using the training data only. 
+    \item {Scale the target and normalize the features.} We scale the target values to $[0, 1]$ and we normalize each feature, so it has $0$ mean and a standard deviation of $1$. This is done using the training data only. 
     For the target scale, we select the target minimum and maximum values, that is, $y_\text{min} = 0$, when no energy is produced, and $y_\text{max}$ is the maximum capacity of the park.    
     %Then, the target in train, validation and test sets is normalized as     $y_\text{scaled} = (y - y^\text{tr}_\text{min}) / (y^\text{tr}_\text{max} - y^\text{tr}_\text{min} )$.
     %For example, for feature normalization, we compute the training mean $\mu_d^\text{tr}$ and standard deviation $\sigma_d^\text{tr}$ of feature $d$, then we normalize the corresponding feature in the whole dataset using $\hat{X}_d = (\hat{X}_d - \mu_d^\text{tr}) /  \sigma_d^\text{tr}$.
-    \item \textbf{Use a \acrshort{cv} grid search to select the optimal hyperparameters.} This is done with the train and validation sets, with the grids and adjustements already explained. We use the MAE as our validation metric.
-    \item \textbf{Predict on the test set and rescale to the original scale.} That is, we use the corresponding model $f(\cdot)$ to compute the prediction of the normalized $i$-th test example from task $r$, $\tilde{x}_i^r$, as $f(\tilde{x}_i^r)$. Then, we rescale it back to obtain the final prediction $\hat{y}_i^r = f(x_i^r)  (y_\text{max} - y_\text{min} ) + y_\text{min}$.
-    \item \textbf{Compute the test score.} Using the target values $y_i^r$ and their corresponding predictions, $\hat{y}_i^r$, we measure the performance of our model using both MAE and MSE.
+    \item {Use a \acrshort{cv} grid search to select the optimal hyperparameters.} This is done with the train and validation sets, with the grids and adjustements already explained. We use the MAE as our validation metric.
+    \item {Predict on the test set and rescale to the original scale.} That is, we use the corresponding model $f(\cdot)$ to compute the prediction of the normalized $i$-th test example from task $r$, $\tilde{x}_i^r$, as $f(\tilde{x}_i^r)$. Then, we rescale it back to obtain the final prediction $\hat{y}_i^r = f(x_i^r)  (y_\text{max} - y_\text{min} ) + y_\text{min}$.
+    \item {Compute the test score.} Using the target values $y_i^r$ and their corresponding predictions, $\hat{y}_i^r$, we measure the performance of our model using both MAE and MSE.
 \end{enumerate}
-The entire process is carried out using a \fcode{Pipeline} object, where we make use of the class \fcode{StandardScaler} to normalize the data, and the \fcode{TransformedTargetRegressor} class to scale the targets. All these classes are part of the \emph{scikit-learn} library~\citep{scikit-learn}.
-
+%The entire process is carried out using a \fcode{Pipeline} object, where we make use of the class \fcode{StandardScaler} to normalize the data, and the \fcode{TransformedTargetRegressor} class to scale the targets. All these classes are part of the \emph{scikit-learn} library~\citep{scikit-learn}.
 %
-To put our results in perspective, we also show the errors of simple persistence models and of multilayer perceptrons. For the perceptron we use the \fcode{MLPRegressor} class of \emph{scikit-learn}. The architecture for both problems consists on fully connected networks with two hidden layers, with $100$ and $50$ neurons. We train these networks using the L-BFGS solver with a maximum of $800$ iterations and a tolerance of $10^{-10}$. The regularization hyperparameter is selected using a \acrshort{cv} grid search, as those described above, where the grid is $\set{4^k: -2 \leq j \leq 3}$.
+%
+To put our results in perspective, we also show the errors of simple persistence models and of multilayer perceptrons. For the perceptron we use the \fcode{MLPRegressor} class of \emph{scikit-learn}. The architecture for both problems consists in fully connected networks with two hidden layers, with $100$ and $50$ neurons. We train these networks using the L-BFGS solver with a maximum of $800$ iterations and a tolerance of $10^{-10}$. The regularization hyperparameter is selected using a \acrshort{cv} grid search, as those described above, where the grid is $\set{4^k: -2 \leq k \leq 3}$.
 
 
 
@@ -780,7 +783,7 @@ That is, both grids have a longitude width of 2 degrees and a latitude height of
 
 %
 Observe that we obtain large dimensional patterns, where the features might be highly correlated. That is, a feature, \ftt{SSR} for example, measured in one point of the grid and another close point might be very correlated, since the entire grids are squares with sides of about $\km{12}$.
-This correlation will affect those models based on matrix-vector computations, such as linear models, but, also, to some extent, to neural networks.
+This correlation will affect those models based on matrix-vector computations, such as linear models, but, also, to some extent, to \acrshort{nns}.
 Although ridge (or Tikhonov) regularization can alleviate this issue for these models, kernel-methods, such as the kernel \acrshort{svm}s, seems better suited for this kind of problems.
 When we apply kernels, like the Gaussian kernel $$\exp({-\gamma \norm{x-y}^2}),$$ the algorithm learns using the distances among patterns $\norm{x - y}$, instead of its features.
 %
@@ -823,13 +826,13 @@ Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season
         & \fheadmulti{4}{MAE} & \fheadmulti{4}{MSE} & \fhead{$\lambda^*$}\\
         & {{\mwhu}}	& {{\%}} & {rank} & {Wil.} & {{\mwhusq}}	& {{\textpertenthousand}} & {rank} &  {Wil.}\\
         \midrule
-        \fmod{CTL}    &  5.265 &  7.265  & (6) & (4) &  59.322 &  112.985  & (6) & (4) &  - \\
-        \fmod{(season)\_ITL}   &  5.305 &  7.384  & (7) & (5) &  59.591 &  113.498  & (7) & (4) &  - \\
-        \fmod{(season)\_MTL}   &  \fmaxn{4.884} &  \fmaxn{6.740}  & \fmaxn{(1)} & \fmaxn{(1)} &  53.222 &  101.366  & (2) & (3) &  0.4 \\
-        \fmod{(hour)\_ITL}   &  5.083 &  7.015  & (4) & (2) &  54.540 &  103.877  & (3) & (3) &  - \\
-        \fmod{(hour)\_MTL}   &  4.957 &  6.840  & (2) & (1) &  \fmaxn{52.614} &  \fmaxn{100.208}  & \fmaxn{(1)} & \fmaxn{(1)} &  0.3 \\
-        \fmod{(hour, season)\_ITL}   &  5.250 &  7.251  & (5) & (3) &  57.927 &  110.328  & (5) & (4) &  - \\
-        \fmod{(hour, season)\_MTL}   &  5.038 &  6.952  & (3) & (2) &  54.601 &  103.992  & (4) & (3) &  0.3 \\
+        \fmod{CTL-L1}    &  5.265 &  7.265  & (6) & (4) &  59.322 &  112.985  & (6) & (4) &  - \\
+        \fmod{(season)\_ITL-L1}   &  5.305 &  7.384  & (7) & (5) &  59.591 &  113.498  & (7) & (4) &  - \\
+        \fmod{(season)\_MTL-L1}   &  \fmaxn{4.884} &  \fmaxn{6.740}  & \fmaxn{(1)} & \fmaxn{(1)} &  53.222 &  101.366  & (2) & (3) &  0.4 \\
+        \fmod{(hour)\_ITL-L1}   &  5.083 &  7.015  & (4) & (2) &  54.540 &  103.877  & (3) & (3) &  - \\
+        \fmod{(hour)\_MTL-L1}   &  4.957 &  6.840  & (2) & (1) &  \fmaxn{52.614} &  \fmaxn{100.208}  & \fmaxn{(1)} & \fmaxn{(1)} &  0.3 \\
+        \fmod{(hour, season)\_ITL-L1}   &  5.250 &  7.251  & (5) & (3) &  57.927 &  110.328  & (5) & (4) &  - \\
+        \fmod{(hour, season)\_MTL-L1}   &  5.038 &  6.952  & (3) & (2) &  54.601 &  103.992  & (4) & (3) &  0.3 \\
         \bottomrule
     \end{tabular}
     }
@@ -849,13 +852,13 @@ Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season
         & \fheadmulti{4}{MAE} & \fheadmulti{4}{MSE} & \fhead{$\lambda^*$}\\
         & {{\mwhu}}	& {{\%}} & {rank} & {Wil.} & {{\mwhusq}}	& {{\textpertenthousand}} & {rank} &  {Wil.}\\
         \midrule
-        \fmod{CTL}    &  5.786 &  5.373  & (5) & (5) &   88.323 &  76.174  & (5) & (5) &  - \\
-        \fmod{(season)\_ITL}   &  5.930 &  5.545  & (6) & (5) &   97.454 &  84.611  & (6) & (6) &  - \\
-        \fmod{(season)\_MTL}   &  5.579 &  5.181  & (4) & (2) &   86.227 &  74.366  & (3) & (3) &  0.8 \\
-        \fmod{(hour)\_ITL}   &  5.403 &  5.018  & (2) & (2) &   86.686 &  74.762  & (4) & (4) &  - \\
-        \fmod{(hour)\_MTL}   &  \fmaxn{5.376} &  \fmaxn{4.993}  & \fmaxn{(1)} & (1) &   \fmaxn{84.207} &  \fmaxn{72.624}  & \fmaxn{(1)} & (1) &  0.7 \\
-        \fmod{(hour, season)\_ITL}   &  6.025 &  5.554  & (7) & (6) &  104.536 &  90.297  & (7) & (7) &  - \\
-        \fmod{(hour, season)\_MTL}   &  5.494 &  5.102  & (3) & (3) &   85.440 &  73.687  & (2) & (2) &  0.7 \\
+        \fmod{CTL-L1}    &  5.786 &  5.373  & (5) & (5) &   88.323 &  76.174  & (5) & (5) &  - \\
+        \fmod{(season)\_ITL-L1}   &  5.930 &  5.545  & (6) & (5) &   97.454 &  84.611  & (6) & (6) &  - \\
+        \fmod{(season)\_MTL-L1}   &  5.579 &  5.181  & (4) & (2) &   86.227 &  74.366  & (3) & (3) &  0.8 \\
+        \fmod{(hour)\_ITL-L1}   &  5.403 &  5.018  & (2) & (2) &   86.686 &  74.762  & (4) & (4) &  - \\
+        \fmod{(hour)\_MTL-L1}   &  \fmaxn{5.376} &  \fmaxn{4.993}  & \fmaxn{(1)} & (1) &   \fmaxn{84.207} &  \fmaxn{72.624}  & \fmaxn{(1)} & (1) &  0.7 \\
+        \fmod{(hour, season)\_ITL-L1}   &  6.025 &  5.554  & (7) & (6) &  104.536 &  90.297  & (7) & (7) &  - \\
+        \fmod{(hour, season)\_MTL-L1}   &  5.494 &  5.102  & (3) & (3) &   85.440 &  73.687  & (2) & (2) &  0.7 \\
         \bottomrule
     \end{tabular}
     }
@@ -956,11 +959,11 @@ The neural network errors are \mwh{5.140} and \mwh{5.763}, that is, 7.09\% and 5
 %
 To get a better understanding of the results, we plot the predictions against the target values of the \acrshort{ctl} model and of the best \acrshort{itl} and \acrshort{mtl} ones.
 %
-In the case of \fdata{majorca}, we plot the predictions \fmod{CTL}, \fmodt{hour}{ITL} and \fmodt{season}{MTL} in Figure~\ref{fig:majorca_best_plots}.
+In the case of \fdata{majorca}, we plot the predictions \fmod{CTL-L1}, \fmodt{hour}{ITL-L1} and \fmodt{season}{MTL-L1} in Figure~\ref{fig:majorca_best_plots}.
 From these scatter plots it seems that the \acrshort{ctl} approach has a larger deviation in its predictions, while the \acrshort{itl} one has a bias, that is, it systematically underestimates the prediction corresponding to larger values of energy production.
 The \acrshort{mtl} approach seems to correct, to a certain degree, this bias of the \acrshort{itl} model, while preserving a smaller variance than the \acrshort{ctl} one.
 %
-For \fdata{tenerife} we plot the predictions of \fmod{CTL}, \fmodt{hour}{ITL} and \fmodt{hour}{MTL}, which are shown in Figure~\ref{fig:tenerife_best_plots}.
+For \fdata{tenerife} we plot the predictions of \fmod{CTL-L1}, \fmodt{hour}{ITL-L1} and \fmodt{hour}{MTL-L1}, which are shown in Figure~\ref{fig:tenerife_best_plots}.
 It is more difficult to interpret the plots in this case, although it is possible to highlight that the \acrshort{mtl} approach seems less prone to overestimate the production at lower values than either the \acrshort{ctl} or \acrshort{itl} models.
 
 
@@ -1063,21 +1066,21 @@ Moreover, the boundaries of the tasks are set in a way that is partially arbitra
 %    & \fhead{\fcode{stv}}	& \fhead{\fcode{stv}} & \fhead{\fcode{stv}} \\
 & {{\mwhu}} & {rank} & {Wil.} & {{\mwhusq}} & {rank} &  {Wil.}\\
     \midrule
-    \fmod{CTL}                                           &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & - \\
-    \fmod{(velocity)\_ITL}                              &  6.211 & (7) & (3) &   93.363 & (7) & (3) & - \\
-    \fmod{(velocity)\_MTL}                       &   6.208 & (6) & (3) &    93.199 & (6) & (3) & 0 \\
-    \fmod{(timeOfDay)\_ITL}                             &  6.283 & (9) & (4) &   93.594 & (9) & (4) & - \\
-    \fmod{(timeOfDay)\_MTL}                      &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
-    \fmod{(timeOfDay, velocity)\_ITL}                 &  6.341 & (11) & (4) &   97.250 & (11) & (5) & - \\
-    \fmod{(timeOfDay, velocity)\_MTL}          &  6.312 & (10) & (4) &   94.774 & (10) & (4) & 0.4 \\
-    \fmod{(timeOfDay, angle)\_ITL}                    &  6.266 & (8) & (4) &   93.517 & (8) & (4) & - \\
-    \fmod{(timeOfDay, angle)\_MTL}             &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
-    \fmod{(timeOfDay, angle, velocity)\_ITL}        &  6.410 & (12) & (4) &  102.031 & (12) & (6) & - \\
-    \fmod{(timeOfDay, angle, velocity)\_MTL} &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
-    \fmod{(angle)\_ITL}                                 &   6.170 & (4) & (3) &    91.586 & (4) & (3) & - \\
-    \fmod{(angle)\_MTL}                          &   6.135 & (2) & (2) &    \fmaxn{90.026} & \fmaxn{(1)} & \fmaxn{(1)} & 0.9 \\
-    \fmod{(angle, velocity)\_ITL}                     &   6.173 & (5) & (3) &    92.529 & (5) & (3) & - \\
-    \fmod{(angle, velocity)\_MTL}              &   6.168 & (3) & (3) &    90.990 & (3) & (3) & 0.7 \\
+    \fmod{CTL-L1}                                           &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & - \\
+    \fmod{(velocity)\_ITL-L1}                              &  6.211 & (7) & (3) &   93.363 & (7) & (3) & - \\
+    \fmod{(velocity)\_MTL-L1}                       &   6.208 & (6) & (3) &    93.199 & (6) & (3) & 0 \\
+    \fmod{(timeOfDay)\_ITL-L1}                             &  6.283 & (9) & (4) &   93.594 & (9) & (4) & - \\
+    \fmod{(timeOfDay)\_MTL-L1}                      &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
+    \fmod{(timeOfDay, velocity)\_ITL-L1}                 &  6.341 & (11) & (4) &   97.250 & (11) & (5) & - \\
+    \fmod{(timeOfDay, velocity)\_MTL-L1}          &  6.312 & (10) & (4) &   94.774 & (10) & (4) & 0.4 \\
+    \fmod{(timeOfDay, angle)\_ITL-L1}                    &  6.266 & (8) & (4) &   93.517 & (8) & (4) & - \\
+    \fmod{(timeOfDay, angle)\_MTL-L1}             &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
+    \fmod{(timeOfDay, angle, velocity)\_ITL-L1}        &  6.410 & (12) & (4) &  102.031 & (12) & (6) & - \\
+    \fmod{(timeOfDay, angle, velocity)\_MTL-L1} &   \fmaxn{6.132} & \fmaxn{(1)} & \fmaxn{(1)} &    90.228 & (2) & (2) & 1 \\
+    \fmod{(angle)\_ITL-L1}                                 &   6.170 & (4) & (3) &    91.586 & (4) & (3) & - \\
+    \fmod{(angle)\_MTL-L1}                          &   6.135 & (2) & (2) &    \fmaxn{90.026} & \fmaxn{(1)} & \fmaxn{(1)} & 0.9 \\
+    \fmod{(angle, velocity)\_ITL-L1}                     &   6.173 & (5) & (3) &    92.529 & (5) & (3) & - \\
+    \fmod{(angle, velocity)\_MTL-L1}              &   6.168 & (3) & (3) &    90.990 & (3) & (3) & 0.7 \\
     \bottomrule
     \end{tabular}
     }
@@ -1118,16 +1121,16 @@ Moreover, the boundaries of the tasks are set in a way that is partially arbitra
 % \end{table}
 
 Regarding the experimental results for wind energy prediction, in Table~\ref{table:wind_scores} the MAE and MSE scores are shown, and also the ranking is given in parentheses. 
-Unlike the solar energy case, here the \acrshort{ctl} approach seems better suited than using an \acrshort{itl} one. This is also reflected in the selection of $\lambda^*$ values in the models that get best results, which are close to $1$, the \acrshort{ctl} equivalent case. That is, \acrshort{mtl} models such as \fmodt{timeOfDay}{MTL}, \fmodt{timeOfDay, angle}{MTL} and \fmodt{timeOfDay, angle, velocity}{MTL}, where $\lambda^*=1$, obtain the best results and are equivalent to \fmod{CTL}. Also note the cases of \fmodt{angle}{MTL} and \fmodt{angle, velocity}{MTL}, that are second and third best, and where the selected values are $\lambda^*=0.9$ and $\lambda^*=0.7$.
-Those models that put the emphasis on the independent parts, like \fmodt{timeOfDay, velocity}{MTL}, and, of course, the \acrshort{itl} approaches, get worse results.
+Unlike the solar energy case, here the \acrshort{ctl} approach seems better suited than using an \acrshort{itl} one. This is also reflected in the selection of $\lambda^*$ values in the models that get best results, which are close to $1$, the \acrshort{ctl} equivalent case. That is, \acrshort{mtl} models such as \fmodt{timeOfDay}{MTL-L1}, \fmodt{timeOfDay, angle}{MTL-L1} and \fmodt{timeOfDay, angle, velocity}{MTL-L1}, where $\lambda^*=1$, obtain the best results and are equivalent to \fmod{CTL-L1}. Also note the cases of \fmodt{angle}{MTL-L1} and \fmodt{angle, velocity}{MTL-L1}, that are second and third best, and where the selected values are $\lambda^*=0.9$ and $\lambda^*=0.7$.
+Those models that put the emphasis on the independent parts, like \fmodt{timeOfDay, velocity}{MTL-L1}, and, of course, the \acrshort{itl} approaches, get worse results.
 %
 %
 As with the solar energy problems, the statistical significance of the results is tested using the Wilcoxon test. As before, using the ranking of Table~\ref{table:wind_scores}, the significance of the difference between one model and its immediate succesor is tested. 
 %
 %In Table~\ref{table:wind_wilcoxon} the $p$-values of these Wilcoxon tests are given, and the statistical significance ranking is shown. Recall that two models have different significance ranking only if the Wilcoxon test hypothesis is rejected.
 %
-The \acrshort{ctl} approach obtains the best results, being the best model in terms of MAE and second best in terms of MSE. Nevertheless, the equivalent \acrshort{mtl} approaches that use $\lambda^*=1$ trivially tie at first place; these are \fmodt{timeOfDay}{MTL}, \fmodt{timeOfDay, angle}{MTL} and \fmodt{timeOfDay, angle, velocity}{MTL}, while the \fmodt{angle}{MTL} gets the second best MAE score.
-When the MSE scores are analyzed, the roles are reversed, the \fmodt{angle}{MTL} gets the best result, and the \fmod{CTL} and the equivalents \acrshort{mtl} approaches are second.
+The \acrshort{ctl} approach obtains the best results, being the best model in terms of MAE and second best in terms of MSE. Nevertheless, the equivalent \acrshort{mtl} approaches that use $\lambda^*=1$ trivially tie at first place; these are \fmodt{timeOfDay}{MTL-L1}, \fmodt{timeOfDay, angle}{MTL-L1} and \fmodt{timeOfDay, angle, velocity}{MTL-L1}, while the \fmodt{angle}{MTL-L1} gets the second best MAE score.
+When the MSE scores are analyzed, the roles are reversed, the \fmodt{angle}{MTL-L1} gets the best result, and the \fmod{CTL-L1} and the equivalents \acrshort{mtl} approaches are second.
 
 %
 This advantage of the \acrshort{ctl} approach can find its roots on poorly defined tasks, which do not have a strong relation with the energy production. Also, the definition of the tasks is made using the train set, data from year 2016, which may behave differently to the validation or test years.
@@ -1245,7 +1248,7 @@ Anyway, nowadays, in the era of big data, many problems are composed of tens of 
 
 Moreover, data is not always tabular, where the features have no apparent connection among them, but there might exist a spatial structure, as in images, or temporal dependencies, as in time series or natural language. Incoporating the knowledge of such structures with kernel methods is not an easy task, since the feature space where the problem is actually solved is possibly infinite-dimensional, and very difficult to interpret. Neural networks, on the other hand, are very flexible to incorporate such knowledge, and they are easily adaptable to a wide range of architectures without significant modifications of their training procedure.
 %
-In this section, we want to show the effectiveness of the convex \acrshort{mtl} formulation when applied to \acrshort{nns}. To do this, we consider four different image datasets, so convolutional neural networks will be the base of our \acrshort{mtl} models. Each of these problems has \num{70000} images, so using \acrshort{svm}-based models with the entire dataset is quite time consuming. Instead, we will use two different approaches to \acrshort{mtl} with \acrshort{nns}, a feature-based one, the hard sharing of hidden weights, and our proposal, the convex \acrshort{mtl} approach.
+In this section, we want to show the effectiveness of the convex \acrshort{mtl} formulation when applied to \acrshort{nns}. To do this, we consider four different image datasets, so convolutional \acrshort{nns} will be the base of our \acrshort{mtl} models. Each of these problems has \num{70000} images, so using \acrshort{svm}-based models with the entire dataset is quite time consuming. Instead, we will use two different approaches to \acrshort{mtl} with \acrshort{nns}, a feature-based one, the hard sharing of hidden weights, and our proposal, the convex \acrshort{mtl} approach.
 
 
 \begin{figure}[t!]
@@ -1255,7 +1258,7 @@ In this section, we want to show the effectiveness of the convex \acrshort{mtl} 
 \end{figure}
 
 %\subsubsection*{Problems' Description}
-To test the convex \acrshort{mtl} neural networks we consider four \acrshort{mt} image datasets:
+To test the convex \acrshort{mtl} \acrshort{nns} we consider four \acrshort{mt} image datasets:
 \fdata{var-MNIST} and \fdata{rot-MNIST}, based on MNIST~\citep{LeCunBBH98}, and \fdata{var-FMNIST} and \fdata{rot-FMNIST}, based on fashion-MNIST~\citep{xiao2017}.
 %
 The MNIST and fashion-MNIST datasets are both composed of \num{70000} examples of $28\times 28$ grey-scale images. The MNIST dataset contains images of handwritten numbers, while the fashion-MNIST has images of clothes and fashion-related objects.
@@ -1322,7 +1325,7 @@ The \acrshort{cv} grid searches are carried out using the training set, where we
 
 \begin{table}[t!]
     \centering
-        \caption{Test accuracy with majority voting.}
+        \caption{Test accuracy with averaged logits.}
         \label{tab:test_accuracy_majority}
         \scalebox{.65}{
     \begin{tabular}{l*{4}{c}}
@@ -1365,7 +1368,7 @@ To get more accurate results, less sensitive to randomness, we train each model 
 Although maximizing the accuracy is ultimately the goal in classification problems, it is not a differentiable measure, so we use the categorical cross entropy instead as the loss function to train the networks. Both measures are broadly correlated, but they do not represent exactly the same behavior. We will show the results using both for completeness.
 
 % Tables
-Since we have $5$ instances of each model, a typical strategy to combine their predictions is majority voting. We perform this majority voting using the logits, in the output neurons, of each instance and averaging them, so we have $10$ values, one for each class.
+Since we have $5$ instances of each model, to combine their predictions, we consider the logits, in output neurons, of each instance and we average them, so we have $10$ values, one for each class of our problems; thus, for each sample we take the average of $5$ logits.
 In Table~\ref{tab:test_accuracy_majority} we show the test accuracy, using the logits average already described, for each of the approaches considered.
 %
 Other way to visualize these results is to compute the categorical cross entropy directly on the averaged logits, which we show in Table~\ref{tab:test_crossentropy_mean}.
@@ -1463,15 +1466,27 @@ Although the characteristics of these datasets have been presented in Table~\ref
 
 %\subsubsection*{Experimental Procedure}
 
-To test our proposal we compare it with four alternative models, all based on the Gaussian L1-\acrshort{svm}, which are described next.
-%
+% TODO
+To test our proposal, we consider the \acrshort{ctl}, \acrshort{itl} and \acrshort{mtl} approaches. More specifically, using our nomenclature LX-\acrshort{svm} to refer for either L1, L2 or LS-\acrshort{svm}, we will compare the following:
 \begin{itemize}
-    \item \textbf{Common Task Learning \acrshort{svm} (\fmod{CTL})}, which considers a single \acrshort{svm} model for all tasks, without making use of the task information.
-    \item \textbf{Independent Task learning \acrshort{svm} (\fmod{ITL})}, which fits an independent \acrshort{svm} for each task.
-    \item \textbf{Convex Multi-Task learning \acrshort{svm} (\fmod{MTL})}, which considers the convex \acrshort{mtl} approach, described in Section~\ref{sec:convexmlt_kernel}.
-    \item \textbf{Graph Laplacian MTL-\acrshort{svm} (\fmod{GLMTL})}, where only the \acrshort{gl} regularization is used to enforce the coupling between the tasks, as presented in Section~\ref{sec:graphlap}; no common part is incorporated.
-    \item \textbf{Convex Graph Laplacian MTL-\acrshort{svm} (\fmod{cvxGLMTL})}, where we use a common and task-specific parts, and those specific parts are coupled through a \acrshort{gl} regularization, as presented in Section~\ref{sec:convexgl}.
+    \item \fmod{CTL-LX}: A \acrshort{ctl} model based on the LX-\acrshort{svm}.
+    \item \fmod{ITL-LX}: An \acrshort{itl} model based on the LX-\acrshort{svm}.
+    \item \fmod{MTL-LX}: A Convex \acrshort{mtl} model based on the LX-\acrshort{svm}.
+    \item \fmod{GLMTL-LX}: A \acrshort{gl} \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~\ref{sec:graphlap}.
+    \item \fmod{GLMTL-LX}: A convex \acrshort{gl} \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~\ref{sec:convexgl}.
+    %\item \fmod{AdapGLMTL-LX}: An Adaptive Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~~\ref{sec:adapconvexgl}.
 \end{itemize}
+In all cases we use \acrshort{svms} with Gaussian kernels. We recall that in the adaptive convex \acrshort{gl} formulation two possible kernel spaces can be used simultaneously.
+% To test our proposal we compare it with four alternative models: \fmod{CTL-L1}, \fmod{ITL-L1}
+%  which with our nomenclature:  ;  all based on the Gaussian L1-\acrshort{svm}, which with our nomenclature.
+% %
+% \begin{itemize}
+%     \item {Common Task Learning \acrshort{svm} (\fmod{CTL})}, which considers a single \acrshort{svm} model for all tasks, without making use of the task information.
+%     \item {Independent Task learning \acrshort{svm} (\fmod{ITL})}, which fits an independent \acrshort{svm} for each task.
+%     \item {Convex Multi-Task learning \acrshort{svm} (\fmod{MTL})}, which considers the convex \acrshort{mtl} approach, described in Section~\ref{sec:convexmlt_kernel}.
+%     \item {Graph Laplacian MTL-\acrshort{svm} (\fmod{GLMTL})}, where only the \acrshort{gl} regularization is used to enforce the coupling between the tasks, as presented in Section~\ref{sec:graphlap}; no common part is incorporated.
+%     \item {Convex Graph Laplacian MTL-\acrshort{svm} (\fmod{cvxGLMTL})}, where we use a common and task-specific parts, and those specific parts are coupled through a \acrshort{gl} regularization, as presented in Section~\ref{sec:convexgl}.
+% \end{itemize}
 
 
 
@@ -1593,19 +1608,19 @@ Selecting an adequate graph is not trivial, and an expert knowledge of each spec
     \midrule
     &\fheadmulti{10}{MAE} & \fheadmulti{4}{F1} \\
     \midrule
-    {\fmod{CTL}} & 5.265 &  5.786 & 2.254 & 0.035 & {41870.820} & {76.723} & 1.483 & 0.039 & 0.078 & 0.001  &  0.106 & 0.016 & 0.868 & 0.002 \\
-    {\fmod{ITL}} & 5.119 & 5.341 & 2.779 & 0.134 & {37043.664} & {371.549} & 1.488 & 0.038 & 0.082 & 0.006  & 0.183 & 0.034 & 0.901 & 0.000 \\
-    {\fmod{MTL}} & 5.077 & 5.351 &  \fmax{2.228} & \fmax{0.006} & {36848.971} & {242.052} & \fmax{1.466} & \fmax{0.028} & \fmax{0.074} & \fmax{0.003}   & 0.150 & 0.023 & 0.906 & 0.001 \\
-    {\fmod{GLMTL}} & 5.291 & 5.840 & 3.070 & 0.391 & {37123.515} & {404.205} & 1.690 & 0.017 & 0.094 & 0.006   & \fmax{0.227} & \fmax{0.042} & 0.896 & 0.003 \\
-    {\fmod{cvxGLMTL}} & \fmax{4.917} & \fmax{5.335} &  2.230 & 0.038 & \fmax{36720.854} & \fmax{225.335} & 1.467 & 0.026 & \fmax{0.074} & \fmax{0.003}   & 0.163 & 0.031 & \fmax{0.908} & \fmax{0.001} \\
+    {\fmod{CTL-L1}} & 5.265 &  5.786 & 2.254 & 0.035 & {41870.820} & {76.723} & 1.483 & 0.039 & 0.078 & 0.001  &  0.106 & 0.016 & 0.868 & 0.002 \\
+    {\fmod{ITL-L1}} & 5.119 & 5.341 & 2.779 & 0.134 & {37043.664} & {371.549} & 1.488 & 0.038 & 0.082 & 0.006  & 0.183 & 0.034 & 0.901 & 0.000 \\
+    {\fmod{MTL-L1}} & 5.077 & 5.351 &  \fmax{2.228} & \fmax{0.006} & {36848.971} & {242.052} & \fmax{1.466} & \fmax{0.028} & \fmax{0.074} & \fmax{0.003}   & 0.150 & 0.023 & 0.906 & 0.001 \\
+    {\fmod{GLMTL-L1}} & 5.291 & 5.840 & 3.070 & 0.391 & {37123.515} & {404.205} & 1.690 & 0.017 & 0.094 & 0.006   & \fmax{0.227} & \fmax{0.042} & 0.896 & 0.003 \\
+    {\fmod{cvxGLMTL-L1}} & \fmax{4.917} & \fmax{5.335} &  2.230 & 0.038 & \fmax{36720.854} & \fmax{225.335} & 1.467 & 0.026 & \fmax{0.074} & \fmax{0.003}   & 0.163 & 0.031 & \fmax{0.908} & \fmax{0.001} \\
     \midrule        
         &\fheadmulti{10}{R2} & \fheadmulti{4}{Accuracy}\\
         \midrule
-        {\fmod{CTL}} & 0.831 &  0.902 & 0.843 & 0.044 & {0.638} & {0.005} & 0.560 & 0.017 & 0.743 & 0.022    &  0.942 & 0.004 & 0.791 & 0.003   \\
-        {\fmod{ITL}} & 0.843 & 0.904 & 0.776 & 0.017 & {0.696} & {0.005} & 0.550 & 0.024 & 0.711 & 0.006  & 0.942 & 0.004 & 0.850 & 0.000 \\
-        {\fmod{MTL}} & 0.845 & \fmax{0.907} & 0.850 & 0.045 & {0.700} & {0.003} & \fmax{0.566} & \fmax{0.013} & \fmax{0.755} & \fmax{0.016}  & 0.943 & 0.004 & 0.858 & 0.002 \\
-        {\fmod{GLMTL}} & 0.832 & 0.894 &  0.490 & 0.264 & {0.695} & {0.007} & 0.366 & 0.027 & 0.596 & 0.033  & 0.935 & 0.002 & 0.844 & 0.005 \\
-        {\fmod{cvxGLMTL}} & \fmax{0.849} & 0.905 & \fmax{0.852} & \fmax{0.046} & \fmax{0.702} & \fmax{0.003} & \fmax{0.566} & \fmax{0.013} & 0.752 & 0.016  & \fmax{0.944} & \fmax{0.004} & \fmax{0.862} & \fmax{0.002} \\
+        {\fmod{CTL-L1}} & 0.831 &  0.902 & 0.843 & 0.044 & {0.638} & {0.005} & 0.560 & 0.017 & 0.743 & 0.022    &  0.942 & 0.004 & 0.791 & 0.003   \\
+        {\fmod{ITL-L1}} & 0.843 & 0.904 & 0.776 & 0.017 & {0.696} & {0.005} & 0.550 & 0.024 & 0.711 & 0.006  & 0.942 & 0.004 & 0.850 & 0.000 \\
+        {\fmod{MTL-L1}} & 0.845 & \fmax{0.907} & 0.850 & 0.045 & {0.700} & {0.003} & \fmax{0.566} & \fmax{0.013} & \fmax{0.755} & \fmax{0.016}  & 0.943 & 0.004 & 0.858 & 0.002 \\
+        {\fmod{GLMTL-L1}} & 0.832 & 0.894 &  0.490 & 0.264 & {0.695} & {0.007} & 0.366 & 0.027 & 0.596 & 0.033  & 0.935 & 0.002 & 0.844 & 0.005 \\
+        {\fmod{cvxGLMTL-L1}} & \fmax{0.849} & 0.905 & \fmax{0.852} & \fmax{0.046} & \fmax{0.702} & \fmax{0.003} & \fmax{0.566} & \fmax{0.013} & 0.752 & 0.016  & \fmax{0.944} & \fmax{0.004} & \fmax{0.862} & \fmax{0.002} \\
         \bottomrule
         \end{tabular}}
 \end{table*}
@@ -1675,19 +1690,19 @@ Selecting an adequate graph is not trivial, and an expert knowledge of each spec
     \midrule
     &\fheadmulti{12}{MAE} & \fheadmulti{2}{F1} \\
     \midrule
-    \fmod{CTL} & 0.0000 & (3) & 0.0000 & (4)  & \fmaxn{0.2554} & \fmaxn{(1)} & 0.0000 & (4) & 0.0002 & (2) & 0.0000 & (2) & 0.0277 & {(3)}\\
-    \fmod{ITL} & 0.8131 & (2) & 0.0035 & (2) & 0.0001 & (2) & 0.0318 & (3) & 0.2546 & (2) & 0.3995 & (2) &	\fmaxn{0.3454} & \fmaxn{(1)}\\
-    \fmod{MTL} & 0.0000 & (2) & 0.0000 & (3) & {-} & \fmaxn{(1)} &  0.0000 & (2) &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0277 & {(2)} \\
-    \fmod{GLMTL} & 0.4183 & (3) & 0.5962 & (4) & 0.0621 & (2) &  0.5658 & (3) &  0.0000 & (3) & 0.0000 & (3) & {-} & \fmaxn{(1)} \\
-    \fmod{cvxGLMTL} &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & \fmaxn{0.4113} & \fmaxn{(1)} &  {-} & \fmaxn{(1)} & \fmaxn{0.0771} & \fmaxn{(1)} & \fmaxn{0.6093} & \fmaxn{(1)} & \fmaxn{0.3454} & \fmaxn{(1)}\\
+    \fmod{CTL-L1} & 0.0000 & (3) & 0.0000 & (4)  & \fmaxn{0.2554} & \fmaxn{(1)} & 0.0000 & (4) & 0.0002 & (2) & 0.0000 & (2) & 0.0277 & {(3)}\\
+    \fmod{ITL-L1} & 0.8131 & (2) & 0.0035 & (2) & 0.0001 & (2) & 0.0318 & (3) & 0.2546 & (2) & 0.3995 & (2) &	\fmaxn{0.3454} & \fmaxn{(1)}\\
+    \fmod{MTL-L1} & 0.0000 & (2) & 0.0000 & (3) & {-} & \fmaxn{(1)} &  0.0000 & (2) &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0277 & {(2)} \\
+    \fmod{GLMTL-L1} & 0.4183 & (3) & 0.5962 & (4) & 0.0621 & (2) &  0.5658 & (3) &  0.0000 & (3) & 0.0000 & (3) & {-} & \fmaxn{(1)} \\
+    \fmod{cvxGLMTL-L1} &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & \fmaxn{0.4113} & \fmaxn{(1)} &  {-} & \fmaxn{(1)} & \fmaxn{0.0771} & \fmaxn{(1)} & \fmaxn{0.6093} & \fmaxn{(1)} & \fmaxn{0.3454} & \fmaxn{(1)}\\
     \midrule
     &\fheadmulti{12}{R2} & \fheadmulti{2}{Accuracy}\\
         \midrule
-    \fmod{CTL} & 0.0032 & (3) & 0.0000 & (2)  & \fmaxn{0.1791} & \fmaxn{(1)} & 0.0000 & (4) & 0.0016 & (3) & 0.0001 & (2) & 0.3454 & (4) \\
-        \fmod{ITL} & 0.6340 & (2) & \fmaxn{0.5999} & \fmaxn{(1)} & 0.0001 & (2)  & 0.0035 & (3) & 0.3096 & (3) & 0.3972 & (2) & 0.0277 & (3)\\
-        \fmod{MTL} & 0.0000 & (2) & \fmaxn{0.0815} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0000 & (2) &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0431 & (2)\\
-        \fmod{GLMTL} & 0.2040 & (3) & 0.7790 & (2) & 0.0384 & (3) &  0.6759 & (3) &  0.0000 & (4) & 0.0000 & (3) & 0.0277 & (4) \\
-        \fmod{cvxGLMTL} &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & \fmaxn{0.2606} & \fmaxn{(1)} &  {-} & \fmaxn{(1)} &  0.0181 & (2) & \fmaxn{0.7262} & \fmaxn{(1)} & 	{-} & \fmaxn{(1)} \\
+    \fmod{CTL-L1} & 0.0032 & (3) & 0.0000 & (2)  & \fmaxn{0.1791} & \fmaxn{(1)} & 0.0000 & (4) & 0.0016 & (3) & 0.0001 & (2) & 0.3454 & (4) \\
+        \fmod{ITL-L1} & 0.6340 & (2) & \fmaxn{0.5999} & \fmaxn{(1)} & 0.0001 & (2)  & 0.0035 & (3) & 0.3096 & (3) & 0.3972 & (2) & 0.0277 & (3)\\
+        \fmod{MTL-L1} & 0.0000 & (2) & \fmaxn{0.0815} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0000 & (2) &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & 0.0431 & (2)\\
+        \fmod{GLMTL-L1} & 0.2040 & (3) & 0.7790 & (2) & 0.0384 & (3) &  0.6759 & (3) &  0.0000 & (4) & 0.0000 & (3) & 0.0277 & (4) \\
+        \fmod{cvxGLMTL-L1} &  {-} & \fmaxn{(1)} & {-} & \fmaxn{(1)} & \fmaxn{0.2606} & \fmaxn{(1)} &  {-} & \fmaxn{(1)} &  0.0181 & (2) & \fmaxn{0.7262} & \fmaxn{(1)} & 	{-} & \fmaxn{(1)} \\
         \bottomrule
     \end{tabular}}
 \end{table*}
@@ -1723,11 +1738,11 @@ Given that this is a small sample, the validity of using the Wilcoxon test is no
     \midrule
     &\fheadmulti{10}{MAE} \\
     \midrule
-        {\fmod{CTL}}              &       3.440 &        4.183 &   1.557 & 0.198 &  {40502.686} & {222.209} &  1.434 & 0.019 &   0.055 & 0.006 \\
-        {\fmod{ITL}}              &       3.590 &        3.914 &   1.883 & 0.224 &   {34403.940} & {83.583} &  1.399 & 0.025 &   0.050 & 0.004 \\
-        {\fmod{MTL}}       &       3.649 &        3.921 &   1.522 & 0.248 &  {35061.556} & {118.259} &  1.399 & 0.027 &   0.055 & 0.007 \\
-        {\fmod{GLMTL}}     &       \fmaxn{2.630} &        \fmaxn{3.728} &   2.077 & 0.447 &  \fmaxn{33984.568} & \fmaxn{151.998} &  1.594 & 0.023 &   \fmaxn{0.038} & \fmaxn{0.002} \\
-        {\fmod{cvxGLMTL}} &       3.344 &        4.141 &   \fmaxn{1.516} &\fmaxn {0.270} &  {34409.942} & {101.472} &  \fmaxn{1.406} &\fmaxn {0.023} &   0.057 & 0.007 \\
+        {\fmod{CTL-L1}}              &       3.440 &        4.183 &   1.557 & 0.198 &  {40502.686} & {222.209} &  1.434 & 0.019 &   0.055 & 0.006 \\
+        {\fmod{ITL-L1}}              &       3.590 &        3.914 &   1.883 & 0.224 &   {34403.940} & {83.583} &  1.399 & 0.025 &   0.050 & 0.004 \\
+        {\fmod{MTL-L1}}       &       3.649 &        3.921 &   1.522 & 0.248 &  {35061.556} & {118.259} &  1.399 & 0.027 &   0.055 & 0.007 \\
+        {\fmod{GLMTL-L1}}     &       \fmaxn{2.630} &        \fmaxn{3.728} &   2.077 & 0.447 &  \fmaxn{33984.568} & \fmaxn{151.998} &  1.594 & 0.023 &   \fmaxn{0.038} & \fmaxn{0.002} \\
+        {\fmod{cvxGLMTL-L1}} &       3.344 &        4.141 &   \fmaxn{1.516} &\fmaxn {0.270} &  {34409.942} & {101.472} &  \fmaxn{1.406} &\fmaxn {0.023} &   0.057 & 0.007 \\
         % \midrule
         % &\fheadmulti{10}{R2} \\
         %     \midrule
@@ -1778,15 +1793,17 @@ To take into account this kind of dependences, we have proposed the convex adapt
 %
 In this section we present some experiments to test our proposal, using both synthetic and real data. 
 %
-To make this comparison we consider the \acrshort{ctl}, \acrshort{itl} and \acrshort{mtl} approaches. More specifically, using the nomenclature LX-\acrshort{svm} to refer for either L1, L2 or LS-\acrshort{svm}, we will compare the following:
-\begin{itemize}
-    \item \fmod{CTL-LX}: A \acrshort{ctl} model based on the LX-\acrshort{svm}.
-    \item \fmod{ITL-LX}: An \acrshort{itl} model based on the LX-\acrshort{svm}.
-    \item \fmod{MTL-LX}: A Convex \acrshort{mtl} model based on the LX-\acrshort{svm}, as explained in Section~\ref{sec:convexmlt_kernel}.
-    \item \fmod{GLMTL-LX}: A Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~\ref{sec:convexgl}.
-    \item \fmod{AdapGLMTL-LX}: An Adaptive Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~~\ref{sec:adapconvexgl}.
-\end{itemize}
-In all cases we use \acrshort{svms} with Gaussian kernels. We recall that in the adaptive convex \acrshort{gl} formulation two possible kernel spaces can be used simultaneously.
+To make this comparison we consider the models \fmod{CTL-LX}, \fmod{ITL-LX}, \fmod{MTL-LX} and \fmod{cvxGLMTL-LX} already described, and we also add the adaptive convex \acrshort{gl} model, as presented in Section~~\ref{sec:adapconvexgl}, which we call \fmod{AdapGLMTL-LX}.
+%\fmod{AdapGLMTL-LX}: An Adaptive Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~~\ref{sec:adapconvexgl}.
+% \acrshort{ctl}, \acrshort{itl} and \acrshort{mtl} approaches. More specifically, using our nomenclature LX-\acrshort{svm} to refer for either L1, L2 or LS-\acrshort{svm}, we will compare the following:
+% \begin{itemize}
+%     \item \fmod{CTL-LX}: A \acrshort{ctl} model based on the LX-\acrshort{svm}.
+%     \item \fmod{ITL-LX}: An \acrshort{itl} model based on the LX-\acrshort{svm}.
+%     \item \fmod{MTL-LX}: A Convex \acrshort{mtl} model based on the LX-\acrshort{svm}.
+%     \item \fmod{GLMTL-LX}: A Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~\ref{sec:convexgl}.
+%     \item \fmod{AdapGLMTL-LX}: An Adaptive Convex GL \acrshort{mtl} model based on the LX-\acrshort{svm}, as presented in Section~~\ref{sec:adapconvexgl}.
+% \end{itemize}
+% In all cases we use \acrshort{svms} with Gaussian kernels. We recall that in the adaptive convex \acrshort{gl} formulation two possible kernel spaces can be used simultaneously.
 %
 
 We conduct experiments with both synthetic and real data, each requiring a different experimental procedure because of their respective computational cost. We first describe the synthetic problems and then those with real data. In each case, we describe the characteristic of the problems, explain the procedure and discuss the corresponding results. 
@@ -2065,19 +2082,19 @@ One possible reason can be found in the nature of the LS-\acrshort{svm} for clas
         \fmod{CTL-L1}               &            0.989 &            0.512 &            0.541                 &             0.901 &             0.912 &             0.904 \\
         \fmod{ITL-L1}               &            0.221 &            0.212 &            0.159                 &             0.922 &             0.923 &             0.910 \\
         \fmod{MTL-L1}         &            0.213 &            0.176 &            0.135           &             \fmaxn{0.924} &             0.925 &             0.914 \\
-        \fmod{GLMTL-L1}       &            0.212 &            0.173 &            0.138         &             0.920 &             0.926 &             0.912 \\
+        \fmod{cvxGLMTL-L1}       &            0.212 &            0.173 &            0.138         &             0.920 &             0.926 &             0.912 \\
         \fmod{AdapGLMTL-L1}   &            \fmaxn{0.152} &            \fmaxn{0.116} &            \fmaxn{0.107}     &             \fmaxn{0.924} &             \fmaxn{0.929} &             \fmaxn{0.916} \\
         \midrule
         \fmod{CTL-L2}             &            0.990 &            0.642 &            0.768               &             0.904 &             0.912 &             0.906 \\
         \fmod{ITL-L2}             &            0.213 &            0.201 &            0.154               &             \fmaxn{0.928} &             0.928 &             0.910 \\
         \fmod{MTL-L2}       &            0.209 &            0.168 &            0.131         &             0.925 &             0.927 &             0.913 \\
-        \fmod{GLMTL-L2}     &            0.204 &            0.169 &            0.131       &             0.921 &             0.923 &             \fmaxn{0.915} \\
+        \fmod{cvxGLMTL-L2}     &            0.204 &            0.169 &            0.131       &             0.921 &             0.923 &             \fmaxn{0.915} \\
         \fmod{AdapGLMTL-L2} &            \fmaxn{0.141} &            \fmaxn{0.115} &            \fmaxn{0.103}   &             0.924 &             \fmaxn{0.929} &             \fmaxn{0.915} \\
         \midrule
         \fmod{CTL-LS}             &            0.989 &            0.642 &            0.766               &             0.895 &             0.908 &             0.894 \\
         \fmod{ITL-LS}             &            0.212 &            0.209 &            0.149               &             0.914 &             0.915 &             0.904 \\
         \fmod{MTL-LS}       &            0.206 &            0.167 &            0.131         &             0.917 &             0.917 &             \fmaxn{0.905} \\
-        \fmod{GLMTL-LS}     &            0.207 &            0.169 &            0.132       &             0.919 &             \fmaxn{0.921} &             0.897 \\
+        \fmod{cvxGLMTL-LS}     &            0.207 &            0.169 &            0.132       &             0.919 &             \fmaxn{0.921} &             0.897 \\
         \fmod{AdapGLMTL-LS} &            \fmaxn{0.136} &            \fmaxn{0.115} &            \fmaxn{0.106}   &             \fmaxn{0.920} &             \fmaxn{0.921} &             0.901 \\
         \bottomrule
     \end{tabular}
@@ -2096,19 +2113,19 @@ One possible reason can be found in the nature of the LS-\acrshort{svm} for clas
 %         \fmod{CTL-L1}               &            0.989 &            0.512 &            0.541 \\
 %         \fmod{ITL-L1}               &            0.221 &            0.212 &            0.159 \\
 %         \fmod{MTL-L1}         &            0.213 &            0.176 &            0.135 \\
-%         \fmod{GLMTL-L1}       &            0.212 &            0.173 &            0.138 \\
+%         \fmod{cvxGLMTL-L1}       &            0.212 &            0.173 &            0.138 \\
 %         \fmod{AdapGLMTL-L1}   &            \fmaxn{0.152} &            \fmaxn{0.116} &            \fmaxn{0.107} \\
 %         \midrule
 %         \fmod{CTL-L2}             &            0.990 &            0.642 &            0.768 \\
 %         \fmod{ITL-L2}             &            0.213 &            0.201 &            0.154 \\
 %         \fmod{MTL-L2}       &            0.209 &            0.168 &            0.131 \\
-%         \fmod{GLMTL-L2}     &            0.204 &            0.169 &            0.131 \\
+%         \fmod{cvxGLMTL-L2}     &            0.204 &            0.169 &            0.131 \\
 %         \fmod{AdapGLMTL-L2} &            \fmaxn{0.141} &            \fmaxn{0.115} &            \fmaxn{0.103} \\
 %         \midrule
 %         \fmod{CTL-LS}             &            0.989 &            0.642 &            0.766 \\
 %         \fmod{ITL-LS}             &            0.212 &            0.209 &            0.149 \\
 %         \fmod{MTL-LS}       &            0.206 &            0.167 &            0.131 \\
-%         \fmod{GLMTL-LS}     &            0.207 &            0.169 &            0.132 \\
+%         \fmod{cvxGLMTL-LS}     &            0.207 &            0.169 &            0.132 \\
 %         \fmod{AdapGLMTL-LS} &            \fmaxn{0.136} &            \fmaxn{0.115} &            \fmaxn{0.106} \\
 %         \bottomrule
 %     \end{tabular}
@@ -2127,19 +2144,19 @@ One possible reason can be found in the nature of the LS-\acrshort{svm} for clas
 %     \fmod{CTL-L1}               &             0.901 &             0.912 &             0.904 \\
 %     \fmod{ITL-L1}               &             0.922 &             0.923 &             0.910 \\
 %     \fmod{MTL-L1}         &             \fmaxn{0.924} &             0.925 &             0.914 \\
-%     \fmod{GLMTL-L1}       &             0.920 &             0.926 &             0.912 \\
+%     \fmod{cvxGLMTL-L1}       &             0.920 &             0.926 &             0.912 \\
 %     \fmod{AdapGLMTL-L1}   &             \fmaxn{0.924} &             \fmaxn{0.929} &             \fmaxn{0.916} \\
 %     \midrule
 %     \fmod{CTL-L2}             &             0.904 &             0.912 &             0.906 \\
 %     \fmod{ITL-L2}             &             \fmaxn{0.928} &             0.928 &             0.910 \\
 %     \fmod{MTL-L2}       &             0.925 &             0.927 &             0.913 \\
-%     \fmod{GLMTL-L2}     &             0.921 &             0.923 &             \fmaxn{0.915} \\
+%     \fmod{cvxGLMTL-L2}     &             0.921 &             0.923 &             \fmaxn{0.915} \\
 %     \fmod{AdapGLMTL-L2} &             0.924 &             \fmaxn{0.929} &             \fmaxn{0.915} \\
 %     \midrule
 %     \fmod{CTL-LS}             &             0.895 &             0.908 &             0.894 \\
 %     \fmod{ITL-LS}             &             0.914 &             0.915 &             0.904 \\
 %     \fmod{MTL-LS}       &             0.917 &             0.917 &             \fmaxn{0.905} \\
-%     \fmod{GLMTL-LS}     &             0.919 &             \fmaxn{0.921} &             0.897 \\
+%     \fmod{cvxGLMTL-LS}     &             0.919 &             \fmaxn{0.921} &             0.897 \\
 %     \fmod{AdapGLMTL-LS} &             \fmaxn{0.920} &             \fmaxn{0.921} &             0.901 \\
 %     \bottomrule
 % \end{tabular}
@@ -2245,10 +2262,10 @@ For searching the optimal hyperparameters, with each outer train-validation set 
 %
 We select the hyperparameter combination with the best average validation score, and the corresponding model is refitted on the entire outer train-validation set, and then applied to the outer test fold to compute the test score. In Table~\ref{tab:results_real} we give the averages of the $5$ test scores that we obtain with this procedure.
 %
-We remark that the number of hyperparameters in the \fmod{GLMTL} and \fmod{AdapGLMTL} models, which include the \acrshort{gl} regularization, is $5$ and $6$, which define spaces too large to be covered with only $50$ points. To alleviate this, we first pre-select the hyperparameters $C, \epsilon, \gamma, \gamma_s$ with those values that are optimal for the \fmod{MTL} model. Recall that we are using two different kernel widths, as discussed on the \acrshort{gl} \acrshort{mtl} Section in Chapter~\ref{Chapter5}.
+We remark that the number of hyperparameters in the \fmod{cvxGLMTL} and \fmod{AdapGLMTL} models, which include the \acrshort{gl} regularization, is $5$ and $6$, which define spaces too large to be covered with only $50$ points. To alleviate this, we first pre-select the hyperparameters $C, \epsilon, \gamma, \gamma_s$ with those values that are optimal for the \fmod{MTL} model. Recall that we are using two different kernel widths, as discussed on the \acrshort{gl} \acrshort{mtl} Section in Chapter~\ref{Chapter5}.
 %
 In Table~\ref{table:hyperpars_grid_full} we present the grids considered for the \acrshort{cv} search in these experiments, and we also indicate which parameters are included in this random search for each model.
-Here, observe that we include the values $\mu=0$ and $\nu=0$, which ensures that the the \fmod{GLMTL} model contains the \fmod{MTL} one, with $\nu=0$, and also \fmod{AdapGLMTL} contains \fmod{GLMTL} with an identity matrix (minimal entropy rows) when $\mu=0$.
+Here, observe that we include the values $\mu=0$ and $\nu=0$, which ensures that the the \fmod{cvxGLMTL} model contains the \fmod{MTL} one, with $\nu=0$, and also \fmod{AdapGLMTL} contains \fmod{cvxGLMTL} with an identity matrix (minimal entropy rows) when $\mu=0$.
 %
 
 % \begin{table}[t!]
@@ -2260,7 +2277,7 @@ Here, observe that we include the values $\mu=0$ and $\nu=0$, which ensures that
 %     \scalebox{.65}{
 %      \begin{tabular}{*{8}{c}}
 %      \toprule
-%      \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL-LX}} & \fhead{\fmod{ITL-LX}} & \fhead{\fmod{MTL-LX}}  & \fhead{\fmod{GLMTL-LX}} & \fhead{\fmod{AdapGLMTL-LX}}    \\
+%      \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL-LX}} & \fhead{\fmod{ITL-LX}} & \fhead{\fmod{MTL-LX}}  & \fhead{\fmod{cvxGLMTL-LX}} & \fhead{\fmod{AdapGLMTL-LX}}    \\
 %      \midrule
 %       $C$ &  \scalebox{1}{$\set{10^k: 0 \leq k \leq 4}$} & \checkmark & \checkmark & \checkmark & - & - \\ 
 %       $\epsilon$ & \scalebox{1}{$\set{\frac{1}{10^k}: 1 \leq k \leq 4}$} & \checkmark & \checkmark & \checkmark & - & - \\
@@ -2281,7 +2298,7 @@ Here, observe that we include the values $\mu=0$ and $\nu=0$, which ensures that
 In Table~\ref{tab:results_real} we show the test results for the real problems, where we report the \acrshort{mae} for the regression problems and the F1 score for \fdata{landmine}, the classification one.
 %
 In \fdata{computer}, our proposal, \fmod{AdapGLMTL} obtains different results depending on the \acrshort{svm} variant. For L2-\acrshort{svm}, it gets the best result; however, in the L1 and LS variants, it obtains third and second positions, respectively, while%although it has the best validation scores, this does not generalize well to the test set,
-in these variants the non-adaptive \fmod{GLMTL} approach has the best results.
+in these variants the non-adaptive \fmod{cvxGLMTL} approach has the best results.
 %
 In summary, in \fdata{computer}, the proposed \fmod{AdapGLMTL} is best overall for the L2 variant, essentially ties with \fmod{MTL} for second place in the LS variant, and is third for the L1-\acrshort{svm}.
 %
@@ -2294,7 +2311,7 @@ In any case, we can highlight some general patterns: the \acrshort{mt} models ge
 Now, we also point out the difference in performance of the \fmod{AdapGLMTL} between the real and synthetic problems.
 We can try to find an explanation for these different behaviors. Note that our adaptive proposal relies on pushing together tasks whose model parameters are close. In the synthetic problems, the clusters of tasks are well-defined and, thus, smart-grouping lead to better results. However, in the real problems this is not the case. The task structure is not clear-cut, and even more, the information that is inferred from the training set might not reflect the real underlying structure.
 %
-% In fact, when drawing the graph adjacency matrices (not shown for space considerations), they are essentially diagonal for the three real problems; in particular, no clustering between them appears and, therefore, \fmod{AdapGLMTL} cannot draw any advantage on these problems to improve the performance of either \fmod{MTL} or \fmod{GLMTL}.
+% In fact, when drawing the graph adjacency matrices (not shown for space considerations), they are essentially diagonal for the three real problems; in particular, no clustering between them appears and, therefore, \fmod{AdapGLMTL} cannot draw any advantage on these problems to improve the performance of either \fmod{MTL} or \fmod{cvxGLMTL}.
 
 \begin{table*}[t]
     \caption{Test results for real problems.
@@ -2310,19 +2327,19 @@ We can try to find an explanation for these different behaviors. Note that our a
     \fmod{CTL-L1}    & 1.985 & 0.039  & 4.306 & 0.209 & 0.202 & 0.047 \\
      \fmod{ITL-L1}    & 1.623 & 0.028  & 1.949 & 0.021 & 0.243 & 0.014 \\
      \fmod{MTL-L1} & \fmaxn{1.526} & \fmaxn{0.052}  & \fmaxn{1.942} & \fmaxn{0.019} & 0.266 & 0.022 \\
-     \fmod{GLMTL-L1}     & \fmaxn{1.526} & \fmaxn{0.052}  & 1.945 & 0.024 & 0.249 & 0.039 \\
+     \fmod{cvxGLMTL-L1}     & \fmaxn{1.526} & \fmaxn{0.052}  & 1.945 & 0.024 & 0.249 & 0.039 \\
      \fmod{AdapGLMTL-L1} & 1.545 & 0.083  & 1.945 & 0.024 & \fmaxn{0.272} & \fmaxn{0.033} \\
     \hline
     \fmod{CTL-L2}    & 2.001 & 0.028 & 4.211 & 0.093 & 0.235 & 0.045 \\
     \fmod{ITL-L2}    & 2.105 & 0.070 & 1.936 & 0.026 & \fmaxn{0.267} & \fmaxn{0.019} \\
     \fmod{MTL-L2} & 1.506 & 0.043 & 1.928 & 0.037 & 0.260 & 0.041 \\
-    \fmod{GLMTL-L2}     & 1.507 & 0.045 & \fmaxn{1.927} & \fmaxn{0.037} & 0.251 & 0.048 \\
+    \fmod{cvxGLMTL-L2}     & 1.507 & 0.045 & \fmaxn{1.927} & \fmaxn{0.037} & 0.251 & 0.048 \\
     \fmod{AdapGLMTL-L2} & \fmaxn{1.501} & \fmaxn{0.047} & 1.928 & 0.038 & 0.249 & 0.055 \\
    \hline
     \fmod{CTL-LS}    & 2.002 & 0.029 & 4.217 & 0.108 & 0.186 & 0.040 \\
     \fmod{ITL-LS}    & 1.609 & 0.015 & 1.928 & 0.017 & 0.182 & 0.007 \\
     \fmod{MTL-LS} & 1.507 & 0.042 & 1.929 & 0.026 & 0.186 & 0.041 \\
-    \fmod{GLMTL-LS}     & \fmaxn{1.502} & \fmaxn{0.047} & \fmaxn{1.917} & \fmaxn{0.022} & \fmaxn{0.197} & \fmaxn{0.033} \\
+    \fmod{cvxGLMTL-LS}     & \fmaxn{1.502} & \fmaxn{0.047} & \fmaxn{1.917} & \fmaxn{0.022} & \fmaxn{0.197} & \fmaxn{0.033} \\
     \fmod{AdapGLMTL-LS} & 1.506 & 0.046 & 1.924 & 0.033 & 0.196 & 0.031    \\
         \bottomrule
         \end{tabular}}
@@ -2343,19 +2360,19 @@ We can try to find an explanation for these different behaviors. Note that our a
 %      \fmod{CTL-L1}    & 1.985 $\pm$ 0.039  & 4.306 $\pm$ 0.209 & 0.202 $\pm$ 0.047 \\
 %      \fmod{ITL-L1}    & 1.623 $\pm$ 0.028  & 1.949 $\pm$ 0.021 & 0.243 $\pm$ 0.014 \\
 %      \fmod{MTL-L1} & \fmaxn{1.526} $\pm$ \fmaxn{0.052}  & \fmaxn{1.942} $\pm$ \fmaxn{0.019} & 0.266 $\pm$ 0.022 \\
-%      \fmod{GLMTL-L1}     & \fmaxn{1.526} $\pm$ \fmaxn{0.052}  & 1.945 $\pm$ 0.024 & 0.249 $\pm$ 0.039 \\
+%      \fmod{cvxGLMTL-L1}     & \fmaxn{1.526} $\pm$ \fmaxn{0.052}  & 1.945 $\pm$ 0.024 & 0.249 $\pm$ 0.039 \\
 %      \fmod{AdapGLMTL-L1} & 1.545 $\pm$ 0.083  & 1.945 $\pm$ 0.024 & \fmaxn{0.272} $\pm$ \fmaxn{0.033} \\
 %     \hline
 %     \fmod{CTL-L2}    & 2.001 $\pm$ 0.028 & 4.211 $\pm$ 0.093 & 0.235 $\pm$ 0.045 \\
 %     \fmod{ITL-L2}    & 2.105 $\pm$ 0.070 & 1.936 $\pm$ 0.026 & \fmaxn{0.267} $\pm$ \fmaxn{0.019} \\
 %     \fmod{MTL-L2} & 1.506 $\pm$ 0.043 & 1.928 $\pm$ 0.037 & 0.260 $\pm$ 0.041 \\
-%     \fmod{GLMTL-L2}     & 1.507 $\pm$ 0.045 & \fmaxn{1.927} $\pm$ \fmaxn{0.037} & 0.251 $\pm$ 0.048 \\
+%     \fmod{cvxGLMTL-L2}     & 1.507 $\pm$ 0.045 & \fmaxn{1.927} $\pm$ \fmaxn{0.037} & 0.251 $\pm$ 0.048 \\
 %     \fmod{AdapGLMTL-L2} & \fmaxn{1.501} $\pm$ \fmaxn{0.047} & 1.928 $\pm$ 0.038 & 0.249 $\pm$ 0.055 \\
 %    \hline
 %     \fmod{CTL-LS}    & 2.002 $\pm$ 0.029 & 4.217 $\pm$ 0.108 & 0.186 $\pm$ 0.040 \\
 %     \fmod{ITL-LS}    & 1.609 $\pm$ 0.015 & 1.928 $\pm$ 0.017 & 0.182 $\pm$ 0.007 \\
 %     \fmod{MTL-LS} & 1.507 $\pm$ 0.042 & 1.929 $\pm$ 0.026 & 0.186 $\pm$ 0.041 \\
-%     \fmod{GLMTL-LS}     & \fmaxn{1.502} $\pm$ \fmaxn{0.047} & \fmaxn{1.917} $\pm$ \fmaxn{0.022} & \fmaxn{0.197} $\pm$ \fmaxn{0.033} \\
+%     \fmod{cvxGLMTL-LS}     & \fmaxn{1.502} $\pm$ \fmaxn{0.047} & \fmaxn{1.917} $\pm$ \fmaxn{0.022} & \fmaxn{0.197} $\pm$ \fmaxn{0.033} \\
 %     \fmod{AdapGLMTL-LS} & 1.506 $\pm$ 0.046 & 1.924 $\pm$ 0.033 & 0.196 $\pm$ 0.031    \\
 % \hline
 % \end{tabular}

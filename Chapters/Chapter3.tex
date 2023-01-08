@@ -823,7 +823,7 @@ The parameter-based approaches consider enforcing the coupling through the regul
 Finally, the combination based approach uses the combination of a common part and task specific parts, i.e. $h_r(x_i^r) = g(x_i^r) + g_r(x_i^r)$, where $g$ and $g_r$ can be modeled in multiple ways.
 In this section we develop a subsection for each one of these approaches.
 %
-Although most \acrshort{mtl} strategies used in deep learning can be categorized as feature-based, and most kernel methods use parameter-based or combination-based strategies, given the relevance of these frameworks, \acrshort{mtl} with neural networks and \acrshort{mtl} with kernel methods will be treated separately in their specific subsections. 
+Although most \acrshort{mtl} strategies used in deep learning can be categorized as feature-based, and most kernel methods use parameter-based or combination-based strategies, given the relevance of these frameworks, \acrshort{mtl} with \acrshort{nns} and \acrshort{mtl} with kernel methods will be treated separately in their specific subsections. 
 
 \subsection{Feature-based Multi-Task Learning}\label{subsec:featbased_mtl}
 % feature learning or
@@ -836,7 +836,7 @@ Two main approaches are taken: feature learning, which tries to learn new featur
 
 \subsubsection{Feature Learning}
 
-In the feature learning approach, the feature-building function $f$ can be modeled in different ways. With neural networks, $f$ can be modeled using shared layers of a neural network, while $g_r$ is the linear model corresponding to the output layer, that is $h_r(x_i^r) = \dotp{w_r}{f(x_i^r, \Theta)} + b_r$ where $\Theta$ are the parameters of the hidden layers and $w_r, b_r$ are the parameters of the output layer. 
+In the feature learning approach, the feature-building function $f$ can be modeled in different ways. With \acrshort{nns}, $f$ can be modeled using shared layers of a neural network, while $g_r$ is the linear model corresponding to the output layer, that is $h_r(x_i^r) = \dotp{w_r}{f(x_i^r, \Theta)} + b_r$ where $\Theta$ are the parameters of the hidden layers and $w_r, b_r$ are the parameters of the output layer. 
 This is the idea behind the \acrshort{mt} \acrshort{nn} first given in~\cite{Caruana97}, which will be described in Section~\ref{sec:deep_mtl}.
 %
 
@@ -1115,7 +1115,7 @@ To overcome this disadvantage, in~\cite{ZhangY10,ZhangY13a}, using the idea of t
     \nonumber
     \mymat{W} \sim \left(\prod_{r=1}^\ntasks \normal{\myvec{0}_d, \sigma_r^2 I_d}  \right) \multinormal{\mymat{0}_{d \times m}, \mymat{i}_d \otimes \mymat{\Omega}}
 \end{equation}
-where $\multinormal{\mymat{M}, \mymat{A} \otimes \mymat{B}}$ denotes the matrix-variate normal distribution with mean $\mymat{M}$, row covariance matrix $\mymat{a}$ and column covariance matrix $\mymat{b}$. Thus, in this case the feature covariance matrix is the identity matrix, while the task-covariance matrix is given by $\fm{Omega}$. It is shown that the problem of selecting the maximum a posteriori estimation of $\mymat{w}$ and the maximum likelihood estimations of $\mymat{\Omega}$ and biases $b_r$, $r=1, \ldots, \ntasks$, is a regularized minimization problem that, when relaxing the restrictions on $\Omega$, can be expressed as
+where $\multinormal{\mymat{M}, \mymat{A} \otimes \mymat{B}}$ denotes the matrix-variate normal distribution with mean $\mymat{M}$, row covariance matrix $\mymat{a}$ and column covariance matrix $\mymat{b}$. Thus, in this case the feature covariance matrix is the identity matrix, while the task-covariance matrix is given by $\fm{\Omega}$. It is shown that the problem of selecting the maximum a posteriori estimation of $\mymat{w}$ and the maximum likelihood estimations of $\mymat{\Omega}$ and biases $b_r$, $r=1, \ldots, \ntasks$, is a regularized minimization problem that, when relaxing the restrictions on $\Omega$, can be expressed as
 % \begin{equation}
 %     \label{eq:mtl_relation_learn_trace}
 %     \argmin_{\mymat{\Omega} \in \reals^{d \times \ntasks}, \mymat{w}, \myvec{b}} \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w_r}{x_i^r}) + \lambda \Tr\left({\mymat{w} \mymat{w}^\intercal}\right) + \mu \Tr \left(\mymat{w} \mymat{\Omega}^{-1} \mymat{w}^\intercal \right)\text{ s.t. } \mymat{\mymat{\Omega}} \succeq 0, \Tr\mymat{\Omega} = 1 .
@@ -1393,14 +1393,15 @@ This is equivalent to a feature extension strategy, like the domain adaptation s
 
 \section{Multi-Task Learning with Neural Networks}\label{sec:deep_mtl}
 Deep learning has experimented an enormous development over the last decade, with multiple variants having great success in many fields and applications such as Convolutional Neural Networks for image recognition~\citep*{KrizhevskySH12}, Generative Adversarial Networks for generative models~\citep{GoodfellowPMXWOCB14} or Transformers for Natural Language Processing~\citep{VaswaniSPUJGKP17}. 
-The feature learning process, natural to neural networks, is usually the main idea behind \acrshort{mtl} strategies, but there are also other proposals.
+
+The feature learning process, natural to \acrshort{nns}, is usually the main idea behind \acrshort{mtl} strategies, but there are also other proposals.
 In this subsection we explore some of these strategies and their connection with other methods used in kernel or linear models.
 
-%The \acrshort{mtl} adaptations for neural networks can also be categorized 
+%The \acrshort{mtl} adaptations for \acrshort{nns} can also be categorized 
 % An Overview of \acrshort{mtl} in Deep Neural Networks 2017 (incluye los de 2017?)
-As proposed in~\cite{Ruder17a} we can divide the \acrshort{mtl} approaches with neural networks in hard sharing and soft sharing.
+As proposed in~\cite{Ruder17a} we can divide the \acrshort{mtl} approaches with \acrshort{nns} in hard sharing and soft sharing.
 % Hard parameter sharing
-The hard sharing approach is the most common one, and it consists in sharing between all tasks the hidden layers of the network while keeping some task-specific layers at the end of the network. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. Although this approach has some theoretical properties to improve learning~\citep{baxter2000model}, it is very rigid since it assumes that the learned features and the feature learning process must be the same for all tasks.
+The hard sharing approach is the most common one, and it consists in sharing between all tasks the hidden layers of the network while keeping some task-specific layers at the end of the network. The first example dates back to~\cite{Caruana97} where only the output layers are task-specific. The goal of this approach is to learn a set of features that is useful for all tasks simultaneously, so the transfer of information between tasks is done in this feature building process. In~\citet{Dorado-MorenoNG20} we can find an application of this kind of model for the prediction of wind energy. Although this approach has some theoretical properties to improve learning~\citep{baxter2000model}, it is a rigid one since it assumes that the learned features and the feature learning process must be the same for all tasks.
 
 % Soft parameter sharing
 The soft sharing approach to \acrshort{mtl} tries to tackle these problems with different strategies.

@@ -1,0 +1,1215 @@
+\documentclass{beamer}
+\usepackage{amsfonts,amsmath,oldgerm}
+\usepackage{bm}
+\usepackage{siunitx}       % typesetting values with units
+\usepackage[ruled]{algorithm2e}
+
+% color gradient bar
+\usepackage{tikz}
+\usepackage{tabularx}
+
+\graphicspath{{Figures/}}  % Location of the graphics files (set up for graphics to be in PDF format)
+
+
+%algorithm2e
+%%% Coloring the comment as blue
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+
+\SetKwInput{KwInput}{\small{Input}}                % Set the Input
+\SetKwInput{KwOutput}{\small{Output}}              % set the Output
+\SetKwInput{KwData}{\small{Data}}              % set the Output
+
+%tikz
+\usetikzlibrary{arrows,positioning} 
+\tikzset{
+    %Define standard arrow tip
+    >=stealth',
+    %Define style for boxes
+    punkt/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           text width=6.5em,
+           minimum height=2em,
+           text centered},
+    % Define arrow style
+    pil/.style={
+           ->,
+           thick,
+           shorten <=2pt,
+           shorten >=2pt,}
+}
+\usetikzlibrary{calc}
+%Tikz picture
+% Input layer neurons'number
+\newcommand{\inputnum}{2} 
+ 
+% Hidden layer neurons'number
+\newcommand{\hiddennum}{2}  
+
+% Hidden layer neurons'number hard sharing
+\newcommand{\hiddennumhs}{4}  
+
+% Hidden layer neurons'number hard sharing
+\newcommand{\hiddennumsp}{3}  
+ 
+% Output layer neurons'number
+\newcommand{\outputnum}{2} 
+
+% Min Node size
+\newcommand{\minnodesize}{5mm} 
+
+\usetheme{sintef}
+
+\newtheorem{proposition}[theorem]{Proposicion}
+
+\newcommand{\testcolor}[1]{\colorbox{#1}{\textcolor{#1}{test}}~\texttt{#1}}
+
+\newcommand\Mark[2][8.4]{%
+  \rlap{\tikz[baseline=(current bounding box.south)]{
+        \shade[left color=darkgray, right color=maincolor!#2!darkgray]
+               (0,0) rectangle ++(#1*#2/100,0.3);}%
+  }%
+}
+
+% My definitions
+
+  % Math Operators
+  \DeclareMathOperator*{\argmin}{arg\min}
+  \DeclareMathOperator*{\argmax}{arg\max}
+  \DeclareMathOperator*{\arginf}{arg\inf}
+  \DeclareMathOperator*{\argsup}{arg\sup}
+  \DeclareMathOperator{\Tr}{tr}
+  \DeclareMathOperator{\Span}{span}
+  \DeclareMathOperator{\Diag}{diag}
+  \DeclareMathOperator{\rank}{rank}
+  \DeclareMathOperator{\sign}{sign}
+  \DeclareMathOperator{\expect}{E}
+  \DeclareMathOperator{\VCdim}{VCdim}
+  
+  \DeclareMathOperator{\mn}{\mathcal{M_N}}
+  \DeclareMathOperator{\tn}{\mathcal{T_N}}
+  
+  
+  
+  \DeclareMathOperator{\Ima}{Im}
+  \DeclareMathOperator{\Ker}{Ker}
+  \DeclareMathOperator{\Vector}{vec}
+  
+%   \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+%   \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+%   \DeclarePairedDelimiter\equivclass{\lbrack}{\rbrack}
+  
+  
+  
+  \newcommand{\comm}[1]{{\color{red} #1}}
+  
+  \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+  \newcommand{\abs}[1]{\left|#1\right|}
+  \newcommand{\mymax}[1]{\max\left(#1\right)}
+  \newcommand{\mymin}[1]{\min\left(#1\right)}
+  \newcommand{\pospart}[1]{\left[#1\right]_{+}}
+  \newcommand{\epsins}[1]{\left[#1\right]_{\epsilon}}
+  
+  \newcommand{\set}[1]{\left\{#1\right\}}
+  \newcommand{\cardinal}[1]{\left|#1\right|}
+  \newcommand{\defeq}{\vcentcolon=}
+  \newcommand{\hypf}{h}
+  \newcommand{\hypfun}[1]{\hypf\left(#1\right)}
+  \newcommand{\hyp}[2]{\hypf\left(#1, #2\right)}
+  \newcommand{\fun}[1]{f\left(#1\right)}
+  \newcommand{\den}[1]{p\left( #1 \right)}
+  \newcommand{\opt}[1]{{#1}^*}
+  \newcommand{\cond}[2]{P\left( #1 \;\middle\vert\; #2 \right)}
+  \newcommand{\normal}[1]{N \left(#1\right)}
+  \newcommand{\multinormal}[1]{\mn \left(#1\right)}
+  \newcommand{\tensornormal}[1]{\tn \left(#1\right)}
+  \newcommand{\tendsto}[2]{\xrightarrow[#1]{} #2}
+  \newcommand{\diffp}[2]{\frac{\partial #1}{\partial #2}}
+  \newcommand{\optim}[1]{{#1}^*}
+  \newcommand{\priv}[1]{{#1}^{\diamond}}
+  
+  \newcommand{\adj}[1]{{#1}^{\#}}
+  
+  
+  \newcommand{\crefrangeconjunction}{--}
+  \newcommand{\svset}{\mathcal{I}}
+  
+  
+  
+  
+  \newcommand{\upper}[1]{\expandafter\MakeUppercase\expandafter{#1}}
+  \newcommand{\mymat}[1]{\upper{#1}}
+  \newcommand{\myvec}[1]{\bm{#1}}
+  \newcommand{\fv}[1]{\myvec{#1}}
+  \newcommand{\fm}[1]{\mymat{#1}}
+  \newcommand{\frow}[1]{\fv{#1}}
+  \newcommand{\vect}[1]{\bm{\text{vect}}\left(#1\right)}
+  
+  \newcommand{\trace}[1]{\Tr{\left(#1\right)}}
+  \newcommand{\dotp}[2]{\bm{\left\langle} #1, #2 \bm{\right\rangle}}
+  \newcommand{\ydotp}[2]{\left[ #1, #2 \right]_\mathcal{Y}}
+  
+  \newcommand{\ind}{\bm{1}}
+  
+  \newcommand{\domain}{\mathcal{D}}
+  \newcommand{\cvxset}{X}
+  \newcommand{\vecspace}{\reals^\dimx}
+  
+  \newcommand{\nsamples}{n}
+  \newcommand{\dimx}{d}
+  \newcommand{\vcdim}[1]{\VCdim\left(#1\right)}
+  \newcommand{\vc}{d}
+  \newcommand{\hplane}{w}
+  \newcommand{\bias}{b}
+  
+  \newcommand{\ntasks}{T}
+  \newcommand{\nclusters}{C}
+  
+  \newcommand{\npertask}{m}
+  \newcommand{\idotsn}{i=1, \ldots, \nsamples}
+  \newcommand{\hypspace}{\mathcal{H}}
+  \newcommand{\hypspacef}{\mathbb{H}}
+  \newcommand{\reals}{\mathbb{R}}
+  \newcommand{\naturals}{\mathbb{N}}
+  \newcommand{\param}{\alpha}
+  \newcommand{\paramspace}{A}
+  \newcommand{\fparam}{\beta}
+  \newcommand{\fparamspace}{B}
+  \newcommand{\hilbertspace}{\mathcal{H}}
+  \newcommand{\lagr}{\mathcal{L}}
+  \newcommand{\grad}{\nabla}
+  
+  
+  
+  \newcommand{\lossf}{\ell}
+  \newcommand{\loss}[2]{\lossf\left( #1, #2\right)}
+  
+  \newcommand{\distf}{P}
+  \newcommand{\sample}{D}
+  \newcommand{\samplen}{D_{\nsamples}}
+  
+  \newcommand{\err}{e}
+  \newcommand{\risk}{R}
+  \newcommand{\emprisk}{\hat{\risk}_{\sample}}
+  \newcommand{\empriskn}{\hat{\risk}_{\samplen}}
+  
+  \newcommand{\regrisk}{\hat{\risk}_{\sample, \lambda}}
+  \newcommand{\exprisk}{\risk_\distf}
+  \newcommand{\hypemp}{\opt{\hypf}_\nsamples}
+  \newcommand{\hypexp}{\opt{\hypf}_\distf}
+  
+  % bias learning
+  
+  \newcommand{\bprobspace}{\mathcal{P}}
+  \newcommand{\bdistf}{Q}
+  \newcommand{\bprobseq}{\bm{P}}
+  \newcommand{\bsample}{\bm{\sample}}
+  \newcommand{\bemprisk}{\hat{\risk}_{\bsample}}
+  \newcommand{\bexprisk}{\risk_\bdistf}
+  \newcommand{\bsetsample}{\hypspacef^{\ntasks}}
+  \newcommand{\bsetdist}{\hypspacef^{*}}
+  \newcommand{\capf}{C}
+  \newcommand{\capacity}[2]{\capf\left(#1, #2\right)}
+  \newcommand{\dist}[1]{d_{#1}}
+  
+  \newcommand{\bigO}[1]{O\left( #1 \right)}
+  
+  \newcommand{\Xspace}{\mathcal{X}}
+  \newcommand{\Tspace}{\mathcal{T}}
+  \newcommand{\Yspace}{\mathcal{Y}}
+  \newcommand{\Fspace}{\mathcal{V}}
+  \newcommand{\Vspace}{\mathcal{V}}
+  
+  
+  \newcommand{\toprob}{\xrightarrow{P}}
+  
+  \newcommand{\powerset}[1]{\wp\left( #1 \right)}
+  
+  \newcommand{\frelf}{f}
+  \newcommand{\frel}[1]{\frelf\left[ #1 \right]}
+  \newcommand{\frelset}{\mathcal{F}}
+  
+  \newcommand{\rkhs}{\mathcal{H}}
+  
+  \newcommand{\E}{\mathrm{E}}
+  \newcommand{\Var}{\mathrm{Var}}
+  \newcommand{\Cov}{\mathrm{Cov}}
+  
+  
+  % Tables
+  \newcommand{\fcode}[1]{\texttt{#1}}
+  \newcommand{\fheadmulti}[2]{\multicolumn{#1}{c}{\boldmath\textbf{#2}}}
+  \newcommand{\fhead}[1]{\fheadmulti{1}{#1}}
+  \newcommand{\fmax}[1]{{\num[detect-weight=true,math-rm=\mathbf]{#1}}}
+  \newcommand{\fmaxn}[1]{\textbf{#1}}
+  \newcommand{\fdata}[1]{\textsf{#1}}
+  \newcommand{\fmod}[1]{\textsf{#1}}
+  \newcommand{\ftt}[1]{\text{#1}}
+  
+  % energies
+  \newcommand{\fmodt}[2]{\fmod{(#1)}\_\fmod{#2}}
+  
+  % Units
+  \DeclareSIUnit\utc{UTC}
+  \newcommand{\utc}[1]{\SI[parse-numbers=false]{#1}{\utc}}
+  \newcommand{\mwh}[1]{\SI{#1}{\mega{\watt\hour}}}
+  \newcommand{\mw}[1]{\SI{#1}{\mega\watt}}
+  \newcommand{\mwhu}{\si{\mega{\watt\hour}}}
+  \newcommand{\mwhusq}{\si{\mega{\watt\hour}\squared}}
+  
+  \newcommand{\km}[1]{\SI{#1}{\kilo\metre}}
+
+
+
+
+\usefonttheme[onlymath]{serif}
+
+\titlebackground*{assets/uambackground}
+
+\newcommand{\hrefcol}[2]{\textcolor{cyan}{\href{#1}{#2}}}
+
+\title{Advanced Kernel Methods for
+Multi-Task Learning}
+\subtitle{Tesis dirigida por José Dorronsoro y Carlos Alaíz}
+%\course{Tesis dirigida por José Dorronsoro y Carlos Alaíz}
+\author{\href{mailto:carlos.ruizp@uam.es}{Carlos Ruiz Pastor}}
+%\IDnumber{1234567}
+
+\begin{document}
+\maketitle
+
+\begin{frame}
+
+Acknowledgements 1
+
+\vspace{\baselineskip}
+
+Acknowledgements 2
+
+\end{frame}
+
+
+\begin{frame}{Outline}{}
+      \tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}
+
+% Qué es ML
+\begin{frame}
+      {Introducción al Aprendizaje Automático}
+
+      \begin{itemize}
+            \item El Aprendizaje Automático intenta automatizar el proceso de aprendizaje
+            \item En el aprendizaje supervisado tenemos:
+            \begin{itemize}
+                  \item un espacio de entrada $\Xspace$,
+                  \item un espacio de salida $\Yspace$,
+                  \item y una distribución $P(x, y)$ (desconocida) sobre $\Xspace \times \Yspace$
+            \end{itemize} 
+            \item Dada una función $f: \Xspace \to \Yspace$, definimos una función de pérdida como
+            \begin{equation}
+                  \begin{aligned}
+              \nonumber
+              \lossf:\; &\Yspace \times \Yspace &\to &&[0, \infty) \\
+              &(y, f(x)) &\to  && \lossf(y, f(x)) ,
+          \end{aligned}
+          \end{equation}
+          tal que $\lossf(y, y) = 0$ para todo $y \in \Yspace$
+            
+      \end{itemize}
+      
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Loss Functions}
+
+      \begin{itemize}
+            \item In classification, with the class labels $y_i \in \set{-1, 1}$, we can use:
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:hinge_def}
+                  \lossf(y, f(x)) = \pospart{1 - yf(x)} = 
+                  \begin{cases}
+                      0, & y f(x) \geq 1 ,\\
+                      1 - y f(x), & y f(x) < 1 .
+                  \end{cases}
+            \end{equation}
+            \item 
+      \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      {Expected Risk}
+      \begin{itemize}
+            \item Given a space of hypothesis $\hypspace = \set{\hyp{\cdot}{\param}, \param \in \paramspace}$
+            \item Definition: Expected Risk
+            \begin{equation}
+                  \nonumber
+                  \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y)
+            \end{equation}
+            \item Our goal is to find 
+            \begin{equation}
+                  \nonumber
+                  \opt{\param} = \argmin_{\param \in \paramspace} \left\{ \exprisk(\param) = \int_{\Xspace \times \Yspace} \ell(y, \hyp{x}{\param}) d\distf(x, y) \right\} ,
+              \end{equation}
+            however the distribution $\distf(x, y)$ is unknown
+      \end{itemize}
+      
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Empirical Risk}
+
+      \begin{itemize}
+            \item Instead, we have a set of $\nsamples$ instances sampled from $\distf(x,y)$:
+            \begin{equation}
+                  \nonumber
+                  \samplen = \set{(x_i, y_i), \; i=1, \ldots, \nsamples} ,
+              \end{equation}
+            \item Definition: Empirical Risk
+            $$ \empriskn(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) $$
+            \item Instead of the Expected Risk, we minimize this empirical risk:
+            \begin{equation}
+                  \nonumber
+                  \argmin_{\param \in \paramspace} \left\{ \emprisk(\param) = \frac{1}{\nsamples} \sum_{i=1}^\nsamples \ell(y_i, \hyp{x_i}{\param}) \right\}
+              \end{equation}
+      \end{itemize}
+
+\end{frame}
+
+
+
+\subsection{Multi-Task Learning}
+
+\begin{frame}
+      \frametitle{Multi-Task Learning}
+
+      
+
+\end{frame}
+
+\subsection{Support Vector Machines}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Una Formulación Convexa para Aprendizaje Multitarea}
+
+\begin{frame}
+    \frametitle{Formulación Aditiva}
+
+    \begin{itemize}
+        \item Una manera de implementar el MTL es combinar una parte común y otras específicas
+        \item La formulación aditiva para el aprendizaje multitarea es
+        \begin{equation}
+            \nonumber
+            h_r(\cdot) = g(\cdot) + g_r(\cdot) 
+        \end{equation}
+        donde
+        \begin{itemize}
+            \item $g(\cdot)$ es la parte común
+            \item $g_r(\cdot)$ es la parte específica
+        \end{itemize}
+        \item Fue propuesta para SVM lineales con los modelos
+        \begin{equation}
+            \nonumber
+            h_r(\cdot) = \dotp{w + v_r}{\cdot} + b_r
+        \end{equation}
+    \end{itemize}
+    
+\end{frame}
+
+  
+
+\begin{frame}
+      \frametitle{Formulación Convexa}
+  
+      \begin{itemize}
+          \item Proponemos la siguiente formulación convexa para el aprendizaje multitarea:
+          \begin{equation}
+              \nonumber
+              h_r(\cdot) = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) ,
+          \end{equation}
+          con $\lambda_r \in [0,1]$.
+          \item Los hiperparámetros $\lambda_r$ regulan la influencia de cada parte:
+          \begin{itemize}
+              \item $\lambda_1, \ldots, \lambda_\ntasks=0$: modelos independientes (ITL)
+              \item $\lambda_1, \ldots, \lambda_\ntasks=1$: modelo común (CTL)
+          \end{itemize}
+          \item La interpretación de los hiperparámetros es más sencilla \\
+            %\Mark{100}
+      \end{itemize}
+      
+  \end{frame}
+
+
+\subsection{Convex Multi-Task Learning with Kernel Methods}
+
+\begin{frame}
+      \frametitle{Formulacion Convexa con Métodos de Kernel}
+
+      \begin{itemize}
+            \item La formulación aditiva con métodos de kernel puede expresarse con los modelos:
+            \begin{equation}
+                  \nonumber
+                  h_r(\cdot) = \left\lbrace \dotp{w}{\phi(\cdot)} + b  \right\rbrace + \left\lbrace \dotp{{v}_r}{\phi_r(\cdot)} + d_r \right\rbrace
+            \end{equation}
+            \item Con nuestra formulación convexa los modelos son:
+            \begin{equation}
+                  \nonumber
+                  h_r(\cdot) = \lambda_r \left\lbrace \dotp{w}{\phi(\cdot)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(\cdot)} + d_r \right\rbrace
+            \end{equation}
+            \item Desarrollamos tres variantes de SVM:
+            \begin{itemize}
+                  \item L1-SVM
+                  \item L2-SVM
+                  \item LS-SVM
+            \end{itemize}
+      \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación Aditiva para MTL L1-SVM}
+  
+      \begin{block}{Problema Primal - L1-SVM Aditiva}
+          \begin{equation}\nonumber
+              \begin{aligned}
+              & \argmin_{w, \fv{v}, \fv{b}, \xi}
+              & & {J({w}, \fv{v}, \fv{b}, \fv{\xi}) = C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{\mu}{2} {\norm{{w}}}^2} \\
+              & \text{s.t.}
+              & & y_{i}^r (\dotp{w}{\phi(x_{i}^r)} + \dotp{v_r}{\phi_r(x_{i}^r)} + b_r) \geq p_{i}^r - \xi_{i}^r ,  \\
+              & & & \xi_{i}^r \geq 0; \;  i=1 , \dotsc , m_r, \;  r= 1,\dotsc, T  . \\
+              \end{aligned}
+          \end{equation}   
+      \end{block}
+      \begin{itemize}
+          \item El parámetro $\mu$ (junto con $C$) regula la influencia de cada parte:
+          \begin{itemize}
+              \item $\mu \to \infty$: modelos independientes (ITL)
+              \item $C \to 0,\; \mu \to 0$: modelo común (CTL)
+          \end{itemize}
+      \end{itemize}
+  \end{frame}
+  
+  
+  \begin{frame}
+        \frametitle{Formulación Aditiva para MTL L1-SVM}
+    
+        \begin{block}{Problema Dual - L1-SVM Aditiva}
+              \begin{equation}\nonumber
+                    \begin{aligned}
+                    & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\frac{1}{\mu} \fm{Q} + \fm{K} \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+                    & \text{s.t.}
+                    & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, \npertask_r,\;\; r=1, \ldots, \ntasks ,\\
+                    & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks . \\
+                    \end{aligned}
+                \end{equation}
+        \end{block}
+        \begin{itemize}
+            \item El parámetro $\mu$ (junto con $C$) regula la influencia de cada parte:
+            \begin{itemize}
+                \item $\mu \to \infty$: modelos independientes (ITL)
+                \item $C \to 0,\; \mu \to 0$: modelo común (CTL)
+            \end{itemize}
+        \end{itemize}
+    \end{frame}
+  
+  
+  
+  \begin{frame}
+      \frametitle{Formulación Convexa para MT L1-SVM}
+  
+      \begin{block}{Problema Primal - L1-SVM Convexa}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \min_{w, \fv{v}, b, \fv{d}, \fv{\xi}}
+                  & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = C \sum_{r= 1}^T \sum_{i=1}^{m_r} {\xi_{i}^r} + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
+                  & \text{s.t.}
+                  & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) \geq p_{i}^r - \xi_{i}^r ,  \\
+                  & & & \xi_{i}^r \geq 0, \;  i=1 , \dotsc , m_r, \;  r= 1,\dotsc, T  . \\
+                  \end{aligned}
+              \end{equation}   
+      \end{block}
+      \begin{itemize}
+            \item Los hiperparámetros $\lambda_r$ regulan la influencia de cada parte:
+            \begin{itemize}
+                \item $\lambda_1, \ldots, \lambda_\ntasks=0$: modelos independientes (ITL)
+                \item $\lambda_1, \ldots, \lambda_\ntasks=1$: modelo común (CTL)
+            \end{itemize}
+            \item El hiperparámetro $C$ no interviene en la definición de los modelos
+      \end{itemize}
+
+  \end{frame}
+
+
+  \begin{frame}
+      \frametitle{Formulación Convexa para MT L1-SVM}
+  
+      \begin{block}{Problema Dual - SVM Convexa}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+                  & \text{s.t.}
+                  & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks ,\\
+                  & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks , \\
+                  \end{aligned}
+              \end{equation}
+              donde
+              \begin{equation}\nonumber
+                  \Lambda = \Diag(\overbrace{\lambda_1, \ldots, \lambda_1}^{\npertask_1}, \ldots, \overbrace{\lambda_\ntasks, \ldots, \lambda_\ntasks}^{\npertask_\ntasks})
+              \end{equation}
+      \end{block}
+
+  \end{frame}
+
+
+
+  \begin{frame}
+      \frametitle{Formulación Convexa para MT L1-SVM}
+  
+      \begin{block}{Problema Dual - SVM Convexa ($\lambda$ común)}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \min_{\fv{\alpha}} && \Theta(\fv{\alpha}) = \frac{1}{2} \fv{\alpha}^\intercal \left(\lambda^2 \fm{Q} + \left( 1 - \lambda \right)^2 \fm{K}  \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+                  & \text{s.t.}
+                  & & 0 \leq \alpha_i^r \leq C ; \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks ,\\
+                  & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0;\;  r=1, \ldots, \ntasks , \\
+                  \end{aligned}
+              \end{equation}
+      \end{block}
+      \begin{itemize}
+            \item El hiperparámetro $\lambda$ regula la influencia de cada parte:
+            \begin{itemize}
+                \item $\lambda=0$: modelos independientes (ITL)
+                \item $\lambda=1$: modelo común (CTL)
+            \end{itemize}
+            \item El hiperparámetro $C$ no interviene en la definición de los modelos
+      \end{itemize}
+
+  \end{frame}
+
+
+\begin{frame}
+      \frametitle{Proposiciones}
+
+      \begin{proposition}[Equivalencia entre formulaciones para SVM]
+            Para valores $\lambda \in (0, 1)$, la formulación aditiva con hiperparámetros $C_\text{add}, \mu$ y la formulación convexa con $C_\text{conv}$ y un $\lambda$ común, $\lambda_1, \ldots, \lambda_\ntasks = \lambda$, son equivalentes cuando
+            $$C_\text{add} = (1 - \lambda)^2 C_\text{conv}, \; \mu = (1 - \lambda)^2 / \lambda^2 .$$ 
+      \end{proposition}
+
+      \begin{proposition}[Equivalencia con CTL e ITL]
+            \begin{itemize}
+                  \item Para $\lambda = 0$, la formulación convexa con un $\lambda$ común es equivalente a modelos independientes (ITL).
+                  \item Para $\lambda = 1$ la formulación convexa con un $\lambda$ común es equivalente a un modelo común (CTL).
+            \end{itemize}
+      \end{proposition}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación convexa para MT L2-SVM}
+
+      \begin{block}{Problema Primal - MTL L2-SVM Convexa}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
+                  & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} ({\xi_{i}^r})^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
+                  & \text{s.t.}
+                  & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) \geq p_{i}^r - \xi_{i}^r ,  \\
+                  \end{aligned}
+              \end{equation}
+      \end{block}
+
+      
+
+\end{frame}
+
+
+% \begin{frame}
+%       \frametitle{Extensiones a L2 y LS-SVM}
+
+%       \begin{itemize}
+%             \item En la SVM (L1-SVM) hemos definido los modelos:
+%             \begin{equation}
+%                   \nonumber
+%                   h_r(\cdot) = \lambda_r \left\lbrace \dotp{w}{\phi(\cdot)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(\cdot)} + d_r \right\rbrace
+%             \end{equation}
+%       \end{itemize}
+
+% \end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación Convexa para MT L2-SVM}
+  
+      \begin{block}{Problema Dual - MTL L2-SVM Convexa}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \min_{\alpha} && \Theta(\alpha) = \frac{1}{2} \fv{\alpha}^\intercal \left( \left\lbrace \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right\rbrace + \frac{1}{C} \fm{I} \right) \fv{\alpha} - \fv{p} \fv{\alpha} \\
+                  & \text{s.t.}
+                  & & 0 \leq \alpha_i^r , \; i=1, \ldots, \npertask_r,\; r=1, \ldots, \ntasks, \\
+                  & & & \sum_{i=1}^{m_r} \alpha_i^r y_i^r = 0, \;  r=1, \ldots, \ntasks . \\
+                  \end{aligned}
+              \end{equation}
+      \end{block}
+
+  \end{frame}
+
+
+  \begin{frame}
+      \frametitle{Formulación convexa para MT LS-SVM}
+
+      \begin{block}{Problema Primal - MTL LS-SVM Convexa}
+            \begin{equation}\nonumber
+                  \begin{aligned}
+                  & \argmin_{w, \fv{v}, b, \fv{d}, \xi}
+                  & & {J({w}, \fv{v}, b, \fv{d}, \fv{\xi}) = \frac{C}{2} \sum_{r= 1}^T \sum_{i=1}^{m_r} \left({\xi_{i}^r}\right)^2 + \frac{1}{2} \sum_{r= 1}^T{\norm{{v}_r}^2} + \frac{1}{2} {\norm{{w}}}^2} \\
+                  & \text{s.t.}
+                  & & y_{i}^r \left(\lambda_r \left\lbrace \dotp{w}{\phi(x_{i}^r)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(x_{i}^r)} + d_r \right\rbrace  \right) = p_{i}^r - \xi_{i}^r ,  \\
+                  \end{aligned}
+              \end{equation}
+      \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación Convexa para MT LS-SVM}
+  
+      \begin{block}{Problema Dual - MTL LS-SVM Convexa}
+            \begin{equation}
+                  \nonumber
+                  \begin{aligned}
+                  \left[
+                  \begin{array}{c|c|c}
+                  0 & \fv{0}_\ntasks^\intercal &  \fv{y}^\intercal \Lambda \\
+                  \hline
+                  \fv{0}_\ntasks & \fv{0}_{\ntasks \times \ntasks} & \fm{A}^\intercal \fm{y} (I_\nsamples - \Lambda)\\
+                  \hline
+                  \fv{y} & \fm{y} \fm{A} & \widehat{\fm{Q}} + \frac{1}{C} \fm{I}_\nsamples
+                  \end{array}
+                  \right] 
+                  \begin{pmatrix}
+                      b \\
+                      d_1 \\
+                      \vdots \\
+                      d_\ntasks \\
+                      \fv{\alpha}
+                  \end{pmatrix}
+                  = 
+                  \begin{pmatrix}
+                      0 \\
+                      \fv{0}_\ntasks \\
+                      \fv{p}
+                  \end{pmatrix}, 
+                  \end{aligned}
+              \end{equation}
+      \end{block}
+
+  \end{frame}
+
+
+
+\subsection{Convex Multi-Task Learning with Neural Networks}
+\begin{frame}
+      \frametitle{Redes Neuronales MT}
+
+      \begin{itemize}
+            \item La manera más común de adaptar las redes neuronales es el \emph{hard sharing}
+            \begin{itemize}
+                  \item Capas ocultas compartidas por todas las tareas
+                  \item Capas de salida específicas para cada tarea
+            \end{itemize}
+            \item El modelo se puede expresar como:
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:convexmtl_nn}
+                  \begin{aligned}
+                      h_r(\cdot) &=  g_r(\cdot; w_r, \Theta)
+                     =  \lbrace \dotp{w_r}{f(\cdot; \Theta)} \rbrace + d_r
+                  \end{aligned}
+            \end{equation}
+            \begin{itemize}
+                  \item $w_r, d_r$ son los parámetros de las capas de salida específicas
+                  \item $\Theta$ son los parámetros de las capas ocultas compartidas
+            \end{itemize}
+      \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+      \input{Diagrams/hardharing_nn_image.tex}
+
+\end{frame}
+
+\begin{frame}
+      \frametitle{Formulación Convexa para Redes Neuronales MT}
+
+      \begin{itemize}
+            \item Proponemos la formulación convexa para redes neuronales MT, combinando:
+            \begin{itemize}
+                  \item Una parte común $g(\cdot; w, \Theta)$
+                  \item Una parte específica $g_r(\cdot; w_r, \Theta_r)$
+            \end{itemize}
+            \item Los modelos son:
+            \begin{equation}
+                  \nonumber
+                  \begin{aligned}
+                      h_r(\cdot) &= \lambda_r g(\cdot; w, \Theta) + (1 - \lambda_r) g_r(\cdot; w_r, \Theta_r)
+                     \\&= \lambda_r \lbrace \dotp{w}{f(\cdot; \Theta)} + b \rbrace + (1 - \lambda_r) \lbrace \dotp{w_r}{f_r(\cdot; \Theta_r)} + d_r \rbrace.
+                  \end{aligned} 
+              \end{equation}
+              \begin{itemize}
+                  \item $w, \Theta$ son los parámetros de la red común (capa de salida y ocultas)
+                  \item $w_r, \Theta_r$ son los parámetros de las redes específicas (capa de salida y ocultas)
+
+              \end{itemize}
+      \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+      \input{Diagrams/convexmtl_nn_image.tex}
+
+\end{frame}
+
+\begin{frame}
+      \frametitle{Formulación Convexa para Redes Neuronales MT}
+
+      \begin{itemize}
+            \item El riesgo a minimizar en este caso es
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:regrisk_convex_nn}
+                  \begin{aligned}
+                      \emprisk = \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \lossf(h_r(x_i^r), y_i^r) + \frac{\mu}{2} \left( \norm{w}^2 + \sum_{r=1}^\ntasks \norm{w_r}^2 + \Omega(\Theta) + \Omega(\Theta_r)\right) .
+                  \end{aligned}
+            \end{equation}
+            \item Se puede aplicar el descenso por gradiente con
+            \begin{equation}\nonumber
+                  \begin{aligned}       
+                      &\nabla_{w} h_t(x_i^t)  
+                      = \lambda_t  f(x_i^t, \Theta) ,
+                      &&\nabla_{\Theta} h_t(x_i^t)  
+                      = \lambda_t  \dotp{w}{\nabla_\Theta f(x_i^t, \Theta)} ; \\
+                      &\nabla_{w_t} h_t(x_i^t)  
+                      = (1 - \lambda_t)  f_t(x_i^t, \Theta) ,
+                      &&\nabla_{\Theta_t} h_t(x_i^t)  
+                      = (1 - \lambda_t)   \dotp{w}{\nabla_{\Theta_t} f_t(x_i^t, \Theta_t)} ; \\
+                      &\nabla_{w_r} h_t(x_i^t)  
+                      =  0 , 
+                      &&\nabla_{\Theta_r} h_t(x_i^t)  
+                      =  0 , \text{ for } r \neq t .\\
+                  \end{aligned}    
+              \end{equation}
+            \item Los gradientes se escalan adecuadamente con $\lambda_t$ y $(1 - \lambda_t)$
+      \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación Convexa para Redes Neuronales MT}
+
+      \begin{algorithm}[H]
+            \caption{Pase ``forward''}
+            \DontPrintSemicolon
+              \KwInput{$X_\text{mb}, t_\text{mb}$ \tcp*{Minibatch data and task labels}}
+              \KwOutput{$f$ \tcp*{Forward pass for the minibatch}}
+              \KwData{$\lambda$ \tcp*{Parameter of convex combination}}
+              \KwData{$g; g_1, \ldots, g_\ntasks$ \tcp*{Modules of the common and specific networks}}      
+              \For{$x_i, t_i \in (X_\text{mb}, t_\text{mb}) $}    
+                    { 
+                        $f_i \gets \lambda g(x_i) + (1 - \lambda) g_{t_i}(x_i)$   \tcp*{Convex combination}
+        
+                    }
+      \end{algorithm}
+      \begin{itemize}
+            \item El pase ``backward'' se hace con la diferenciación automática de \texttt{PyTorch}
+      \end{itemize}
+
+\end{frame}
+
+
+\subsection{Combinación Convexa de modelos Preentrenados}
+
+\begin{frame}
+      \frametitle{Combinación Convexa de modelos Preentrenados}
+
+      \begin{itemize}
+            \item Alternativa a la formulación convexa para aprendizaje MT
+            \item Consideramos la combinación convexa de
+            \begin{itemize}
+                  \item modelo común $g(\cdot)$ entrenado
+                  \item modelos específicos $g_r(\cdot)$ entrenados
+            \end{itemize}
+            \item Minimizamos el riesgo eligiendo los hiperparámetros $\lambda_1, \ldots, \lambda_\ntasks$ óptimos
+            \begin{equation}
+                  \nonumber
+                  \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r), y_i^r) ,
+              \end{equation}
+
+      \end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+      \frametitle{Formulación Unificada Clasificación}
+
+      \begin{itemize}
+            \item Hinge loss (classification):
+            \begin{equation}
+                \nonumber%\label{eq:hingeloss_emprisk}
+                \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
+            \end{equation}
+            \item Squared hinge loss (classification):
+            \begin{equation}
+                \nonumber%\label{eq:sqhingeloss_emprisk}
+                \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \pospart{1 - y_i^r \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace}^2 .
+            \end{equation}
+            \item Ambas se pueden expresar como:
+            \begin{equation}
+                  \nonumber
+                  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r) , \; \text{donde} \; c_i^r =  y_i^r (g_r(x_i^r) - g(x_i^r))  , \;  d_i^r =  1 - y_i^r g_r(x_i^r)
+              \end{equation}
+            %   donde
+            %   \begin{equation}
+            %       \label{eq:changevar_clas}
+            %       c_i^r =  y_i^r (g_r(x_i^r) - g(x_i^r))  , \;  d_i^r =  1 - y_i^r g_r(x_i^r) ,
+            %   \end{equation}
+        \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Formulación Unificada Regresión}
+
+      \begin{itemize}
+            \item Absolute loss (regression):
+            \begin{equation}
+                \nonumber%\label{eq:absloss_emprisk}
+                \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \abs{y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} .
+            \end{equation}
+            \item Squared loss (regression):
+            \begin{equation}
+                \nonumber%\label{eq:sqloss_emprisk}
+                \emprisk(\lambda_1, \ldots, \lambda_\ntasks) = \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \left( {y_i^r - \left\lbrace\lambda_r g(x_i^r) + (1 - \lambda_r) g_r(x_i^r) \right \rbrace} \right)^2 .
+            \end{equation}
+            \item Ambas se pueden expresar como:
+            \begin{equation}
+                  \nonumber
+                  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r) ,\; \text{donde} \; c_i^r = g(x_i^r) - g_r(x_i^r)  , \;  d_i^r =  g_r(x_i^r) - y_i^r
+              \end{equation}
+            % donde $c_i^r = g(x_i^r) - g_r(x_i^r)  , \;  d_i^r =  g_r(x_i^r) - y_i^r .$
+            %   \begin{equation}
+            %       \label{eq:changevar_reg}
+            %       c_i^r = g(x_i^r) - g_r(x_i^r)  , \;  d_i^r =  g_r(x_i^r) - y_i^r .
+            %   \end{equation}
+        \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+      \frametitle{Formulación Unificada}
+
+      \begin{itemize}
+            \item En todos los casos tenemos que minimizar 
+            \begin{equation}
+                  \nonumber
+                  \emprisk(\lambda_1, \ldots, \lambda_\ntasks) =
+                  \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r)
+            \end{equation}
+            \item Como es separable, tenemos en cada tarea el problema
+            \begin{equation}
+                  \nonumber
+                  \argmin_{\lambda_r \in [0, 1]} \mathcal{J}(\lambda_r) = \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r),
+            \end{equation}
+            \item Usando el Teorema de Fermat
+            \begin{equation}
+                  \nonumber
+                  \lambda^* = \argmin_{0 \leq \lambda \leq 1} \mathcal{J}(\lambda) \iff (0 \in \partial \mathcal{J}(\lambda^*) \text{ and } \lambda^* \in (0, 1) ) \text{ or } \lambda^*=0 \text{ or } \lambda^*=1 .
+              \end{equation}
+      \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Combinación Convexa con Error Cuadrático}
+
+      \begin{itemize}
+            \item La función a minimizar es 
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:opt_sq}
+                  \argmin_{\lambda \in [0, 1]} \mathcal{J}(\lambda) = \sum_{i=1}^{\npertask} \left({\lambda c_i + d_i}\right)^2 .
+            \end{equation}
+            \item La derivada es
+            \begin{equation}
+                  \nonumber
+                  \mathcal{J}'(\lambda) = \sum_{i=1}^\npertask 2 c_i (\lambda c_i + d_i) .
+            \end{equation}
+            \item Como es derivable, resolviendo $\mathcal{J}'(\lambda)= 0$ obtenemos
+            \begin{equation*}
+                  \lambda' =  -\frac{\sum_{i=1}^{\npertask} d_i c_i }{\sum_{i=1}^{\npertask} (c_i)^2 } .
+                  \end{equation*}
+            \item La solución es entonces $\opt{\lambda} = \max(\min(\lambda', 1), 0)$
+      \end{itemize}
+        %
+        
+\end{frame}
+
+
+\begin{frame}
+
+      \begin{figure}[t!]
+            \centering
+            \includegraphics[width=.6\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mse.pdf}
+            \caption{Error using the squared loss function (top) and its corresponding derivative (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, and whose corresponding derivative contains the value $0$.}
+            \label{fig:sq_error}
+        \end{figure}      
+
+\end{frame}
+
+
+
+\begin{frame}
+      \frametitle{Combinación Convexa con Error Absoluto}
+
+      \begin{proposition}[$\lambda^*$ óptimo para el problema con valor absoluto]\label{prop:abs_neurocom2020}
+            \begin{itemize}
+                  \item $\lambda^*=0$ es óptimo si y solo si: $- \sum_{i: \; 0 > \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i: \; 0 < \lambda_{(i)}} \abs{c_{(i)}} \leq 0$
+                  \item $\lambda^* \in (0,1)$ es óptimo si y solo si $0 < \lambda^* = \lambda_{(k)} < 1$ para algún $k=1, \dotsc, \npertask$, y
+                  \begin{equation}
+                  \nonumber    
+                  - \sum_{i:\; \lambda_{(k)} > \lambda_{(i)}} \abs{c_{(i)}} + \sum_{i:\; \lambda_{(k)} < \lambda_{(i)}} \abs{c_{(i)}} \in \left[ -  \abs{c_{(k)}},  \abs{c_{(k)}}  \right] 
+                  \end{equation}
+                  \item $\lambda^*=1$ es óptimo en otro caso
+            \end{itemize}
+        \end{proposition}
+\end{frame}
+
+
+\begin{frame}
+
+      \begin{figure}[t!]
+            \centering
+            \includegraphics[width=.6\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mae.pdf}
+            \label{fig:sq_error}
+        \end{figure}      
+
+\end{frame}
+
+
+
+
+\begin{frame}
+      \frametitle{Combinación Convexa con Error Hinge}
+      \begin{proposition}[$\lambda^*$ óptimo para el problema con error hinge]\label{prop:hinge_neurocom2020}
+            \begin{itemize}
+                  \item $\lambda^*=0$ es óptimo si y solo si: $-\sum_{i:\; 0 > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{0 < \lambda_{(i)}} \mymin{0, c_{(i)}} \leq 0 $
+                  \item $\lambda^* \in (0,1)$ es óptimo si y solo si $0 < \lambda^* = \lambda_{(k)} < 1$ para algún $k=1, \dotsc, \npertask$, y
+                  \begin{equation}
+                        \nonumber%\label{eq:sol_hinge}
+                        -\sum_{i:\; \lambda_{(k)} > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{i:\; \lambda_{(k)} <\lambda_{(i)}} \mymin{0, c_{(i)}} \in \left[\mymin{0, c_{(k)}}, \mymax{0, c_{(k)}} \right] 
+                  \end{equation}
+                  \item $\lambda^*=1$ es óptimo en otro caso
+            \end{itemize}
+        \end{proposition}
+      % \begin{proposition}[Optimal $\lambda^*$ with Hinge Loss]\label{prop:hinge_neurocom2020}
+      %       In~\eqref{eq:opt_hinge_l1}, $\lambda^*=0$ is optimal iff
+      %       \begin{equation}
+      %           \nonumber
+      %           %\label{eq:sol_hinge_0}
+      %           -\sum_{i:\; 0 > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{0 < \lambda_{(i)}} \mymin{0, c_{(i)}} \leq 0 .
+      %           \end{equation}
+      %           If this condition does not hold, a value $\lambda^* \in (0, 1)$ is optimal for problem~\eqref{eq:opt_hinge_l1} \emph{iff} $\lambda^*$ is a feasible elbow, that is, $0 < \lambda^* = \lambda_{(k)} < 1$ for some $k=1, \dotsc, \npertask$, and
+      %       \begin{equation}
+      %           \label{eq:sol_hinge}
+      %           -\sum_{i:\; \lambda_{(k)} > \lambda_{(i)}} \mymax{0, c_{(i)}} - \sum_{i:\; \lambda_{(k)} <\lambda_{(i)}} \mymin{0, c_{(i)}} \in \left[\mymin{0, c_{(k)}}, \mymax{0, c_{(k)}} \right] .
+      %       \end{equation}
+      %       If none of the previous conditions hold, then $\lambda^*=1$ is optimal.
+      %   \end{proposition}
+\end{frame}
+
+
+\begin{frame}
+
+      \begin{figure}[t!]
+            \centering
+            \includegraphics[width=.6\textwidth]{Chapter4/NeuroCom2021/ejemplo2_hinge.pdf}
+            \label{fig:sq_error}
+        \end{figure}      
+
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Combinación Convexa con Error Hinge Cuadrático}
+
+
+      \begin{proposition}[$\lambda^*$ óptimo para el problema con error hinge cuadrático]\nonumber%\label{prop:hinge_neurocom2020}
+            \begin{itemize}
+                  \item $\lambda^*=0$ es óptimo si y solo si: $-\sum_{i:\; 0 > c_{(i)}, 0 < \lambda_{(i)}} {2 c_i d_i} - \sum_{i:\; 0 < c_{(i)}, 0 > \lambda_{(i)}} {2 c_i d_i}  \leq 0 $
+                  \item $\lambda^* \in (0,1)$ es óptimo si y solo si $0 < \lambda^* = \widehat{\lambda}_{(k)} < 1$ para algún $k=1, \dotsc, \npertask$, donde
+                  \begin{equation}\nonumber%\label{eq:sol_hinge_2}
+                        \widehat{\lambda}_{(k)} = - \frac{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}}{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}}^2 + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}}^2} ,
+                  \end{equation}
+                  y además $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$
+                  \item $\lambda^*=1$ es óptimo en otro caso
+            \end{itemize}
+        \end{proposition}
+
+      % \begin{proposition}[Optimal $\lambda^*$ with Squared Hinge Loss]\label{prop:sqhinge_neurocom2020}
+      %       In~\eqref{eq:opt_hinge_l2},
+      %       $\lambda^*=0$ is optimal iff 
+      %       \begin{equation}\nonumber
+      %           -\sum_{\substack{i:\; 0 > c_{(i)},\\ \;\; 0 < \lambda_{(i)}}} {2 c_i d_i} - \sum_{\substack{i:\; 0 < c_{(i)},\\ \;\; 0 > \lambda_{(i)}}} {2 c_i d_i}  \leq 0 .
+      %          \end{equation}
+      %       If this condition does not hold, 
+      %       consider the sorted list of elbows $\lambda_{(1)}, \ldots, \lambda_{(\npertask)}$; then, for each interval between elbows $(\lambda_{(k)}, \lambda_{(k+1)})$, we define the value $\widehat{\lambda}_k$ for $k=1, \ldots,  \npertask-1$ as %
+      %   \begin{equation}\label{eq:sol_hinge_2}
+      %       \widehat{\lambda}_{(k)} = - \frac{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}} d_{(i)} + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}} d_{(i)}}{\sum_{i:\; \lambda_{(k+1)} \geq \lambda_{(i)}} \mymax{0, c_{(i)}}^2 + \sum_{i:\; \lambda_{(k)} \leq \lambda_{(i)}} \mymin{0, c_{(i)}}^2} .
+      %   \end{equation}
+      %   %
+      %   If $\widehat{\lambda}_k$ satisfies that $\lambda_{(k)} \leq \widehat{\lambda}_k \leq  \lambda_{(k+1)}$ and $0 \leq \widehat{\lambda}_{(k)} \leq 1$ for some $k=1, \ldots, \npertask$ then $\lambda^* = \widehat{\lambda}_k$ is optimal.
+      %   Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a minimum at $\lambda^* = 1$.
+      %   \end{proposition}
+\end{frame}
+
+\begin{frame}
+
+      \begin{figure}[t!]
+            \centering
+            \includegraphics[width=.6\textwidth]{Chapter4/NeuroCom2021/ejemplo2_sqhinge.pdf}
+            \label{fig:sq_error}
+        \end{figure}      
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Laplaciano Adaptativo para Aprendizaje Multitarea}
+
+\begin{frame}
+      \frametitle{Aprendizaje Multitarea con Regularización Laplaciana}
+
+      \begin{itemize}
+            \item Otra manera de acoplar distintas tareas es usar una regularización Laplaciana
+            \item Consideramos un grafo donde
+            \begin{itemize}
+                  \item Los nodos representan tareas
+                  \item Las aristas y sus pesos representan las relaciones entre las tareas
+            \end{itemize}
+            \item La matriz de adyacencia $A$ tiene los pesos de las aristas
+            \item La matriz de grados $D$ es una matriz diagonal donde
+            $$ (D)_{rr} = \sum_{s=1}^\ntasks (A)_{rs}$$
+            \item La matriz Laplaciana se define como $L = D - A$
+      \end{itemize}
+      
+\end{frame}
+
+
+\begin{frame}
+      \frametitle{Aprendizaje Multitarea con Regularización Laplaciana}
+
+      \begin{itemize}
+            \item Dados los modelos para cada tarea definidos como
+            $$ \hypf_r(\cdot) = \dotp{w_r}{\cdot} + b_r$$
+            \item Definimos la regularización
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:gl_regularization}
+                  \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks (A)_{rs} \norm{w_r - w_s}^2 ,
+              \end{equation}
+            \item Esta regularización se puede expresar como
+            \begin{equation}
+                  \nonumber
+                  %\label{eq:gl_regularization}
+                  \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks (A)_{rs} \norm{w_r - w_s}^2 = \sum_{r=1}^\ntasks \sum_{s=1}^\ntasks (L)_{rs} \dotp{w_r}{w_s} ,
+              \end{equation}
+      \end{itemize}
+      
+\end{frame}
+
+
+\subsection{Laplaciano de Grafo con Métodos de Kernel}
+
+\begin{frame}
+      \frametitle{Laplaciano de Grafo con Métodos de Kernel}
+
+      \begin{itemize}
+            % \item La regularización Laplaciana penaliza las distancias
+            % \item ¿Cómo calcular las distancias en un Espacio de Hilbert con Kernel Reproductor?
+            \item Consideramos el problema de minimización
+            \begin{equation}
+                  \label{eq:mtl_kernel_altext_original}
+                  \begin{aligned}
+                       & R({u_1, \ldots, u_T}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{u_r}{\phi(x_i^r)}) + \mu \sum_r \sum_s (E)_{rs} \dotp{u_r}{u_s} , \\
+                  \end{aligned}
+            \end{equation}
+            \item Si usamos el vector $\fv{u}^\intercal = (u_1^\intercal, \ldots, u_\ntasks^\intercal)$ lo expresamos como
+            \begin{equation}
+                  \label{eq:mtl_kernel_altext_tensor}
+                  \begin{aligned}
+                          & R(\myvec{u}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\myvec{u}}{e_r \otimes \phi(x_i^r)}) + \mu \left(  \myvec{u}^\intercal (E \otimes I) \myvec{u} \right). \\
+                  \end{aligned}
+              \end{equation}
+      \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+      \frametitle{Laplaciano de Grafo con Métodos de Kernel}
+
+      \begin{lemma}\label{lemma:regproblems_kernel}
+            Las soluciones $u_1^*, \ldots, u_\ntasks^*$ de~\eqref{eq:mtl_kernel_altext_original}, o equivalentemente la solución $\opt{\fv{u}}$ de~\eqref{eq:mtl_kernel_altext_tensor},    
+            se pueden obtener minimizando
+            \begin{equation}
+                \label{eq:mtl_kernel_tensor}
+                \begin{aligned}
+                     & S(\myvec{w}) = \sum_{r=1}^{\ntasks} \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{\myvec{w}}{(B_r \otimes \phi(x_i^r))}) + \mu  \myvec{w}^\intercal \myvec{w} , \\
+                \end{aligned}
+            \end{equation}
+            donde $\bm{w} \in \reals^p \otimes \hilbertspace$ con $p \geq \ntasks$ y $B_r$ son las columnas de $B \in \reals^{p \times \ntasks}$, una matriz de rango máximo tal que $\mymat{E}^{-1} = \mymat{B}^\intercal \mymat{B}$.
+        \end{lemma}
+        El kernel reproductor correspondiente es:
+        \begin{equation}
+            \nonumber
+            \dotp{B_r \otimes \phi(x_i^r)}{B_s \otimes \phi(x_j^s)} = \left(E^{-1} \right)_{rs} k(x_i^r, x_j^s) 
+        \end{equation}
+
+
+
+\end{frame}
+
+\subsection{Adaptive Graph Laplacian Algorithm}
+
+
+\section{Summary}
+
+\begin{frame}
+\frametitle{Good Luck!}
+\begin{itemize}
+\item Enough for an introduction! You should know enough by now
+\end{itemize}
+\end{frame}
+
+\backmatter
+\end{document}

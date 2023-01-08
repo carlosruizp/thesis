@@ -82,7 +82,7 @@ where $\alpha_i \in \reals$ are some coefficients. This means that our optimal s
 These models embrace the \acrfull{srm} paradigm by limiting the capacity of the space of hypothesis, which is done by penalizing the $L_2$ norm of $w$. This is equivalent to limiting our space of candidates to vectors inside a ball of some fixed radius.
 
 % One of the first multi-task learning approach with kernel methods is Regularized \acrshort{mtl}
-\acrshort{mtl} with kernel methods requires imposing some kind of coupling between the models for each task in the learning process. The feature learning or feature sharing approach, which is usually adopted with neural networks, is not feasible when using kernel methods, since the (implicit) transformation functions $\phi$ used are not learned but fixed, and determined by the choice of the kernel function. Therefore, other strategies have to be developed. 
+\acrshort{mtl} with kernel methods requires imposing some kind of coupling between the models for each task in the learning process. The feature learning or feature sharing approach, which is usually adopted with \acrshort{nns}, is not feasible when using kernel methods, since the (implicit) transformation functions $\phi$ used are not learned but fixed, and determined by the choice of the kernel function. Therefore, other strategies have to be developed. 
 One of the first approaches to \acrshort{mtl} with kernel methods was presented in~\cite{EvgeniouP04}, and later extended in~\citet{CaiC09, CaiC12}, where they use an L1-SVM formulation and the model for each task is defined as
 \begin{equation}
     \nonumber
@@ -374,6 +374,8 @@ Combined, we have a multi-task kernel matrix $\widehat{\fm{Q}} = (1/\mu) \fm{Q} 
 \end{equation}
 Here we are using two different kernels: a common one $k(x, \tilde{x})$ and a task-specific one $k_r(x, \tilde{x})$, each being the reproducing kernels for the common and task-specific transformations, respectively. That is,
 $k(x, \tilde{x}) = \dotp{\phi(x)}{\phi(\tilde{x})}$ and $k_r(x, \tilde{x}) = \dotp{\phi_r(x)}{\phi_r(\tilde{x})}$.
+%
+Therefore, it is possible to select different kernels for the common part and each one of the specific ones. In~\citet{RuizACD19}, considering Gaussian kernels, we proposed a method to select the kernel widths as those that were optimal for Gaussian \acrfull{gps}.
 
 %   Discussion: Primal vs Dual
 The dual problem~\eqref{eq:svmmtl_dualvec_add} is very similar to the \acrshort{ctl} one but we have two major differences: the use of the multi-task kernel matrix $\widehat{\fm{Q}}$ and the multiple equality constraints. These constraints, which appear in~\eqref{eq:specific_eqconstr_add}, are consequence of the specific biases used in the primal problem~\eqref{eq:svmmtl_primal_add}. In~\cite{CaiC12} the authors develop a Generalized SMO algorithm to account for these multiple equality constraints.
@@ -990,12 +992,12 @@ Neural networks, however, are models that are well suited for this kind of chall
 %
 In particular, in Chapter~\ref{Chapter3} we have reviewed the taxonomy for \acrshort{mtl} methods, and the approaches can be broadly grouped in three categories: feature-based, parameter-based and combination-based. 
 We also give in Section~\ref{sec:deep_mtl} some of the most relevant approaches to \acrshort{mtl} with \acrshort{nns}. Most of these approaches can fit in the feature-based category, where the shared layers are fully or partially shared to obtain a latent representation that is useful for all tasks, as shown in Figure~\ref{fig:hardsharing_nn}; see for example~\cite{Caruana97, MisraSGH16,RuderBAS17}. Some approaches rely also on a parameter-based view, where the parameters of each task-specific network are regularized together so that they are close in some sense; see~\cite{Long015a, YangH17a}.
-However, to the best of our knowledge, we proposed the first purely combination-based approach to \acrshort{mtl} with neural networks in~\cite{RuizAD22_hais}, where we use a convex combination of neural networks, that we present next.
+However, to the best of our knowledge, we proposed the first purely combination-based approach to \acrshort{mtl} with \acrshort{nns} in~\cite{RuizAD22_hais}, where we use a convex combination of \acrshort{nns}, that we present next.
 
 \input{Diagrams/hardharing_nn_image.tex}
 
 \subsection{Model Definition}
-Using the formulation of~\eqref{eq:convexmtl_general}, we use neural networks to model the common part 
+Using the formulation of~\eqref{eq:convexmtl_general}, we use \acrshort{nns} to model the common part 
 $$ g(\cdot; w, \Theta) = \dotp{w}{f(\cdot; \Theta)} + b,$$
 and the task-specific parts
 $$ g_r(\cdot; w_r, \Theta_r) =  \dotp{w_r}{f_r(\cdot; \Theta_r)} + d_r.$$

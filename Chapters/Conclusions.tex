@@ -7,13 +7,13 @@
 
 \section{Conclusions}
 %
-\acrfull{ml} has the goal of automatizing the learning process so machines can be programmed to learn. For this purpose, several approaches have been considered, but all of them ultimately try to estimate some function from data inductively, i.e. from particular realizations of some process, \acrshort{ml} methods try to infer the underlying function generating this data. Some of the most relevant \acrshort{ml} methods are kernel methods, such as the \acrfull{svm}, or \acrfull{nns}.
+\acrfull{ml} has the goal of automatizing the learning process so machines can be programmed to learn. For this purpose, several approaches have been considered, but all of them ultimately try to estimate some function from data inductively, i.e., from particular realizations of some process, \acrshort{ml} methods try to infer the underlying function generating this data. Some of the most relevant \acrshort{ml} methods are kernel methods, such as the \acrfull{svm}, or \acrfull{nns}.
 
 \acrfull{mtl} is a field of \acrshort{ml} that considers learning multiple tasks jointly with the goal of improving the learning process, that is, multiple functions are to be estimated and the goal is to obtain leverage by learning them together. The trivial approximations for these scenarios would be \acrfull{ctl}, where a common model is applied for all tasks, and \acrfull{itl}, where task-specific models are considered, without any relation between them. However, \acrshort{mtl} considers another way, where there is one model for each task, but there exist a connection between them.
 
 For the goals of \acrshort{mtl}, several strategies have been considered; in this work, in Chapter~\refeq{Chapter3}, we have categorized them in three groups: feature-based, parameter-based and regularization-based.
 In short, feature-based methods try to find a shared representation of the data that is useful for all tasks, parameter-based methods try to couple different tasks using regularization schemes, and combination-based ones combine a common and task-specific parts.
-Different \acrshort{ml} methods, based on their characteristics, are more easily adaptable to one strategy or another, as described in Chapter~\ref{Chapter3}. In particular, \acrfull{nns} are most compatible with feature-based approaches: a very natural way to implement \acrshort{mtl} is to define a network with shared hidden layers and task-specific output neurons.
+Different \acrshort{ml} methods, based on their characteristics, are more easily adaptable to one strategy or another, as described in Chapter~\ref{Chapter3}. In particular, \acrshort{nns} are most compatible with feature-based approaches: a very natural way to implement \acrshort{mtl} is to define a network with shared hidden layers and task-specific output neurons.
 Other example is linear models, which are also compatible with feature-based strategies; however, the parameter-based ones are more interesting in this case, where different properties can be enforced on the linear models (such as different coupling schemes, sparsity...) through specialized regularizers.
 Looking at the kernel methods, although they bring desirable properties, they present a more rigid framework to adapt \acrshort{mtl} strategies for them. Since the features depend on the choice of the kernel, feature-based strategies cannot be easily applied. Moreover, the parameters of these models are elements of a \acrfull{rkhs}, so designing specialized regularizers for them is more difficult; however, combination-based strategies fit well with kernel methods.
 %
@@ -25,9 +25,9 @@ First, we have described a convex combination approach in Chapter~\ref{Chapter4}
 %
 For a deeper understanding, we have developed this convex combination approach for three \acrshort{svm} variants: L1, L2 and LS-\acrshort{svm}; we have also discussed its properties both in the dual and primal formulations.
 %
-In addition, we have considered a natural alternative, which applies the convex combination of pre-trained common and task-specific models. We describe how the optimal combination parameters can be obtained in this case.
+In addition, we have considered a natural alternative, which applies the direct convex combination of pre-trained common and task-specific models. We describe how the optimal combination parameters can be obtained in this case.
 %
-In the experiments of Chapter~\ref{Chapter6} we show how, in most cases, this convex approach outperforms the \acrshort{ctl} and \acrshort{itl} strategies, as well as the convex combination of pre-trained models.
+In the experiments of Chapter~\ref{Chapter6} we show how, in most cases, this convex approach outperforms the \acrshort{ctl} and \acrshort{itl} strategies, as well as the direct convex combination of pre-trained models.
 The experiments concerning energy prediction are specially relevant; here, we have observed that defining tasks in our data to build more specialized models can improve our results.
 
 %
@@ -41,21 +41,21 @@ As we have already seen, parameter-based strategies are more difficult to implem
 As a result of this formulation, we have shown that we can define kernels that split the task and feature information in two parts, which are multiplied.
 
 In particular, taking this tensor-based formulation, in Chapter~\ref{Chapter5} we have developed a \acrfull{gl} approach for the L1, L2 and LS-\acrshort{svm}. In this strategy, the tasks are seen as nodes in a graph, and the pairwise distance between task parameters are penalized, where the graph adjacency matrix is used to weight these distances.
-Our formulation enables us to write a kernel that splits the task relatedness, as indicated in the adjacency matrix, and the features similarities.
+Our formulation enables us to write a kernel that splits the task relatedness, as indicated in the adjacency matrix, and the feature similarities.
 %
-Additionally, we have combined the \acrshort{gl} approach with the convex formulation, where we use a convex part and task-specific parts coupled through a graph regularization.
+Additionally, we have combined the \acrshort{gl} approach with the convex formulation, where we use the convex combination of a common part with task-specific parts coupled through a graph regularization.
 %
 The results of our experiments in Chapter~\ref{Chapter6} have shown that this convex \acrshort{gl} strategy is an interesting alternative to the plain convex formulation, each capturing different properties of the problems. We have observed that the choice of the best strategy depends on the characteristics of each problem.
 
 As we have explained, the \acrshort{gl} models strongly depend on the selection of an adjacency matrix, so, in Chapter~\ref{Chapter5}, we have developed an algorithm to automatically learn this matrix from the data.
-We have provided multiple experimental results in Chapter~\ref{Chapter6} that show how this approach enables us to learn the task relations and, in consequence, obtain better models.
+We have provided several experimental results in Chapter~\ref{Chapter6} that show how this approach enables us to learn the task relations and, in consequence, obtain better models.
 
 
 \section{Future Work}
-Our proposed methods show how we can adapt different \acrshort{mtl} strategies principally to kernel methods, but also to other models such as \acrshort{nns}. 
+Our proposed methods show how we can adapt different \acrshort{mtl} strategies mainly to kernel methods, but also to other models such as \acrshort{nns}. 
 In this work, we have proposed a general convex formulation for \acrshort{mtl}, which we apply on kernel methods and \acrshort{nns}. Also, we have presented a \acrshort{gl} approach that we have applied to the L1, L2 and LS-\acrshort{svm}.
 %
-These proposals offer the possibility of new extensions, and they also bring challenges for which we can develop novel solutions. Precisely, to conclude this work, we describe some of the ideas that can be studied as future work.
+These proposals offer the possibility of new extensions, and they also bring challenges for which we can develop novel solutions. To conclude this work, we describe some of the ideas that can be studied as future work.
 
 % Hyperparameter selection (general) BO, simulated annealing 
 One of the main difficulties of using the combination-based \acrshort{mtl} strategies with kernel methods is the large number of hyperparameters that have to be selected. Recall that, with these approaches, it is possible to apply a common kernel and task-specific ones, which can all be different. In addition, we have other hyperparameters, such as the regularization ones or, in our convex formulation, those that govern the convex combinations. 
@@ -64,7 +64,7 @@ Therefore, to fully exploit the expressive power of these models we would like t
 % Kernel hyperpar selection (why is relevant)
 In the case of kernel hyperparameters, such as the kernel width in the Gaussian kernel, strategies related to kernel learning can be applied and extended for the \acrshort{mtl} case. 
 % convex hyperpar selection + extconvex
-In our proposal, the convex \acrshort{mtl} formulation, the selection of the convex combination parameters is particularly relevant. One approximation is to act with them as with the rest of hyperparameters and rely on general strategies (such as Bayesian Optimization), but we can also develop specific methods that learn these parameters from data, similarly to what we have done with the adjacency matrix of the \acrshort{gl} proposal.
+In our convex \acrshort{mtl} formulation proposal, the selection of the convex combination parameters is particularly relevant. One approximation is to act with them as with the rest of hyperparameters and rely on general strategies (such as Bayesian Optimization), but we can also develop specific methods that learn these parameters from data, similarly to what we have done with the adjacency matrix of the \acrshort{gl} proposal.
 % convex hyperpar selection with NN
 Furthermore, in the case of the convex \acrshort{mtl} \acrshort{nn} it is not necessary to develop any novel algorithm; we can treat these convex combination hyperparameters as parameters of the network and optimize them using standard gradient descent techniques.
 
