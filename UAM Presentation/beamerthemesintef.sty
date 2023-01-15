@@ -279,7 +279,7 @@
         \Huge \inserttitle
         \vspace{5mm}
       }
-      \Large \textsl{Thank you for listening! \\ Any questions?}
+      \Large \textsl{\\ Gracias por su atención. }
     \end{minipage}
   \end{frame}
 \endgroup
@@ -290,29 +290,29 @@
 {
     \begingroup
     \themecolor{main}
-    \begin{frame}{Table of Contents}
+    \begin{frame}{Índice}
         \tableofcontents[currentsection]
     \end{frame}
     \endgroup
 }
 
 % Define sectioning and table of contents
-\AtBeginSubsection[]
-{
-    \begingroup
-    \themecolor{main}
-    \begin{frame}{Table of Contents}
-        \tableofcontents[currentsubsection]
-    \end{frame}
-    \endgroup
-}
+% \AtBeginSubsection[]
+% {
+%     \begingroup
+%     \themecolor{main}
+%     \begin{frame}{Table of Contents}
+%         \tableofcontents[currentsubsection]
+%     \end{frame}
+%     \endgroup
+% }
 
 % style of section presented in the table of contents
 \setbeamertemplate{section in toc}{$\blacktriangleright$~\inserttocsection}
 
 % automate subtitle of each frame
 \makeatletter
-    \pretocmd\beamer@checkframetitle{\framesubtitle{\thesection \, \secname}}
+    \pretocmd\beamer@checkframetitle{\framesubtitle{\thesection. \, \secname}}
 \makeatother
 
 % avoid numbering of frames that are breaked into multiply slides
