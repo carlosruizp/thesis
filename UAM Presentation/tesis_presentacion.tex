@@ -18,6 +18,9 @@
 \graphicspath{{Figures/}}  % Location of the graphics files (set up for graphics to be in PDF format)
 
 
+\renewcommand{\footnotesize}{\scriptsize}
+
+
 %algorithm2e
 %%% Coloring the comment as blue
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
@@ -365,8 +368,7 @@ Multi-Task Learning}
 \begin{frame}
       {Riesgo Esperado}
       \begin{itemize}
-            \item Dado un espacio de hipótesis $\hypspace$
-            \item Riesgo Esperado:
+            \item Dado un espacio de hipótesis $\hypspace$, definimos el Riesgo Esperado:
             \begin{myequation}
                   \nonumber
                   \exprisk(\hypf) = \int_{\Xspace \times \Yspace} \ell(y, \hypf({x})) d\distf(x, y), \; \hypf \in \hypspace
@@ -374,7 +376,7 @@ Multi-Task Learning}
             \item El objetivo es minimizar el Riesgo Esperado:
             \begin{myequation}
                   \nonumber
-                  \opt{\hypf} = \argmin_{\hypf \in \hypspace} \left\{ \exprisk(\hypf) = \int_{\Xspace \times \Yspace} \ell(y, \hypf({x})) d\distf(x, y) \right\} ,
+                  \opt{\hypf} = \argmin_{\hypf \in \hypspace} \left\{ \exprisk(\hypf) = \int_{\Xspace \times \Yspace} \ell(y, \hypf({x})) d\distf(x, y) \right\} ;
               \end{myequation}
             sin embargo, la distribución $\distf(x, y)$ es desconocida
       \end{itemize}
@@ -437,7 +439,7 @@ Multi-Task Learning}
       \frametitle{Aprendizaje Multitarea}
 
       \begin{itemize}
-            \item Ahora tenemos una muestra multitarea:
+            \item Tenemos una muestra multitarea:
             \begin{myequation}
                   \nonumber
                   \bsample = \bigcup_{r=1}^\ntasks \set{(x_i^r, y_i^r) \sim \distf_r(x, y), \; i=1, \ldots, \npertask_r} ,
@@ -470,7 +472,7 @@ Multi-Task Learning}
                   \item Aprendizaje independiente (ITL): se usan modelos independientes en cada tarea
                   \begin{myequation}
                         \nonumber
-                        \argmin_{\fv{\hypf}} \left\{ \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \ell(\hypf_r(x_i^r), y_i^r) +  \sum_{r=1}^\ntasks \Omega_r(h_r) \right\}
+                        \argmin_{\fv{\hypf} \in \hypspace^\ntasks} \left\{ \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \ell(\hypf_r(x_i^r), y_i^r) +  \sum_{r=1}^\ntasks \Omega_r(h_r) \right\}
                   \end{myequation}
                   \item Aprendizaje multitarea (MTL): se usan modelos específicos que comparten información
                   \begin{itemize}
@@ -487,17 +489,17 @@ Multi-Task Learning}
       \frametitle{Aprendizaje Multitarea}
 
       \begin{itemize}
-                  \item Basados en características (más comunes en redes neuronales)
+                  \item Modelos basados en características (más comunes en redes neuronales)
                   \begin{myequation}
                         \nonumber
                         \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \ell(g_r \circ f(x_i^r), y_i^r) + \Omega(f) +\Omega(g_1, \ldots, g_\ntasks)
                   \end{myequation}
-                  \item Basados en regularización (más comunes con modelos lineales)
+                  \item Modelos basados en regularización (más comunes con modelos lineales)
                   \begin{myequation}
                         \nonumber
                         \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \ell(\hypf_r(x_i^r), y_i^r) + \Omega(h_1, \ldots, h_\ntasks), \; \Omega(h_1, \ldots, h_\ntasks) \neq \sum_{r=1}^\ntasks \Omega_r(h_r)
                   \end{myequation}
-                  \item Basados en combinación (más comunes con métodos de kernel)
+                  \item Modelos basados en combinación (más comunes con métodos de kernel)
                   \begin{myequation}
                         \nonumber
                         \sum_{r=1}^\ntasks \sum_{i=1}^{m_r} \ell(g(x_i^r) + g_r(x_i^r), y_i^r) + \Omega(g) + \Omega(g_1, \ldots, g_\ntasks)
@@ -518,6 +520,7 @@ Multi-Task Learning}
                         \item Se definen usando problemas convexos
                         \item Se puede aplicar el ``truco del kernel''
                         \item En clasificación maximizan el margen
+                        \item En regresión minimizan la distancia absoluta y definen un tubo de anchura $\epsilon$ que no es penalizado
                         \item Consideramos tres variantes: 
                         \begin{itemize}
                               \item L1-SVM
@@ -553,7 +556,7 @@ Multi-Task Learning}
                   \nonumber
                   \begin{aligned}
                       &\min_{w, b, \fv{\xi}} & & C \sum_{i=1}^\nsamples \xi_i + \frac{1}{2} \norm{w}^2 \\
-                      & \text{s.t.} & & y_i (\dotp{w}{x_i} + b) \geq p_i - \xi_i , \\
+                      & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i , \\
                       & & & \xi_i \geq 0   
                   \end{aligned}  
               \end{myequation}
@@ -587,7 +590,7 @@ Multi-Task Learning}
       \begin{itemize}
           \item Aquí $Q$ es la matriz de kernel 
           \begin{itemize}
-              \item SVM lineal: $Q_{ij} = y_i y_j k(x_i, x_j) = y_i y_j \dotp{x_i}{x_j} $
+              \item SVM lineal: $Q_{ij} = y_i y_j \dotp{x_i}{x_j} $
               \item SVM no lineal: $Q_{ij} = y_i y_j k(x_i, x_j) = y_i y_j \dotp{\phi({x_i})}{\phi({x_j})} $
           \end{itemize}
           
@@ -602,7 +605,7 @@ Multi-Task Learning}
                   \nonumber%\label{eq:l2_primal_clas}
                   \begin{aligned}
                       &\min_{w, b, \fv{\xi}} & & \frac{C}{2} \sum_{i=1}^m (\xi_i)^2 + \frac{1}{2} \norm{w}^2 \\
-                      & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq 1 - \xi_i 
+                      & \text{s.t.} & & y_i (\dotp{w}{\phi(x_i)} + b) \geq p_i - \xi_i 
                   \end{aligned}  
               \end{myequation}
       \end{block}
@@ -719,6 +722,7 @@ Multi-Task Learning}
               \item $\mu \to \infty$: modelos independientes (ITL)
               \item $C \to 0,\; \mu \to 0$: modelo común (CTL)
           \end{itemize}
+          \item Tenemos la transformación común $\phi$ y las específicas $\phi_r$ 
       \end{itemize}
   \end{frame}
   
@@ -727,7 +731,7 @@ Multi-Task Learning}
       \frametitle{Formulacion Convexa con Métodos de Kernel}
   
       \begin{itemize}
-          \item Proponemos en~\footfullcite{RuizAD19} la siguiente formulación convexa para el aprendizaje multitarea:
+          \item Proponemos~\footfullcite{RuizAD19} la siguiente formulación convexa para el aprendizaje multitarea:
           \begin{myequation}
             \nonumber
             h_r(\cdot) = \lambda_r \left\lbrace \dotp{w}{\phi(\cdot)} + b  \right\rbrace + (1 - \lambda_r) \left\lbrace \dotp{{v}_r}{\phi_r(\cdot)} + d_r \right\rbrace, \; \lambda_r \in [0,1]
@@ -737,12 +741,12 @@ Multi-Task Learning}
       %         h_r(\cdot) = \lambda_r g(\cdot) + (1 - \lambda_r) g_r(\cdot) ,
       %     \end{myequation}
           % con $\lambda_r \in [0,1]$
-          \item Los hiperparámetros $\lambda_r$ regulan la influencia de cada parte
+          \item Los hiperparámetros $\lambda_r$, en lugar de $\mu$, regulan la influencia de cada parte
       %     \begin{itemize}
       %         \item $\lambda_1, \ldots, \lambda_\ntasks=0$: modelos independientes (ITL)
       %         \item $\lambda_1, \ldots, \lambda_\ntasks=1$: modelo común (CTL)
       %     \end{itemize}
-          \item Extendemos esta formulación en~\footfullcite{RuizAD21} y desarrollamos tres variantes de SVM:
+          \item Extendemos esta formulación~\footfullcite{RuizAD21} y desarrollamos tres variantes de SVM:
           \begin{itemize}
                 \item L1-SVM
                 \item L2-SVM
@@ -1019,7 +1023,7 @@ Multi-Task Learning}
                   \hline
                   \fv{0}_\ntasks & \fv{0}_{\ntasks \times \ntasks} & \fm{A}^\intercal \fm{y} (I_\nsamples - \Lambda)\\
                   \hline
-                  \fv{y} & \fm{y} \fm{A} & \widehat{\fm{Q}} + \frac{1}{C} \fm{I}_\nsamples
+                  \fv{y} & \fm{y} \fm{A} & \left\lbrace \Lambda \fm{Q} \Lambda + \left(\fm{I}_{\nsamples} - \Lambda \right) \fm{K} \left(\fm{I}_{\nsamples} - \Lambda \right) \right\rbrace + \frac{1}{C} \fm{I} 
                   \end{array}
                   \right] 
                   \begin{pmatrix}
@@ -1096,7 +1100,7 @@ Multi-Task Learning}
       \frametitle{Combinación Convexa de Modelos Preentrenados}
 
       \begin{itemize}
-            \item Consideramos en~\footfullcite{RuizAD21} la combinación convexa de
+            \item Como alternativa natural, consideramos~\footfullcite{RuizAD21} la combinación convexa de
             \begin{itemize}
                   \item modelo común $g(\cdot)$ ya entrenado
                   \item modelos específicos $g_r(\cdot)$ ya entrenados
@@ -1179,13 +1183,13 @@ Multi-Task Learning}
       \frametitle{Formulación Unificada}
 
       \begin{itemize}
-            \item En todos los casos lo podemos expresar como
+            \item En todos los casos el riesgo lo podemos expresar como
             \begin{myequation}
                   \nonumber
                   \emprisk(\lambda_1, \ldots, \lambda_\ntasks) =
                   \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r)
             \end{myequation}
-            \item Como es separable, tenemos en cada tarea el problema
+            \item Como $\emprisk(\lambda_1, \ldots, \lambda_\ntasks)$ es separable, tenemos en cada tarea el problema
             \begin{myequation}
                   \nonumber
                   \argmin_{\lambda_r \in [0, 1]} \mathcal{J}(\lambda_r) = \sum_{i=1}^{\npertask_r} u(\lambda_r c_i^r + d_i^r)
@@ -1485,12 +1489,17 @@ Multi-Task Learning}
           \toprule
           \fhead{Problema} & \fhead{Tamaño} & \fhead{Dimensión} & \fhead{Nº tareas} & \fhead{Tam. tarea medio} & \fhead{Tam. tarea mín.} & \fhead{Tam. tarea máx.}\\
           \midrule
+      %      & \multicolumn{6}{c}{\fhead{Regresión}} \\
+      %     \midrule
           \fdata{majorca} & 15330 & 765 & 14 & 1095 & 1095 & 1095 \\ 
           \fdata{tenerife} & 15330 & 765 & 14 & 1095 & 1095 & 1095 \\
           \fdata{california} & 19269 & 9 & 5 & 3853 & 5 & 8468\\
           \fdata{boston} & 506 & 12 & 2 & 253 & 35 & 471 \\
           \fdata{abalone} & 4177 & 8 & 3 & 1392 & 1307 & 1527 \\
           \fdata{crime} & 1195 & 127 & 9 & 132 & 60  & 278 \\
+          \midrule
+      %     \multicolumn{7}{c}{\fhead{Regresión}} \\
+      %     \midrule
           \fdata{binding} & 32302 & 184 & 47 & 687 & 59 & 3089 \\ 
           \fdata{landmine} & 14820 & 10 & 28 & 511 & 445 & 690 \\
           \fdata{adult\_(G)} & 48842 & 106 & 2 & 24421 & 16192 & 32650 \\
@@ -1510,7 +1519,7 @@ Multi-Task Learning}
   
       \begin{itemize}
           \item Para \fdata{majorca} y \fdata{tenerife}, usamos los datos de 2013, 2014 and 2015 como conjuntos de entrenamiento, validación y test, respectivamente
-          \item Para el resto, usamos una CV con 3 particiones externas e internas estratificadas por tareas
+          \item Para el resto, usamos una CV anidada con 3 particiones externas e internas estratificadas por tareas
           \item Los hiperparámetros se eligen con una búsqueda en rejilla con las particiones de entrenamiento y validación
           \item Obtenemos $3$ scores de test para cada modelo en cada problema
       \end{itemize}
@@ -1576,35 +1585,35 @@ Multi-Task Learning}
   \end{frame}
   
   
-  \begin{frame}{Experimentos: Resultados de Regresión (MSE)}
+%   \begin{frame}{Experimentos: Resultados de Regresión (MSE)}
   
-      \begin{table}[t]
-          \label{tab:error_models_reg_mae_r2}
-          \centering
-          \scalebox{.7}{
-          \begin{tabular}{l*{2}{S[table-format=1.3]@{ }l}*{4}{S[table-format=1.3]@{$\pm$}S[table-format=1.3]@{ }l } }
-          \toprule
-              & \fheadmulti{2}{\fdata{maj.}} & \fheadmulti{2}{\fdata{ten.}} & \fheadmulti{3}{\fdata{boston}} & \fheadmulti{3}{\fdata{california}} &  \fheadmulti{3}{\fdata{abalone}} & \fheadmulti{3}{\fdata{crime}}\\
-              \midrule
-          \fmod{ITL-L1}            &  {0.845} &   (6) &  {0.901} &   (7) &  {0.821} & {0.041} &   (2) &  {0.699} & {0.009} &   (7) &  {0.543} & {0.022} &   (8) &  {0.732} & {0.021} &   (3) \\
-          \fmod{CTL-L1}            &  {0.837} &   (9) &  {0.901} &   (6) &  {0.854} & {0.036} &   \fmaxn{(1)} &  {0.639} & {0.006} &  (10) &  {0.559} & {0.014} &   (6) &  {0.740} & {0.027} &   (3) \\
-          \fmod{CMB-L1} &  {0.844} &   (6) &  {0.905} &   (4) &  {0.845} & {0.053} &   \fmaxn{(1)} &  {0.699} & {0.009} &   (6) &  {0.555} & {0.018} &   (7) &  {0.741} & {0.029} &   (3) \\
-          \fmod{MTL-L1}     &  \fmaxn{0.846} &   (4) &  \fmaxn{0.908} &   (2) &  \fmaxn{0.858} & \fmaxn{0.057} &   \fmaxn{(1)} &  \fmaxn{0.703} & \fmaxn{0.007} &   (6) &  \fmaxn{0.568} & \fmaxn{0.012} &   (5) &  \fmaxn{0.760} & \fmaxn{0.024} &   (2) \\
-          \midrule
-          \fmod{ITL-L2}            &  {0.846} &   (5) &  {0.906} &   (3) &  {0.836} & {0.045} &   (2) &  {0.707} & {0.009} &   (5) &  {0.565} & {0.025} &   (6) &  {0.743} & {0.017} &   (3) \\
-          \fmod{CTL-L2}            &  {0.840} &   (8) &  {0.901} &   (8) &  \fmaxn{0.889} & \fmaxn{0.017} &   \fmaxn{(1)} &  {0.645} & {0.005} &   (9) &  {0.574} & {0.013} &   (4) &  {0.744} & {0.028} &   (3) \\
-          \fmod{CMB-L2} &  {0.850} &   (3) &  {0.900} &   (9) &  {0.885} & {0.013} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (4) &  {0.571} & {0.018} &   (4) &  {0.755} & {0.024} &   (3) \\
-          \fmod{MTL-L2}     &  \fmaxn{0.863} &   (2) &  \fmaxn{0.908} &   \fmaxn{(1)} &  {0.888} & {0.015} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &  \fmaxn{(1)} &  \fmaxn{0.580} & \fmaxn{0.014} &   (3) &  \fmaxn{0.762} & \fmaxn{0.028} &   \fmaxn{(1)} \\
-          \midrule
-          \fmod{ITL-LS}            &  {0.849} &   (3) &  {0.907} &   (3) &  {0.856} & {0.008} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (3) &  {0.573} & {0.015} &   (4) &  {0.743} & {0.022} &   (3) \\
-          \fmod{CTL-LS}            &  {0.838} &   (9) &  {0.904} &   (5) &  \fmaxn{0.894} & \fmaxn{0.015} &  \fmaxn{(1)} &  {0.646} & {0.005} &   (8) &  {0.576} & {0.016} &   (4) &  {0.746} & {0.032} &   (3) \\
-          \fmod{CMB-LS} &  {0.843} &   (7) &  {0.907} &   (2) &  {0.886} & {0.024} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (2) &  {0.581} & {0.012} &   (2) &  {0.746} & {0.021} &   (3) \\
-          \fmod{MTL-LS}     &  \fmaxn{0.863} &  \fmaxn{(1)} &  \fmaxn{0.910} &  \fmaxn{(1)} &  {0.890} & {0.016} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &   (2) &  \fmaxn{0.581} & \fmaxn{0.015} &  \fmaxn{(1)} &  \fmaxn{0.763} & \fmaxn{0.028} &  \fmaxn{(1)} \\
-          \bottomrule
-         \end{tabular}}
-        \end{table}
+%       \begin{table}[t]
+%           \label{tab:error_models_reg_mae_r2}
+%           \centering
+%           \scalebox{.7}{
+%           \begin{tabular}{l*{2}{S[table-format=1.3]@{ }l}*{4}{S[table-format=1.3]@{$\pm$}S[table-format=1.3]@{ }l } }
+%           \toprule
+%               & \fheadmulti{2}{\fdata{maj.}} & \fheadmulti{2}{\fdata{ten.}} & \fheadmulti{3}{\fdata{boston}} & \fheadmulti{3}{\fdata{california}} &  \fheadmulti{3}{\fdata{abalone}} & \fheadmulti{3}{\fdata{crime}}\\
+%               \midrule
+%           \fmod{ITL-L1}            &  {0.845} &   (6) &  {0.901} &   (7) &  {0.821} & {0.041} &   (2) &  {0.699} & {0.009} &   (7) &  {0.543} & {0.022} &   (8) &  {0.732} & {0.021} &   (3) \\
+%           \fmod{CTL-L1}            &  {0.837} &   (9) &  {0.901} &   (6) &  {0.854} & {0.036} &   \fmaxn{(1)} &  {0.639} & {0.006} &  (10) &  {0.559} & {0.014} &   (6) &  {0.740} & {0.027} &   (3) \\
+%           \fmod{CMB-L1} &  {0.844} &   (6) &  {0.905} &   (4) &  {0.845} & {0.053} &   \fmaxn{(1)} &  {0.699} & {0.009} &   (6) &  {0.555} & {0.018} &   (7) &  {0.741} & {0.029} &   (3) \\
+%           \fmod{MTL-L1}     &  \fmaxn{0.846} &   (4) &  \fmaxn{0.908} &   (2) &  \fmaxn{0.858} & \fmaxn{0.057} &   \fmaxn{(1)} &  \fmaxn{0.703} & \fmaxn{0.007} &   (6) &  \fmaxn{0.568} & \fmaxn{0.012} &   (5) &  \fmaxn{0.760} & \fmaxn{0.024} &   (2) \\
+%           \midrule
+%           \fmod{ITL-L2}            &  {0.846} &   (5) &  {0.906} &   (3) &  {0.836} & {0.045} &   (2) &  {0.707} & {0.009} &   (5) &  {0.565} & {0.025} &   (6) &  {0.743} & {0.017} &   (3) \\
+%           \fmod{CTL-L2}            &  {0.840} &   (8) &  {0.901} &   (8) &  \fmaxn{0.889} & \fmaxn{0.017} &   \fmaxn{(1)} &  {0.645} & {0.005} &   (9) &  {0.574} & {0.013} &   (4) &  {0.744} & {0.028} &   (3) \\
+%           \fmod{CMB-L2} &  {0.850} &   (3) &  {0.900} &   (9) &  {0.885} & {0.013} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (4) &  {0.571} & {0.018} &   (4) &  {0.755} & {0.024} &   (3) \\
+%           \fmod{MTL-L2}     &  \fmaxn{0.863} &   (2) &  \fmaxn{0.908} &   \fmaxn{(1)} &  {0.888} & {0.015} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &  \fmaxn{(1)} &  \fmaxn{0.580} & \fmaxn{0.014} &   (3) &  \fmaxn{0.762} & \fmaxn{0.028} &   \fmaxn{(1)} \\
+%           \midrule
+%           \fmod{ITL-LS}            &  {0.849} &   (3) &  {0.907} &   (3) &  {0.856} & {0.008} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (3) &  {0.573} & {0.015} &   (4) &  {0.743} & {0.022} &   (3) \\
+%           \fmod{CTL-LS}            &  {0.838} &   (9) &  {0.904} &   (5) &  \fmaxn{0.894} & \fmaxn{0.015} &  \fmaxn{(1)} &  {0.646} & {0.005} &   (8) &  {0.576} & {0.016} &   (4) &  {0.746} & {0.032} &   (3) \\
+%           \fmod{CMB-LS} &  {0.843} &   (7) &  {0.907} &   (2) &  {0.886} & {0.024} &   \fmaxn{(1)} &  {0.707} & {0.009} &   (2) &  {0.581} & {0.012} &   (2) &  {0.746} & {0.021} &   (3) \\
+%           \fmod{MTL-LS}     &  \fmaxn{0.863} &  \fmaxn{(1)} &  \fmaxn{0.910} &  \fmaxn{(1)} &  {0.890} & {0.016} &   \fmaxn{(1)} &  \fmaxn{0.709} & \fmaxn{0.008} &   (2) &  \fmaxn{0.581} & \fmaxn{0.015} &  \fmaxn{(1)} &  \fmaxn{0.763} & \fmaxn{0.028} &  \fmaxn{(1)} \\
+%           \bottomrule
+%          \end{tabular}}
+%         \end{table}
   
-  \end{frame}
+%   \end{frame}
   
   
   
@@ -1639,35 +1648,35 @@ Multi-Task Learning}
   \end{frame}
   
   
-  \begin{frame}{Experimentos: Resultados de Clasificación (Accuracy)}
+%   \begin{frame}{Experimentos: Resultados de Clasificación (Accuracy)}
   
-      \begin{table}[t]
-          \label{tab:error_models_class_acc}
-          \centering
-          \scalebox{.7}{
-          \begin{tabular}{ l*{8}{S[table-format=1.3]} c c c}
-          \toprule
-          & \fhead{\fdata{comp\_(G)}} & \fhead{\fdata{comp\_(R)}} & \fhead{\fdata{comp\_(G,R)}} & \fhead{\fdata{ad\_(G)}} & \fhead{\fdata{ad\_(R)}} & \fhead{\fdata{ad\_(G,R)}} & \fhead{\fdata{landmine}} & \fhead{\fdata{binding}} & \fhead{mean} & \fhead{rank}  & \fhead{Wil.}\\
-          \midrule
-          \fmod{ITL-L1}    &          0.750 &           0.749 &                  0.746 &         0.852 &          0.851 &                 \fmaxn{0.853} &    \fmaxn{0.941} &   0.790 & 0.817 &     11 & 3 \\
-          \fmod{CTL-L1}    &          \fmaxn{0.757} &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.938 &   0.850 & 0.827 &      6 & 1 \\
-          \fmod{CMB-L1} &          0.754 &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.935 &   0.850 & 0.826 &      7 & 2 \\
-          \fmod{MTL-L1}    &          0.753 &           \fmaxn{0.760} &                  \fmaxn{0.763} &         \fmaxn{0.853} &          \fmaxn{0.852} &                 \fmaxn{0.853} &    0.933 &   \fmaxn{0.861} & \fmaxn{0.829} &      5 & 1 \\
-          \midrule
-          \fmod{ITL-L2}    &          0.754 &           0.762 &                  0.751 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    \fmaxn{0.942} &   0.791 & 0.821 &      8 & 2 \\
-          \fmod{CTL-L2}    &          \fmaxn{0.762} &           0.765 &                  \fmaxn{0.767} &         0.854 &          0.853 &                 0.851 &    0.933 &   0.853 & 0.830 &      3 & 1 \\
-          \fmod{CMB-L2} &          0.757 &           0.764 &                  0.766 &         0.854 &          0.853 &                 0.853 &    0.934 &   0.853 & 0.829 &      4 & 1 \\
-          \fmod{MTL-L2}    &          0.753 &           \fmaxn{0.766} &                  0.766 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    0.933 &   \fmaxn{0.864} & \fmaxn{0.831} &      1 & 1 \\
-          \midrule
-          \fmod{ITL-LS}    &          0.754 &           0.761 &                  0.750 &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    0.943 &   0.791 & 0.819 &      9 & 3 \\
-          \fmod{CTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  0.766 &         0.845 &          0.847 &                 0.842 &    0.914 &   0.750 & 0.811 &     12 & 3 \\
-          \fmod{CMB-LS} &          0.754 &           \fmaxn{0.764} &                  0.765 &         0.849 &          \fmaxn{0.850} &                 0.848 &    0.925 &   0.793 & 0.818 &     10 & 3 \\
-          \fmod{MTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  \fmaxn{0.767} &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    \fmaxn{0.944} &   \fmaxn{0.858} & \fmaxn{0.830} &      2 & 1 \\
-          \bottomrule  
-        \end{tabular}}
-        \end{table}
+%       \begin{table}[t]
+%           \label{tab:error_models_class_acc}
+%           \centering
+%           \scalebox{.7}{
+%           \begin{tabular}{ l*{8}{S[table-format=1.3]} c c c}
+%           \toprule
+%           & \fhead{\fdata{comp\_(G)}} & \fhead{\fdata{comp\_(R)}} & \fhead{\fdata{comp\_(G,R)}} & \fhead{\fdata{ad\_(G)}} & \fhead{\fdata{ad\_(R)}} & \fhead{\fdata{ad\_(G,R)}} & \fhead{\fdata{landmine}} & \fhead{\fdata{binding}} & \fhead{mean} & \fhead{rank}  & \fhead{Wil.}\\
+%           \midrule
+%           \fmod{ITL-L1}    &          0.750 &           0.749 &                  0.746 &         0.852 &          0.851 &                 \fmaxn{0.853} &    \fmaxn{0.941} &   0.790 & 0.817 &     11 & 3 \\
+%           \fmod{CTL-L1}    &          \fmaxn{0.757} &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.938 &   0.850 & 0.827 &      6 & 1 \\
+%           \fmod{CMB-L1} &          0.754 &           0.759 &                  \fmaxn{0.763} &         0.852 &          0.847 &                 0.849 &    0.935 &   0.850 & 0.826 &      7 & 2 \\
+%           \fmod{MTL-L1}    &          0.753 &           \fmaxn{0.760} &                  \fmaxn{0.763} &         \fmaxn{0.853} &          \fmaxn{0.852} &                 \fmaxn{0.853} &    0.933 &   \fmaxn{0.861} & \fmaxn{0.829} &      5 & 1 \\
+%           \midrule
+%           \fmod{ITL-L2}    &          0.754 &           0.762 &                  0.751 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    \fmaxn{0.942} &   0.791 & 0.821 &      8 & 2 \\
+%           \fmod{CTL-L2}    &          \fmaxn{0.762} &           0.765 &                  \fmaxn{0.767} &         0.854 &          0.853 &                 0.851 &    0.933 &   0.853 & 0.830 &      3 & 1 \\
+%           \fmod{CMB-L2} &          0.757 &           0.764 &                  0.766 &         0.854 &          0.853 &                 0.853 &    0.934 &   0.853 & 0.829 &      4 & 1 \\
+%           \fmod{MTL-L2}    &          0.753 &           \fmaxn{0.766} &                  0.766 &         \fmaxn{0.856} &          \fmaxn{0.855} &                 \fmaxn{0.856} &    0.933 &   \fmaxn{0.864} & \fmaxn{0.831} &      1 & 1 \\
+%           \midrule
+%           \fmod{ITL-LS}    &          0.754 &           0.761 &                  0.750 &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    0.943 &   0.791 & 0.819 &      9 & 3 \\
+%           \fmod{CTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  0.766 &         0.845 &          0.847 &                 0.842 &    0.914 &   0.750 & 0.811 &     12 & 3 \\
+%           \fmod{CMB-LS} &          0.754 &           \fmaxn{0.764} &                  0.765 &         0.849 &          \fmaxn{0.850} &                 0.848 &    0.925 &   0.793 & 0.818 &     10 & 3 \\
+%           \fmod{MTL-LS}    &          \fmaxn{0.757} &           \fmaxn{0.764} &                  \fmaxn{0.767} &         \fmaxn{0.851} &          \fmaxn{0.850} &                 \fmaxn{0.851} &    \fmaxn{0.944} &   \fmaxn{0.858} & \fmaxn{0.830} &      2 & 1 \\
+%           \bottomrule  
+%         \end{tabular}}
+%         \end{table}
   
-  \end{frame}
+%   \end{frame}
 
   
 
@@ -1738,7 +1747,7 @@ Multi-Task Learning}
       \frametitle{Formulación Convexa para Redes Neuronales MT}
 
       \begin{itemize}
-            \item Proponemos en~\footfullcite{RuizAD22_hais} la formulación convexa para redes neuronales MT, combinando:
+            \item Proponemos~\footfullcite{RuizAD22_hais} la formulación convexa para redes neuronales MT, combinando:
             \begin{itemize}
                   \item Una parte común $g(\cdot; w, b, \Theta)$
                   \item Una parte específica $g_r(\cdot; w_r, d_r, \Theta_r)$
@@ -1952,7 +1961,11 @@ Multi-Task Learning}
             \item Por otra parte, la definición de tareas puede ser arbitraria
             \item Es posible que definamos tareas distintas que realmente son la misma
             \vfill
-            \item Una alternativa para el aprendizaje MT es usar una regularización laplaciana de grafo
+            \item Una alternativa para el aprendizaje MT es usar una regularización laplaciana de grafo:
+            \begin{itemize}
+                  \item para mejorar modelos
+                  \item para encontrar relaciones entre tareas
+            \end{itemize}
       \end{itemize}
 
 \end{frame}
@@ -1984,9 +1997,9 @@ Multi-Task Learning}
       \begin{itemize}
             \item Dados los modelos para cada tarea definidos como
             \begin{myequation*}
-                  \hypf_r(\cdot) = \dotp{w_r}{\cdot} + b_r
+                  \hypf_r(\cdot) = \dotp{w_r}{\cdot} + b_r,
             \end{myequation*}
-            \item Definimos la regularización
+            definimos la regularización
             \begin{myequation}
                   \nonumber
                   %\label{eq:gl_regularization}
@@ -2063,7 +2076,7 @@ Multi-Task Learning}
 \begin{frame}
       \frametitle{Laplaciano de Grafo con Métodos de Kernel y Formulación Convexa}
       \begin{itemize}
-            \item En~\footfullcite{RuizAD20} proponemos combinar la formulación convexa con la regularización Laplaciana
+            \item Proponemos combinar la formulación convexa con la regularización Laplaciana~\footfullcite{RuizAD20}
             %\item El problema de minimización es
             \begin{myequation}
                   \nonumber%\label{eq:mtl_kernel_altext_original}
@@ -2215,7 +2228,7 @@ Multi-Task Learning}
 
       \begin{itemize}
             \item La selección de la matriz de adyacencia $A$ (y la respectiva $L$) es determinante
-            \item En~\footfullcite{RuizAD21_hais} proponemos un método para la selección automática de $A$
+            \item Proponemos~\footfullcite{RuizAD21_hais} un método para la selección automática de $A$
             \item Tiene que tener las siguientes restricciones:
             \begin{itemize}
                   \item $A$ es simétrica
@@ -2224,12 +2237,12 @@ Multi-Task Learning}
               \end{itemize}
             %\item Se puede escoger usando conocimiento experto del problema
             %\item Proponemos un algoritmo para aprender la matriz $A$ de forma automática
-            \item La entropía de cada fila es: $\fv{a}^r$: $H(\fv{a}^r) = \sum_{s=1}^\ntasks (A)_{rs} \log((A)_{rs})$
+            \item La entropía de cada fila $\fv{a}^r$ es: $H(\fv{a}^r) = \sum_{s=1}^\ntasks (A)_{rs} \log((A)_{rs})$
             %\item Definimos la entropía de $A$ como: $H(A) = \sum_{r=1}^\ntasks H(\fv{a}^r)$
             \item Interpretación:
             \begin{itemize}
-                  \item $H(A)$ es máxima si $A$ es constante, $A = \frac{1}{\ntasks} \fv{1}_\ntasks \fv{1}_\ntasks^\intercal$
-                  \item $H(A)$ es mínima si $A$ es la identidad, $A = I_\ntasks$ 
+                  \item $\sum_{r=1}^\ntasks H(\fv{a}^r) $ es máxima si $A$ es constante, $A = \frac{1}{\ntasks} \fv{1}_\ntasks \fv{1}_\ntasks^\intercal$
+                  \item $\sum_{r=1}^\ntasks H(\fv{a}^r) $ es mínima si $A$ es la identidad, $A = I_\ntasks$ 
             \end{itemize}
             
             % \item Proponemos un algoritmo para aprender la matriz de forma automática:
@@ -2386,7 +2399,7 @@ Multi-Task Learning}
             %& \multicolumn{3}{c}{Tarea Real 1} \\
                                  &   $\tau$ &   $f_r$  & $T_r$  & Total tareas virtuales  \\
               \midrule
-               \multirow{3}{*}{\fdata{regClusters0}, \fdata{clasClusters0}} & \multirow{3}{*}{2} & $f_1(x) = x^2$ & 2 & \multirow{3}{*}{7}\\
+               \multirow{3}{*}{\fdata{regClusters0}, \fdata{clasClusters0}} & \multirow{3}{*}{3} & $f_1(x) = x^2$ & 2 & \multirow{3}{*}{7}\\
                & & $f_2(x) = \sin(10x)$ & 3 & \\ 
              & & $f_3(x) = x^3$ & 2  & \\ 
              \midrule
@@ -2559,70 +2572,70 @@ Multi-Task Learning}
 \end{frame}
 
 
-\begin{frame}
-      \frametitle{Experimentos Reales: Procedimiento}
+% \begin{frame}
+%       \frametitle{Experimentos Reales: Procedimiento}
 
       
-      \centering
-            \scalebox{.7}{
-            \begin{tabular}{*{7}{c}}
-            \toprule
-            \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL}} & \fhead{\fmod{ITL}} & \fhead{\fmod{MTL}} & \fhead{\fmod{GLMTL}} & \fhead{\fmod{cvxGLMTL}} \\
-             \midrule
-            $C$ &  \scalebox{1}{$\set{4^k: -2 \leq k \leq 2}$} & CV & CV & CV & CV & CV  \\ 
-            $\epsilon$ & \scalebox{1}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & CV & CV & CV & CV & CV  \\
-            $\gamma$ & \scalebox{1}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & CV & - & \fmod{CTL} & - & \fmod{CTL} \\
-            $\gamma_s$ & \scalebox{1}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & CV & \fmod{ITL} & \fmod{CTL} & \fmod{CTL}\\
-            $\lambda$ & \scalebox{1}{$\set{0.2 k : 0 \leq k \leq 5}$} & - & - & CV & - & CV\\
-            $\mu$ & \scalebox{1}{$\set{4^k : -1 \leq k \leq 3}$} & - & - & - & CV & \fmod{GLMTL}\\
-            \bottomrule
-            \end{tabular}
-            }
-      \vfill
-      \begin{itemize}
-            \item Usamos 5 particiones externas y obtenemos 5 scores de test
-            \item Usamos la Validación Cruzada (CV) con 5 particiones internas para la búsqueda en rejilla de los hiperparámetros
-      \end{itemize}
+%       \centering
+%             \scalebox{.7}{
+%             \begin{tabular}{*{7}{c}}
+%             \toprule
+%             \fhead{} & \fhead{Grid} & \fhead{\fmod{CTL}} & \fhead{\fmod{ITL}} & \fhead{\fmod{MTL}} & \fhead{\fmod{GLMTL}} & \fhead{\fmod{cvxGLMTL}} \\
+%              \midrule
+%             $C$ &  \scalebox{1}{$\set{4^k: -2 \leq k \leq 2}$} & CV & CV & CV & CV & CV  \\ 
+%             $\epsilon$ & \scalebox{1}{$\set{\frac{\sigma}{4^k}: 1 \leq k \leq 6}$} & CV & CV & CV & CV & CV  \\
+%             $\gamma$ & \scalebox{1}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & CV & - & \fmod{CTL} & - & \fmod{CTL} \\
+%             $\gamma_s$ & \scalebox{1}{$\set{\frac{4^k}{d}: -2 \leq k \leq 3}$} & - & CV & \fmod{ITL} & \fmod{CTL} & \fmod{CTL}\\
+%             $\lambda$ & \scalebox{1}{$\set{0.2 k : 0 \leq k \leq 5}$} & - & - & CV & - & CV\\
+%             $\mu$ & \scalebox{1}{$\set{4^k : -1 \leq k \leq 3}$} & - & - & - & CV & \fmod{GLMTL}\\
+%             \bottomrule
+%             \end{tabular}
+%             }
+%       \vfill
+%       \begin{itemize}
+%             \item Usamos 5 particiones externas y obtenemos 5 scores de test
+%             \item Usamos la Validación Cruzada (CV) con 5 particiones internas para la búsqueda en rejilla de los hiperparámetros
+%       \end{itemize}
 
-\end{frame}
+% \end{frame}
 
 
-\begin{frame}
-      \frametitle{Experimentos Reales: Resultados}
+% \begin{frame}
+%       \frametitle{Experimentos Reales: Resultados}
 
-      %\begin{table*}[H]
-            % \caption{Test results for real problems.
-            % We show the average and standard deviation of MAE scores for the regression problems: \fdata{computer} and \fdata{parkinson}; and average and standard deviation of F1 scores for the classification problem: \fdata{landmine}.
-            % In bold we highlight the best models of each group: L1, L2 or LS-SVMs.}
-            % \label{tab:results_real}
-            \centering
-            \scalebox{.7}{
-            \begin{tabular}{l*{2}{S[table-format=1.3]@{$\pm$}S[table-format=1.3]}|S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
-            \toprule
-            &  \fheadmulti{2}{\fdata{computer}} & \fheadmulti{2}{\fdata{parkinson}} & \fheadmulti{2}{\fdata{landmine}} \\
-            \midrule
-            \fmod{CTL-L1}    & 1.985 & 0.039  & 4.306 & 0.209 & 0.202 & 0.047 \\
-             \fmod{ITL-L1}    & 1.623 & 0.028  & 1.949 & 0.021 & 0.243 & 0.014 \\
-             \fmod{MTL-L1} & \fmaxn{1.526} & \fmaxn{0.052}  & \fmaxn{1.942} & \fmaxn{0.019} & 0.266 & 0.022 \\
-             \fmod{cvxGLMTL-L1}     & \fmaxn{1.526} & \fmaxn{0.052}  & 1.945 & 0.024 & 0.249 & 0.039 \\
-             \fmod{AdapGLMTL-L1} & 1.545 & 0.083  & 1.945 & 0.024 & \fmaxn{0.272} & \fmaxn{0.033} \\
-            \hline
-            \fmod{CTL-L2}    & 2.001 & 0.028 & 4.211 & 0.093 & 0.235 & 0.045 \\
-            \fmod{ITL-L2}    & 2.105 & 0.070 & 1.936 & 0.026 & \fmaxn{0.267} & \fmaxn{0.019} \\
-            \fmod{MTL-L2} & 1.506 & 0.043 & 1.928 & 0.037 & 0.260 & 0.041 \\
-            \fmod{cvxGLMTL-L2}     & 1.507 & 0.045 & \fmaxn{1.927} & \fmaxn{0.037} & 0.251 & 0.048 \\
-            \fmod{AdapGLMTL-L2} & \fmaxn{1.501} & \fmaxn{0.047} & 1.928 & 0.038 & 0.249 & 0.055 \\
-           \hline
-            \fmod{CTL-LS}    & 2.002 & 0.029 & 4.217 & 0.108 & 0.186 & 0.040 \\
-            \fmod{ITL-LS}    & 1.609 & 0.015 & 1.928 & 0.017 & 0.182 & 0.007 \\
-            \fmod{MTL-LS} & 1.507 & 0.042 & 1.929 & 0.026 & 0.186 & 0.041 \\
-            \fmod{cvxGLMTL-LS}     & \fmaxn{1.502} & \fmaxn{0.047} & \fmaxn{1.917} & \fmaxn{0.022} & \fmaxn{0.197} & \fmaxn{0.033} \\
-            \fmod{AdapGLMTL-LS} & 1.506 & 0.046 & 1.924 & 0.033 & 0.196 & 0.031    \\
-                \bottomrule
-      \end{tabular}}
-        %\end{table*}
+%       %\begin{table*}[H]
+%             % \caption{Test results for real problems.
+%             % We show the average and standard deviation of MAE scores for the regression problems: \fdata{computer} and \fdata{parkinson}; and average and standard deviation of F1 scores for the classification problem: \fdata{landmine}.
+%             % In bold we highlight the best models of each group: L1, L2 or LS-SVMs.}
+%             % \label{tab:results_real}
+%             \centering
+%             \scalebox{.7}{
+%             \begin{tabular}{l*{2}{S[table-format=1.3]@{$\pm$}S[table-format=1.3]}|S[table-format=1.3]@{$\pm$}S[table-format=1.3]}
+%             \toprule
+%             &  \fheadmulti{2}{\fdata{computer}} & \fheadmulti{2}{\fdata{parkinson}} & \fheadmulti{2}{\fdata{landmine}} \\
+%             \midrule
+%             \fmod{CTL-L1}    & 1.985 & 0.039  & 4.306 & 0.209 & 0.202 & 0.047 \\
+%              \fmod{ITL-L1}    & 1.623 & 0.028  & 1.949 & 0.021 & 0.243 & 0.014 \\
+%              \fmod{MTL-L1} & \fmaxn{1.526} & \fmaxn{0.052}  & \fmaxn{1.942} & \fmaxn{0.019} & 0.266 & 0.022 \\
+%              \fmod{cvxGLMTL-L1}     & \fmaxn{1.526} & \fmaxn{0.052}  & 1.945 & 0.024 & 0.249 & 0.039 \\
+%              \fmod{AdapGLMTL-L1} & 1.545 & 0.083  & 1.945 & 0.024 & \fmaxn{0.272} & \fmaxn{0.033} \\
+%             \hline
+%             \fmod{CTL-L2}    & 2.001 & 0.028 & 4.211 & 0.093 & 0.235 & 0.045 \\
+%             \fmod{ITL-L2}    & 2.105 & 0.070 & 1.936 & 0.026 & \fmaxn{0.267} & \fmaxn{0.019} \\
+%             \fmod{MTL-L2} & 1.506 & 0.043 & 1.928 & 0.037 & 0.260 & 0.041 \\
+%             \fmod{cvxGLMTL-L2}     & 1.507 & 0.045 & \fmaxn{1.927} & \fmaxn{0.037} & 0.251 & 0.048 \\
+%             \fmod{AdapGLMTL-L2} & \fmaxn{1.501} & \fmaxn{0.047} & 1.928 & 0.038 & 0.249 & 0.055 \\
+%            \hline
+%             \fmod{CTL-LS}    & 2.002 & 0.029 & 4.217 & 0.108 & 0.186 & 0.040 \\
+%             \fmod{ITL-LS}    & 1.609 & 0.015 & 1.928 & 0.017 & 0.182 & 0.007 \\
+%             \fmod{MTL-LS} & 1.507 & 0.042 & 1.929 & 0.026 & 0.186 & 0.041 \\
+%             \fmod{cvxGLMTL-LS}     & \fmaxn{1.502} & \fmaxn{0.047} & \fmaxn{1.917} & \fmaxn{0.022} & \fmaxn{0.197} & \fmaxn{0.033} \\
+%             \fmod{AdapGLMTL-LS} & 1.506 & 0.046 & 1.924 & 0.033 & 0.196 & 0.031    \\
+%                 \bottomrule
+%       \end{tabular}}
+%         %\end{table*}
 
-\end{frame}
+% \end{frame}
 
 
 \section{Conclusiones y Trabajo Futuro}
@@ -2635,7 +2648,7 @@ Multi-Task Learning}
       \item Formulación convexa con métodos de kernel:
       \begin{itemize}
             \item Definimos las L1, L2 y LS-SVM MT con esta formulación convexa 
-            \item Proponemos la combinación convexa de modelos preentrenados
+            \item Analizamos la alternativa que consiste en la combinación convexa de modelos preentrenados
             \item Mostramos buenos resultados de las SVM MT convexas con varios problemas
       \end{itemize}
       \item Formulación convexa con redes neuronales:
@@ -2676,17 +2689,19 @@ Multi-Task Learning}
 
 \end{frame}
 
-\backmatter
-
-\begin{frame}{Índice}{}
-      \tableofcontents
-\end{frame}
 
 \begin{frame}[allowframebreaks]
       \frametitle{Referencias}
 
       \printbibliography
 
+\end{frame}
+
+
+\backmatter
+
+\begin{frame}{Índice}{}
+      \tableofcontents
 \end{frame}
 
 \end{document}
