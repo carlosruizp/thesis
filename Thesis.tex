@@ -436,11 +436,11 @@
 
 \null\vfill
 % Now comes the "Funny Quote", written in italics
-\textit{What is the essence of life? To serve others and to do good.} 
+\textit{Machines take me by surprise with great frequency.} 
 %\textit{``Write a quote here.''}
 
 \begin{flushright}
-Aristotle.
+Alan Turing.
 \end{flushright}
 
 \vfill\vfill\vfill\vfill\vfill\vfill\null
@@ -457,10 +457,10 @@ Aristotle.
 % ml es importante 
 % mtl intenta juntar varias tareas como los humanos
 Machine Learning (ML), whose goal is to automatize the process of learning, has a great influence in our current society.
-The ML algorithms try to infer general patterns from data, which can then be applicable to new unseen data. 
-%Gathering data, with the ML algorithms it is possible to inductively infer general patterns. 
-These algorithms, such as the Support Vector Machine (SVM) or Neural Network (NN), are present in many daily situations and have strongly impacted multiple areas such as engineering or advertising, among many others.
-Multi-Task Learning (MTL) is a field of ML that considers learning different tasks jointly to improve the learning process. This is the natural way of learning for humans: we do not learn each task in an isolated manner, but there exist related tasks are better learned together. The goal in MTL is to develop strategies to mimic this behaviour, where learning various tasks jointly offers an advantage.
+The ML algorithms try to infer general pattern from data, which can then be applicable to new unseen data. 
+%Gathering data, with the ML algorithms it is possible to inductively infer general pattern. 
+These algorithms, such as the Support Vector Machine (SVM) or the Neural Network (NN), are present in many daily situations and have strongly impacted multiple areas such as engineering or advertising, among many others.
+Multi-Task Learning (MTL) is a field of ML that considers learning different tasks jointly to improve the learning process. This is the natural way of learning for humans: we do not learn each task in an isolated manner, but there exist related tasks that are better learned together. The goal in MTL is to develop strategies to mimic this behaviour, where learning various tasks jointly offers an advantage.
 
 
 This thesis begins with a presentation of some basic concepts and definitions that we will use in the rest of this work.
@@ -476,7 +476,7 @@ In multiple experiments, it is observed that the kernel methods with a convex MT
 As a real world application, the prediction of solar and wind energy is also presented using these models, where our proposal outperforms or ties with the described competition.
 
 %
-Applying this formulation, a MTL proposal for NNs is also made, where a convex combination of a common and a task-specific networks is used. These models can also be trained with standard optimization techniques for NNs.
+Applying this formulation, an MTL proposal for NNs is also made, where a convex combination of a common and a task-specific networks is used. These models can also be trained with standard optimization techniques for NNs.
 In experiments with four image datasets, it is shown that the results of this proposal are better than using standard approaches, such as sharing the weights in the hidden layers and task-specific output neurons.
 
 % Considering an alternative combination-based approach, a new convex form ... is proposed
@@ -485,7 +485,7 @@ In experiments with four image datasets, it is shown that the results of this pr
 % As a real work application, it is shown (energy)...
 
 % Another strategy, based on a gl approach is proposed.
-Another approach is proposed with a Graph Laplacian (GL) regularization, where the tasks are interpreted as nodes in a graph, and the pairwise distances between the task models are penalized. In this approach, the adjacency matrix of the graph defines the weights for the distances. A new formulation, based on the tensor product of Reproducing Kernel Hilbert Spaces, to apply this regularization in kernel spaces is developed, and the \acrshort{gl} regularization is applied to the L1, L2 and LS-SVM. 
+Another approach is proposed with a Graph Laplacian (GL) regularization, where the tasks are interpreted as nodes in a graph, and the pairwise distances between the task models are penalized. In this approach, the adjacency matrix of the graph defines the weights for the distances. A new formulation, based on the tensor product of Reproducing Kernel Hilbert Spaces, to apply this regularization in kernel spaces is developed, and the GL regularization is applied to the L1, L2 and LS-SVM. 
 It is exemplified with multiple experiments that this approach can obtain competitive results. 
 %
 Moreover, an algorithm to automatically learn the graph adjacency matrix from the data is proposed and examples of the advantages of using this algorithm are given using experiments with synthetic and real data.
@@ -505,7 +505,7 @@ The thesis ends with some general conclusions and presents lines of research for
 \addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
 
 \small{
-El aprendizaje automático (AA), cuyo objetivo es automatizar el proceso de aprendizaje, tiene una gran influencia en la sociedad actual. Los algoritmos de AA tratan de inferir patrones generales a partir de datos, los cuales pueden después ser aplicados a nuevos datos. Estos algoritmos, como las Máquinas de Vectores Soporte (MVS) o las Redes Neuronales (RNs), están presentes en muchas situaciones cotidianas y han causado un fuerte impacto en múltiples áreas como la ingeniería o la publicidad, entre otras muchas. El Aprendizaje Multitarea (AMT) es un campo del AA que considera el aprendizaje de diferentes tareas de forma conjunta para mejorar el proceso de aprendizaje. Esta es la manera natural de aprender para los humanos: no aprendemos las tareas de manera iaslada, sino que existen tareas que están relacionadas y se aprenden mejor juntas. El objetivo del AMT es desarrollar estrategias que imiten este comportamiento, donde aprender diversas tareas conjuntamente ofrece una ventaja.
+El aprendizaje automático (AA), cuyo objetivo es automatizar el proceso de aprendizaje, tiene una gran influencia en la sociedad actual. Los algoritmos de AA tratan de inferir patrones generales a partir de datos, los cuales pueden después ser aplicados a nuevos datos. Estos algoritmos, como las Máquinas de Vectores Soporte (MVS) o las Redes Neuronales (RN), están presentes en muchas situaciones cotidianas y han causado un fuerte impacto en múltiples áreas como la ingeniería o la publicidad, entre otras muchas. El Aprendizaje Multitarea (AMT) es un campo del AA que considera el aprendizaje de diferentes tareas de forma conjunta para mejorar el proceso de aprendizaje. Esta es la manera natural de aprender para los humanos: no aprendemos las tareas de manera iaslada, sino que existen tareas que están relacionadas y se aprenden mejor juntas. El objetivo del AMT es desarrollar estrategias que imiten este comportamiento, donde aprender diversas tareas conjuntamente ofrece una ventaja.
 
 Esta tesis comienza presentando algunos conceptos básicos y definiciones que usaremos en el resto de este trabajo.
 %
@@ -514,9 +514,9 @@ Después de esto, se ofrece una motivación teórica para el AMT, y se revisan a
 Dentro de las estrategias basadas en combinaciones, se presenta una nueva formulación convexa: se considera la combinación convexa de una parte común y otra específica como el modelo de cada tarea. Esta formulación ofrece algunas propiedades buenas, como una mejor interpretabilidad o la posibilidad de, con una selección particular de hiperparámetros, eliminar la parte común o la específica del modelo. Este enfoque se aplica a métodos de kernel, en particular se proponen la L1, L2 y LS-MVS convexas para AMT, y las soluciones correspondientes a los problemas de entrenamiento se pueden obtener con técnicas estándares de MVS. También se describe una alternativa natural, que considera la combinación convexa directa de un modelo común y otros específicos que ya han sido preentrenados. 
 Se observa en múltiples experimentos que los métodos de kernel con esta formulación convexa obtienen mejores resultados que considerando únicamente un modelo común, uno específico, o la combinación de estos modelos preentrenados. También se presenta la predicción de energía eólica y solar como una aplicación real de estos modelos, donde nuestra propuesta iguala o supera a otros enfoques, como el de un modelo común, modelos específicos por tarea o la combinación convexa directa.
 
-Aplicando esta formulación se hace una propuesta de AMT para RNs, donde se considera una combinación convexa de redes comunes y específicas. Estos modelos se puede entrenar también con técnicas estándares para RNs. Se muestra con cuatro conjuntos de imágenes que los resultados de nuestra propuesta son mejores que aquellos obtenidos con enfoques más tradicionales, como compartir las capas ocultas y definir neuronas de salida específicas para cada tarea.
+Aplicando esta formulación se hace una propuesta de AMT para RN, donde se considera una combinación convexa de redes comunes y específicas. Estos modelos se puede entrenar también con técnicas estándares para RN. Se muestra con cuatro conjuntos de imágenes que los resultados de nuestra propuesta son mejores que aquellos obtenidos con enfoques más tradicionales, como compartir las capas ocultas y definir neuronas de salida específicas para cada tarea.
 
-Se propone además otro enfoque con una regularización basada en el laplaciano de un grafo, en el que las tareas se interpretan como nodos en un grafo, y las distancias entre los modelos de cada par de tareas son penalizadas. En este enfoque, la matriz de adyacencia del grafo define el peso de cada distancia. Se propone una nueva formulación, basada en el producto tensorial de espacios de Hilbert con kernel reproductor, para usar este enfoque, y la regularización laplaciana se aplica a la L1, L2 y LS-MVS. Se ejemplifica con múltiples experimentos que este enfoque puede obtener resultados competitivos. Además se propone un algoritmo para para aprender la matriz de adyacencia de forma automática y se proporcionan ejemplos de las ventajas de este algoritmo en varios problemas sintéticos y reales.
+Se propone además otro enfoque con una regularización basada en el laplaciano de un grafo, en el que las tareas se interpretan como nodos en un grafo, y las distancias entre los modelos de cada par de tareas son penalizadas. En este enfoque, la matriz de adyacencia del grafo define el peso de cada distancia. Se propone una nueva formulación, basada en el producto tensorial de espacios de Hilbert con kernel reproductor, para usar este enfoque, y la regularización laplaciana se aplica a la L1, L2 y LS-MVS. Se ejemplifica con múltiples experimentos que este enfoque puede obtener resultados competitivos. Además se propone un algoritmo para aprender la matriz de adyacencia de forma automática y se proporcionan ejemplos de las ventajas de este algoritmo en varios problemas sintéticos y reales.
 
 Esta tesis termina con algunas conclusiones generales y persenta líneas de investigación para un trabajo futuro.
 }
@@ -533,7 +533,25 @@ Esta tesis termina con algunas conclusiones generales y persenta líneas de inve
 \acknowledgements{
 %\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 \addtocontents{toc}{}  % Add a gap in the Contents, for aesthetics
-.
+First, I want to thank my Ph.D. supervisors, Professor José R. Dorronsoro and Professor Carlos M. Alaíz, who have guided me with great expertise and wise advices throughout my research. I am immensely grateful for their invaluable help, but also for their kindness.
+
+I would like to express my gratitude to Professor Johan Suykens, for his assistance and insightful comments.
+
+I also want to thank my fellow Ph.D students, Carlos Ramos, David Díaz, Eduardo Garrido and Alejandro Catalina, for their guidance and discussions. I express my gratitude to my friend Arun Pandey, who was an inestimable help during my stay in Leuven.
+\newline
+\newline
+I also acknowledge all the members of the committee and official readers of this thesis. I am grateful as well to the KU Leuven University, particulary to the ESAT group, for receiving me in my research visit. I would like to mention all the staff from the Instituto de Ingenería del Conocimiento (IIC) and the Department of Computer Sciences at Universidad Autónoma de Madrid, in particular to the Machine Learning Group.
+
+This research would have not been possible without the support of the Spain’s grant TIN2016-76406-P and the European Regional Development Fund and the Spanish State Research Agency of the Ministry of Economy, Industry, and Competitiveness under the project PID2019-106827GB-I00.
+I also acknowledge the UAM-ADIC Chair for Data Science and Machine Learning for their support.
+I thank Red El\'ectrica de España for making available solar energy data and the Agencia Estatal de Meteorologı\'ia, AEMET, and the ECMWF for access to the MARS repository. 
+I also gratefully acknowledge the use of the facilities of Centro de Computaci\'on Cient\'ifica (CCC) at UAM.
+\newline
+\newline
+I dedicate my deepest gratitude to my family, who has always supported me.
+
+Finally, I am deeply grateful to all my friends, but particularly to Sara, Javier, Elena and Cristina, who have accompanied me throughout this journey.
+
 }
 \clearpage  % End of the Acknowledgements
 %% ----------------------------------------------------------------

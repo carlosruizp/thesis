@@ -116,7 +116,7 @@ where $\dotp{\cdot}{\cdot}$ indicates the inner product.
     \includegraphics[width=0.3\textwidth]{Chapter2/CubicReg/regression_cubicsol.pdf}
     \label{fig:cubicreg_cubicsol}}
     \\
-    \caption{Cubic regression problem example and two regression functions: one linear and one cubic.}
+    \caption[Cubic regression problem.]{Cubic regression problem example and two regression functions: one linear and one cubic.}
     \label{fig:cubicreg}
 \end{figure}
 %
@@ -1465,7 +1465,7 @@ In this section we will present the \acrshort{svm}, also called L1-\acrshort{svm
 \begin{figure}[t!]
     \centering
     \includegraphics[width=0.6\textwidth]{Chapter2/SeparableProblem/separable_problem.pdf}
-    \caption{Example of a linearly separable binary classification problem, where classes are represented with colors blue and red.}
+    \caption[Linearly separable binary classification problem.]{Example of a linearly separable binary classification problem, where classes are represented with colors blue and red.}
     \label{fig:separable_problem}
 \end{figure}
 Before illustrating the idea that leads to the \acrshort{svm} model, we have to define some concepts. Consider a sample of a binary classification problem:
@@ -1484,7 +1484,7 @@ On the other hand, if for any linear rule $f$, its associated $\emprisk(f)$ is g
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter2/SeparableProblem/stochastic_boundaries.pdf}
-    \caption{Linearly separable problem with three different perfect classification rules.}
+    \caption[Linearly separable problem with three different perfect classification rules.]{Linearly separable problem with three different perfect classification rules.}
     \label{fig:stochastic_boundaries}
 \end{figure}
 
@@ -1498,7 +1498,7 @@ The capacity of a set of functions is not easily interpretable; however, we can 
 \begin{figure}[t!]
     \centering
     \includegraphics[width=0.6\textwidth]{Chapter2/SeparableProblem/maxmargin_boundary.pdf}
-    \caption{Linearly separable problem separated by a maximum margin boundary. The classification boundary is shown with a solid line. The lines parallel to the boundary that contain the closest points to such boundary are depicted with dashed lines.}
+    \caption[Linearly separable problem separated by a maximum margin boundary.]{Linearly separable problem separated by a maximum margin boundary. The classification boundary is shown with a solid line. The lines parallel to the boundary that contain the closest points to such boundary are depicted with dashed lines.}
     \label{fig:maxmargin_boundary}
 \end{figure}
 %
@@ -1770,7 +1770,7 @@ After obtaining $\opt{b}$, we focus on the indices $i$ such that $\opt{\alpha}_i
 Actually, we can sum this up and use these necessary \acrshort{kkt} conditions, equations~\eqref{eq:comp_alpha} and~\eqref{eq:comp_beta}, to establish a classification of the support vectors according to their corresponding $\opt{\alpha}_i$, which we give in Table~\ref{tab:sv_clas}.
 %
 \begin{table}[t!]
-    \caption{Classification of the vectors in terms of the value of $\opt{\alpha}_i$. The first three rows illustrate the support vectors, while the last one illustrates those instances that are not support vectors.}
+    \caption[Classification of support vectors.]{Classification of the vectors in terms of the value of $\opt{\alpha}_i$. The first three rows illustrate the support vectors, while the last one illustrates those instances that are not support vectors.}
     \label{tab:sv_clas}
     \centering
     \scalebox{1}{

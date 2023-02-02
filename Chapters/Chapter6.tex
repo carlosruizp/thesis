@@ -338,7 +338,7 @@ For classification, in Table~\ref{tab:error_models_class_f1} we show the F1 and 
 
   \begin{table*}[t!]
     %\captionsetup{font=scriptsize}
-    \caption{Test \acrshort{mae} (top) and R2 score (bottom) and Wilcoxon-based ranking. Here, the optimal hyperparameters have been selected using the \acrshort{mae}. The best models are shown in bold.}
+    \caption[Test regression scores using \acrshort{mae} as the validation metric.]{Test \acrshort{mae} (top) and R2 score (bottom) and Wilcoxon-based ranking. Here, the optimal hyperparameters have been selected using the \acrshort{mae}. The best models are shown in bold.}
     \label{tab:error_models_reg_mae_mae}
     \centering
     \scalebox{.65}{
@@ -389,7 +389,7 @@ For classification, in Table~\ref{tab:error_models_class_f1} we show the F1 and 
 
   \begin{table*}[t!]
     %\captionsetup{font=scriptsize}
-    \caption{Test \acrshort{mae} (top) and R2 score (bottom) and Wilcoxon-based ranking. Here, the optimal hyperparameters have been selected using the \acrshort{mse}. The best models are shown in bold.}
+    \caption[Test regression scores using \acrshort{mse} as the validation metric.]{Test \acrshort{mae} (top) and R2 score (bottom) and Wilcoxon-based ranking. Here, the optimal hyperparameters have been selected using the \acrshort{mse}. The best models are shown in bold.}
       \label{tab:error_models_reg_mse_mae}
       \centering
       \scalebox{.65}{
@@ -461,7 +461,7 @@ Also, a convex \acrshort{mtl} approach yields the single best overall model in f
 
 \begin{table*}[t!]
     %\captionsetup{font=scriptsize}
-    \caption{Test F1 (top) and accuracy (bottom) scores, global ranking and block-wise Wilcoxon-based rankings for classification problems. The best models in each block are shown in bold.}
+    \caption[Test classification scores using the F1 score as validation metric.]{Test F1 (top) and accuracy (bottom) scores, global ranking and block-wise Wilcoxon-based rankings for classification problems. The best models in each block are shown in bold.}
     \label{tab:error_models_class_f1}
     \centering
     \scalebox{.65}{
@@ -657,7 +657,7 @@ In the first subsection the experimental methodology is described, showing how t
 
 %
 \begin{table}[t!]
-    \caption{Hyperparameters, grids used to find them (when appropriate), and hyperparameter selection method for each model. Here, $d$ is the number of {dimensions} % Please chang the font in the Table.
+    \caption[Hyperparameters, grids used to find them (when appropriate), and hyperparameter selection method for each model.]{Hyperparameters, grids used to find them (when appropriate), and hyperparameter selection method for each model. Here, $d$ is the number of {dimensions} % Please chang the font in the Table.
      of the data and $\sigma$ is the standard deviation of the~target.}
     \label{tab:hyperpars_grid_energies}
     \centering
@@ -752,7 +752,7 @@ To put our results in perspective, we also show the errors of simple persistence
     \subfloat[][Monthly photovoltaic energy mean in \fdata{tenerife}.]{%
     \includegraphics[width=.35 \textwidth]{Chapter6/energies/hist_season_tenerife_train_byMonth.pdf}
     \label{fig:ten_groupby_season}}
- \caption{\label{fig:solar_task_def}Hourly photovoltaic energy mean {in} \fcode{majorca} {and} \fcode{tenerife} measured in \mwhu{}. Photovoltaic energy monthly averages for \fcode{majorca} and \fcode{tenerife}, colored with the tasks defined using the season and measured in \mwhu{}. All the histograms have been computed using data from year~2016.}
+ \caption[Hourly photovoltaic energy mean {in} \fcode{majorca} {and} \fcode{tenerife} measured in \mwhu{}.]{\label{fig:solar_task_def}Hourly photovoltaic energy mean {in} \fcode{majorca} {and} \fcode{tenerife} measured in \mwhu{}. Photovoltaic energy monthly averages for \fcode{majorca} and \fcode{tenerife}, colored with the tasks defined using the season and measured in \mwhu{}. All the histograms have been computed using data from year~2016.}
  \end{figure}
 
 The goal is to predict the hourly energy production in the islands of Majorca and Tenerife, and the corresponding problems are named \fdata{majorca} and \fdata{tenerife}, respectively. 
@@ -817,7 +817,7 @@ Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season
 %\subsubsection*{Experimental~Results}
 
 \begin{table}[t!]
-    \caption{Test \acrshort{mae} (left), test \acrshort{mse} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{majorca}. {Base units} are \mwhu{} or percentages (\%) for the \acrshort{mae}, and \mwhusq{} or permyriad ({\textpertenthousand}) for \acrshort{mse}, whose root values are percentages of the \acrshort{rmse}.  The~best model errors are shown in~bold.}
+    \caption[Test \acrshort{mae} test \acrshort{mse} for \fdata{majorca}, with the corresponding rankings and associated Wilcoxon-based rankings.]{Test \acrshort{mae} (left), test \acrshort{mse} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{majorca}. {Base units} are \mwhu{} or percentages (\%) for the \acrshort{mae}, and \mwhusq{} or permyriad ({\textpertenthousand}) for \acrshort{mse}, whose root values are percentages of the \acrshort{rmse}.  The~best model errors are shown in~bold.}
     \centering
     \label{table:solar_scores_m}
     \scalebox{.65}{
@@ -841,7 +841,7 @@ Also, in Subfigures~\ref{fig:maj_groupby_season} and~\ref{fig:ten_groupby_season
 
 
  \begin{table}[t!]
-    \caption{Test \acrshort{mae} (left), test \acrshort{mse} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{tenerife}. {Base units} are \mwhu{} or percentages (\%) for the \acrshort{mae}, and \mwhusq{} or permyriad ({\textpertenthousand}) for \acrshort{mse}, whose root values are percentages of the \acrshort{rmse}. The~best model errors are shown in~bold. 
+    \caption[Test \acrshort{mae} test \acrshort{mse} for \fdata{tenerife}, with the corresponding rankings and associated Wilcoxon-based rankings.]{Test \acrshort{mae} (left), test \acrshort{mse} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the solar energy models considered {in} \fcode{tenerife}. {Base units} are \mwhu{} or percentages (\%) for the \acrshort{mae}, and \mwhusq{} or permyriad ({\textpertenthousand}) for \acrshort{mse}, whose root values are percentages of the \acrshort{rmse}. The~best model errors are shown in~bold. 
     %The positions in bold correspond to the model ranked first in terms of MAE or MSE, as indicated by its column.
     }
     \centering
@@ -952,7 +952,7 @@ The neural network errors are \mwh{5.140} and \mwh{5.763}, that is, 7.09\% and 5
     \subfloat[\acrshort{mtl} prediction.]{%
     \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter6/energies/best_mtl_tenerife.pdf}
     \label{fig:best_mtl_tenerife}}\\
- \caption{\label{fig:tenerife_best_plots} Real energy production against prediction made by the best models {in} \fcode{tenerife}; the perfect prediction  line is shown in orange. The~units of the axis are \mwhu{}.}
+ \caption[Real energy production against prediction made by the best models {in} \fcode{tenerife}.]{\label{fig:tenerife_best_plots} Real energy production against prediction made by the best models {in} \fcode{tenerife}; the perfect prediction  line is shown in orange. The~units of the axis are \mwhu{}.}
 \end{figure}
 
 
@@ -1055,7 +1055,7 @@ Moreover, the boundaries of the tasks are set in a way that is partially arbitra
 
 
 \begin{table}[t!]
-    \caption{Test \acrshort{mae} (left), {\acrshort{mse}} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the Sotavento wind energy models considered. The~best model errors are shown in~bold.}
+    \caption[Test \acrshort{mae} test \acrshort{mse} for \fdata{sotavento}, with the corresponding rankings and associated Wilcoxon-based rankings.]{Test \acrshort{mae} (left), {\acrshort{mse}} (center), with the corresponding rankings and associated Wilcoxon-based rankings, and optimal mixing $\lambda^*$ (right) of the \fdata{sotavento} wind energy models considered. The~best model errors are shown in~bold.}
     \centering
     \label{table:wind_scores}
     %% \tablesize{} %% You can specify the fontsize here, e.g.,~\tablesize{\footnotesize}. If commented out \small will be used.
@@ -1152,7 +1152,7 @@ With the neural network regressor, the error is a $6.66\%$, which is also greate
     \subfloat[Best \acrshort{mtl} prediction.]{%
     \includegraphics[width=.3 \textwidth, height=.3 \textwidth]{Chapter6/energies/best_mtl_stv.pdf}
     \label{fig:best_mtl_stv}}\\
- \caption{\label{fig:stv_best_plots} Real energy production against prediction made by the best models for \fdata{sotavento}; the perfect prediction line is shown in orange. The~units of the axis are percentage points of the total wind energy~installed.}
+ \caption[Real energy production against prediction made by the best models for \fdata{sotavento}.]{\label{fig:stv_best_plots} Real energy production against prediction made by the best models for \fdata{sotavento}; the perfect prediction line is shown in orange. The~units of the axis are percentage points of the total wind energy~installed.}
  \end{figure}
 
 %
@@ -1253,7 +1253,7 @@ In this section, we want to show the effectiveness of the convex \acrshort{mtl} 
 
 \begin{figure}[t!]
     \includegraphics[width=\linewidth]{Chapter6/HAIS2022/hais22_datasets.pdf}
-    \caption{Images of the four classification problems used. Each image has a title indicating the corresponding task. The rows correspond to \fdata{var-MNIST}, \fdata{rot-MNIST}, \fdata{var-FMNIST} and \fdata{rot-FMNIST} (from top to bottom).}
+    \caption[Images of the four classification problems used.]{Images of the four classification problems used. Each image has a title indicating the corresponding task. The rows correspond to \fdata{var-MNIST}, \fdata{rot-MNIST}, \fdata{var-FMNIST} and \fdata{rot-FMNIST} (from top to bottom).}
     \label{fig:problems_hais2022}
 \end{figure}
 
@@ -1597,7 +1597,7 @@ Selecting an adequate graph is not trivial, and an expert knowledge of each spec
 % \end{table*}
 
 \begin{table*}[t]
-    \caption{In the left, test MAE  (top), and test R2 scores (bottom) in the regression problems. In the right, test  F1 score (top), and accuracy (bottom) in the classification problems.}
+    \caption[Test MAE and R2 scores in the regression problems, and test F1 scores in the classification ones.]{In the left, test MAE  (top), and test R2 scores (bottom) in the regression problems. In the right, test  F1 score (top), and accuracy (bottom) in the classification problems.}
     \label{tab:error_models_full}
     \centering
     \scalebox{.65}{
@@ -1678,7 +1678,7 @@ Selecting an adequate graph is not trivial, and an expert knowledge of each spec
 % \\fmod[A-Za-z{}]+([a-z.0-9 (){}-]+&){3}
 % ([.0-9 ()]+&){2}
 \begin{table*}[t]
-    \caption{Top: Wilcoxon $p$-values of absolute errors of a regression model and the one following it in the MAE ranking and similar F1 score $p$ values.
+    \caption[Wilcoxon test $p$-values.]{Top: Wilcoxon $p$-values of absolute errors of a regression model and the one following it in the MAE ranking and similar F1 score $p$ values.
     Bottom: with the same scheme, $p$ values of quadratic errors and the R2 score ranking and accuracy scores.}
     % (bottom); $p$-value rankings shown in parenthesis. \comm{No son acc y f1 en classif?} \resp{Sí, no está bien la caption}}
     \label{tab:wilcoxon}
@@ -1862,7 +1862,7 @@ Also, we generate small training datasets so we can find all the hyperparameters
         \caption{\fdata{clasClusters2}.}
         \label{clasClusters2}
     \end{subfigure}
-    \caption{Representation of the synthetic problems. We use a different color for each ``underlying'' task and a different marker for each ``virtual'' task. In the case of classification, we take two tones for each color: the darker one corresponds to the positive labels, while the lighter one corresponds to the negative labels.}
+    \caption[Representation of the synthetic problems for the adaptive \acrshort{gl} method.]{Representation of the synthetic problems for the adaptive \acrshort{gl} method. We use a different color for each ``underlying'' task and a different marker for each ``virtual'' task. In the case of classification, we take two tones for each color: the darker one corresponds to the positive labels, while the lighter one corresponds to the negative labels.}
 \end{figure}
 
 Regarding the definition of the synthetic problems, we generate three pairs of related regression and classification problems, namely \fdata{regClusters0}, \fdata{regClusters1} and \fdata{regClusters2} for regression, and \fdata{clasClusters0}, \fdata{clasClusters1} and \fdata{clasClusters2} for classification.
@@ -1908,7 +1908,7 @@ To get more stable results, the full procedure, i.e. the problem generation, hyp
 %
 
 \begin{table}[t!]
-    \caption{Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model in the synthetic and real problems.
+    \caption[Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model in the synthetic and real problems.]{Hyperparameters, grids used to select them (when appropriate) and hyperparameter selection method for each model in the synthetic and real problems.
     The parameter $\epsilon$ is only suitable for regression with L1 and L2-\acrshort{svm}.
     }
     \label{table:hyperpars_grid_full}
@@ -2069,7 +2069,7 @@ One possible reason can be found in the nature of the LS-\acrshort{svm} for clas
 
 
 \begin{table}
-    \caption{\acrshort{mae} scores for synthetic regression problems and F1 scores for synthetic classification ones. In bold we highlight the best models of each group: L1, L2 or LS-\acrshort{svms}.}
+    \caption[\acrshort{mae} scores for synthetic regression problems and F1 scores for synthetic classification ones.]{\acrshort{mae} scores for synthetic regression problems and F1 scores for synthetic classification ones. In bold we highlight the best models of each group: L1, L2 or LS-\acrshort{svms}.}
     \label{tab:full_synthetic}
     \centering
     \scalebox{.65}{
@@ -2314,7 +2314,7 @@ We can try to find an explanation for these different behaviors. Note that our a
 % In fact, when drawing the graph adjacency matrices (not shown for space considerations), they are essentially diagonal for the three real problems; in particular, no clustering between them appears and, therefore, \fmod{AdapGLMTL} cannot draw any advantage on these problems to improve the performance of either \fmod{MTL} or \fmod{cvxGLMTL}.
 
 \begin{table*}[t]
-    \caption{Test results for real problems.
+    \caption[Test results for real problems using the adaptive \acrshort*{gl} method.]{Test results for real problems.
     We show the average and standard deviation of MAE scores for the regression problems: \fdata{computer} and \fdata{parkinson}; and average and standard deviation of F1 scores for the classification problem: \fdata{landmine}.
     In bold we highlight the best models of each group: L1, L2 or LS-SVMs.}
     \label{tab:results_real}

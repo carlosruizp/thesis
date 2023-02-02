@@ -1373,7 +1373,7 @@ The original problem presented in~\citet{EvgeniouP04}, which is linear, is
 \begin{equation}
     \label{eq:mtl_combination_primal}
     \begin{aligned}
-        &\argmin_{w, \mymat{V}} C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w + v_r}{x_i^r}) + \frac{\mu}{2}  \norm{w}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{v_r}^2 ,
+        &\argmin_{w, \fv{v}} C \sum_{r=1}^\ntasks \sum_{i=1}^{\npertask_r} \lossf(y_i^r, \dotp{w + v_r}{x_i^r}) + \frac{\mu}{2}  \norm{w}^2 + \frac{1}{2} \sum_{r=1}^\ntasks \norm{v_r}^2 ,
     \end{aligned}    
 \end{equation}
 where $\mu$ is a trade-off parameter to leverage the common and task-specific information, and $C$ is the hyperparameter to control the relevance of the error term against the regularization terms.
@@ -1677,7 +1677,7 @@ To incorporate the concept of Intelligent Teacher in the Machine Learning framew
 % LUPI
 % Definition and notation
 In this paradigm, given a set of i.i.d. triplets
-$$ z = \set{(x_1, \priv{x}_1, y_1), \ldots, (x_\nsamples,\priv{x}_\nsamples, y_\nsamples)}, \; x \in \Xspace, \priv{x} \in \priv{\Xspace}, y \in \Yspace $$
+$$ D_\nsamples = \set{(x_1, \priv{x}_1, y_1), \ldots, (x_\nsamples,\priv{x}_\nsamples, y_\nsamples)}, \; x \in \Xspace, \priv{x} \in \priv{\Xspace}, y \in \Yspace $$
 generated according to an unknown distribution $P(x, \priv{x}, y)$, the goal is to find the hypothesis $\hyp{x}{\opt{\param}}$ from a set of hypotheses $\hypspace = \set{\hyp{x}{\param}, \param \in \paramspace}$ that minimizes some expected risk 
 $$ \exprisk = \int \loss{\hyp{x}{\param}}{y} d\distf(x, y). $$
 

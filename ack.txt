@@ -1,0 +1,6 @@
+This research would have not been possible without the support of the Spain’s grant TIN2016-76406-P. Work supported also by the
+UAM–ADIC Chair for Data Science and Machine Learning. We thank Red Eléctrica de España for making available solar energy data and the Agencia Estatal de Meteorologı́a, AEMET, and the ECMWF for access to the MARS repository. We also gratefully acknowledge the use of the facilities of Centro de Computación Cientı́fica (CCC) at
+UAM.
+financial support from the European Regional Devel-
+opment Fund and the Spanish State Research Agency of the Ministry of Econ-
+omy, Industry, and Competitiveness under the project PID2019-106827GB-I00.

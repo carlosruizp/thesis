@@ -144,6 +144,7 @@
 \newcommand*{\examiner}[1]{\def\examname{#1}}
 \newcommand*{\degree}[1]{\def\degreename{#1}}
 \newcommand*{\authors}[1]{\def\authornames{#1}}
+\newcommand*{\directors}[1]{\def\directornames{#1}}
 \newcommand*{\addresses}[1]{\def\addressnames{#1}}
 \newcommand*{\university}[1]{\def\univname{#1}}
 \newcommand*{\UNIVERSITY}[1]{\def\UNIVNAME{#1}}
@@ -215,7 +216,7 @@
       \smallskip
       {\LARGE \authornames \par}
       \vfill
-      {\large A thesis submitted in partial fulfillment for the \par}
+      {\large A thesis submitted for the \par}
       {\large degree of Doctor of Philosophy \par}
       \bigskip
       \bigskip
@@ -291,6 +292,8 @@
    {\normalsize\bf \@title \par}
    \medskip
    {\normalsize by \authornames \par}
+   \medskip
+   {\normalsize directed by \supname \par}
    \bigskip
   \end{center}
 }
@@ -420,7 +423,13 @@
 \thispagestyle{plain}
   \null\vfil
 \begin{center}{ \huge{\textit{Resumen}} \par }
-    \bigskip
+  %\bigskip
+  %{\normalsize\bf \@title \par}
+   %\medskip
+   %{\normalsize by \authornames \par}
+   %\medskip
+   %{\normalsize directed by \supname \par}
+    %\bigskip
 \end{center}
 {\normalsize #1}
 \vfil\vfil\null

@@ -6,49 +6,54 @@
 
 
 
-Using mathematics to predict future events has been in the mind of humans at least since the discovery of Newton's laws of motion. Applying just three laws, it was possible to determine with precision the position of a planet in a future time. However, not everything can be described with a few number of rules. For example, it is not possible to forecast with certainty when a person will die, or the outcome of a war.
+Using mathematics to predict future events has been in the mind of humans at least since the discovery of Newton's laws of motion. Applying just three laws, it was possible to determine with precision the position of a planet in a future time. However, not everything can be described with a few number of rules. For example, it is not possible to forecast with certainty the outcome of a war or the evolution of the economic market.
 
 It was necessary to develop a new type of mathematics to deal with uncertainty, and to be able to give meaningful results for these scenarios. The law of large numbers, discovered by Jakob Bernoulli, stated that, although it was not possible to know the outcome of a particular event, the average behaviour of many similar events could be determined with precision. 
 %
 Such result was applied by Webster and Wallace, two Scottish clergymen, who in the 18th century founded a company that offered life insurances to the pastors' widows. Using a census, they determined that, in average, every year 27 pastors would die, and 18 widows would outlive them. With these numbers, they were able to forecast the capital that they would obtain after 20 years with an error of just one pound.
 %
-This idea has also motivated fictional sciences like the ``psicohistory'', presented in Isaac Asimov's science-fiction book \emph{Foundation}. It is described as a field of mathematics that, analyzing the behaviour and history of an immense number of people, is able to predict the future of the society as a whole. 
+This idea has also motivated fictional sciences like the ``psychohistory'', presented in Isaac Asimov's science-fiction book \emph{Foundation}. It is described as a field of mathematics that, analyzing the behaviour and history of an immense number of people, is able to predict the future of the society as a whole. 
 
 The law of large numbers can be regarded as the founding result of statistical learning, that, as we have seen, has always been linked with its application to real world problems. It was principally during the 20th century that the probability and statistics theory was developed, but it was not until the end of such century when statistical learning was truly born.
-
-Nowadays, in the era of computers, statistical learning is also called \acrfull{ml}, because it tries to automatize the process of learning, so machines can be programmed to learn. In short, the goal of \acrshort{ml} is to detect patterns in data, so they are applicable to new unseen observations. Algorithms to find such patterns by analyzing data are developed and executed by computers.
+%
+Nowadays, in the era of computers, \acrfull{ml} tries to automatize the process of learning, so machines can be programmed to learn. In short, the goal of \acrshort{ml} is to detect patterns in data, so they are applicable to new unseen observations. Algorithms to find such patterns by analyzing data are developed and executed by computers.
 %
 For some people, this pattern recognition ability has been interpreted as a type of intelligence, so \acrshort{ml} is considered to be part of \acrfull{ai}, which includes other areas such as logical inference or graph analytics.
 %
-Furthermore, the impact of \acrshort{ml} in the current society is tremendous, being present in many decisions taken by computers that try to optimize some objective, such as maximizing the traffic of a website or the profit of some company, for instance.
+Furthermore, the impact of \acrshort{ml} in the current society is tremendous, being present in many decisions taken by computers that try to optimize some objective, such as, for instance, maximizing the traffic of a website or the profit of some company.
 
-For this work, it is particularly relevant the case of supervised learning, where there are instances, described by some features, and a target value associated to each instance. The goal here is to model the dependency between those features and the target, so that given the features of a new instance, we can approximate the value of its corresponding target. Going back to the life insurance company example, many of today's insurance companies use \acrshort{ml} to predict the probability of death of each person based on data of that individual, such as the age, gender, or whether they smoke, so they can offer a price that benefits the company. In this case, the features describing each instance are the age, gender, and whether they smoke, and the target is the probability of death.
+For this work, it is particularly relevant the case of supervised learning, where there are instances, described by some features, and a target value associated to each instance. The goal here is to model the dependency between those features and the target, so that given the features of a new instance, we can approximate the value of its corresponding target. Going back to the life insurance example, many of today's insurance companies use \acrshort{ml} to predict the probability of death of each person based on data of that individual, such as the age, gender, or whether they smoke, so they can offer a price that benefits the company. In this case, the features describing each instance are the age, gender, and whether they smoke, and the target is the probability of death.
 %
-Observe here that, although the probability of a few people is predicted with a large error, if for the majority the predictions are approximately accurate, the company will likely have benefits.
+Observe here that, although the probability of a few people is predicted with a large error, if for the majority the predictions are approximately accurate, the company will likely have profits.
 %
 The aim of supervised learning is then to minimize the total error made by our model. In our example, we want to minimize the error on estimating the risk of deaths.
 %
-To do this, we try to find a model that, by finding patterns, minimizes the error on the data that we have, and we expect that this model will be valid also for unseen data.
+To do this, we try to find a model that, by finding patterns, minimizes the error on the data we have, and we expect that this model will be valid also for unseen data.
 
-Several (supervised) \acrshort{ml} methods have been developed, but here we highlight two of them, the \acrfull{svm} and the \acrfull{nn}; each having their strong and weak points. 
+Several supervised \acrshort{ml} methods have been developed, but here we highlight two of them, the \acrfull{svm} and the \acrfull{nn}, each having their strong and weak points. 
 %
 The \acrfull{svm} considers models whose capacity is restricted, which results in a better generalization ability on new data. Moreover, these models can be defined in \acrfull{rkhss}, where there is a kernel function that defines the inner product between elements and, hence, their similarity. In short, kernels allow us to transform the original features in an element with possibly infinite dimensions, which can present more information than the original data. 
 %
 \acrfull{nns}, which have a huge popularity nowadays, consider models that learn increasingly complex representations of the data, and the predictions are made using the most complex representation. Similarly to \acrshort{svms}, the final models are built using a transformation of the original data, but here the transformation is automatically learned from the data.
 
-The description that we have given for \acrshort{ml} seems too focused on the task at hand. The process of learning for humans does not consist on learning isolated tasks, trying to minimize the errors made; instead, we typically can develop multiple skills when practicing an activity. Observe that we do not learn just by recognizing voices or sounds, we also can recognize images, and, more importantly, we connect these two elements to compose a better representation of their world.
+The description that we have given for \acrshort{ml} seems too focused on the task at hand. The process of learning for humans does not consist on learning isolated tasks, trying to minimize the errors made; instead, we typically can develop multiple skills when practicing an activity. Observe that we do not learn just by recognizing voices or sounds, we also can recognize images, and, more importantly, we connect two elements to compose a better representation of their world.
 Moreover, the capabilities that we have obtained in one task can be useful for another task. Consider the case of sports: if we practice tennis, for instance, we are developing the eye-hand coordination and feet mobility, which would be useful abilities for other sports too.
 %
 
 \acrfull{mtl} is a branch of \acrshort{ml} which tries to mimic this strategy, where different tasks are learned together to leverage the learning process. 
 One typical example of an \acrshort{mtl} problem is the prediction of the scores of students from different schools. Here, the prediction of the scores at each school is a different task. 
 %
-Although we would like to have models specialized for each school, since they might have different characteristics, we also want that each model can learn from the entire data. 
+Although we would like to have models specialized for each school, since they might have different characteristics, we also want that each model captures general information across all data. 
 %
 
 To achieve this goal, it is necessary to develop methods that can embody this concept, solving jointly multiple tasks to get better models for each one. This presents some challenges because it is necessary to find ways to couple the task models, which may depend on the underlying \acrshort{ml} algorithm that is used. 
 This is the main motivation of this thesis, where we develop novel methods for \acrshort{mtl}, and we apply them to \acrshort{svms} and \acrshort{nns}.
-
+%
+In the next section, we describe the approaches we have followed and the contributions we have obtained.
+%
+%We develop a convex formulation for \acrshort{mtl}, which improves the interpretability of previous approaches, and define the convex \acrshort{mtl} \acrshort{svm}, as well as the convex \acrshort{svm}. We also develop other method, based on a graph Laplacian, to learn the relations between the tasks of each problem.
+%
+%We test our proposals with multiple problems, both in a classification and a regression setting, and we 
 
 
 
@@ -61,15 +66,31 @@ This is the main motivation of this thesis, where we develop novel methods for \
 % }}
 %We begin this manuscript presenting our contributions and 
 
-\section{Contributions}
-In this section we detail the contributions of this thesis\footnote{The publications corresponding to these contributions can be found on Appendix~\ref{AppendixA}.}.
+\section{Objectives and Contributions}
+%In this section we detail the objectives and contributions of this thesis.
+%Objectives
+As explained above, \acrshort{mtl} considers multiple related problems jointly to leverage the learning process, and it is necessary to develop techniques to achieve this goal. There are different strategies: some approaches learn a shared representation for all tasks, others apply regularization schemes to enforce a coupling in the task parameters, and we can also consider others based on the combination of a common and task-specific parts. The first approach, based on feature learning, is common with approaches based on \acrshort{nns}, while the second one is mostly used with linear models. 
+
+In any case, adapting \acrshort*{mtl} techniques for kernel methods present some difficulties for different reasons. The implicit transformations of kernel methods are fixed and non-learnable, so a shared representation learning approach is not natural, also, applying regularization to elements of an \acrshort{rkhs} present some technical issues. The combination of a common and task-specific parts is the most usual strategy with kernel models. 
+In these approaches, the influence of each part, common or specific, in the final models is determined by a hyperparameter that weights the regularization, which results in a formulation that is difficult to interpret. Our first objective is to improve this situation and to propose a formulation for the combination-based models that is more interpretable. For this, we present a convex approach that we can apply to kernel models.
+
+On the other side, the combination-based strategies assume that all tasks share a common part, which may not be the case for some situations. A second objective has been to address this issue by developing an approach that considers independently the relation between each pair of tasks. Moreover, this idea can be extended, and it is possible to seek methods that not only learn the task models, but also the task relations.
+%
+Finally, going back to the more general view of \acrshort{mtl} strategies, as explained before, the approaches with \acrshort{nns} have been mostly monopolized by a feature-learning approximations.
+However, our previous results show that combination-based \acrshort{mtl} gives very good results over \acrshort{svms}, and our third objective has been
+%; however, we believe that alternative versions based on other techniques, such as the combination-based strategy, is yet to be developed. 
+to %extend our previous contribution from kernels to \acrshort{nns} and we have 
+define and implement combination-based models for \acrshort{mtl} with \acrshort{nns}.
+
+% Contributions
+The contributions of this work\footnote{The publications corresponding to these contributions can be found on Appendix~\ref{AppendixA}.}, derived from the goals defined above, are the following:
 \begin{itemize}
     \item The first contribution is a survey of \acrshort{mtl} methods, where we propose an updated taxonomy to classify the \acrshort{mtl} approaches in three groups: feature-based, parameter-based and combination-based strategies. In this survey, we describe some of the most relevant works and establish connections between different approaches. Moreover, we provide a discussion of which \acrshort{ml} methods are more suitable for each strategy.
-    \item One of the main contributions of this thesis is the convex \acrshort{mtl} formulation for \acrshort{svm} \acrshort{mtl}. This is a general formulation that considers a convex combination of common and task-specific parts, which are trained jointly, as the \acrshort{mtl} models. In particular, we develop this formulation with the L1, L2 and LS-\acrshort{svm}. This is a modification that extends previous works of \acrshort{mtl} with the \acrshort{svm}. Here, we present a more general and interpretable formulation. We provide multiple experiments to show the benefits of this formulation.
-    \item Considering the convex \acrshort{mtl} formulation, we propose a model based on \acrshort{nns} that adopts this approach. We consider the convex combination of common and task-specific networks, where the optimization is done jointly. We show that this \acrshort{mtl} obtains an advantage in four image datasets.
+    \item One of the main contributions of this thesis is the convex \acrshort{mtl} formulation for \acrshort{svm} \acrshort{mtl}. This is a general formulation that considers a convex combination of common and task-specific parts, which are trained jointly, as the \acrshort{mtl} models. In particular, we develop this formulation with the L1, L2 and LS-\acrshort{svm} and their corresponding Python implementation following the style of \texttt{scikit-learn}\footnote{The code is available at \href{https://github.com/carlosruizp/mtlskl}{https://github.com/carlosruizp/mtlskl}}. This is a modification that extends previous works of \acrshort{mtl} with the \acrshort{svm}. Here, we present a more general and interpretable formulation. We provide multiple experiments to show the benefits of this formulation.
+    \item Considering the convex \acrshort{mtl} formulation, we propose a model based on \acrshort{nns} that adopts this approach. We consider the convex combination of common and task-specific networks, where the optimization is done jointly. We develop an implementation based on \texttt{PyTorch} modules\footnote{The code is available at \href{https://github.com/carlosruizp/convexMTLPyTorch}{https://github.com/carlosruizp/convexMTLPyTorch}}, and show that this \acrshort{mtl} obtains an advantage in four image datasets.
     \item Another contribution is the development of a formulation of \acrshort{mtl} kernels based on the tensor product of \acrshort{rkhss}. Here, the kernel is the result of multiplying the similarity between tasks, which can be encoded in a matrix, and the feature similarity, which is expressed by a standard kernel.% tensor-based formulation
     \item Applying the tensor product formulation, we develop an \acrshort{mtl} approach based on a \acrfull{gl} regularization for kernel methods, in particular, the L1, L2 and LS-\acrshort{svm}. In this formulation, the tasks are seen as nodes in a graph, and the distances between each pair of task models is penalized. The adjacency matrix indicates the weight of each pairwise distance. It is exemplified with real experiments that our \acrshort{gl} models are competitive.
-    \item Taking the \acrshort{gl} approach, we define an algorithm to automatically learn the adjacency matrix, which illustrates the task structure, from the data. This is done in an iterated manner, where both the task models and the adjacency matrix are optimized in a loop. Multiple synthetic and real experiments show how this adaptive approach can obtain leverage over other models.
+    \item Taking the \acrshort{gl} approach, we define an algorithm to automatically learn the adjacency matrix, which encodes the task structure, from the data. This is done in an iterated manner, where both the task models and the adjacency matrix are optimized in a loop. Multiple synthetic and real experiments show how this adaptive approach can obtain leverage over other models.
 \end{itemize}
 
 
@@ -92,20 +113,20 @@ The thesis is structured in the following chapters:
 % In this section\dots
 \begin{description}
 
-\item [{Chapter \ref{Chapter1}}] is the present chapter, it gives the main motivation of this thesis and presents the contributions and structure of this thesis.
+\item [{Chapter \ref{Chapter1}}. \nameref{Chapter1}] is the present chapter, it gives the main motivation of this thesis and presents the contributions and structure of this thesis.
 
-\item [{Chapter \ref{Chapter2}}] presents the basic concepts related to \acrshort{ml} such as kernel functions, loss functions, empirical and expected risks, and regularization. The learning theory and optimization theory are also briefly introduced, where the notions that will be applied in the rest of this work are defined. This chapter also describes the standard \acrshort{svm}, namely the L1-\acrshort{svm}, and its variants the L2 and LS-\acrshort{svm}.
+\item [{Chapter \ref{Chapter2}}. \nameref{Chapter2}] presents the basic concepts related to \acrshort{ml} such as kernel functions, loss functions, empirical and expected risks, and regularization. The learning theory and optimization theory are also briefly introduced, where the notions that will be applied in the rest of this work are defined. This chapter also describes the standard \acrshort{svm}, namely the L1-\acrshort{svm}, and its variants the L2 and LS-\acrshort{svm}.
 
-\item [{Chapter \ref{Chapter3}}] motivates \acrshort{mtl} with a theoretical discussion of the advantages that it can offer. Moreover, it gives an overview of some of the most relevant works in this field, introducing a taxonomy to classify the \acrshort{mtl} methods in three groups: feature-based, parameter-based and combination-based. This chapter also presents short reviews of specific \acrshort{mtl} approaches for kernel methods and for \acrshort{nns}. An introduction to the \acrfull{lupi} paradigm, which has a connection with the work developed in this thesis, is also given. 
+\item [{Chapter \ref{Chapter3}}. \nameref{Chapter3}] motivates \acrshort{mtl} with a theoretical discussion of the advantages that it can offer. Moreover, it gives an overview of some of the most relevant works in this field, introducing a taxonomy to classify the \acrshort{mtl} methods in three groups: feature-based, parameter-based and combination-based. This chapter also presents short reviews of specific \acrshort{mtl} approaches for kernel methods and for \acrshort{nns}. An introduction to the \acrfull{lupi} paradigm, which has a connection with the work developed in this thesis, is also given. 
 %This chapter presents the main motivation for this work.
 
-\item [{ Chapter \ref{Chapter4}}] describes a general \acrshort{mtl} formulation that considers the convex combination of a common and a task-specific part as model. This formulation is called convex \acrshort{mtl}. In this chapter, the convex \acrshort{mtl} formulation is applied to kernel methods, in particular to the L1, L2 and LS-\acrshort{svm}, and also to \acrshort{nns}. Moreover, an alternative that considers the direct convex combination of pre-trained common and task-specific models is given, and the selection of the optimal combination parameters is described for this case.
+\item [{ Chapter \ref{Chapter4}}. \nameref{Chapter4}] describes a general \acrshort{mtl} formulation that considers the convex combination of a common and a task-specific part as model. This formulation is called convex \acrshort{mtl}. In this chapter, the convex \acrshort{mtl} formulation is applied to kernel methods, in particular to the L1, L2 and LS-\acrshort{svm}, and also to \acrshort{nns}. Moreover, an alternative that considers the direct convex combination of pre-trained common and task-specific models is given, and the selection of the optimal combination parameters is described for this case.
 
-\item [{ Chapter \ref{Chapter5}}] presents an \acrshort{mtl} proposal for kernel methods based on a \acrfull{gl} regularization. This strategy interprets the tasks as nodes in a graph, and the distance between each pair of task models is penalized, as indicated by the corresponding adjacency matrix. Moreover, a formulation based on tensor products of \acrfull{rkhss} is given, which is then applied to describe the \acrshort{gl} approach for the L1, L2 and LS-\acrshort{svm}. Also, an algorithm to automatically learn the adjacency matrix from the data is described, this is the adaptive \acrshort{gl}. 
+\item [{ Chapter \ref{Chapter5}}. \nameref{Chapter5}] presents an \acrshort{mtl} proposal for kernel methods based on a \acrfull{gl} regularization. This strategy interprets the tasks as nodes in a graph, and the distance between each pair of task models is penalized, as indicated by the corresponding adjacency matrix. Moreover, a formulation based on tensor products of \acrfull{rkhss} is given, which is then applied to describe the \acrshort{gl} approach for the L1, L2 and LS-\acrshort{svm}. Also, an algorithm to automatically learn the adjacency matrix from the data is described, this is the adaptive \acrshort{gl}. 
 
-\item [{ Chapter \ref{Chapter6}}] illustrates the experimental results that we have obtained for the different proposals developed in this thesis. It shows the performance of the convex \acrshort{mtl} formulation, where a single common model, task-specific models and the convex combination of these previous pre-trained models are considered as baselines. It is shown in multiple real-world problems that our proposal obtains an advantage in most of the considered scenarios. As an application of this approach, we highlight the prediction of solar and wind energy, where the convex \acrshort{mtl} kernel models outperform the other approaches considered, a common model, or task-specific ones. The good performance of the convex \acrshort{mtl} with \acrshort{nns} is also exemplified with four image datasets. Regarding the \acrshort{gl} approaches, this chapter also provides several synthetic and real experiments showing how adopting the fixed \acrshort{gl} and adaptive \acrshort{gl} can leverage the models to get better results.
+\item [{ Chapter \ref{Chapter6}}. \nameref{Chapter6}] illustrates the experimental results that we have obtained for the different proposals developed in this thesis. It shows the performance of the convex \acrshort{mtl} formulation, where a single common model, task-specific models and the convex combination of these previous pre-trained models are considered as baselines. It is shown in multiple real-world problems that our proposal obtains an advantage in most of the considered scenarios. As an application of this approach, we highlight the prediction of solar and wind energy, where the convex \acrshort{mtl} kernel models outperform the other approaches considered, a common model, or task-specific ones. The good performance of the convex \acrshort{mtl} with \acrshort{nns} is also exemplified with four image datasets. Regarding the \acrshort{gl} approaches, this chapter also provides several synthetic and real experiments showing how adopting the fixed \acrshort{gl} and adaptive \acrshort{gl} can leverage the models to get better results.
 
-\item [{Chapter \ref{ChapterConclusions}}] provides a summary of the work developed for this thesis. We include the conclusions drawn from the different proposals and results presented. We also illustrate possible future lines for further research.
+\item [{Chapter \ref{ChapterConclusions}}. \nameref{ChapterConclusions}] provides a summary of the work developed for this thesis. We include the conclusions drawn from the different proposals and results presented. We also illustrate possible future lines for further research.
 
 \end{description}
 

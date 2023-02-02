@@ -1314,7 +1314,7 @@ To compute $\partial \mathcal{J}(\lambda)$ we use that all functions $u(\lambda 
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mse.pdf}
-    \caption{Squared value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
+    \caption[Squared value function and its corresponding subgradient.]{Squared value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:sq_loss}
 \end{figure}
 This is the simplest case, since the squared function,
@@ -1341,7 +1341,7 @@ and the optimum is hence $\lambda^* = \max(0, \min(1, \lambda'))$.
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mse.pdf}
-    \caption{Error using the squared loss function (top) and its corresponding derivative (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, and whose corresponding derivative contains the value $0$.}
+    \caption[Error using the squared loss function and its corresponding derivative.]{Error using the squared loss function (top) and its corresponding derivative (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, and whose corresponding derivative contains the value $0$.}
     \label{fig:sq_error}
 \end{figure}
 
@@ -1351,7 +1351,7 @@ In Figure~\ref{fig:sq_error} the error function using $10$ random pairs $(c_i, d
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_mae.pdf}
-    \caption{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
+    \caption[Absolute value function and its corresponding subgradient.]{Absolute value function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:abs_loss}
 \end{figure}
 The absolute function 
@@ -1472,7 +1472,7 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_mae.pdf}
-    \caption{Error using the absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \caption[Error using the absolute loss function and its corresponding subgradient.]{Error using the absolute loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:abs_error}
 \end{figure}
 The meaning of this proposition is depicted in Figure~\ref{fig:abs_error}, where the error and its corresponding subgradient is computed for $10$ random pairs $(c_i, d_i)$. It can be seen that the subdifferential is constant between elbows, and takes a step at the elbows. Then, the parameter $\lambda^*$ is optimal when $0 \in \partial J(\lambda^*)$.
@@ -1505,7 +1505,7 @@ which is illustrated in Figure~\ref{fig:hinge_loss}.
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_hinge.pdf}
-    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
+    \caption[Positive part function and its corresponding subgradient.]{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates the point minimizing the function.}
     \label{fig:hinge_loss}
 \end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the hinge loss is
@@ -1606,7 +1606,7 @@ In~\citet[Proposition 2]{RuizAD21} we present the following result to get the op
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_hinge.pdf}
-    \caption{Error using the hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
+    \caption[Error using the hinge loss function and its corresponding subgradient.]{Error using the hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. Red dots mark the extremes of the subdifferential intervals of non-differentiable points. The yellow dot is the point minimizing the error, and whose corresponding subgradient contains the value $0$.}
     \label{fig:hinge_error}
 \end{figure}
 
@@ -1639,7 +1639,7 @@ Although the gradient can be defined at any point, the definition by parts makes
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo1_sqhinge.pdf}
-    \caption{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates one point minimizing the function.}
+    \caption[Positive part function and its corresponding subgradient.]{Positive part function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot indicates one point minimizing the function.}
     \label{fig:sqhinge_loss}
 \end{figure}
 Using the formulation of~\eqref{eq:subproblem_lambda}, the training error corresponding to the squared hinge loss is
@@ -1747,7 +1747,7 @@ Finally, if none of the previous conditions holds, \eqref{eq:opt_hinge_l2} has a
 \begin{figure}[t!]
     \centering
     \includegraphics[width=\textwidth]{Chapter4/NeuroCom2021/ejemplo2_sqhinge.pdf}
-    \caption{Error using the squared hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, whose corresponding derivative is $0$.}
+    \caption[Error using the squared hinge loss function and its corresponding subgradient.]{Error using the squared hinge loss function (top) and its corresponding subgradient (bottom). The green line represents the $0$ constant function. The yellow dot is the point minimizing the error, whose corresponding derivative is $0$.}
     \label{fig:sqhinge_error}
 \end{figure}
 
