@@ -1,0 +1,100 @@
+% \begin{figure}[t!]
+    \centering
+    \begin{tikzpicture}
+ 
+        % Input Layer
+        \foreach \i in {1,...,\inputnum}
+        {
+            \node[circle, 
+                minimum size = 6mm,
+                fill=orange!30] (Input-\i) at (0,-\i) {};
+        }
+         
+        
+        % Hidden Layer 1
+        \foreach \i in {1,...,\hiddennumhs}
+        {
+            \node[circle, 
+                minimum size = 6mm,
+                fill=teal!50,
+                yshift=(\hiddennumhs-\inputnum)*5 mm
+            ] (Hidden1-\i) at (2.5,-\i) {};
+        }
+        
+        % Hidden Layer 2
+        \foreach \i in {1,...,\hiddennumhs}
+        {
+            \node[circle, 
+                minimum size = 6mm,
+                fill=teal!50,
+                yshift=(\hiddennumhs-\inputnum)*5 mm
+            ] (Hidden2-\i) at (5,-\i) {};
+        }
+         
+        % Output Layer
+        \foreach \i in {1,...,\outputnum}
+        {
+            \node[circle, 
+                minimum size = 6mm,
+                fill=purple!50,
+                yshift=(\outputnum-\inputnum)*5 mm
+            ] (Output-\i) at (7.5,-\i) {};
+        }
+         
+        % Connect neurons In-Hidden
+        \foreach \i in {1,...,\inputnum}
+        {
+            \foreach \j in {1,...,\hiddennumhs}
+            {
+                \draw[->, shorten >=1pt] (Input-\i) -- (Hidden1-\j);   
+            }
+        }
+
+        % Connect neurons Hidden-Hidden
+        \foreach \i in {1,...,\hiddennumhs}
+        {
+            \foreach \j in {1,...,\hiddennumhs}
+            {
+                \draw[->, shorten >=1pt] (Hidden1-\i) -- (Hidden2-\j);   
+            }
+        }
+         
+        % Connect neurons Hidden-Out
+        \foreach \i in {1,...,\hiddennumhs}
+        {
+            \foreach \j in {1}
+            {
+                \draw[->, shorten >=1pt] (Hidden2-\i) -- (Output-\j);
+            }
+        }
+
+        \foreach \i in {1,...,\hiddennumhs}
+        {
+            \foreach \j in {2,...,\outputnum}
+            {
+                \draw[->, shorten >=1pt] (Hidden2-\i) -- (Output-\j);
+            }
+        }
+         
+        % Inputs
+        \foreach \i in {1,...,\inputnum}
+        {            
+            \draw[<-, shorten <=1pt] (Input-\i) -- ++(-1,0)
+                node[left]{};
+        }
+         
+        % % Outputs
+        % \foreach \i in {1,...,\outputnum}
+        % {            
+        %     \draw[->, shorten <=1pt] (Output-\i) -- ++(1,0)
+        %         node[right]{$h_{\i}(\fv{x})$};
+        % }
+         
+    \end{tikzpicture}
+    
+%     \caption{Ejemplo de \emph{Hard Sharing} para dos tareas . 
+%     %The input neurons are shown in orange, the hidden ones in cyan and the output ones in magenta.
+%     %Assuming a sample belonging to task $1$ is used, the shared weights updated in training are represented in red, and in blue the updated specific weights. 
+%     }
+%     \label{fig:hardsharing_nn}
+% \end{figure}
